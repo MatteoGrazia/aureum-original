@@ -4,6 +4,9 @@ import { Droplets, Plus, Minus } from 'lucide-react';
 import GlassCard from '@/components/ui/GlassCard';
 
 export default function WaterTracker({ glasses, goal, onAdd, onRemove }) {
+  // Convert glasses (250ml each) to liters
+  const liters = (glasses * 0.25).toFixed(1);
+  const goalLiters = (goal * 0.25).toFixed(1);
   const percentage = Math.min((glasses / goal) * 100, 100);
 
   return (
@@ -16,24 +19,42 @@ export default function WaterTracker({ glasses, goal, onAdd, onRemove }) {
         transition={{ duration: 0.8, ease: "easeOut" }}
       />
       
-      {/* Wave animation */}
-      <motion.div
-        className="absolute bottom-0 left-0 right-0 h-full opacity-30"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%2360A5FA' d='M0,160L48,176C96,192,192,224,288,213.3C384,203,480,149,576,138.7C672,128,768,160,864,186.7C960,213,1056,235,1152,218.7C1248,203,1344,149,1392,122.7L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E")`,
-          backgroundRepeat: 'repeat-x',
-          backgroundSize: '100% 100%',
-          transform: `translateY(${100 - percentage}%)`
-        }}
-        animate={{
-          backgroundPositionX: ['0%', '100%']
-        }}
-        transition={{
-          duration: 8,
-          repeat: Infinity,
-          ease: "linear"
-        }}
-      />
+      {/* Flowing wave animation */}
+      <div className="absolute bottom-0 left-0 right-0 overflow-hidden" style={{ height: `${percentage}%` }}>
+        <motion.div
+          className="absolute w-full"
+          style={{
+            bottom: '-10%',
+            left: 0,
+          }}
+          animate={{
+            x: ['-100%', '0%']
+          }}
+          transition={{
+            duration: 3,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+        >
+          <svg className="w-[200%]" viewBox="0 0 1440 120" preserveAspectRatio="none">
+            <path
+              fill="rgba(96, 165, 250, 0.3)"
+              d="M0,60 Q360,90 720,60 T1440,60 L1440,120 L0,120 Z"
+            >
+              <animate
+                attributeName="d"
+                dur="5s"
+                repeatCount="indefinite"
+                values="
+                  M0,60 Q360,90 720,60 T1440,60 L1440,120 L0,120 Z;
+                  M0,60 Q360,30 720,60 T1440,60 L1440,120 L0,120 Z;
+                  M0,60 Q360,90 720,60 T1440,60 L1440,120 L0,120 Z
+                "
+              />
+            </path>
+          </svg>
+        </motion.div>
+      </div>
 
       <div className="relative z-10">
         <div className="flex items-center justify-between mb-4">
@@ -45,8 +66,8 @@ export default function WaterTracker({ glasses, goal, onAdd, onRemove }) {
 
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-4xl text-white">{glasses}</p>
-            <p className="text-white/40 text-sm">of {goal} glasses</p>
+            <p className="text-4xl text-white">{liters}L</p>
+            <p className="text-white/40 text-sm">of {goalLiters}L goal</p>
           </div>
 
           <div className="flex gap-2">

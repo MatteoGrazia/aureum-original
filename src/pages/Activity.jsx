@@ -154,10 +154,37 @@ export default function Activity() {
     }
   };
 
+  // Auto-start tracking on mount
+  useEffect(() => {
+    if (motionSupported && !isTracking) {
+      requestMotionPermission();
+    }
+  }, [motionSupported]);
+
   // Calculate weekly stats
   const weeklySteps = weeklyActivity.reduce((sum, day) => sum + (day.steps || 0), 0);
   const weeklyAverage = Math.round(weeklySteps / Math.max(weeklyActivity.length, 1));
   const bestDay = Math.max(...weeklyActivity.map(d => d.steps || 0), 0);
+  
+  // Calculate monthly and yearly averages
+  const { data: monthlyActivity = [] } = useQuery({
+    queryKey: ['monthlyActivity'],
+    queryFn: async () => {
+      return base44.entities.DailyActivity.filter({}, '-date', 30);
+    }
+  });
+  
+  const { data: yearlyActivity = [] } = useQuery({
+    queryKey: ['yearlyActivity'],
+    queryFn: async () => {
+      return base44.entities.DailyActivity.filter({}, '-date', 365);
+    }
+  });
+  
+  const monthlySteps = monthlyActivity.reduce((sum, day) => sum + (day.steps || 0), 0);
+  const monthlyAverage = Math.round(monthlySteps / Math.max(monthlyActivity.length, 1));
+  const yearlySteps = yearlyActivity.reduce((sum, day) => sum + (day.steps || 0), 0);
+  const yearlyAverage = Math.round(yearlySteps / Math.max(yearlyActivity.length, 1));
 
   return (
     <div className="min-h-screen p-6">
@@ -266,6 +293,26 @@ export default function Activity() {
               <p className="text-white/30 text-[10px] uppercase">Best Day</p>
             </div>
           </div>
+        </GlassCard>
+      </motion.div>
+
+      {/* Monthly & Yearly Averages */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
+        className="grid grid-cols-2 gap-4"
+      >
+        <GlassCard className="p-5">
+          <h3 className="text-xs uppercase tracking-widest text-[#D4AF37] mb-3">Monthly Average</h3>
+          <p className="text-3xl text-white mb-1">{monthlyAverage.toLocaleString()}</p>
+          <p className="text-white/30 text-xs">steps per day</p>
+        </GlassCard>
+        
+        <GlassCard className="p-5">
+          <h3 className="text-xs uppercase tracking-widest text-[#D4AF37] mb-3">Yearly Average</h3>
+          <p className="text-3xl text-white mb-1">{yearlyAverage.toLocaleString()}</p>
+          <p className="text-white/30 text-xs">steps per day</p>
         </GlassCard>
       </motion.div>
     </div>
