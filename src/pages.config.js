@@ -49,12 +49,16 @@
  */
 import Dashboard from './pages/Dashboard';
 import Nutrition from './pages/Nutrition';
+import Workouts from './pages/Workouts';
+import Activity from './pages/Activity';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "Dashboard": Dashboard,
     "Nutrition": Nutrition,
+    "Workouts": Workouts,
+    "Activity": Activity,
 }
 
 export const pagesConfig = {
