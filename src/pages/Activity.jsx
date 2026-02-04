@@ -167,13 +167,12 @@ export default function Activity() {
         animate={{ opacity: 1, y: 0 }}
         className="mb-6"
       >
-        <p className="text-white/40 text-xs uppercase tracking-[0.3em]">
+        <h1 className="text-4xl tracking-[0.4em] font-extralight text-center mb-2">
+          <span className="text-[#D4AF37]">ACTIVITY</span>
+        </h1>
+        <p className="text-white/30 text-xs uppercase tracking-[0.3em] text-center">
           {format(new Date(), 'EEEE, MMMM d')}
         </p>
-        <h1 className="text-3xl mt-2 tracking-wide">
-          <span className="text-white">Movement</span>
-          <span className="text-[#D4AF37] ml-2">Pulse</span>
-        </h1>
       </motion.div>
 
       {/* Step Counter */}
@@ -186,56 +185,12 @@ export default function Activity() {
         <StepCounter steps={currentSteps} goal={stepGoal} />
       </motion.div>
 
-      {/* Tracking Controls */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-        className="mb-6"
-      >
-        <GlassCard className="p-5">
-          <h3 className="text-xs uppercase tracking-widest text-[#D4AF37] mb-4">Step Tracking</h3>
-          
-          {motionSupported ? (
-            <div className="space-y-4">
-              <GoldButton
-                onClick={isTracking ? () => setIsTracking(false) : requestMotionPermission}
-                variant={isTracking ? 'outline' : 'filled'}
-                className="w-full flex items-center justify-center gap-2"
-              >
-                <RefreshCw className={`w-4 h-4 ${isTracking ? 'animate-spin' : ''}`} />
-                {isTracking ? 'Tracking Active' : 'Start Tracking'}
-              </GoldButton>
-              
-              {isTracking && (
-                <p className="text-center text-white/40 text-xs">
-                  Walk around to track your steps automatically
-                </p>
-              )}
-            </div>
-          ) : (
-            <div className="space-y-4">
-              <p className="text-white/40 text-sm text-center">
-                Motion sensors not available on this device
-              </p>
-              
-              {/* Manual Entry */}
-              <div className="flex gap-3">
-                <Input
-                  type="number"
-                  placeholder="Add steps manually"
-                  value={manualSteps}
-                  onChange={(e) => setManualSteps(e.target.value)}
-                  className="flex-1 bg-white/5 border-[#D4AF37]/20"
-                />
-                <GoldButton onClick={handleManualSteps} disabled={!manualSteps}>
-                  Add
-                </GoldButton>
-              </div>
-            </div>
-          )}
-        </GlassCard>
-      </motion.div>
+      {/* Auto-start tracking on mount */}
+      {React.useEffect(() => {
+        if (motionSupported && !isTracking) {
+          requestMotionPermission();
+        }
+      }, [motionSupported])}
 
       {/* Activity Stats */}
       <motion.div

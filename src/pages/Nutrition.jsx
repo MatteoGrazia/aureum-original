@@ -143,9 +143,8 @@ export default function Nutrition() {
         animate={{ opacity: 1, y: 0 }}
         className="mb-6"
       >
-        <h1 className="text-3xl tracking-wide mb-4">
-          <span className="text-white">The</span>
-          <span className="text-[#D4AF37] ml-2">Sommelier</span>
+        <h1 className="text-4xl tracking-[0.4em] font-extralight text-center mb-4">
+          <span className="text-[#D4AF37]">NUTRITION</span>
         </h1>
 
         <GlassCard className="p-3">
@@ -293,7 +292,7 @@ export default function Nutrition() {
                   </div>
                 </div>
 
-                <GoldButton onClick={handleLogFood} className="w-full">
+                <GoldButton onClick={handleLogFood} className="w-full" style={{ marginBottom: '20px' }}>
                   Log Food
                 </GoldButton>
               </GlassCard>

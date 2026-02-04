@@ -1,11 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from './utils';
-import { LayoutDashboard, Utensils, Dumbbell, Activity, User } from 'lucide-react';
+import { Home, Utensils, Dumbbell, Activity, User } from 'lucide-react';
 
 export default function Layout({ children, currentPageName }) {
   const navItems = [
-    { name: 'Dashboard', icon: LayoutDashboard, page: 'Dashboard' },
+    { name: 'Dashboard', icon: Home, page: 'Dashboard' },
     { name: 'Nutrition', icon: Utensils, page: 'Nutrition' },
     { name: 'Workouts', icon: Dumbbell, page: 'Workouts' },
     { name: 'Activity', icon: Activity, page: 'Activity' },
@@ -17,16 +17,17 @@ export default function Layout({ children, currentPageName }) {
       <style>{`
         :root {
           --gold: #D4AF37;
+          --bronze: #9C7E46;
           --gold-light: rgba(212, 175, 55, 0.2);
           --gold-glow: rgba(212, 175, 55, 0.4);
-          --glass-bg: rgba(255, 255, 255, 0.03);
+          --glass-bg: rgba(255, 255, 255, 0.05);
           --glass-border: rgba(212, 175, 55, 0.2);
         }
         
         .glass-card {
-          backdrop-filter: blur(20px);
-          background: var(--glass-bg);
-          border: 0.5px solid var(--glass-border);
+          backdrop-filter: blur(25px) saturate(160%);
+          background: rgba(255, 255, 255, 0.05);
+          border: 0.5px solid rgba(212, 175, 55, 0.2);
         }
         
         .gold-text {
@@ -82,16 +83,23 @@ export default function Layout({ children, currentPageName }) {
           background: rgba(212, 175, 55, 0.3);
           border-radius: 4px;
         }
+        
+        /* Safe area insets for mobile */
+        @supports (padding: max(0px)) {
+          body {
+            padding-bottom: env(safe-area-inset-bottom);
+          }
+        }
       `}</style>
 
-      <main className="pb-24 min-h-screen">
+      <main className="pb-24 min-h-screen" style={{ paddingBottom: 'calc(5rem + env(safe-area-inset-bottom, 0px))' }}>
         {children}
       </main>
 
-      {/* Premium Frosted Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50">
+      {/* Premium Frosted Bottom Navigation - Icon Only */}
+      <nav className="fixed bottom-0 left-0 right-0 z-50" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
         <div className="mx-4 mb-4 rounded-2xl glass-card overflow-hidden">
-          <div className="flex items-center justify-around py-3">
+          <div className="flex items-center justify-around py-4 px-2">
             {navItems.map((item) => {
               const isActive = currentPageName === item.page;
               const Icon = item.icon;
@@ -100,25 +108,18 @@ export default function Layout({ children, currentPageName }) {
                 <Link
                   key={item.page}
                   to={createPageUrl(item.page)}
-                  className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all duration-300 ${
+                  className={`flex items-center justify-center p-3 rounded-xl transition-all duration-300 relative ${
                     isActive 
                       ? 'bg-gradient-to-t from-[#D4AF37]/20 to-transparent' 
                       : 'hover:bg-white/5'
                   }`}
                 >
                   <Icon 
-                    className={`w-5 h-5 transition-all duration-300 ${
+                    className={`w-6 h-6 transition-all duration-300 ${
                       isActive ? 'text-[#D4AF37]' : 'text-white/50'
                     }`}
                     strokeWidth={1.5}
                   />
-                  <span 
-                    className={`text-[10px] tracking-wider uppercase transition-all duration-300 ${
-                      isActive ? 'text-[#D4AF37]' : 'text-white/50'
-                    }`}
-                  >
-                    {item.name}
-                  </span>
                   {isActive && (
                     <div className="absolute -bottom-1 w-8 h-0.5 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent rounded-full" />
                   )}

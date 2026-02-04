@@ -208,9 +208,8 @@ export default function Workouts() {
         animate={{ opacity: 1, y: 0 }}
         className="mb-6"
       >
-        <h1 className="text-3xl tracking-wide">
-          <span className="text-white">Hevy</span>
-          <span className="text-[#D4AF37] ml-2">Platinum</span>
+        <h1 className="text-4xl tracking-[0.4em] font-extralight text-center">
+          <span className="text-[#D4AF37]">WORKOUTS</span>
         </h1>
       </motion.div>
 

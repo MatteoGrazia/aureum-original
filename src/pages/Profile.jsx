@@ -132,9 +132,8 @@ export default function Profile() {
         animate={{ opacity: 1, y: 0 }}
         className="mb-6"
       >
-        <h1 className="text-3xl tracking-wide">
-          <span className="text-white">Aesthetics</span>
-          <span className="text-[#D4AF37] ml-2">Vault</span>
+        <h1 className="text-4xl tracking-[0.4em] font-extralight text-center">
+          <span className="text-[#D4AF37]">{user?.full_name?.toUpperCase() || 'PROFILE'}</span>
         </h1>
       </motion.div>
 

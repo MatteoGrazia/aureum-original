@@ -92,8 +92,8 @@ export default function Dashboard() {
       label: 'Remaining', 
       value: remainingCalories, 
       unit: 'kcal',
-      color: 'text-orange-400',
-      bgColor: 'from-orange-400/20'
+      color: 'text-[#9C7E46]',
+      bgColor: 'from-[#9C7E46]/20'
     },
     { 
       icon: Footprints, 
@@ -130,19 +130,32 @@ export default function Dashboard() {
     <div className="min-h-screen p-6">
       {showWelcome && <WelcomeModal onComplete={handleWelcomeComplete} />}
       
-      {/* Header */}
+      {/* Header with Logo */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mb-8"
+        className="mb-8 text-center"
       >
-        <p className="text-white/40 text-xs uppercase tracking-[0.3em]">
+        {/* Golden Feather Logo */}
+        <svg className="w-12 h-12 mx-auto mb-3" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z" stroke="url(#goldGradient)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+          <line x1="16" y1="8" x2="2" y2="22" stroke="url(#goldGradient)" strokeWidth="1.5" strokeLinecap="round"/>
+          <defs>
+            <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#D4AF37"/>
+              <stop offset="50%" stopColor="#F4D03F"/>
+              <stop offset="100%" stopColor="#D4AF37"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        
+        <h1 className="text-4xl tracking-[0.4em] font-extralight">
+          <span className="text-[#D4AF37]">AUREUM</span>
+        </h1>
+        
+        <p className="text-white/30 text-xs uppercase tracking-[0.3em] mt-2">
           {format(new Date(), 'EEEE, MMMM d')}
         </p>
-        <h1 className="text-3xl mt-2 tracking-wide">
-          <span className="text-white">Command</span>
-          <span className="text-[#D4AF37] ml-2">Center</span>
-        </h1>
       </motion.div>
 
       {/* Activity Rings */}
@@ -248,7 +261,7 @@ export default function Dashboard() {
             </div>
             <span className="text-[#D4AF37]">−</span>
             <div className="text-center">
-              <p className="text-xl text-orange-400">{consumedCalories}</p>
+              <p className="text-xl text-[#9C7E46]">{consumedCalories}</p>
               <p className="text-[10px] text-white/30 uppercase tracking-wider">Eaten</p>
             </div>
             <span className="text-[#D4AF37]">=</span>
