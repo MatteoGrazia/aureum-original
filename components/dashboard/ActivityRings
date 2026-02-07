@@ -66,7 +66,7 @@ export default function ActivityRings({ calories, caloriesGoal, steps, stepsGoal
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.5 }} className="pr-3 pl-3">
 
-          <p className="text-3xl text-[#D4AF37] mb-3" style={{ fontWeight: 200 }}>
+          <p className="text-[#D4AF37] text-3xl" style={{ fontWeight: 200 }}>
             {Math.round(calories / caloriesGoal * 100)}%
           </p>
           <p className="text-[10px] text-white/50 uppercase tracking-widest">Complete</p>
