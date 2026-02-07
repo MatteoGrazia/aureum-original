@@ -5,7 +5,7 @@ export default function ActivityRings({ calories, caloriesGoal, steps, stepsGoal
   const rings = [
     { value: calories, goal: caloriesGoal, color: '#D4AF37', label: 'Calories', size: 180 },
     { value: steps, goal: stepsGoal, color: '#C0C0C0', label: 'Steps', size: 140 },
-    { value: volume, goal: volumeGoal, color: '#CD7F32', label: 'Volume', size: 85 },
+    { value: volume, goal: volumeGoal, color: '#CD7F32', label: 'Volume', size: 100 },
   ];
 
   return (
