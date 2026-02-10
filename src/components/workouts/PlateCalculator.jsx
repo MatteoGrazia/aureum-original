@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Calculator } from 'lucide-react';
+import { X, Calculator, Settings } from 'lucide-react';
 import GlassCard from '@/components/ui/GlassCard';
 import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
 
 const PLATES = [
   { weight: 25, color: '#EF4444', name: 'Red' },
@@ -18,6 +19,14 @@ const BAR_WEIGHT = 20; // Olympic bar
 
 export default function PlateCalculator({ isOpen, onClose }) {
   const [targetWeight, setTargetWeight] = useState('');
+  const [showSettings, setShowSettings] = useState(false);
+  const [enabledPlates, setEnabledPlates] = useState(
+    PLATES.reduce((acc, plate) => ({ ...acc, [plate.weight]: true }), {})
+  );
+
+  const togglePlate = (weight) => {
+    setEnabledPlates(prev => ({ ...prev, [weight]: !prev[weight] }));
+  };
 
   const calculatePlates = (total) => {
     if (!total || total <= BAR_WEIGHT) return [];
@@ -25,7 +34,9 @@ export default function PlateCalculator({ isOpen, onClose }) {
     let remaining = (total - BAR_WEIGHT) / 2; // Per side
     const platesToUse = [];
 
-    for (const plate of PLATES) {
+    const availablePlates = PLATES.filter(plate => enabledPlates[plate.weight]);
+    
+    for (const plate of availablePlates) {
       while (remaining >= plate.weight) {
         platesToUse.push(plate);
         remaining -= plate.weight;
@@ -62,13 +73,58 @@ export default function PlateCalculator({ isOpen, onClose }) {
                 <Calculator className="w-5 h-5 text-[#D4AF37]" />
                 <h3 className="text-lg text-white">Plate Calculator</h3>
               </div>
-              <button
-                onClick={onClose}
-                className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center"
-              >
-                <X className="w-4 h-4 text-white" />
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setShowSettings(!showSettings)}
+                  className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
+                >
+                  <Settings className={`w-4 h-4 text-[#D4AF37] transition-transform ${showSettings ? 'rotate-90' : ''}`} />
+                </button>
+                <button
+                  onClick={onClose}
+                  className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
+                >
+                  <X className="w-4 h-4 text-white" />
+                </button>
+              </div>
             </div>
+
+            {/* Settings Panel */}
+            <AnimatePresence>
+              {showSettings && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="mb-6 overflow-hidden"
+                >
+                  <div className="bg-white/5 rounded-xl p-4 border border-[#D4AF37]/20">
+                    <p className="text-xs text-white/40 uppercase tracking-wider mb-3">Available Plates</p>
+                    <div className="space-y-2">
+                      {PLATES.map((plate) => (
+                        <div
+                          key={plate.weight}
+                          className="flex items-center justify-between py-2"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div
+                              className="w-4 h-4 rounded"
+                              style={{ backgroundColor: plate.color }}
+                            />
+                            <span className="text-white text-sm">{plate.weight}kg</span>
+                            <span className="text-white/40 text-xs">({plate.name})</span>
+                          </div>
+                          <Switch
+                            checked={enabledPlates[plate.weight]}
+                            onCheckedChange={() => togglePlate(plate.weight)}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             <Input
               type="number"
