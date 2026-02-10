@@ -97,8 +97,8 @@ export default function Layout({ children, currentPageName }) {
       </main>
 
       {/* Premium Frosted Bottom Navigation - Icon Only */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
-        <div className="mx-4 mb-4 rounded-2xl glass-card overflow-hidden">
+      <nav className="fixed bottom-0 left-0 right-0 z-50">
+        <div className="mx-4 mb-6 rounded-2xl glass-card overflow-hidden" style={{ marginBottom: 'calc(1.5rem + env(safe-area-inset-bottom, 0px))' }}>
           <div className="flex items-center justify-around py-4 px-2">
             {navItems.map((item) => {
               const isActive = currentPageName === item.page;
