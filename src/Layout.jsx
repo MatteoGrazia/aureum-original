@@ -17,7 +17,7 @@ export default function Layout({ children, currentPageName }) {
       <style>{`
         :root {
           --gold: #D4AF37;
-          --bronze: #9C7E46;
+          --bronze: #BFA68F;
           --gold-light: rgba(212, 175, 55, 0.2);
           --gold-glow: rgba(212, 175, 55, 0.4);
           --glass-bg: rgba(255, 255, 255, 0.05);
