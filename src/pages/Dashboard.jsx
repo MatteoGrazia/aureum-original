@@ -140,12 +140,14 @@ export default function Dashboard() {
         <img 
           src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698347d058d3014d6271ccff/7a73e1737_1.png" 
           alt="Aureum Logo" 
-          className="w-16 h-16 mx-auto mb-3 object-contain"
+          className="w-24 h-24 mx-auto mb-4 object-contain"
         />
         
-        <h1 className="text-4xl tracking-[0.4em]" style={{ fontFamily: 'Inter', fontWeight: 100 }}>
-          <span className="text-[#D4AF37]">AUREUM</span>
-        </h1>
+        <img 
+          src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698347d058d3014d6271ccff/bca005d8b_Untitleddesign.png" 
+          alt="Aureum Text" 
+          className="h-8 mx-auto object-contain"
+        />
         
         <p className="text-white/30 text-xs uppercase tracking-[0.3em] mt-2">
           {format(new Date(), 'EEEE, MMMM d')}
