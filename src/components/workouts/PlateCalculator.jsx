@@ -85,7 +85,7 @@ export default function PlateCalculator({ isOpen, onClose }) {
               
               {/* Plates on left */}
               <div className="absolute top-1/2 left-4 flex items-center -translate-y-1/2">
-                {plates.map((plate, i) => (
+                {[...plates].reverse().map((plate, i) => (
                   <motion.div
                     key={i}
                     initial={{ scale: 0 }}
@@ -105,7 +105,7 @@ export default function PlateCalculator({ isOpen, onClose }) {
 
               {/* Plates on right */}
               <div className="absolute top-1/2 right-4 flex items-center -translate-y-1/2 flex-row-reverse">
-                {plates.map((plate, i) => (
+                {[...plates].reverse().map((plate, i) => (
                   <motion.div
                     key={i}
                     initial={{ scale: 0 }}
