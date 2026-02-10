@@ -108,8 +108,8 @@ export default function Dashboard() {
       label: 'Volume', 
       value: workoutVolume.toLocaleString(), 
       unit: 'kg',
-      color: 'text-[#CD7F32]',
-      bgColor: 'from-[#CD7F32]/20'
+      color: 'text-[#BFA68F]',
+      bgColor: 'from-[#BFA68F]/20'
     },
     { 
       icon: Droplets, 
@@ -137,19 +137,13 @@ export default function Dashboard() {
         className="mb-8 text-center"
       >
         {/* Golden Feather Logo */}
-        <svg className="w-12 h-12 mx-auto mb-3" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z" stroke="url(#goldGradient)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-          <line x1="16" y1="8" x2="2" y2="22" stroke="url(#goldGradient)" strokeWidth="1.5" strokeLinecap="round"/>
-          <defs>
-            <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#D4AF37"/>
-              <stop offset="50%" stopColor="#F4D03F"/>
-              <stop offset="100%" stopColor="#D4AF37"/>
-            </linearGradient>
-          </defs>
-        </svg>
+        <img 
+          src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698347d058d3014d6271ccff/7a73e1737_1.png" 
+          alt="Aureum Logo" 
+          className="w-16 h-16 mx-auto mb-3 object-contain"
+        />
         
-        <h1 className="text-4xl tracking-[0.4em] font-extralight">
+        <h1 className="text-4xl tracking-[0.4em]" style={{ fontFamily: 'Inter', fontWeight: 100 }}>
           <span className="text-[#D4AF37]">AUREUM</span>
         </h1>
         
@@ -185,7 +179,7 @@ export default function Dashboard() {
               <span className="text-xs text-white/50">Steps</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-[#CD7F32]" />
+              <div className="w-3 h-3 rounded-full bg-[#BFA68F]" />
               <span className="text-xs text-white/50">Volume</span>
             </div>
           </div>
