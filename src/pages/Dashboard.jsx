@@ -15,35 +15,39 @@ export default function Dashboard() {
   const queryClient = useQueryClient();
   const today = format(new Date(), 'yyyy-MM-dd');
 
-  const { data: profile } = useQuery({
+  const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ['userProfile'],
     queryFn: async () => {
       const profiles = await base44.entities.UserProfile.filter({});
       return profiles[0] || null;
-    }
+    },
+    staleTime: 5 * 60 * 1000
   });
 
-  const { data: dailyActivity, refetch: refetchActivity } = useQuery({
+  const { data: dailyActivity, refetch: refetchActivity, isLoading: activityLoading } = useQuery({
     queryKey: ['dailyActivity', today],
     queryFn: async () => {
       const activities = await base44.entities.DailyActivity.filter({ date: today });
       return activities[0] || { steps: 0, water_glasses: 0, active_minutes: 0, calories_burned: 0 };
-    }
+    },
+    staleTime: 1 * 60 * 1000
   });
 
-  const { data: todaysFoodLogs } = useQuery({
+  const { data: todaysFoodLogs, isLoading: foodLoading } = useQuery({
     queryKey: ['foodLogs', today],
     queryFn: async () => {
       return await base44.entities.FoodLog.filter({ date: today });
-    }
+    },
+    staleTime: 1 * 60 * 1000
   });
 
-  const { data: todaysWorkout } = useQuery({
+  const { data: todaysWorkout, isLoading: workoutLoading } = useQuery({
     queryKey: ['workoutLogs', today],
     queryFn: async () => {
       const workouts = await base44.entities.WorkoutLog.filter({ date: today });
       return workouts[0] || null;
-    }
+    },
+    staleTime: 1 * 60 * 1000
   });
 
   useEffect(() => {
@@ -125,6 +129,19 @@ export default function Dashboard() {
     refetchActivity();
     queryClient.invalidateQueries(['weightHistory']);
   };
+
+  const isLoading = profileLoading || activityLoading || foodLoading || workoutLoading;
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen p-6 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-[#D4AF37]/20 border-t-[#D4AF37] rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-white/50 text-sm">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen p-6">
