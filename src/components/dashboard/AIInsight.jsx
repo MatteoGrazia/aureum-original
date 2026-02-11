@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Sparkles, RefreshCw } from 'lucide-react';
-import GlassCard from '@/components/ui/GlassCard';
 import { base44 } from '@/api/base44Client';
 
 export default function AIInsight({ stats }) {
@@ -36,32 +35,38 @@ Keep it sophisticated and brief.`,
   }, [stats]);
 
   return (
-    <GlassCard className="p-5" glow>
-      <div className="flex items-start gap-4">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#D4AF37]/30 to-[#D4AF37]/10 flex items-center justify-center flex-shrink-0">
-          <Sparkles className="w-5 h-5 text-[#D4AF37]" />
-        </div>
-        <div className="flex-1">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-xs uppercase tracking-widest text-[#D4AF37]">Today's Insight</h3>
-            <button
-              onClick={generateInsight}
-              disabled={loading}
-              className="text-white/30 hover:text-[#D4AF37] transition-colors"
-            >
-              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-            </button>
-          </div>
-          <motion.p
-            key={insight}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-white/70 text-sm leading-relaxed"
-          >
-            {loading ? 'Analyzing your day...' : insight}
-          </motion.p>
-        </div>
+    <div>
+      <div className="flex items-start justify-between mb-4">
+        <h3 
+          className="text-[10px] uppercase tracking-[0.4em] text-[#9C7E46]"
+          style={{ fontFamily: 'Cinzel, serif', fontWeight: 300 }}
+        >
+          Daily Insight
+        </h3>
+        <button
+          onClick={generateInsight}
+          disabled={loading}
+          className="text-white/30 hover:text-[#D4AF37] transition-colors"
+        >
+          <Sparkles className="w-3.5 h-3.5" strokeWidth={1} />
+        </button>
       </div>
-    </GlassCard>
+      
+      <motion.p
+        key={insight}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="text-white/50 text-xs leading-relaxed"
+        style={{ fontWeight: 200 }}
+      >
+        {loading ? (
+          <span className="flex items-center gap-2">
+            <span className="w-[1px] h-3 bg-[#D4AF37] animate-pulse" />
+            <span className="w-[1px] h-3 bg-[#D4AF37] animate-pulse" style={{ animationDelay: '0.2s' }} />
+            <span className="w-[1px] h-3 bg-[#D4AF37] animate-pulse" style={{ animationDelay: '0.4s' }} />
+          </span>
+        ) : insight}
+      </motion.p>
+    </div>
   );
 }
