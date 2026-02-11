@@ -14,7 +14,7 @@ export default function Layout({ children, currentPageName }) {
 
   return (
     <div className="min-h-screen bg-[#080808] text-white">
-      <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@300;400;500;600&display=swap" rel="stylesheet" />
+      <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@300;400;500;600&family=Cormorant:wght@300;400;500&display=swap" rel="stylesheet" />
       <style>{`
         :root {
           --gold: #D4AF37;
