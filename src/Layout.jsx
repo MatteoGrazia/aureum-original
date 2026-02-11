@@ -1,11 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from './utils';
-import { Home, Utensils, Dumbbell, Activity, User } from 'lucide-react';
+import { House, Utensils, Dumbbell, Activity, User } from 'lucide-react';
 
 export default function Layout({ children, currentPageName }) {
   const navItems = [
-    { name: 'Dashboard', icon: Home, page: 'Dashboard' },
+    { name: 'Dashboard', icon: House, page: 'Dashboard' },
     { name: 'Nutrition', icon: Utensils, page: 'Nutrition' },
     { name: 'Workouts', icon: Dumbbell, page: 'Workouts' },
     { name: 'Activity', icon: Activity, page: 'Activity' },
