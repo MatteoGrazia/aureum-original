@@ -1,9 +1,19 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Flame, Footprints, Dumbbell, Droplets } from 'lucide-react';
 
-export default function AureumPulse({ label, value, goal, unit, index = 0 }) {
+export default function AureumPulse({ label, value, goal, unit, index = 0, icon }) {
   const progress = Math.min((value / goal) * 100, 100);
   const isNearGoal = progress > 80;
+  
+  const iconMap = {
+    'Energy Remaining': Flame,
+    'Steps': Footprints,
+    'Training Volume': Dumbbell,
+    'Hydration': Droplets
+  };
+  
+  const Icon = icon || iconMap[label];
 
   return (
     <motion.div
@@ -19,14 +29,17 @@ export default function AureumPulse({ label, value, goal, unit, index = 0 }) {
         borderRadius: '16px'
       }}
     >
-      {/* Label */}
+      {/* Label with Icon */}
       <div className="flex items-baseline justify-between mb-4">
-        <p 
-          className="text-[9px] uppercase tracking-[0.35em] text-[#9C7E46]"
-          style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 200 }}
-        >
-          {label}
-        </p>
+        <div className="flex items-center gap-2">
+          {Icon && <Icon className="w-3.5 h-3.5 text-[#9C7E46]" strokeWidth={1} />}
+          <p 
+            className="text-[9px] uppercase tracking-[0.35em] text-[#9C7E46]"
+            style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 200 }}
+          >
+            {label}
+          </p>
+        </div>
         <p 
           className="text-white/40 text-[10px] tracking-wider"
           style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}
@@ -49,24 +62,24 @@ export default function AureumPulse({ label, value, goal, unit, index = 0 }) {
               : '0 0 4px rgba(212,175,55,0.4)',
           }}
         >
-          {/* Shimmer effect when near goal */}
-          {isNearGoal && (
-            <motion.div
-              className="absolute right-0 top-0 w-8 h-[1px]"
-              style={{
-                background: 'linear-gradient(90deg, transparent, rgba(212,175,55,0.8), transparent)',
-              }}
-              animate={{
-                x: [0, 8, 0],
-                opacity: [0.3, 1, 0.3]
-              }}
-              transition={{
-                duration: 1.5,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-            />
-          )}
+          {/* Enhanced Shimmer effect - always visible, more intense near goal */}
+          <motion.div
+            className="absolute right-0 top-0 w-12 h-[1px]"
+            style={{
+              background: isNearGoal 
+                ? 'linear-gradient(90deg, transparent, rgba(212,175,55,0.9), rgba(244,208,63,0.9), transparent)'
+                : 'linear-gradient(90deg, transparent, rgba(212,175,55,0.5), transparent)',
+            }}
+            animate={{
+              x: isNearGoal ? [-8, 12, -8] : [-4, 8, -4],
+              opacity: isNearGoal ? [0.5, 1, 0.5] : [0.3, 0.7, 0.3]
+            }}
+            transition={{
+              duration: isNearGoal ? 1 : 2,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
         </motion.div>
 
         {/* Goal marker */}

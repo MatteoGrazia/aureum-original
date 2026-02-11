@@ -13,7 +13,9 @@ export default function Layout({ children, currentPageName }) {
   ];
 
   return (
-    <div className="min-h-screen bg-[#080808] text-white">
+    <div className="min-h-screen text-white" style={{
+      background: 'radial-gradient(ellipse at top center, rgba(40, 40, 40, 0.15) 0%, #080808 50%, #080808 100%)'
+    }}>
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500&family=Montserrat:wght@200;300;400;500&display=swap" rel="stylesheet" />
       <style>{`
         :root {
@@ -22,9 +24,9 @@ export default function Layout({ children, currentPageName }) {
           --muted-bronze: #9C7E46;
           --gold-light: rgba(212, 175, 55, 0.2);
           --gold-glow: rgba(212, 175, 55, 0.4);
-          --glass-bg: rgba(255, 255, 255, 0.05);
+          --glass-bg: rgba(255, 255, 255, 0.03);
           --glass-border: rgba(212, 175, 55, 0.2);
-          --void-black: #050505;
+          --void-black: #080808;
         }
         
         .glass-card {
@@ -121,9 +123,9 @@ export default function Layout({ children, currentPageName }) {
                 >
                   <Icon 
                     className={`w-6 h-6 transition-all duration-300 ${
-                      isActive ? 'text-[#D4AF37]' : 'text-white/50'
+                      isActive ? 'text-[#D4AF37]' : 'text-[#9C7E46]'
                     }`}
-                    strokeWidth={1.5}
+                    strokeWidth={1}
                   />
                   {isActive && (
                     <div className="absolute -bottom-1 w-8 h-0.5 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent rounded-full" />

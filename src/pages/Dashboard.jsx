@@ -3,6 +3,7 @@ import { motion, useScroll } from 'framer-motion';
 import { format } from 'date-fns';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { Flame, Footprints, Dumbbell, Droplets } from 'lucide-react';
 import VoidCard from '@/components/ui/VoidCard';
 import ChronosOrbital from '@/components/dashboard/ChronosOrbital';
 import AureumPulse from '@/components/dashboard/AureumPulse';
@@ -215,16 +216,38 @@ export default function Dashboard() {
 
         {/* Aureum Pulse Horizontal Visualizations */}
         <div className="space-y-4 mb-8">
-          {pulseStats.map((stat, index) => (
-            <AureumPulse
-              key={stat.label}
-              label={stat.label}
-              value={stat.value}
-              goal={stat.goal}
-              unit={stat.unit}
-              index={index}
-            />
-          ))}
+          <AureumPulse
+            label="Energy Remaining"
+            value={Math.max(remainingCalories, 0)}
+            goal={maintenanceCalories + activityCalories}
+            unit="kcal"
+            icon={Flame}
+            index={0}
+          />
+          <AureumPulse
+            label="Steps"
+            value={dailyActivity?.steps || 0}
+            goal={stepsGoal}
+            unit="steps"
+            icon={Footprints}
+            index={1}
+          />
+          <AureumPulse
+            label="Training Volume"
+            value={workoutVolume}
+            goal={5000}
+            unit="kg"
+            icon={Dumbbell}
+            index={2}
+          />
+          <AureumPulse
+            label="Hydration"
+            value={dailyActivity?.water_glasses || 0}
+            goal={waterGoal}
+            unit="glasses"
+            icon={Droplets}
+            index={3}
+          />
         </div>
 
         {/* AI Insight */}
