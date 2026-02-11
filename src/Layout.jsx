@@ -14,8 +14,12 @@ export default function Layout({ children, currentPageName }) {
 
   return (
     <div className="min-h-screen text-white" style={{
-      background: 'linear-gradient(180deg, #0d0d0d 0%, #080808 40%, #0a0a0a 100%)',
-      backgroundImage: 'radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, 0.03) 0%, transparent 50%)'
+      background: '#080808',
+      backgroundImage: `
+        radial-gradient(ellipse 1200px 800px at 30% 20%, rgba(140, 140, 140, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse 1000px 600px at 70% 60%, rgba(160, 160, 160, 0.06) 0%, transparent 50%),
+        radial-gradient(ellipse 800px 500px at 50% 90%, rgba(120, 120, 120, 0.05) 0%, transparent 50%)
+      `
     }}>
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500&family=Montserrat:wght@200;300;400;500&display=swap" rel="stylesheet" />
       <style>{`
