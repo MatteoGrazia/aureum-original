@@ -157,7 +157,7 @@ export default function Dashboard() {
           {/* Ultra-thin Inter Typography */}
           <h1 
             className="text-2xl tracking-[0.5em] text-white mb-3"
-            style={{ fontFamily: 'Inter, sans-serif', fontWeight: 100 }}
+            style={{ fontFamily: 'Inter, sans-serif', fontWeight: 200 }}
           >
             A U R E U M
           </h1>
@@ -165,7 +165,7 @@ export default function Dashboard() {
           {/* Muted Bronze Date */}
           <p 
             className="text-[#9C7E46] text-[10px] uppercase tracking-[0.3em] opacity-40"
-            style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 200 }}
+            style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 300 }}
           >
             {format(new Date(), 'EEEE, MMMM d')}
           </p>
@@ -255,7 +255,7 @@ export default function Dashboard() {
           <VoidCard>
             <h3 
               className="text-[9px] uppercase tracking-[0.35em] text-[#9C7E46] mb-5"
-              style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 200 }}
+              style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 300 }}
             >
               Energy Balance
             </h3>
