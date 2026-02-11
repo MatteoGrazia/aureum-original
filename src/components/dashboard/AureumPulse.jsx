@@ -22,16 +22,27 @@ export default function AureumPulse({ label, value, goal, unit, index = 0, icon 
       transition={{ delay: index * 0.08 }}
       className="relative"
       style={{
-        background: 'rgba(255, 255, 255, 0.03)',
-        backdropFilter: 'blur(25px) saturate(160%)',
-        boxShadow: 'inset 0px 4px 12px rgba(0,0,0,0.5), 0px 10px 30px rgba(0,0,0,0.3)',
-        borderTop: '0.5px solid #D4AF37',
+        background: 'linear-gradient(135deg, rgba(212,175,55,0.08) 0%, rgba(255,255,255,0.03) 50%, rgba(212,175,55,0.05) 100%)',
+        backdropFilter: 'blur(30px) saturate(180%)',
+        boxShadow: 'inset 0px 1px 20px rgba(212,175,55,0.12), inset 0px 4px 12px rgba(0,0,0,0.4), 0px 10px 40px rgba(0,0,0,0.3)',
+        borderTop: '0.5px solid rgba(212,175,55,0.6)',
+        borderLeft: '0.5px solid rgba(212,175,55,0.1)',
+        borderRight: '0.5px solid rgba(212,175,55,0.1)',
         padding: '24px 20px',
-        borderRadius: '16px'
+        borderRadius: '16px',
+        overflow: 'hidden',
+        position: 'relative'
       }}
     >
+      {/* Amber glow overlay */}
+      <div 
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: 'radial-gradient(circle at 50% 0%, rgba(212,175,55,0.04) 0%, transparent 60%)',
+        }}
+      />
       {/* Label with Icon */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 relative z-10">
         <div className="flex items-center gap-3">
           {Icon && (
             <div className="w-8 h-8 rounded-lg bg-[#D4AF37]/5 flex items-center justify-center">
@@ -54,7 +65,7 @@ export default function AureumPulse({ label, value, goal, unit, index = 0, icon 
       </div>
 
       {/* Thread visualization */}
-      <div className="relative h-[1px] bg-[#9C7E46]/20 overflow-visible">
+      <div className="relative h-[1px] bg-[#9C7E46]/20 overflow-visible z-10">
         {/* Progress thread */}
         <motion.div
           initial={{ width: 0 }}
@@ -129,7 +140,7 @@ export default function AureumPulse({ label, value, goal, unit, index = 0, icon 
       </div>
 
       {/* Percentage indicator */}
-      <div className="mt-3 text-right">
+      <div className="mt-3 text-right relative z-10">
         <span 
           className="text-[11px] tracking-wider"
           style={{ 
