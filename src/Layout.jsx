@@ -14,7 +14,7 @@ export default function Layout({ children, currentPageName }) {
 
   return (
     <div className="min-h-screen bg-[#080808] text-white">
-      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500&family=Montserrat:wght@200;300;400;500;600&display=swap" rel="stylesheet" />
+      <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@300;400;500;600&family=Cormorant:wght@300;400;500&display=swap" rel="stylesheet" />
       <style>{`
         :root {
           --gold: #D4AF37;
@@ -22,18 +22,14 @@ export default function Layout({ children, currentPageName }) {
           --muted-bronze: #9C7E46;
           --gold-light: rgba(212, 175, 55, 0.2);
           --gold-glow: rgba(212, 175, 55, 0.4);
-          --glass-bg: rgba(255, 255, 255, 0.03);
+          --glass-bg: rgba(255, 255, 255, 0.05);
           --glass-border: rgba(212, 175, 55, 0.2);
           --void-black: #050505;
         }
         
-        * {
-          font-family: 'Montserrat', sans-serif;
-        }
-        
         .glass-card {
           backdrop-filter: blur(25px) saturate(160%);
-          background: rgba(255, 255, 255, 0.03);
+          background: rgba(255, 255, 255, 0.05);
           border: 0.5px solid rgba(212, 175, 55, 0.2);
         }
         
@@ -52,16 +48,20 @@ export default function Layout({ children, currentPageName }) {
           box-shadow: 0 0 20px rgba(212, 175, 55, 0.3), 0 0 40px rgba(212, 175, 55, 0.1);
         }
         
+        * {
+          font-weight: 200;
+        }
+        
         h1, h2, h3, h4, h5, h6 {
-          font-weight: 300;
+          font-weight: 200;
         }
         
         .font-medium {
-          font-weight: 400;
+          font-weight: 300;
         }
         
         .font-semibold, .font-bold {
-          font-weight: 500;
+          font-weight: 400;
         }
         
         input, textarea, select {

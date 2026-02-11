@@ -23,15 +23,15 @@ export default function AureumPulse({ label, value, goal, unit, index = 0 }) {
       <div className="flex items-baseline justify-between mb-4">
         <p 
           className="text-[9px] uppercase tracking-[0.35em] text-[#9C7E46]"
-          style={{ fontWeight: 300, fontFamily: 'Montserrat, sans-serif' }}
+          style={{ fontWeight: 200 }}
         >
           {label}
         </p>
         <p 
           className="text-white/40 text-[10px] tracking-wider"
-          style={{ fontWeight: 200, fontFamily: 'Montserrat, sans-serif' }}
+          style={{ fontWeight: 100 }}
         >
-          <span style={{ fontWeight: 500 }}>{value.toLocaleString()}</span> {unit && <span className="text-white/20">/ {goal.toLocaleString()} {unit}</span>}
+          {value.toLocaleString()} {unit && <span className="text-white/20">/ {goal.toLocaleString()} {unit}</span>}
         </p>
       </div>
 
@@ -81,8 +81,7 @@ export default function AureumPulse({ label, value, goal, unit, index = 0 }) {
         <span 
           className="text-[11px] tracking-wider"
           style={{ 
-            fontWeight: 400,
-            fontFamily: 'Montserrat, sans-serif',
+            fontWeight: 100,
             color: progress >= 100 ? '#D4AF37' : '#9C7E46'
           }}
         >

@@ -39,7 +39,7 @@ Keep it sophisticated and brief.`,
       <div className="flex items-start justify-between mb-4">
         <h3 
           className="text-[10px] uppercase tracking-[0.4em] text-[#9C7E46]"
-          style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 300 }}
+          style={{ fontFamily: 'Cinzel, serif', fontWeight: 300 }}
         >
           Daily Insight
         </h3>
@@ -57,7 +57,7 @@ Keep it sophisticated and brief.`,
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         className="text-white/50 text-xs leading-relaxed"
-        style={{ fontWeight: 300, fontFamily: 'Montserrat, sans-serif' }}
+        style={{ fontWeight: 200 }}
       >
         {loading ? (
           <span className="flex items-center gap-2">
