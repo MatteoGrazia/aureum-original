@@ -103,40 +103,34 @@ export default function Dashboard() {
   const remainingCalories = maintenanceCalories + activityCalories - consumedCalories;
   const stepsGoal = profile?.daily_step_goal || 10000;
   const workoutVolume = todaysWorkout?.total_volume || 0;
+  const waterGoal = profile?.water_goal_glasses || 8;
 
-  const stats = [
-  {
-    icon: Flame,
-    label: 'Remaining',
-    value: remainingCalories,
-    unit: 'kcal',
-    color: 'text-[#9C7E46]',
-    bgColor: 'from-[#9C7E46]/20'
-  },
-  {
-    icon: Footprints,
-    label: 'Steps',
-    value: dailyActivity?.steps || 0,
-    unit: `/ ${stepsGoal.toLocaleString()}`,
-    color: 'text-[#C0C0C0]',
-    bgColor: 'from-white/10'
-  },
-  {
-    icon: Dumbbell,
-    label: 'Volume',
-    value: workoutVolume.toLocaleString(),
-    unit: 'kg',
-    color: 'text-[#CD7F32]',
-    bgColor: 'from-[#CD7F32]/20'
-  },
-  {
-    icon: Droplets,
-    label: 'Water',
-    value: dailyActivity?.water_glasses || 0,
-    unit: `/ ${profile?.water_goal_glasses || 8}`,
-    color: 'text-blue-400',
-    bgColor: 'from-blue-400/20'
-  }];
+  const pulseStats = [
+    {
+      label: 'Energy Remaining',
+      value: remainingCalories,
+      goal: maintenanceCalories + activityCalories,
+      unit: 'kcal'
+    },
+    {
+      label: 'Steps',
+      value: dailyActivity?.steps || 0,
+      goal: stepsGoal,
+      unit: 'steps'
+    },
+    {
+      label: 'Volume Lifted',
+      value: workoutVolume,
+      goal: 5000,
+      unit: 'kg'
+    },
+    {
+      label: 'Hydration',
+      value: dailyActivity?.water_glasses || 0,
+      goal: waterGoal,
+      unit: 'glasses'
+    }
+  ];
 
 
   const handleUpdate = () => {

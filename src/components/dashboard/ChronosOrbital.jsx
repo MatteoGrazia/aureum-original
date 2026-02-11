@@ -2,101 +2,166 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoal, volume, volumeGoal }) {
-  const rings = [
-    { value: calories, goal: caloriesGoal, color: '#D4AF37', size: 200, offset: { x: 8, y: -5 } },
-    { value: steps, goal: stepsGoal, color: '#C0C0C0', size: 155, offset: { x: -6, y: 4 } },
-    { value: volume, goal: volumeGoal, color: '#CD7F32', size: 110, offset: { x: 3, y: -2 } }
+  const orbitals = [
+    { 
+      value: calories, 
+      goal: caloriesGoal, 
+      color: '#D4AF37', 
+      size: 220,
+      offset: { x: -8, y: -8 },
+      rotation: 0
+    },
+    { 
+      value: steps, 
+      goal: stepsGoal, 
+      color: '#C0C0C0', 
+      size: 170,
+      offset: { x: 5, y: -5 },
+      rotation: 45
+    },
+    { 
+      value: volume, 
+      goal: volumeGoal, 
+      color: '#CD7F32', 
+      size: 120,
+      offset: { x: -3, y: 3 },
+      rotation: -30
+    }
   ];
 
+  const totalProgress = Math.min((calories / caloriesGoal * 100 + steps / stepsGoal * 100 + volume / volumeGoal * 100) / 3, 100);
+
   return (
-    <div className="relative flex items-center justify-center h-64">
-      {/* Ambient glow backdrop */}
-      <div className="absolute inset-0 bg-gradient-radial from-[#D4AF37]/5 via-transparent to-transparent opacity-30 animate-pulse" style={{ animationDuration: '8s' }} />
-      
-      {rings.map((ring, index) => {
-        const progress = Math.min((ring.value / ring.goal) * 100, 100);
-        const circumference = ring.size * Math.PI;
-        const strokeDashoffset = circumference - (progress / 100) * circumference;
-        const rotation = (progress / 100) * 360;
+    <div className="relative flex items-center justify-center h-72">
+      {/* Ambient glow background */}
+      <div className="absolute inset-0 overflow-hidden rounded-2xl">
+        <motion.div
+          className="absolute top-1/2 left-1/2 w-96 h-96 -translate-x-1/2 -translate-y-1/2"
+          style={{
+            background: 'radial-gradient(circle, rgba(212,175,55,0.03) 0%, transparent 70%)',
+          }}
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.3, 0.5, 0.3]
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+      </div>
+
+      {/* Orbital rings */}
+      {orbitals.map((orbital, index) => {
+        const progress = Math.min(orbital.value / orbital.goal * 100, 100);
+        const circumference = orbital.size * Math.PI;
+        const strokeDashoffset = circumference - (progress / 100 * circumference);
 
         return (
           <div
             key={index}
             className="absolute"
             style={{
-              width: ring.size,
-              height: ring.size,
-              transform: `translate(${ring.offset.x}px, ${ring.offset.y}px)`
+              width: orbital.size,
+              height: orbital.size,
+              transform: `translate(${orbital.offset.x}px, ${orbital.offset.y}px) rotate(${orbital.rotation}deg)`
             }}
           >
+            {/* Base orbital path */}
             <svg
-              className="w-full h-full -rotate-90"
-              viewBox={`0 0 ${ring.size} ${ring.size}`}
-              style={{ filter: 'drop-shadow(0 0 12px rgba(212, 175, 55, 0.3))' }}
+              className="w-full h-full"
+              style={{ transform: 'rotate(-90deg)' }}
+              viewBox={`0 0 ${orbital.size} ${orbital.size}`}
             >
-              {/* Background orbital thread */}
+              <defs>
+                <linearGradient id={`pulse-${index}`} x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor={orbital.color} stopOpacity="0.1" />
+                  <stop offset="50%" stopColor={orbital.color} stopOpacity="0.3" />
+                  <stop offset="100%" stopColor={orbital.color} stopOpacity="1">
+                    <animate
+                      attributeName="stop-opacity"
+                      values="1;0.3;1"
+                      dur="2s"
+                      repeatCount="indefinite"
+                    />
+                  </stop>
+                </linearGradient>
+                
+                <filter id={`glow-${index}`}>
+                  <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                  <feMerge>
+                    <feMergeNode in="coloredBlur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+              </defs>
+
+              {/* Background thread */}
               <circle
-                cx={ring.size / 2}
-                cy={ring.size / 2}
-                r={(ring.size - 2) / 2}
+                cx={orbital.size / 2}
+                cy={orbital.size / 2}
+                r={(orbital.size - 4) / 2}
                 fill="none"
-                stroke={`${ring.color}15`}
+                stroke={orbital.color}
                 strokeWidth="1"
+                opacity="0.08"
               />
-              
-              {/* Progress orbital with pulse gradient */}
+
+              {/* Progress thread with pulse */}
               <motion.circle
-                cx={ring.size / 2}
-                cy={ring.size / 2}
-                r={(ring.size - 2) / 2}
+                cx={orbital.size / 2}
+                cy={orbital.size / 2}
+                r={(orbital.size - 4) / 2}
                 fill="none"
-                stroke={`url(#pulseGradient${index})`}
+                stroke={`url(#pulse-${index})`}
                 strokeWidth="1"
                 strokeLinecap="round"
                 strokeDasharray={circumference}
                 initial={{ strokeDashoffset: circumference }}
                 animate={{ strokeDashoffset }}
                 transition={{ duration: 2, ease: "easeOut", delay: index * 0.15 }}
+                filter={`url(#glow-${index})`}
               />
-              
-              {/* Glowing leading edge */}
-              <motion.circle
-                cx={ring.size / 2 + ((ring.size - 2) / 2) * Math.cos((rotation - 90) * Math.PI / 180)}
-                cy={ring.size / 2 + ((ring.size - 2) / 2) * Math.sin((rotation - 90) * Math.PI / 180)}
-                r="2"
-                fill={ring.color}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: [0.6, 1, 0.6] }}
-                transition={{ duration: 2, repeat: Infinity, delay: index * 0.15 }}
-                style={{ filter: `drop-shadow(0 0 8px ${ring.color})` }}
-              />
-              
-              <defs>
-                <linearGradient id={`pulseGradient${index}`} gradientUnits="userSpaceOnUse">
-                  <stop offset="0%" stopColor={ring.color} stopOpacity="0.3" />
-                  <stop offset="70%" stopColor={ring.color} stopOpacity="0.7" />
-                  <stop offset="100%" stopColor={ring.color} stopOpacity="1" />
-                </linearGradient>
-              </defs>
             </svg>
           </div>
         );
       })}
       
-      {/* Center stats */}
-      <div className="absolute text-center z-10">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.6 }}
+      {/* Center percentage */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.6 }}
+        className="absolute text-center z-10 px-16"
+      >
+        <p 
+          className="text-[#D4AF37] mb-2 text-5xl tracking-wider" 
+          style={{ fontWeight: 100, fontFamily: 'Cinzel, serif' }}
         >
-          <p className="text-[#D4AF37] mb-1 text-5xl" style={{ fontWeight: 100 }}>
-            {Math.round((calories / caloriesGoal) * 100)}
-          </p>
-          <p className="text-[9px] text-white/30 uppercase tracking-[0.3em]" style={{ fontWeight: 200 }}>
-            Complete
-          </p>
-        </motion.div>
+          {Math.round(totalProgress)}
+        </p>
+        <p 
+          className="text-[9px] text-white/20 uppercase tracking-[0.4em]"
+          style={{ fontWeight: 200 }}
+        >
+          Complete
+        </p>
+      </motion.div>
+
+      {/* Orbital legend - minimal */}
+      <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 flex gap-8">
+        {orbitals.map((orbital, i) => (
+          <div key={i} className="flex items-center gap-1.5">
+            <div 
+              className="w-1 h-1 rounded-full" 
+              style={{ 
+                backgroundColor: orbital.color,
+                boxShadow: `0 0 8px ${orbital.color}60`
+              }} 
+            />
+          </div>
+        ))}
       </div>
     </div>
   );

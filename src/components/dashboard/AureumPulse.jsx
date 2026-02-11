@@ -1,58 +1,93 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-export default function AureumPulse({ label, value, goal, unit, icon: Icon }) {
+export default function AureumPulse({ label, value, goal, unit, index = 0 }) {
   const progress = Math.min((value / goal) * 100, 100);
-  const isNearGoal = progress >= 80;
+  const isNearGoal = progress > 80;
 
   return (
-    <div className="space-y-3">
-      {/* Label with Icon */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Icon className="w-3.5 h-3.5 text-[#9C7E46]" strokeWidth={1} />
-          <span className="text-[10px] uppercase tracking-[0.25em] text-white/40" style={{ fontWeight: 200 }}>
-            {label}
-          </span>
-        </div>
-        <span className="text-xs text-white/50" style={{ fontWeight: 100 }}>
-          {value.toLocaleString()} / {goal.toLocaleString()} {unit}
-        </span>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.08 }}
+      className="relative"
+      style={{
+        background: '#050505',
+        boxShadow: 'inset 0px 8px 16px rgba(0,0,0,1)',
+        borderTop: '0.5px solid rgba(212,175,55,0.3)',
+        padding: '24px 20px',
+        borderRadius: '16px'
+      }}
+    >
+      {/* Label */}
+      <div className="flex items-baseline justify-between mb-4">
+        <p 
+          className="text-[9px] uppercase tracking-[0.35em] text-[#9C7E46]"
+          style={{ fontWeight: 200 }}
+        >
+          {label}
+        </p>
+        <p 
+          className="text-white/40 text-[10px] tracking-wider"
+          style={{ fontWeight: 100 }}
+        >
+          {value.toLocaleString()} {unit && <span className="text-white/20">/ {goal.toLocaleString()} {unit}</span>}
+        </p>
       </div>
 
-      {/* Gold Thread Progress */}
+      {/* Thread visualization */}
       <div className="relative h-[1px] bg-[#9C7E46]/20 overflow-visible">
+        {/* Progress thread */}
         <motion.div
-          className="absolute left-0 top-0 h-[1px] bg-gradient-to-r from-[#D4AF37]/50 via-[#D4AF37] to-[#F4D03F]"
           initial={{ width: 0 }}
-          animate={{ 
-            width: `${progress}%`,
+          animate={{ width: `${progress}%` }}
+          transition={{ duration: 1.5, ease: "easeOut", delay: index * 0.1 }}
+          className="absolute left-0 top-0 h-[1px] bg-gradient-to-r from-[#9C7E46] via-[#D4AF37] to-[#D4AF37]"
+          style={{
             boxShadow: isNearGoal 
-              ? ['0 0 4px #D4AF37', '0 0 8px #D4AF37', '0 0 4px #D4AF37']
-              : '0 0 4px #D4AF37'
+              ? '0 0 8px rgba(212,175,55,0.6), 0 0 16px rgba(212,175,55,0.3)' 
+              : '0 0 4px rgba(212,175,55,0.4)',
           }}
-          transition={{ 
-            width: { duration: 1.5, ease: "easeOut" },
-            boxShadow: { duration: 1.5, repeat: Infinity, ease: "easeInOut" }
-          }}
+        >
+          {/* Shimmer effect when near goal */}
+          {isNearGoal && (
+            <motion.div
+              className="absolute right-0 top-0 w-8 h-[1px]"
+              style={{
+                background: 'linear-gradient(90deg, transparent, rgba(212,175,55,0.8), transparent)',
+              }}
+              animate={{
+                x: [0, 8, 0],
+                opacity: [0.3, 1, 0.3]
+              }}
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            />
+          )}
+        </motion.div>
+
+        {/* Goal marker */}
+        <div 
+          className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-1 rounded-full bg-[#9C7E46]/40"
+          style={{ boxShadow: '0 0 4px rgba(156,126,70,0.3)' }}
         />
-        
-        {/* Leading edge pulse */}
-        {progress > 0 && (
-          <motion.div
-            className="absolute top-1/2 -translate-y-1/2 w-1 h-1 rounded-full bg-[#F4D03F]"
-            style={{ 
-              left: `${progress}%`,
-              filter: 'drop-shadow(0 0 6px #F4D03F)'
-            }}
-            animate={isNearGoal ? {
-              scale: [1, 1.5, 1],
-              opacity: [0.8, 1, 0.8]
-            } : {}}
-            transition={{ duration: 1, repeat: Infinity }}
-          />
-        )}
       </div>
-    </div>
+
+      {/* Percentage indicator */}
+      <div className="mt-3 text-right">
+        <span 
+          className="text-[11px] tracking-wider"
+          style={{ 
+            fontWeight: 100,
+            color: progress >= 100 ? '#D4AF37' : '#9C7E46'
+          }}
+        >
+          {Math.round(progress)}%
+        </span>
+      </div>
+    </motion.div>
   );
 }
