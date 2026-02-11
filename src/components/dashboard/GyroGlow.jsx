@@ -51,40 +51,62 @@ export default function GyroGlow() {
 
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden">
+      {/* Primary ambient glow */}
       <motion.div
-        className="absolute w-[800px] h-[800px]"
+        className="absolute w-[1000px] h-[1000px]"
         animate={{
           left: `${position.x}%`,
           top: `${position.y}%`,
         }}
         transition={{
           type: "spring",
-          stiffness: 50,
-          damping: 30
+          stiffness: 40,
+          damping: 35,
+          mass: 1.5
         }}
         style={{
           transform: 'translate(-50%, -50%)',
-          background: 'radial-gradient(circle, rgba(212,175,55,0.02) 0%, transparent 70%)',
-          filter: 'blur(60px)',
+          background: 'radial-gradient(circle, rgba(212,175,55,0.02) 0%, transparent 65%)',
+          filter: 'blur(100px)',
         }}
       />
       
       {/* Secondary slower glow */}
       <motion.div
-        className="absolute w-[600px] h-[600px]"
+        className="absolute w-[800px] h-[800px]"
         animate={{
           left: `${100 - position.x}%`,
           top: `${100 - position.y}%`,
         }}
         transition={{
           type: "spring",
-          stiffness: 30,
-          damping: 40
+          stiffness: 25,
+          damping: 45,
+          mass: 2
         }}
         style={{
           transform: 'translate(-50%, -50%)',
-          background: 'radial-gradient(circle, rgba(156,126,70,0.015) 0%, transparent 60%)',
-          filter: 'blur(80px)',
+          background: 'radial-gradient(circle, rgba(212,175,55,0.015) 0%, transparent 60%)',
+          filter: 'blur(120px)',
+        }}
+      />
+      
+      {/* Subtle pulse animation */}
+      <motion.div
+        className="absolute w-[600px] h-[600px] left-1/2 top-1/2"
+        animate={{
+          scale: [1, 1.1, 1],
+          opacity: [0.015, 0.025, 0.015]
+        }}
+        transition={{
+          duration: 12,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+        style={{
+          transform: 'translate(-50%, -50%)',
+          background: 'radial-gradient(circle, rgba(212,175,55,0.02) 0%, transparent 70%)',
+          filter: 'blur(90px)',
         }}
       />
     </div>

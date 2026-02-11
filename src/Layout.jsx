@@ -14,7 +14,7 @@ export default function Layout({ children, currentPageName }) {
 
   return (
     <div className="min-h-screen bg-[#080808] text-white">
-      <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@300;400;500;600&family=Cormorant:wght@300;400;500&display=swap" rel="stylesheet" />
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500&family=Montserrat:wght@200;300;400;500&display=swap" rel="stylesheet" />
       <style>{`
         :root {
           --gold: #D4AF37;
@@ -49,19 +49,21 @@ export default function Layout({ children, currentPageName }) {
         }
         
         * {
+          font-family: 'Montserrat', sans-serif;
           font-weight: 200;
         }
         
         h1, h2, h3, h4, h5, h6 {
+          font-family: 'Montserrat', sans-serif;
           font-weight: 200;
         }
         
         .font-medium {
-          font-weight: 300;
+          font-weight: 400;
         }
         
         .font-semibold, .font-bold {
-          font-weight: 400;
+          font-weight: 500;
         }
         
         input, textarea, select {

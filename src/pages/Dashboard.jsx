@@ -178,16 +178,19 @@ export default function Dashboard() {
             </defs>
           </svg>
           
-          {/* Ultra-light Serif Typography */}
+          {/* Ultra-thin Inter Typography */}
           <h1 
             className="text-2xl tracking-[0.5em] text-white mb-3"
-            style={{ fontFamily: 'Cinzel, serif', fontWeight: 300 }}
+            style={{ fontFamily: 'Inter, sans-serif', fontWeight: 100 }}
           >
             A U R E U M
           </h1>
           
           {/* Muted Bronze Date */}
-          <p className="text-[#9C7E46] text-[10px] uppercase tracking-[0.3em] opacity-40" style={{ fontWeight: 200 }}>
+          <p 
+            className="text-[#9C7E46] text-[10px] uppercase tracking-[0.3em] opacity-40"
+            style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 200 }}
+          >
             {format(new Date(), 'EEEE, MMMM d')}
           </p>
         </motion.div>
@@ -254,34 +257,69 @@ export default function Dashboard() {
           <VoidCard>
             <h3 
               className="text-[9px] uppercase tracking-[0.35em] text-[#9C7E46] mb-5"
-              style={{ fontWeight: 200 }}
+              style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 200 }}
             >
               Energy Balance
             </h3>
             <div className="flex items-center justify-between text-center">
               <div>
-                <p className="text-lg text-white/80" style={{ fontWeight: 100 }}>{maintenanceCalories}</p>
-                <p className="text-[9px] text-white/20 uppercase tracking-wider mt-1">Base</p>
+                <p 
+                  className="text-lg text-white/80"
+                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}
+                >
+                  {maintenanceCalories}
+                </p>
+                <p 
+                  className="text-[9px] text-white/20 uppercase tracking-wider mt-1"
+                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 200 }}
+                >
+                  Base
+                </p>
               </div>
               <span className="text-[#D4AF37]/40 text-sm">+</span>
               <div>
-                <p className="text-lg text-[#9C7E46]" style={{ fontWeight: 100 }}>{activityCalories}</p>
-                <p className="text-[9px] text-white/20 uppercase tracking-wider mt-1">Active</p>
+                <p 
+                  className="text-lg text-[#9C7E46]"
+                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}
+                >
+                  {activityCalories}
+                </p>
+                <p 
+                  className="text-[9px] text-white/20 uppercase tracking-wider mt-1"
+                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 200 }}
+                >
+                  Active
+                </p>
               </div>
               <span className="text-[#D4AF37]/40 text-sm">−</span>
               <div>
-                <p className="text-lg text-[#9C7E46]" style={{ fontWeight: 100 }}>{consumedCalories}</p>
-                <p className="text-[9px] text-white/20 uppercase tracking-wider mt-1">Eaten</p>
+                <p 
+                  className="text-lg text-[#9C7E46]"
+                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}
+                >
+                  {consumedCalories}
+                </p>
+                <p 
+                  className="text-[9px] text-white/20 uppercase tracking-wider mt-1"
+                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 200 }}
+                >
+                  Eaten
+                </p>
               </div>
               <span className="text-[#D4AF37]/40 text-sm">=</span>
               <div>
                 <p 
                   className={`text-lg ${remainingCalories >= 0 ? 'text-[#D4AF37]' : 'text-red-400/60'}`}
-                  style={{ fontWeight: 100 }}
+                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}
                 >
                   {remainingCalories}
                 </p>
-                <p className="text-[9px] text-white/20 uppercase tracking-wider mt-1">Left</p>
+                <p 
+                  className="text-[9px] text-white/20 uppercase tracking-wider mt-1"
+                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 200 }}
+                >
+                  Left
+                </p>
               </div>
             </div>
           </VoidCard>
