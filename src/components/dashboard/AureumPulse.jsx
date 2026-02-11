@@ -22,17 +22,22 @@ export default function AureumPulse({ label, value, goal, unit, index = 0, icon 
       transition={{ delay: index * 0.08 }}
       className="relative"
       style={{
-        background: '#050505',
-        boxShadow: 'inset 0px 8px 16px rgba(0,0,0,1)',
-        borderTop: '0.5px solid rgba(212,175,55,0.3)',
+        background: 'rgba(255, 255, 255, 0.03)',
+        backdropFilter: 'blur(25px) saturate(160%)',
+        boxShadow: 'inset 0px 4px 12px rgba(0,0,0,0.5), 0px 10px 30px rgba(0,0,0,0.3)',
+        borderTop: '0.5px solid #D4AF37',
         padding: '24px 20px',
         borderRadius: '16px'
       }}
     >
       {/* Label with Icon */}
-      <div className="flex items-baseline justify-between mb-4">
-        <div className="flex items-center gap-2">
-          {Icon && <Icon className="w-3.5 h-3.5 text-[#9C7E46]" strokeWidth={1} />}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-3">
+          {Icon && (
+            <div className="w-8 h-8 rounded-lg bg-[#D4AF37]/5 flex items-center justify-center">
+              <Icon className="w-4 h-4 text-[#9C7E46]" strokeWidth={1} />
+            </div>
+          )}
           <p 
             className="text-[9px] uppercase tracking-[0.35em] text-[#9C7E46]"
             style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 200 }}
@@ -62,24 +67,58 @@ export default function AureumPulse({ label, value, goal, unit, index = 0, icon 
               : '0 0 4px rgba(212,175,55,0.4)',
           }}
         >
-          {/* Enhanced Shimmer effect - always visible, more intense near goal */}
+          {/* Enhanced Multi-layer Shimmer */}
           <motion.div
-            className="absolute right-0 top-0 w-12 h-[1px]"
+            className="absolute right-0 top-0 w-16 h-[1px]"
             style={{
-              background: isNearGoal 
-                ? 'linear-gradient(90deg, transparent, rgba(212,175,55,0.9), rgba(244,208,63,0.9), transparent)'
-                : 'linear-gradient(90deg, transparent, rgba(212,175,55,0.5), transparent)',
+              background: 'linear-gradient(90deg, transparent, rgba(212,175,55,1), rgba(244,208,63,0.8), transparent)',
             }}
             animate={{
-              x: isNearGoal ? [-8, 12, -8] : [-4, 8, -4],
-              opacity: isNearGoal ? [0.5, 1, 0.5] : [0.3, 0.7, 0.3]
+              x: [-16, 16, -16],
+              opacity: [0.5, 1, 0.5]
             }}
             transition={{
-              duration: isNearGoal ? 1 : 2,
+              duration: 1.2,
               repeat: Infinity,
               ease: "easeInOut"
             }}
           />
+          {isNearGoal && (
+            <>
+              <motion.div
+                className="absolute right-0 top-0 w-12 h-[1px]"
+                style={{
+                  background: 'linear-gradient(90deg, transparent, rgba(244,208,63,0.9), transparent)',
+                }}
+                animate={{
+                  x: [0, 20, 0],
+                  opacity: [0.3, 0.9, 0.3]
+                }}
+                transition={{
+                  duration: 0.9,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 0.2
+                }}
+              />
+              <motion.div
+                className="absolute right-0 top-0 w-8 h-[1px]"
+                style={{
+                  background: 'linear-gradient(90deg, transparent, rgba(255,215,0,0.7), transparent)',
+                }}
+                animate={{
+                  x: [-8, 12, -8],
+                  opacity: [0.2, 0.8, 0.2]
+                }}
+                transition={{
+                  duration: 0.6,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 0.4
+                }}
+              />
+            </>
+          )}
         </motion.div>
 
         {/* Goal marker */}

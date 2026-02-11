@@ -14,7 +14,8 @@ export default function Layout({ children, currentPageName }) {
 
   return (
     <div className="min-h-screen text-white" style={{
-      background: 'radial-gradient(ellipse at top center, rgba(40, 40, 40, 0.15) 0%, #080808 50%, #080808 100%)'
+      background: '#080808',
+      backgroundImage: 'radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, 0.03) 0%, #080808 50%)'
     }}>
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500&family=Montserrat:wght@200;300;400;500&display=swap" rel="stylesheet" />
       <style>{`
