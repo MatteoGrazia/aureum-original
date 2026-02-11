@@ -14,14 +14,17 @@ export default function Layout({ children, currentPageName }) {
 
   return (
     <div className="min-h-screen bg-[#080808] text-white">
+      <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@300;400;500;600&display=swap" rel="stylesheet" />
       <style>{`
         :root {
           --gold: #D4AF37;
           --bronze: #BFA68F;
+          --muted-bronze: #9C7E46;
           --gold-light: rgba(212, 175, 55, 0.2);
           --gold-glow: rgba(212, 175, 55, 0.4);
           --glass-bg: rgba(255, 255, 255, 0.05);
           --glass-border: rgba(212, 175, 55, 0.2);
+          --void-black: #050505;
         }
         
         .glass-card {
