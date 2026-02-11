@@ -53,12 +53,12 @@ export default function Layout({ children, currentPageName }) {
         
         * {
           font-family: 'Montserrat', sans-serif;
-          font-weight: 300;
+          font-weight: 400;
         }
         
         h1, h2, h3, h4, h5, h6 {
           font-family: 'Montserrat', sans-serif;
-          font-weight: 300;
+          font-weight: 400;
         }
         
         .font-medium {
