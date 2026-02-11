@@ -65,7 +65,7 @@ export default function AureumPulse({ label, value, goal, unit, index = 0, icon 
       </div>
 
       {/* Thread visualization */}
-      <div className="relative h-[1px] bg-[#9C7E46]/20 overflow-visible z-10">
+      <div className="relative h-[1px] bg-[#9C7E46]/20 overflow-hidden z-10">
         {/* Progress thread */}
         <motion.div
           initial={{ width: 0 }}
