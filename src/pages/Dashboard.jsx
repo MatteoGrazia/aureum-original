@@ -269,7 +269,7 @@ export default function Dashboard() {
                 </p>
                 <p 
                   className="text-[9px] text-white/20 uppercase tracking-wider mt-1"
-                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 200 }}
+                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 300 }}
                 >
                   Base
                 </p>
@@ -284,7 +284,7 @@ export default function Dashboard() {
                 </p>
                 <p 
                   className="text-[9px] text-white/20 uppercase tracking-wider mt-1"
-                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 200 }}
+                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 300 }}
                 >
                   Active
                 </p>
@@ -299,7 +299,7 @@ export default function Dashboard() {
                 </p>
                 <p 
                   className="text-[9px] text-white/20 uppercase tracking-wider mt-1"
-                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 200 }}
+                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 300 }}
                 >
                   Eaten
                 </p>
@@ -314,7 +314,7 @@ export default function Dashboard() {
                 </p>
                 <p 
                   className="text-[9px] text-white/20 uppercase tracking-wider mt-1"
-                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 200 }}
+                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 300 }}
                 >
                   Left
                 </p>
