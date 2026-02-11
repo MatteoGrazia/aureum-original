@@ -106,32 +106,7 @@ export default function Dashboard() {
   const workoutVolume = todaysWorkout?.total_volume || 0;
   const waterGoal = profile?.water_goal_glasses || 8;
 
-  const pulseStats = [
-    {
-      label: 'Energy Remaining',
-      value: remainingCalories,
-      goal: maintenanceCalories + activityCalories,
-      unit: 'kcal'
-    },
-    {
-      label: 'Steps',
-      value: dailyActivity?.steps || 0,
-      goal: stepsGoal,
-      unit: 'steps'
-    },
-    {
-      label: 'Volume Lifted',
-      value: workoutVolume,
-      goal: 5000,
-      unit: 'kg'
-    },
-    {
-      label: 'Hydration',
-      value: dailyActivity?.water_glasses || 0,
-      goal: waterGoal,
-      unit: 'glasses'
-    }
-  ];
+  // Pulse stats are now defined inline in the JSX for better icon handling
 
 
   const handleUpdate = () => {
