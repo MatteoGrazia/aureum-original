@@ -21,6 +21,38 @@ export default function VoidBackground() {
         }}
       />
 
+      {/* Distant gold sun */}
+      <motion.div
+        className="absolute"
+        style={{
+          top: '15%',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: '120px',
+          height: '120px',
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, rgba(212, 175, 55, 0.05) 40%, transparent 70%)',
+          filter: 'blur(40px)'
+        }}
+        animate={{
+          opacity: [0.6, 0.8, 0.6],
+          scale: [1, 1.1, 1]
+        }}
+        transition={{
+          duration: 8,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      />
+
+      {/* Sun light rays */}
+      <div 
+        className="absolute inset-0"
+        style={{
+          background: 'radial-gradient(ellipse 1200px 800px at 50% 15%, rgba(212, 175, 55, 0.03) 0%, transparent 60%)'
+        }}
+      />
+
       {/* Animated depth layers */}
       <motion.div
         className="absolute inset-0"

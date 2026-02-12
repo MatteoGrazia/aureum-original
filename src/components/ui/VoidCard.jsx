@@ -16,6 +16,15 @@ export default function VoidCard({ children, className, ...props }) {
       {...props}
     >
 
+      {/* Subtle gold reflection from distant sun */}
+      <div 
+        className="absolute top-0 left-0 right-0 h-1/3 pointer-events-none"
+        style={{
+          background: 'radial-gradient(ellipse 100% 80% at 50% 0%, rgba(212, 175, 55, 0.04) 0%, transparent 60%)',
+          borderRadius: '14px 14px 0 0'
+        }}
+      />
+
       <div className="relative z-10">
         {children}
       </div>

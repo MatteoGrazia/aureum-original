@@ -32,6 +32,15 @@ export default function AureumPulse({ label, value, goal, unit, index = 0, icon 
         position: 'relative'
       }}
     >
+      {/* Subtle gold reflection from distant sun */}
+      <div 
+        className="absolute top-0 left-0 right-0 h-1/3 pointer-events-none"
+        style={{
+          background: 'radial-gradient(ellipse 100% 80% at 50% 0%, rgba(212, 175, 55, 0.04) 0%, transparent 60%)',
+          borderRadius: '14px 14px 0 0'
+        }}
+      />
+
       {/* Label with Icon */}
       <div className="flex items-center justify-between mb-4 relative z-10">
         <div className="flex items-center gap-3">
