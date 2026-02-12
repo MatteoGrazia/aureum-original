@@ -168,7 +168,9 @@ export default function FoodSearch({ onSelectFood }) {
           className="pl-11 py-6 bg-white/5 border-[#D4AF37]/20 text-white placeholder:text-white/30 rounded-xl"
         />
         {loading && (
-          <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#D4AF37] animate-spin" />
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center justify-center">
+            <Loader2 className="w-4 h-4 text-[#D4AF37] animate-spin" />
+          </div>
         )}
       </div>
 
@@ -208,7 +210,7 @@ export default function FoodSearch({ onSelectFood }) {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="space-y-2 max-h-80 overflow-y-auto"
+            className="space-y-2 max-h-80 overflow-y-auto overflow-x-hidden"
           >
             {results.map((food, index) => (
               <motion.div
@@ -226,8 +228,8 @@ export default function FoodSearch({ onSelectFood }) {
                   }}
                   onClick={() => onSelectFood(food)}
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex-1 min-w-0 overflow-hidden">
                       <p 
                         className="text-white truncate"
                         style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}
@@ -243,7 +245,7 @@ export default function FoodSearch({ onSelectFood }) {
                         </p>
                       )}
                       <div 
-                       className="flex gap-3 mt-2 text-xs"
+                       className="flex flex-wrap gap-2 mt-2 text-xs"
                        style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}
                       >
                        <span className="text-[#D4AF37]">{food.calories} kcal</span>
@@ -260,7 +262,7 @@ export default function FoodSearch({ onSelectFood }) {
                        </p>
                       )}
                     </div>
-                    <button className="ml-4 w-8 h-8 rounded-full bg-[#D4AF37]/20 flex items-center justify-center hover:bg-[#D4AF37]/30 transition-colors">
+                    <button className="flex-shrink-0 w-8 h-8 rounded-full bg-[#D4AF37]/20 flex items-center justify-center hover:bg-[#D4AF37]/30 transition-colors">
                       <Plus className="w-4 h-4 text-[#D4AF37]" />
                     </button>
                   </div>
