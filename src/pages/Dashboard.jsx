@@ -12,15 +12,19 @@ import QuickLogFAB from '@/components/dashboard/QuickLogFAB';
 import AIInsight from '@/components/dashboard/AIInsight';
 import WelcomeModal from '@/components/shared/WelcomeModal';
 import WeightTrendMini from '@/components/dashboard/WeightTrendMini';
+import MotionPermissionModal from '@/components/shared/MotionPermissionModal';
+import { useStepCounter } from '@/components/shared/useStepCounter';
 
 export default function Dashboard() {
   const [showWelcome, setShowWelcome] = useState(false);
   const [showDatePill, setShowDatePill] = useState(false);
   const [showStepPermission, setShowStepPermission] = useState(false);
+  const [showMotionPermission, setShowMotionPermission] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const queryClient = useQueryClient();
   const today = format(new Date(), 'yyyy-MM-dd');
   const { scrollY } = useScroll();
+  const { startTracking } = useStepCounter();
 
   useEffect(() => {
     const timer = setTimeout(() => setIsMounted(true), 100);
@@ -100,8 +104,8 @@ export default function Dashboard() {
       if (isNewUser) {
         setShowWelcome(true);
       } else if (!profile.step_tracking_enabled) {
-        // Existing user who hasn't enabled step tracking
-        setShowStepPermission(true);
+        // Show motion permission modal on first launch
+        setShowMotionPermission(true);
       }
     }
   }, [profile]);
@@ -122,7 +126,34 @@ export default function Dashboard() {
       console.error(error);
     }
     setShowWelcome(false);
+    setShowMotionPermission(true);
     queryClient.invalidateQueries(['userProfile']);
+  };
+
+  const handleMotionPermissionGrant = async () => {
+    try {
+      if (profile) {
+        await base44.entities.UserProfile.update(profile.id, { 
+          step_tracking_enabled: true 
+        });
+      }
+      
+      startTracking();
+      setShowMotionPermission(false);
+      queryClient.invalidateQueries(['userProfile']);
+    } catch (error) {
+      console.error('Error enabling step tracking:', error);
+    }
+  };
+
+  const handleMotionPermissionDismiss = async () => {
+    if (profile) {
+      await base44.entities.UserProfile.update(profile.id, { 
+        step_tracking_enabled: true
+      });
+      queryClient.invalidateQueries(['userProfile']);
+    }
+    setShowMotionPermission(false);
   };
 
   const handleEnableStepTracking = async () => {
@@ -203,9 +234,15 @@ export default function Dashboard() {
       className="min-h-screen relative overflow-hidden bg-[#080808]">
       <VoidBackground />
       {showWelcome && <WelcomeModal onComplete={handleWelcomeComplete} />}
+      {showMotionPermission && (
+        <MotionPermissionModal 
+          onGrant={handleMotionPermissionGrant}
+          onDismiss={handleMotionPermissionDismiss}
+        />
+      )}
       
-      {/* Step Tracking Permission Modal */}
-      {showStepPermission && (
+      {/* Step Tracking Permission Modal - Legacy */}
+      {showStepPermission && !showMotionPermission && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

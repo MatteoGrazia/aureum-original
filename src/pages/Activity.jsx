@@ -10,13 +10,17 @@ import GoldButton from '@/components/ui/GoldButton';
 import StepCounter from '@/components/activity/StepCounter';
 import ActivityStats from '@/components/activity/ActivityStats';
 import { Input } from '@/components/ui/input';
+import MotionPermissionModal from '@/components/shared/MotionPermissionModal';
+import { useStepCounter } from '@/components/shared/useStepCounter';
 
 export default function Activity() {
   const [pedometerSupported, setPedometerSupported] = useState(false);
   const [permissionStatus, setPermissionStatus] = useState('prompt');
+  const [showMotionPermission, setShowMotionPermission] = useState(false);
   const lastSyncTime = useRef(Date.now());
   const queryClient = useQueryClient();
   const today = format(new Date(), 'yyyy-MM-dd');
+  const { startTracking } = useStepCounter();
 
   const { data: dailyActivity, refetch } = useQuery({
     queryKey: ['dailyActivity', today],
@@ -156,32 +160,34 @@ export default function Activity() {
 
 
   const requestPedometerPermission = async () => {
-    try {
-      // iOS native pedometer
-      if (window.webkit?.messageHandlers?.pedometer) {
-        window.webkit.messageHandlers.pedometer.postMessage({
-          action: 'requestPermission',
-          alwaysOn: true
-        });
-        setPermissionStatus('granted');
-        return;
-      }
+    setShowMotionPermission(true);
+  };
 
-      // Web Pedometer API
-      if ('Pedometer' in window) {
-        const result = await navigator.permissions.query({ name: 'pedometer' });
-        if (result.state === 'prompt') {
-          const pedometer = new Pedometer();
-          await pedometer.requestPermission();
-          setPermissionStatus('granted');
-        } else {
-          setPermissionStatus(result.state);
-        }
+  const handleMotionPermissionGrant = async () => {
+    try {
+      if (profile) {
+        await base44.entities.UserProfile.update(profile.id, { 
+          step_tracking_enabled: true 
+        });
       }
+      
+      startTracking();
+      setShowMotionPermission(false);
+      setPermissionStatus('granted');
+      queryClient.invalidateQueries(['userProfile']);
     } catch (error) {
-      console.error('Pedometer permission error:', error);
-      setPermissionStatus('denied');
+      console.error('Error enabling step tracking:', error);
     }
+  };
+
+  const handleMotionPermissionDismiss = async () => {
+    if (profile) {
+      await base44.entities.UserProfile.update(profile.id, { 
+        step_tracking_enabled: true
+      });
+      queryClient.invalidateQueries(['userProfile']);
+    }
+    setShowMotionPermission(false);
   };
 
   // Calculate weekly stats
@@ -212,6 +218,12 @@ export default function Activity() {
   return (
     <div className="min-h-screen relative bg-[#080808]">
       <VoidBackground />
+      {showMotionPermission && (
+        <MotionPermissionModal 
+          onGrant={handleMotionPermissionGrant}
+          onDismiss={handleMotionPermissionDismiss}
+        />
+      )}
       <div className="relative z-10 p-6">
         {/* Header */}
         <motion.div
