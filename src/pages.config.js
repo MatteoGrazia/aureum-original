@@ -52,7 +52,6 @@ import Dashboard from './pages/Dashboard';
 import Nutrition from './pages/Nutrition';
 import Profile from './pages/Profile';
 import Workouts from './pages/Workouts';
-import Settings from './pages/Settings';
 import __Layout from './Layout.jsx';
 
 
@@ -62,7 +61,6 @@ export const PAGES = {
     "Nutrition": Nutrition,
     "Profile": Profile,
     "Workouts": Workouts,
-    "Settings": Settings,
 }
 
 export const pagesConfig = {

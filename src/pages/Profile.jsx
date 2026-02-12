@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { 
   User, Settings, Scale, Target, Ruler, Calendar,
-  LogOut, ChevronRight, Edit3, Save
+  LogOut, ChevronRight, Edit3, Save, Droplets
 } from 'lucide-react';
 import GlassCard from '@/components/ui/GlassCard';
 import GoldButton from '@/components/ui/GoldButton';
@@ -64,7 +64,9 @@ export default function Profile() {
       activity_level: profile?.activity_level || 'moderate',
       goal: profile?.goal || 'maintain',
       daily_step_goal: profile?.daily_step_goal || 10000,
-      water_goal_glasses: profile?.water_goal_glasses || 8
+      water_goal: profile?.water_goal || 2.5,
+      water_unit: profile?.water_unit || 'liters',
+      measurement_system: profile?.measurement_system || 'metric'
     });
     setEditMode(true);
   };
@@ -100,7 +102,7 @@ export default function Profile() {
       current_weight: parseFloat(editData.current_weight) || null,
       goal_weight: parseFloat(editData.goal_weight) || null,
       daily_step_goal: parseInt(editData.daily_step_goal) || 10000,
-      water_goal_glasses: parseInt(editData.water_goal_glasses) || 8,
+      water_goal: parseFloat(editData.water_goal) || 2.5,
       maintenance_calories: maintenance || 2000
     };
 
@@ -300,13 +302,53 @@ export default function Profile() {
                       />
                     </div>
                     <div>
-                      <label className="text-white/40 text-xs uppercase tracking-wider mb-2 block">Water Goal (glasses)</label>
+                      <label className="text-white/40 text-xs uppercase tracking-wider mb-2 block">Water Goal (L)</label>
                       <Input
                         type="number"
-                        value={editData.water_goal_glasses}
-                        onChange={(e) => setEditData(prev => ({ ...prev, water_goal_glasses: e.target.value }))}
+                        step="0.1"
+                        value={editData.water_goal}
+                        onChange={(e) => setEditData(prev => ({ ...prev, water_goal: e.target.value }))}
                         className="bg-white/5 border-[#D4AF37]/20"
                       />
+                    </div>
+                  </div>
+
+                  <div className="border-t border-white/10 pt-4 mt-4">
+                    <h3 className="text-white/60 text-xs uppercase tracking-wider mb-4">Settings</h3>
+                    
+                    <div className="space-y-4">
+                      <div>
+                        <label className="text-white/40 text-xs uppercase tracking-wider mb-2 block">Measurement System</label>
+                        <Select
+                          value={editData.measurement_system}
+                          onValueChange={(value) => setEditData(prev => ({ ...prev, measurement_system: value }))}
+                        >
+                          <SelectTrigger className="bg-white/5 border-[#D4AF37]/20">
+                            <SelectValue placeholder="Select system" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="metric">Metric (kg, cm, L)</SelectItem>
+                            <SelectItem value="imperial">Imperial (lbs, in, fl oz)</SelectItem>
+                            <SelectItem value="uk">UK (stone, ft, pints)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div>
+                        <label className="text-white/40 text-xs uppercase tracking-wider mb-2 block">Water Tracking Unit</label>
+                        <Select
+                          value={editData.water_unit}
+                          onValueChange={(value) => setEditData(prev => ({ ...prev, water_unit: value }))}
+                        >
+                          <SelectTrigger className="bg-white/5 border-[#D4AF37]/20">
+                            <SelectValue placeholder="Select unit" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="liters">Liters</SelectItem>
+                            <SelectItem value="glasses">Glasses (250ml)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
                   </div>
 
