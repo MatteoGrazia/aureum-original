@@ -21,37 +21,7 @@ export default function VoidBackground() {
         }}
       />
 
-      {/* Distant gold sun */}
-      <motion.div
-        className="absolute"
-        style={{
-          top: '15%',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: '120px',
-          height: '120px',
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, rgba(212, 175, 55, 0.05) 40%, transparent 70%)',
-          filter: 'blur(40px)'
-        }}
-        animate={{
-          opacity: [0.6, 0.8, 0.6],
-          scale: [1, 1.1, 1]
-        }}
-        transition={{
-          duration: 8,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-      />
 
-      {/* Sun light rays */}
-      <div 
-        className="absolute inset-0"
-        style={{
-          background: 'radial-gradient(ellipse 1200px 800px at 50% 15%, rgba(212, 175, 55, 0.03) 0%, transparent 60%)'
-        }}
-      />
 
       {/* Animated depth layers */}
       <motion.div
@@ -85,52 +55,7 @@ export default function VoidBackground() {
         }}
       />
 
-      {/* Distant gold suns */}
-      <motion.div
-        className="absolute"
-        style={{
-          top: '25%',
-          right: '15%',
-          width: '180px',
-          height: '180px',
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(212, 175, 55, 0.12) 0%, rgba(212, 175, 55, 0.04) 50%, transparent 70%)',
-          filter: 'blur(60px)'
-        }}
-        animate={{
-          opacity: [0.4, 0.6, 0.4],
-          scale: [1, 1.15, 1]
-        }}
-        transition={{
-          duration: 12,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: 1
-        }}
-      />
 
-      <motion.div
-        className="absolute"
-        style={{
-          bottom: '30%',
-          left: '10%',
-          width: '140px',
-          height: '140px',
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(244, 208, 63, 0.1) 0%, rgba(212, 175, 55, 0.03) 50%, transparent 70%)',
-          filter: 'blur(50px)'
-        }}
-        animate={{
-          opacity: [0.3, 0.5, 0.3],
-          scale: [1, 1.2, 1]
-        }}
-        transition={{
-          duration: 10,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: 3
-        }}
-      />
 
       {/* Floating star particles */}
       {particles.map((particle) => (
