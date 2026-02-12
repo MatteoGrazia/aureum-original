@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Plus, Loader2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
@@ -9,6 +9,7 @@ export default function FoodSearch({ onSelectFood }) {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showEmptyState, setShowEmptyState] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
 
   const searchOpenFoodFactsFallback = async (searchQuery) => {
     try {
@@ -54,13 +55,13 @@ export default function FoodSearch({ onSelectFood }) {
     }, 4000);
 
     try {
-      // Try FatSecret first
       const response = await base44.functions.invoke('fatsecretSearch', {
         action: 'search',
         query: searchQuery
       });
 
-      let foods = response.data.foods.map(food => ({
+      let foods = (response.data.foods || []).map(food => ({
+        id: food.id,
         name: food.name,
         brand: food.brand,
         calories: Math.round(food.calories),
@@ -68,10 +69,9 @@ export default function FoodSearch({ onSelectFood }) {
         carbs: Math.round(food.carbs),
         fat: Math.round(food.fat),
         fiber: Math.round(food.fiber),
-        serving_size: food.servingSize
+        serving_size: food.servingSize || '100g'
       }));
 
-      // Fallback to OpenFoodFacts if no results
       if (foods.length === 0) {
         foods = await searchOpenFoodFactsFallback(searchQuery);
       }
@@ -81,7 +81,6 @@ export default function FoodSearch({ onSelectFood }) {
       setShowEmptyState(foods.length === 0);
     } catch (error) {
       console.error('Search error:', error);
-      // Fallback to OpenFoodFacts on error
       const foods = await searchOpenFoodFactsFallback(searchQuery);
       setResults(foods);
       setShowEmptyState(foods.length === 0);
