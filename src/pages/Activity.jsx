@@ -14,7 +14,6 @@ import { Input } from '@/components/ui/input';
 export default function Activity() {
   const [pedometerSupported, setPedometerSupported] = useState(false);
   const [permissionStatus, setPermissionStatus] = useState('prompt');
-  const [manualSteps, setManualSteps] = useState('');
   const lastSyncTime = useRef(Date.now());
   const queryClient = useQueryClient();
   const today = format(new Date(), 'yyyy-MM-dd');
@@ -154,23 +153,7 @@ export default function Activity() {
     return () => window.removeEventListener('pedometerUpdate', handlePedometerUpdate);
   }, [dailyActivity]);
 
-  const handleManualSteps = async () => {
-    const steps = parseInt(manualSteps);
-    if (!steps || !dailyActivity) return;
 
-    const newSteps = dailyActivity.steps + steps;
-    const caloriesBurned = Math.round(newSteps * 0.04);
-    const activeMinutes = Math.round(steps / 100);
-
-    await base44.entities.DailyActivity.update(dailyActivity.id, {
-      steps: newSteps,
-      calories_burned: caloriesBurned,
-      active_minutes: (dailyActivity.active_minutes || 0) + activeMinutes
-    });
-
-    setManualSteps('');
-    refetch();
-  };
 
   const requestPedometerPermission = async () => {
     try {
@@ -293,38 +276,7 @@ export default function Activity() {
         </motion.div>
       )}
 
-      {/* Manual Step Input (fallback) */}
-      {!pedometerSupported && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-6"
-        >
-          <VoidCard>
-            <h3 
-              className="text-[10px] uppercase tracking-[0.3em] text-[#D4AF37] mb-3"
-              style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
-            >
-              Manual Step Entry
-            </h3>
-            <p className="text-white/60 text-sm mb-4">
-              Automatic step tracking isn't available on this device. Add your steps manually.
-            </p>
-            <div className="flex gap-2">
-              <Input
-                type="number"
-                placeholder="Enter steps"
-                value={manualSteps}
-                onChange={(e) => setManualSteps(e.target.value)}
-                className="flex-1"
-              />
-              <GoldButton onClick={handleManualSteps} disabled={!manualSteps}>
-                Add
-              </GoldButton>
-            </div>
-          </VoidCard>
-        </motion.div>
-      )}
+
 
       {/* Activity Stats */}
       <motion.div
