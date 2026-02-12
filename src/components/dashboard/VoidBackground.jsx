@@ -85,7 +85,54 @@ export default function VoidBackground() {
         }}
       />
 
-      {/* Floating particles */}
+      {/* Distant gold suns */}
+      <motion.div
+        className="absolute"
+        style={{
+          top: '25%',
+          right: '15%',
+          width: '180px',
+          height: '180px',
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(212, 175, 55, 0.12) 0%, rgba(212, 175, 55, 0.04) 50%, transparent 70%)',
+          filter: 'blur(60px)'
+        }}
+        animate={{
+          opacity: [0.4, 0.6, 0.4],
+          scale: [1, 1.15, 1]
+        }}
+        transition={{
+          duration: 12,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 1
+        }}
+      />
+
+      <motion.div
+        className="absolute"
+        style={{
+          bottom: '30%',
+          left: '10%',
+          width: '140px',
+          height: '140px',
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(244, 208, 63, 0.1) 0%, rgba(212, 175, 55, 0.03) 50%, transparent 70%)',
+          filter: 'blur(50px)'
+        }}
+        animate={{
+          opacity: [0.3, 0.5, 0.3],
+          scale: [1, 1.2, 1]
+        }}
+        transition={{
+          duration: 10,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 3
+        }}
+      />
+
+      {/* Floating star particles */}
       {particles.map((particle) => (
         <motion.div
           key={particle.id}
@@ -95,13 +142,13 @@ export default function VoidBackground() {
             top: `${particle.y}%`,
             width: particle.size,
             height: particle.size,
-            background: 'rgba(255, 255, 255, 0.15)',
-            boxShadow: '0 0 4px rgba(255, 255, 255, 0.3)'
+            background: 'rgba(255, 255, 255, 0.8)',
+            boxShadow: '0 0 8px rgba(255, 255, 255, 0.6), 0 0 3px rgba(255, 255, 255, 0.9)'
           }}
           animate={{
             y: [0, -30, 0],
-            opacity: [0, 1, 0],
-            scale: [0.5, 1, 0.5]
+            opacity: [0.3, 1, 0.3],
+            scale: [0.6, 1.2, 0.6]
           }}
           transition={{
             duration: particle.duration,
