@@ -83,39 +83,7 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
                 opacity="0.08"
               />
 
-              {/* Glow layers - follow ring shape */}
-              <motion.circle
-                cx={orbital.size / 2}
-                cy={orbital.size / 2}
-                r={(orbital.size - 4) / 2}
-                fill="none"
-                stroke={orbital.color}
-                strokeWidth="8"
-                strokeLinecap="round"
-                strokeDasharray={circumference}
-                initial={{ strokeDashoffset: circumference }}
-                animate={{ strokeDashoffset }}
-                transition={{ duration: 2, ease: "easeOut", delay: index * 0.15 }}
-                opacity="0.15"
-                style={{ filter: 'blur(8px)' }}
-              />
-              <motion.circle
-                cx={orbital.size / 2}
-                cy={orbital.size / 2}
-                r={(orbital.size - 4) / 2}
-                fill="none"
-                stroke={orbital.color}
-                strokeWidth="4"
-                strokeLinecap="round"
-                strokeDasharray={circumference}
-                initial={{ strokeDashoffset: circumference }}
-                animate={{ strokeDashoffset }}
-                transition={{ duration: 2, ease: "easeOut", delay: index * 0.15 }}
-                opacity="0.3"
-                style={{ filter: 'blur(4px)' }}
-              />
-
-              {/* Progress thread */}
+              {/* Progress thread with subtle glow */}
               <motion.circle
                 cx={orbital.size / 2}
                 cy={orbital.size / 2}
@@ -128,6 +96,9 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
                 initial={{ strokeDashoffset: circumference }}
                 animate={{ strokeDashoffset }}
                 transition={{ duration: 2, ease: "easeOut", delay: index * 0.15 }}
+                style={{
+                  filter: `drop-shadow(0 0 2px ${orbital.color}80) drop-shadow(0 0 4px ${orbital.color}40)`
+                }}
               />
             </svg>
           </div>
