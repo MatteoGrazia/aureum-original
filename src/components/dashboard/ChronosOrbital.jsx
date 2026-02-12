@@ -38,14 +38,14 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
         <motion.div
           className="absolute top-1/2 left-1/2 w-96 h-96 -translate-x-1/2 -translate-y-1/2"
           style={{
-            background: 'radial-gradient(circle, rgba(212,175,55,0.03) 0%, transparent 70%)',
+            background: 'radial-gradient(circle, rgba(244,208,63,0.08) 0%, transparent 70%)',
           }}
           animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.3, 0.5, 0.3]
+            scale: [1, 1.1, 1],
+            opacity: [0.4, 0.6, 0.4]
           }}
           transition={{
-            duration: 8,
+            duration: 6,
             repeat: Infinity,
             ease: "easeInOut"
           }}
@@ -130,19 +130,19 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
       
       {/* Center percentage */}
       <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
+        initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.6 }}
+        transition={{ duration: 0.4 }}
         className="absolute text-center z-10 px-16"
       >
         <p 
-          className="text-[#D4AF37] mb-2 text-5xl tracking-wider" 
-          style={{ fontWeight: 400, fontFamily: 'Montserrat, sans-serif' }}
+          className="text-[#F4D03F] mb-2 text-5xl tracking-wider" 
+          style={{ fontWeight: 500, fontFamily: 'Montserrat, sans-serif' }}
         >
           {Math.round(totalProgress)}
         </p>
         <p 
-          className="text-[9px] text-white/20 uppercase tracking-[0.4em]"
+          className="text-[10px] text-white/40 uppercase tracking-[0.35em]"
           style={{ fontWeight: 400, fontFamily: 'Montserrat, sans-serif' }}
         >
           Complete

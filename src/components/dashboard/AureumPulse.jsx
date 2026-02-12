@@ -17,19 +17,19 @@ export default function AureumPulse({ label, value, goal, unit, index = 0, icon 
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.08 }}
+      transition={{ duration: 0.3, delay: index * 0.05 }}
       className="relative"
       style={{
-        background: 'linear-gradient(135deg, rgba(160,160,160,0.04) 0%, rgba(255,255,255,0.02) 50%, rgba(180,180,180,0.03) 100%)',
+        background: 'linear-gradient(135deg, rgba(212,175,55,0.06) 0%, rgba(255,255,255,0.03) 50%, rgba(212,175,55,0.05) 100%)',
         backdropFilter: 'blur(30px) saturate(180%)',
-        boxShadow: 'inset 0px 1px 20px rgba(200,200,200,0.06), inset 0px 4px 12px rgba(0,0,0,0.4), 0px 10px 40px rgba(0,0,0,0.3)',
-        borderTop: '0.5px solid rgba(212,175,55,0.5)',
-        borderLeft: '0.5px solid rgba(160,160,160,0.08)',
-        borderRight: '0.5px solid rgba(160,160,160,0.08)',
-        padding: '24px 20px',
-        borderRadius: '16px',
+        boxShadow: 'inset 0px 1px 20px rgba(244,208,63,0.08), inset 0px 4px 12px rgba(0,0,0,0.3), 0px 10px 30px rgba(0,0,0,0.2)',
+        borderTop: '0.5px solid rgba(212,175,55,0.6)',
+        borderLeft: '0.5px solid rgba(212,175,55,0.1)',
+        borderRight: '0.5px solid rgba(212,175,55,0.1)',
+        padding: '20px 18px',
+        borderRadius: '14px',
         overflow: 'hidden',
         position: 'relative'
       }}
@@ -45,22 +45,22 @@ export default function AureumPulse({ label, value, goal, unit, index = 0, icon 
       <div className="flex items-center justify-between mb-4 relative z-10">
         <div className="flex items-center gap-3">
           {Icon && (
-            <div className="w-8 h-8 rounded-lg bg-[#D4AF37]/5 flex items-center justify-center">
-              <Icon className="w-4 h-4 text-[#9C7E46]" strokeWidth={1} />
+            <div className="w-9 h-9 rounded-lg bg-[#D4AF37]/10 flex items-center justify-center">
+              <Icon className="w-5 h-5 text-[#D4AF37]" strokeWidth={1.5} />
             </div>
           )}
           <p 
-            className="text-[9px] uppercase tracking-[0.35em] text-[#9C7E46]"
-            style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}
+            className="text-[10px] uppercase tracking-[0.3em] text-[#D4AF37]"
+            style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
           >
             {label}
           </p>
         </div>
         <p 
-          className="text-white/40 text-[10px] tracking-wider"
-          style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}
+          className="text-white/60 text-[11px] tracking-wider"
+          style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
         >
-          {value.toLocaleString()} {unit && <span className="text-white/20">/ {goal.toLocaleString()} {unit}</span>}
+          {value.toLocaleString()} {unit && <span className="text-white/30">/ {goal.toLocaleString()} {unit}</span>}
         </p>
       </div>
 
@@ -142,11 +142,11 @@ export default function AureumPulse({ label, value, goal, unit, index = 0, icon 
       {/* Percentage indicator */}
       <div className="mt-3 text-right relative z-10">
         <span 
-          className="text-[11px] tracking-wider"
+          className="text-xs tracking-wider"
           style={{ 
             fontFamily: 'Montserrat, sans-serif',
-            fontWeight: 400,
-            color: progress >= 100 ? '#D4AF37' : '#9C7E46'
+            fontWeight: 500,
+            color: progress >= 100 ? '#F4D03F' : '#C9A961'
           }}
         >
           {Math.round(progress)}%
