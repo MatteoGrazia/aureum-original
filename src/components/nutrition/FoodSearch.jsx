@@ -12,35 +12,67 @@ export default function FoodSearch({ onSelectFood }) {
 
   const searchOpenFoodFacts = async (searchQuery) => {
     try {
-      const response = await fetch(
-        `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(searchQuery)}&search_simple=1&action=process&json=1&page_size=20&tagtype_0=categories&tag_contains_0=contains&tag_0=en:foods&sort_by=unique_scans_n`
-      );
-      const data = await response.json();
+      // Fetch both exact and fuzzy results in parallel
+      const [exactResponse, fuzzyResponse] = await Promise.all([
+        fetch(
+          `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(searchQuery)}&search_simple=1&action=process&json=1&page_size=30&sort_by=unique_scans_n`
+        ),
+        fetch(
+          `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(searchQuery)}&search_simple=1&action=process&json=1&page_size=20&tagtype_0=categories&tag_contains_0=contains&tag_0=en:foods`
+        )
+      ]);
+      
+      const exactData = await exactResponse.json();
+      const fuzzyData = await fuzzyResponse.json();
+      
+      const allProducts = [...(exactData.products || []), ...(fuzzyData.products || [])];
       
       const searchTerms = searchQuery.toLowerCase().split(' ');
       
-      const foods = (data.products || [])
+      const foods = allProducts
         .filter(product => {
           const name = (product.product_name || '').toLowerCase();
           const hasBasicNutrition = product.nutriments?.['energy-kcal_100g'] > 0;
           const matchesSearch = searchTerms.some(term => name.includes(term));
-          return matchesSearch && hasBasicNutrition && name !== '';
+          return matchesSearch && hasBasicNutrition && name !== '' && product.nutriments?.proteins_100g >= 0;
         })
-        .map(product => ({
-          name: product.product_name || 'Unknown',
-          brand: product.brands || '',
-          calories: Math.round(product.nutriments?.['energy-kcal_100g'] || 0),
-          protein: Math.round(product.nutriments?.proteins_100g || 0),
-          carbs: Math.round(product.nutriments?.carbohydrates_100g || 0),
-          fat: Math.round(product.nutriments?.fat_100g || 0),
-          fiber: Math.round(product.nutriments?.fiber_100g || 0),
-          serving_size: 100,
-          serving_unit: 'g',
-          barcode: product.code,
-          completeness: product.completeness || 0
-        }))
-        .sort((a, b) => b.completeness - a.completeness)
-        .slice(0, 10);
+        .map(product => {
+          const servingSize = product.serving_quantity || product.product_quantity || 100;
+          const servingUnit = product.serving_unit || 'g';
+          
+          return {
+            name: product.product_name || 'Unknown',
+            brand: product.brands || '',
+            calories: Math.round(product.nutriments?.['energy-kcal_100g'] || 0),
+            protein: Math.round(product.nutriments?.proteins_100g || 0),
+            carbs: Math.round(product.nutriments?.carbohydrates_100g || 0),
+            fat: Math.round(product.nutriments?.fat_100g || 0),
+            fiber: Math.round(product.nutriments?.fiber_100g || 0),
+            sugar: Math.round(product.nutriments?.sugars_100g || 0),
+            sodium: Math.round(product.nutriments?.sodium_100g || 0),
+            serving_size: servingSize,
+            serving_unit: servingUnit,
+            barcode: product.code,
+            completeness: product.completeness || 0,
+            relevance: searchTerms.filter(term => 
+              (product.product_name || '').toLowerCase().includes(term)
+            ).length
+          };
+        })
+        // Remove duplicates by name+brand
+        .filter((food, index, self) => 
+          index === self.findIndex(f => 
+            f.name.toLowerCase() === food.name.toLowerCase() && 
+            f.brand.toLowerCase() === food.brand.toLowerCase()
+          )
+        )
+        // Sort by relevance, then completeness, then calories
+        .sort((a, b) => {
+          if (b.relevance !== a.relevance) return b.relevance - a.relevance;
+          if (b.completeness !== a.completeness) return b.completeness - a.completeness;
+          return b.calories - a.calories;
+        })
+        .slice(0, 15);
 
       return foods;
     } catch (error) {
@@ -97,15 +129,10 @@ export default function FoodSearch({ onSelectFood }) {
       if (results.length === 0) {
         setShowEmptyState(true);
       }
-    }, 3000);
+    }, 4000);
 
     try {
-      let foods = await searchOpenFoodFacts(searchQuery);
-      
-      if (foods.length < 5) {
-        const nutritionixResults = await searchNutritionix(searchQuery);
-        foods = [...foods, ...nutritionixResults].slice(0, 10);
-      }
+      const foods = await searchOpenFoodFacts(searchQuery);
 
       clearTimeout(timeoutId);
       setResults(foods);
@@ -216,14 +243,22 @@ export default function FoodSearch({ onSelectFood }) {
                         </p>
                       )}
                       <div 
-                        className="flex gap-4 mt-2 text-xs"
-                        style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}
+                       className="flex gap-3 mt-2 text-xs"
+                       style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}
                       >
-                        <span className="text-[#D4AF37]">{food.calories} kcal</span>
-                        <span className="text-white/40">P: {food.protein}g</span>
-                        <span className="text-white/40">C: {food.carbs}g</span>
-                        <span className="text-white/40">F: {food.fat}g</span>
+                       <span className="text-[#D4AF37]">{food.calories} kcal</span>
+                       <span className="text-white/40">P: {food.protein}g</span>
+                       <span className="text-white/40">C: {food.carbs}g</span>
+                       <span className="text-white/40">F: {food.fat}g</span>
+                       {food.fiber > 0 && (
+                         <span className="text-white/30">Fiber: {food.fiber}g</span>
+                       )}
                       </div>
+                      {food.serving_size !== 100 && (
+                       <p className="text-[10px] text-white/30 mt-1">
+                         Per {food.serving_size}{food.serving_unit}
+                       </p>
+                      )}
                     </div>
                     <button className="ml-4 w-8 h-8 rounded-full bg-[#D4AF37]/20 flex items-center justify-center hover:bg-[#D4AF37]/30 transition-colors">
                       <Plus className="w-4 h-4 text-[#D4AF37]" />
