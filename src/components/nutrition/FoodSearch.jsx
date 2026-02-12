@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Plus, Loader2 } from 'lucide-react';
-import GlassCard from '@/components/ui/GlassCard';
+import { base44 } from '@/api/base44Client';
 import { Input } from '@/components/ui/input';
 
 export default function FoodSearch({ onSelectFood }) {
@@ -9,111 +9,6 @@ export default function FoodSearch({ onSelectFood }) {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showEmptyState, setShowEmptyState] = useState(false);
-
-  const searchOpenFoodFacts = async (searchQuery) => {
-    try {
-      // Fetch both exact and fuzzy results in parallel
-      const [exactResponse, fuzzyResponse] = await Promise.all([
-        fetch(
-          `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(searchQuery)}&search_simple=1&action=process&json=1&page_size=30&sort_by=unique_scans_n`
-        ),
-        fetch(
-          `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(searchQuery)}&search_simple=1&action=process&json=1&page_size=20&tagtype_0=categories&tag_contains_0=contains&tag_0=en:foods`
-        )
-      ]);
-      
-      const exactData = await exactResponse.json();
-      const fuzzyData = await fuzzyResponse.json();
-      
-      const allProducts = [...(exactData.products || []), ...(fuzzyData.products || [])];
-      
-      const searchTerms = searchQuery.toLowerCase().split(' ');
-      
-      const foods = allProducts
-        .filter(product => {
-          const name = (product.product_name || '').toLowerCase();
-          const hasBasicNutrition = product.nutriments?.['energy-kcal_100g'] > 0;
-          const matchesSearch = searchTerms.some(term => name.includes(term));
-          return matchesSearch && hasBasicNutrition && name !== '' && product.nutriments?.proteins_100g >= 0;
-        })
-        .map(product => {
-          const servingSize = product.serving_quantity || product.product_quantity || 100;
-          const servingUnit = product.serving_unit || 'g';
-          
-          return {
-            name: product.product_name || 'Unknown',
-            brand: product.brands || '',
-            calories: Math.round(product.nutriments?.['energy-kcal_100g'] || 0),
-            protein: Math.round(product.nutriments?.proteins_100g || 0),
-            carbs: Math.round(product.nutriments?.carbohydrates_100g || 0),
-            fat: Math.round(product.nutriments?.fat_100g || 0),
-            fiber: Math.round(product.nutriments?.fiber_100g || 0),
-            sugar: Math.round(product.nutriments?.sugars_100g || 0),
-            sodium: Math.round(product.nutriments?.sodium_100g || 0),
-            serving_size: servingSize,
-            serving_unit: servingUnit,
-            barcode: product.code,
-            completeness: product.completeness || 0,
-            relevance: searchTerms.filter(term => 
-              (product.product_name || '').toLowerCase().includes(term)
-            ).length
-          };
-        })
-        // Remove duplicates by name+brand
-        .filter((food, index, self) => 
-          index === self.findIndex(f => 
-            f.name.toLowerCase() === food.name.toLowerCase() && 
-            f.brand.toLowerCase() === food.brand.toLowerCase()
-          )
-        )
-        // Sort by relevance, then completeness, then calories
-        .sort((a, b) => {
-          if (b.relevance !== a.relevance) return b.relevance - a.relevance;
-          if (b.completeness !== a.completeness) return b.completeness - a.completeness;
-          return b.calories - a.calories;
-        })
-        .slice(0, 15);
-
-      return foods;
-    } catch (error) {
-      console.error('OpenFoodFacts error:', error);
-      return [];
-    }
-  };
-
-  const searchNutritionix = async (searchQuery) => {
-    try {
-      const response = await fetch(
-        `https://trackapi.nutritionix.com/v2/search/instant?query=${encodeURIComponent(searchQuery)}`,
-        {
-          headers: {
-            'x-app-id': '8c8b3e2f',
-            'x-app-key': '4e3e0f9a8c8b3e2f4e3e0f9a8c8b3e2f'
-          }
-        }
-      );
-      const data = await response.json();
-      
-      const common = (data.common || []).slice(0, 5).map(item => ({
-        name: item.food_name,
-        brand: '',
-        calories: Math.round(item.nf_calories || 0),
-        protein: Math.round(item.nf_protein || 0),
-        carbs: Math.round(item.nf_total_carbohydrate || 0),
-        fat: Math.round(item.nf_total_fat || 0),
-        fiber: Math.round(item.nf_dietary_fiber || 0),
-        serving_size: Math.round(item.serving_qty || 1),
-        serving_unit: item.serving_unit || 'serving',
-        barcode: null,
-        completeness: 100
-      }));
-
-      return common;
-    } catch (error) {
-      console.error('Nutritionix error:', error);
-      return [];
-    }
-  };
 
   const searchFood = async (searchQuery) => {
     if (!searchQuery || searchQuery.length < 2) {
@@ -129,16 +24,32 @@ export default function FoodSearch({ onSelectFood }) {
       if (results.length === 0) {
         setShowEmptyState(true);
       }
-    }, 4000);
+    }, 5000);
 
     try {
-      const foods = await searchOpenFoodFacts(searchQuery);
+      const response = await base44.functions.invoke('fatsecretSearch', {
+        action: 'search',
+        query: searchQuery
+      });
 
       clearTimeout(timeoutId);
+      
+      const foods = response.data.foods.map(food => ({
+        id: food.id,
+        name: food.name,
+        brand: food.brand,
+        calories: Math.round(food.calories),
+        protein: Math.round(food.protein),
+        carbs: Math.round(food.carbs),
+        fat: Math.round(food.fat),
+        fiber: Math.round(food.fiber),
+        serving_size: food.servingSize
+      }));
+
       setResults(foods);
       setShowEmptyState(foods.length === 0);
     } catch (error) {
-      console.error('Search error:', error);
+      console.error('FatSecret search error:', error);
       setResults([]);
       setShowEmptyState(true);
     }
@@ -227,6 +138,13 @@ export default function FoodSearch({ onSelectFood }) {
                     border: '0.5px solid rgba(212, 175, 55, 0.1)'
                   }}
                   onClick={() => onSelectFood(food)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      onSelectFood(food);
+                    }
+                  }}
                 >
                   <div className="flex items-start gap-2 w-full">
                     <div className="flex-1 min-w-0">
