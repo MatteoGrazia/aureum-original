@@ -12,11 +12,10 @@ import ActivityStats from '@/components/activity/ActivityStats';
 import { Input } from '@/components/ui/input';
 
 export default function Activity() {
-  const [motionSupported, setMotionSupported] = useState(false);
+  const [pedometerSupported, setPedometerSupported] = useState(false);
+  const [permissionStatus, setPermissionStatus] = useState('prompt');
   const [manualSteps, setManualSteps] = useState('');
-  const [isTracking, setIsTracking] = useState(false);
-  const lastAcceleration = useRef({ x: 0, y: 0, z: 0 });
-  const stepBuffer = useRef(0);
+  const lastSyncTime = useRef(Date.now());
   const queryClient = useQueryClient();
   const today = format(new Date(), 'yyyy-MM-dd');
 
@@ -60,67 +59,100 @@ export default function Activity() {
   const stepGoal = profile?.daily_step_goal || 10000;
   const currentSteps = dailyActivity?.steps || 0;
 
-  // Check for motion sensor support
+  // Check for pedometer support
   useEffect(() => {
-    if ('DeviceMotionEvent' in window) {
-      setMotionSupported(true);
-    }
+    const checkSupport = async () => {
+      // Check if running in iOS native context
+      if (window.webkit?.messageHandlers?.pedometer) {
+        setPedometerSupported(true);
+        return;
+      }
+
+      // Check for Web Pedometer API (experimental)
+      if ('Pedometer' in window) {
+        try {
+          const result = await navigator.permissions.query({ name: 'pedometer' });
+          setPermissionStatus(result.state);
+          setPedometerSupported(true);
+        } catch (err) {
+          setPedometerSupported(false);
+        }
+      } else {
+        setPedometerSupported(false);
+      }
+    };
+
+    checkSupport();
   }, []);
 
-  // Motion tracking
+  // Sync steps periodically when app is open
   useEffect(() => {
-    if (!isTracking || !motionSupported) return;
+    if (!pedometerSupported || !dailyActivity) return;
 
-    let stepCount = 0;
-    const threshold = 12;
-    const minInterval = 300;
-    let lastStepTime = 0;
+    const syncSteps = async () => {
+      try {
+        // iOS native pedometer
+        if (window.webkit?.messageHandlers?.pedometer) {
+          window.webkit.messageHandlers.pedometer.postMessage({
+            action: 'getSteps',
+            startDate: today
+          });
+          return;
+        }
 
-    const handleMotion = (event) => {
-      const acc = event.accelerationIncludingGravity;
-      if (!acc) return;
+        // Web Pedometer API
+        if ('Pedometer' in window && permissionStatus === 'granted') {
+          const pedometer = new Pedometer();
+          const steps = await pedometer.getSteps({
+            startTime: new Date(today).getTime()
+          });
 
-      const magnitude = Math.sqrt(
-        Math.pow(acc.x - lastAcceleration.current.x, 2) +
-        Math.pow(acc.y - lastAcceleration.current.y, 2) +
-        Math.pow(acc.z - lastAcceleration.current.z, 2)
-      );
+          if (steps && steps !== dailyActivity.steps) {
+            const caloriesBurned = Math.round(steps * 0.04);
+            const activeMinutes = Math.round(steps / 100);
 
-      const now = Date.now();
-      if (magnitude > threshold && now - lastStepTime > minInterval) {
-        stepCount++;
-        lastStepTime = now;
-        stepBuffer.current = stepCount;
+            await base44.entities.DailyActivity.update(dailyActivity.id, {
+              steps: steps,
+              calories_burned: caloriesBurned,
+              active_minutes: activeMinutes
+            });
+
+            refetch();
+          }
+        }
+      } catch (error) {
+        console.error('Step sync error:', error);
       }
-
-      lastAcceleration.current = { x: acc.x, y: acc.y, z: acc.z };
     };
 
-    window.addEventListener('devicemotion', handleMotion);
+    // Sync immediately
+    syncSteps();
 
-    // Sync steps every 30 seconds
-    const syncInterval = setInterval(async () => {
-      if (stepBuffer.current > 0 && dailyActivity) {
-        const newSteps = dailyActivity.steps + stepBuffer.current;
-        const caloriesBurned = Math.round(newSteps * 0.04);
-        const activeMinutes = Math.round(stepBuffer.current / 100);
+    // Sync every 60 seconds
+    const syncInterval = setInterval(syncSteps, 60000);
 
-        await base44.entities.DailyActivity.update(dailyActivity.id, {
-          steps: newSteps,
+    return () => clearInterval(syncInterval);
+  }, [pedometerSupported, permissionStatus, dailyActivity, today]);
+
+  // Listen for iOS native pedometer updates
+  useEffect(() => {
+    const handlePedometerUpdate = (event) => {
+      const { steps } = event.detail;
+      if (steps && dailyActivity && steps !== dailyActivity.steps) {
+        const caloriesBurned = Math.round(steps * 0.04);
+        const activeMinutes = Math.round(steps / 100);
+
+        base44.entities.DailyActivity.update(dailyActivity.id, {
+          steps: steps,
           calories_burned: caloriesBurned,
-          active_minutes: (dailyActivity.active_minutes || 0) + activeMinutes
-        });
-
-        stepBuffer.current = 0;
-        refetch();
+          active_minutes: activeMinutes
+        }).then(() => refetch());
       }
-    }, 30000);
-
-    return () => {
-      window.removeEventListener('devicemotion', handleMotion);
-      clearInterval(syncInterval);
     };
-  }, [isTracking, motionSupported, dailyActivity]);
+
+    window.addEventListener('pedometerUpdate', handlePedometerUpdate);
+    return () => window.removeEventListener('pedometerUpdate', handlePedometerUpdate);
+  }, [dailyActivity]);
 
   const handleManualSteps = async () => {
     const steps = parseInt(manualSteps);
@@ -140,27 +172,34 @@ export default function Activity() {
     refetch();
   };
 
-  const requestMotionPermission = async () => {
-    if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
-      try {
-        const response = await DeviceMotionEvent.requestPermission();
-        if (response === 'granted') {
-          setIsTracking(true);
-        }
-      } catch (error) {
-        console.error('Motion permission error:', error);
+  const requestPedometerPermission = async () => {
+    try {
+      // iOS native pedometer
+      if (window.webkit?.messageHandlers?.pedometer) {
+        window.webkit.messageHandlers.pedometer.postMessage({
+          action: 'requestPermission',
+          alwaysOn: true
+        });
+        setPermissionStatus('granted');
+        return;
       }
-    } else {
-      setIsTracking(true);
+
+      // Web Pedometer API
+      if ('Pedometer' in window) {
+        const result = await navigator.permissions.query({ name: 'pedometer' });
+        if (result.state === 'prompt') {
+          const pedometer = new Pedometer();
+          await pedometer.requestPermission();
+          setPermissionStatus('granted');
+        } else {
+          setPermissionStatus(result.state);
+        }
+      }
+    } catch (error) {
+      console.error('Pedometer permission error:', error);
+      setPermissionStatus('denied');
     }
   };
-
-  // Auto-start tracking on mount
-  useEffect(() => {
-    if (motionSupported && !isTracking) {
-      requestMotionPermission();
-    }
-  }, [motionSupported]);
 
   // Calculate weekly stats
   const weeklySteps = weeklyActivity.reduce((sum, day) => sum + (day.steps || 0), 0);
@@ -228,12 +267,64 @@ export default function Activity() {
         <StepCounter steps={currentSteps} goal={stepGoal} />
       </motion.div>
 
-      {/* Auto-start tracking on mount */}
-      {React.useEffect(() => {
-        if (motionSupported && !isTracking) {
-          requestMotionPermission();
-        }
-      }, [motionSupported])}
+      {/* Permission Request Banner */}
+      {pedometerSupported && permissionStatus !== 'granted' && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-6"
+        >
+          <VoidCard className="text-center">
+            <div className="mb-4">
+              <div className="w-12 h-12 rounded-full bg-[#D4AF37]/10 flex items-center justify-center mx-auto mb-3">
+                <Target className="w-6 h-6 text-[#D4AF37]" />
+              </div>
+              <h3 className="text-white mb-2" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>
+                Enable Step Tracking
+              </h3>
+              <p className="text-white/60 text-sm mb-4">
+                Allow Aureum to track your steps continuously, even when the app is closed, to give you accurate activity insights.
+              </p>
+            </div>
+            <GoldButton onClick={requestPedometerPermission} className="w-full">
+              Enable Always-On Tracking
+            </GoldButton>
+          </VoidCard>
+        </motion.div>
+      )}
+
+      {/* Manual Step Input (fallback) */}
+      {!pedometerSupported && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-6"
+        >
+          <VoidCard>
+            <h3 
+              className="text-[10px] uppercase tracking-[0.3em] text-[#D4AF37] mb-3"
+              style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
+            >
+              Manual Step Entry
+            </h3>
+            <p className="text-white/60 text-sm mb-4">
+              Automatic step tracking isn't available on this device. Add your steps manually.
+            </p>
+            <div className="flex gap-2">
+              <Input
+                type="number"
+                placeholder="Enter steps"
+                value={manualSteps}
+                onChange={(e) => setManualSteps(e.target.value)}
+                className="flex-1"
+              />
+              <GoldButton onClick={handleManualSteps} disabled={!manualSteps}>
+                Add
+              </GoldButton>
+            </div>
+          </VoidCard>
+        </motion.div>
+      )}
 
       {/* Activity Stats */}
       <motion.div
