@@ -184,54 +184,54 @@ export default function FoodSearch({ onSelectFood }) {
               >
                 <button
                   onClick={() => onSelectFood(food)}
-                  className="w-full text-left p-3 rounded-xl transition-all hover:border-[#D4AF37]/50 active:scale-95"
+                  className="w-full text-left p-2 rounded-lg transition-all hover:border-[#D4AF37]/50 active:scale-95"
                   style={{
                     background: 'rgba(255, 255, 255, 0.03)',
                     backdropFilter: 'blur(30px) saturate(180%)',
                     border: '0.5px solid rgba(212, 175, 55, 0.1)'
                   }}
                 >
-                  <div className="flex items-start gap-2 w-full">
+                  <div className="flex items-start gap-1.5 w-full">
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
+                      <div className="flex items-baseline gap-2 mb-0.5">
                         <p 
-                          className="text-sm text-white truncate flex-1"
+                          className="text-xs text-white truncate flex-1"
                           style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}
                         >
                           {food.name}
                         </p>
-                        <span className="text-xs text-[#D4AF37] font-semibold flex-shrink-0">
+                        <span className="text-[11px] text-[#D4AF37] font-semibold flex-shrink-0 whitespace-nowrap">
                           {food.calories}kcal
                         </span>
                       </div>
                       {food.brand && (
                         <p 
-                          className="text-[10px] text-white/40 truncate mb-2"
+                          className="text-[9px] text-white/40 truncate mb-1"
                           style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 300 }}
                         >
                           {food.brand}
                         </p>
                       )}
                       <div 
-                        className="grid grid-cols-3 gap-2 text-[10px]"
+                        className="grid grid-cols-3 gap-1.5 text-[9px]"
                         style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}
                       >
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-0.5">
                           <span className="text-white/40">P:</span>
                           <span className="text-white">{food.protein}g</span>
                         </div>
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-0.5">
                           <span className="text-white/40">C:</span>
                           <span className="text-white">{food.carbs}g</span>
                         </div>
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-0.5">
                           <span className="text-white/40">F:</span>
                           <span className="text-white">{food.fat}g</span>
                         </div>
                       </div>
                     </div>
-                    <div className="flex-shrink-0 w-7 h-7 rounded-full bg-[#D4AF37]/20 flex items-center justify-center hover:bg-[#D4AF37]/30 transition-colors">
-                      <Plus className="w-3.5 h-3.5 text-[#D4AF37]" />
+                    <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[#D4AF37]/20 flex items-center justify-center hover:bg-[#D4AF37]/30 transition-colors mt-0.5">
+                      <Plus className="w-3 h-3 text-[#D4AF37]" />
                     </div>
                   </div>
                 </button>
