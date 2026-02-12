@@ -14,7 +14,7 @@ export default function FoodSearch({ onSelectFood }) {
   const searchOpenFoodFactsFallback = async (searchQuery) => {
     try {
       const response = await fetch(
-        `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(searchQuery)}&search_simple=1&action=process&json=1&page_size=15`
+        `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(searchQuery)}&search_simple=1&action=process&json=1&page_size=20`
       );
       
       const data = await response.json();
@@ -22,7 +22,7 @@ export default function FoodSearch({ onSelectFood }) {
       
       return products
         .filter(p => p.product_name && p.nutriments?.['energy-kcal_100g'] > 0)
-        .slice(0, 10)
+        .slice(0, 12)
         .map(p => ({
           name: p.product_name,
           brand: p.brands || '',
@@ -31,7 +31,8 @@ export default function FoodSearch({ onSelectFood }) {
           carbs: Math.round(p.nutriments?.carbohydrates_100g || 0),
           fat: Math.round(p.nutriments?.fat_100g || 0),
           fiber: Math.round(p.nutriments?.fiber_100g || 0),
-          serving_size: '100g'
+          serving_size: '100g',
+          source: 'openfoods'
         }));
     } catch {
       return [];
@@ -69,16 +70,22 @@ export default function FoodSearch({ onSelectFood }) {
         carbs: Math.round(food.carbs),
         fat: Math.round(food.fat),
         fiber: Math.round(food.fiber),
-        serving_size: food.servingSize || '100g'
+        serving_size: food.servingSize || '100g',
+        source: 'fatsecret'
       }));
 
-      if (foods.length === 0) {
-        foods = await searchOpenFoodFactsFallback(searchQuery);
+      // Priority 1: FatSecret results
+      if (foods.length > 0) {
+        clearTimeout(timeoutId);
+        setResults(foods);
+        setShowEmptyState(false);
+      } else {
+        // Priority 2/3: OpenFoodFacts fallback for barcodes and generic items
+        const fallbackFoods = await searchOpenFoodFactsFallback(searchQuery);
+        clearTimeout(timeoutId);
+        setResults(fallbackFoods);
+        setShowEmptyState(fallbackFoods.length === 0);
       }
-
-      clearTimeout(timeoutId);
-      setResults(foods);
-      setShowEmptyState(foods.length === 0);
     } catch (error) {
       console.error('Search error:', error);
       const foods = await searchOpenFoodFactsFallback(searchQuery);

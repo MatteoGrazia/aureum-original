@@ -64,7 +64,7 @@ const searchFoods = async (query, token) => {
     body: new URLSearchParams({
       method: 'foods.search',
       search_expression: query,
-      page_size: '20',
+      page_size: '30',
       format: 'json'
     }).toString()
   });
@@ -78,7 +78,16 @@ const searchFoods = async (query, token) => {
     return [];
   }
   
-  return data.foods?.food || [];
+  let foods = data.foods?.food || [];
+  
+  // Sort by relevance: branded items first, then generic
+  foods = foods.sort((a, b) => {
+    const aBranded = a.brand_name ? 1 : 0;
+    const bBranded = b.brand_name ? 1 : 0;
+    return bBranded - aBranded;
+  });
+
+  return foods.slice(0, 15);
 };
 
 const getFoodDetails = async (foodId, token) => {
