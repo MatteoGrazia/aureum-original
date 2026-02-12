@@ -10,6 +10,33 @@ export default function FoodSearch({ onSelectFood }) {
   const [loading, setLoading] = useState(false);
   const [showEmptyState, setShowEmptyState] = useState(false);
 
+  const searchOpenFoodFactsFallback = async (searchQuery) => {
+    try {
+      const response = await fetch(
+        `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(searchQuery)}&search_simple=1&action=process&json=1&page_size=15`
+      );
+      
+      const data = await response.json();
+      const products = data.products || [];
+      
+      return products
+        .filter(p => p.product_name && p.nutriments?.['energy-kcal_100g'] > 0)
+        .slice(0, 10)
+        .map(p => ({
+          name: p.product_name,
+          brand: p.brands || '',
+          calories: Math.round(p.nutriments?.['energy-kcal_100g'] || 0),
+          protein: Math.round(p.nutriments?.proteins_100g || 0),
+          carbs: Math.round(p.nutriments?.carbohydrates_100g || 0),
+          fat: Math.round(p.nutriments?.fat_100g || 0),
+          fiber: Math.round(p.nutriments?.fiber_100g || 0),
+          serving_size: '100g'
+        }));
+    } catch {
+      return [];
+    }
+  };
+
   const searchFood = async (searchQuery) => {
     if (!searchQuery || searchQuery.length < 2) {
       setResults([]);
@@ -24,18 +51,16 @@ export default function FoodSearch({ onSelectFood }) {
       if (results.length === 0) {
         setShowEmptyState(true);
       }
-    }, 5000);
+    }, 4000);
 
     try {
+      // Try FatSecret first
       const response = await base44.functions.invoke('fatsecretSearch', {
         action: 'search',
         query: searchQuery
       });
 
-      clearTimeout(timeoutId);
-      
-      const foods = response.data.foods.map(food => ({
-        id: food.id,
+      let foods = response.data.foods.map(food => ({
         name: food.name,
         brand: food.brand,
         calories: Math.round(food.calories),
@@ -46,12 +71,20 @@ export default function FoodSearch({ onSelectFood }) {
         serving_size: food.servingSize
       }));
 
+      // Fallback to OpenFoodFacts if no results
+      if (foods.length === 0) {
+        foods = await searchOpenFoodFactsFallback(searchQuery);
+      }
+
+      clearTimeout(timeoutId);
       setResults(foods);
       setShowEmptyState(foods.length === 0);
     } catch (error) {
-      console.error('FatSecret search error:', error);
-      setResults([]);
-      setShowEmptyState(true);
+      console.error('Search error:', error);
+      // Fallback to OpenFoodFacts on error
+      const foods = await searchOpenFoodFactsFallback(searchQuery);
+      setResults(foods);
+      setShowEmptyState(foods.length === 0);
     }
     setLoading(false);
   };
