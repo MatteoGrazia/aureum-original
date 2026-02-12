@@ -113,7 +113,7 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
         className="absolute text-center z-10 px-16"
       >
         <p 
-          className="text-[#F4D03F] mb-2 text-5xl tracking-wider" 
+          className="text-[#F4D03F] mb-2 text-3xl tracking-wider" 
           style={{ fontWeight: 400, fontFamily: 'Montserrat, sans-serif' }}
         >
           {Math.round(totalProgress)}%
@@ -127,7 +127,7 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
       </motion.div>
 
       {/* Orbital legend - minimal */}
-      <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 flex gap-8">
+      <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 flex gap-6">
         {orbitals.map((orbital, i) => (
           <div key={i} className="flex items-center gap-1.5">
             <div 
@@ -137,6 +137,12 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
                 boxShadow: `0 0 8px ${orbital.color}60`
               }} 
             />
+            <p 
+              className="text-[9px] text-white/30 uppercase tracking-wider"
+              style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}
+            >
+              {i === 0 ? 'Calories' : i === 1 ? 'Steps' : 'Volume'}
+            </p>
           </div>
         ))}
       </div>
