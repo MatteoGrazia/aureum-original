@@ -70,16 +70,6 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
                     />
                   </stop>
                 </linearGradient>
-                
-                <filter id={`glow-${index}`} x="-50%" y="-50%" width="200%" height="200%">
-                  <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
-                  <feGaussianBlur stdDeviation="8" result="coloredBlur2"/>
-                  <feMerge>
-                    <feMergeNode in="coloredBlur2"/>
-                    <feMergeNode in="coloredBlur"/>
-                    <feMergeNode in="SourceGraphic"/>
-                  </feMerge>
-                </filter>
               </defs>
 
               {/* Background thread */}
@@ -93,7 +83,39 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
                 opacity="0.08"
               />
 
-              {/* Progress thread with intense glow */}
+              {/* Glow layers - follow ring shape */}
+              <motion.circle
+                cx={orbital.size / 2}
+                cy={orbital.size / 2}
+                r={(orbital.size - 4) / 2}
+                fill="none"
+                stroke={orbital.color}
+                strokeWidth="8"
+                strokeLinecap="round"
+                strokeDasharray={circumference}
+                initial={{ strokeDashoffset: circumference }}
+                animate={{ strokeDashoffset }}
+                transition={{ duration: 2, ease: "easeOut", delay: index * 0.15 }}
+                opacity="0.15"
+                style={{ filter: 'blur(8px)' }}
+              />
+              <motion.circle
+                cx={orbital.size / 2}
+                cy={orbital.size / 2}
+                r={(orbital.size - 4) / 2}
+                fill="none"
+                stroke={orbital.color}
+                strokeWidth="4"
+                strokeLinecap="round"
+                strokeDasharray={circumference}
+                initial={{ strokeDashoffset: circumference }}
+                animate={{ strokeDashoffset }}
+                transition={{ duration: 2, ease: "easeOut", delay: index * 0.15 }}
+                opacity="0.3"
+                style={{ filter: 'blur(4px)' }}
+              />
+
+              {/* Progress thread */}
               <motion.circle
                 cx={orbital.size / 2}
                 cy={orbital.size / 2}
@@ -106,10 +128,6 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
                 initial={{ strokeDashoffset: circumference }}
                 animate={{ strokeDashoffset }}
                 transition={{ duration: 2, ease: "easeOut", delay: index * 0.15 }}
-                filter={`url(#glow-${index})`}
-                style={{
-                  filter: 'drop-shadow(0 0 4px currentColor) drop-shadow(0 0 8px currentColor)'
-                }}
               />
             </svg>
           </div>
