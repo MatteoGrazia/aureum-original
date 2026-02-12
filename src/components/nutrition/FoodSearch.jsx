@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Plus, Loader2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { Input } from '@/components/ui/input';
-import simpleIngredients from './simpleIngredients.json';
+import { simpleIngredients } from './simpleIngredientsData';
 
 export default function FoodSearch({ onSelectFood }) {
   const [query, setQuery] = useState('');

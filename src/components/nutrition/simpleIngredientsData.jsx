@@ -1,4 +1,4 @@
-[
+export const simpleIngredients = [
   { "name": "Apple", "calories": 52, "protein": 0, "carbs": 14, "fat": 0, "fiber": 2 },
   { "name": "Banana", "calories": 89, "protein": 1, "carbs": 23, "fat": 0, "fiber": 3 },
   { "name": "Orange", "calories": 47, "protein": 1, "carbs": 12, "fat": 0, "fiber": 2 },
@@ -96,4 +96,4 @@
   { "name": "Flax Seeds", "calories": 534, "protein": 18, "carbs": 29, "fat": 42, "fiber": 28 },
   { "name": "Chia Seeds", "calories": 486, "protein": 17, "carbs": 42, "fat": 31, "fiber": 34 },
   { "name": "Dark Chocolate", "calories": 578, "protein": 12, "carbs": 64, "fat": 31, "fiber": 7 }
-]
+];
