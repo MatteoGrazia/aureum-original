@@ -29,7 +29,14 @@ const getAccessToken = async () => {
       }).toString()
     });
 
-    const data = await response.json();
+    const responseText = await response.text();
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    } catch {
+      console.error('Token response text:', responseText);
+      throw new Error(`Invalid token response: ${responseText.substring(0, 100)}`);
+    }
     
     if (!data.access_token) {
       console.error('FatSecret token response:', data);
@@ -57,11 +64,20 @@ const searchFoods = async (query, token) => {
     body: new URLSearchParams({
       method: 'foods.search',
       search_expression: query,
-      page_size: '20'
+      page_size: '20',
+      format: 'json'
     }).toString()
   });
 
-  const data = await response.json();
+  const responseText = await response.text();
+  let data;
+  try {
+    data = JSON.parse(responseText);
+  } catch {
+    console.error('Search response:', responseText.substring(0, 200));
+    return [];
+  }
+  
   return data.foods?.food || [];
 };
 
@@ -74,11 +90,20 @@ const getFoodDetails = async (foodId, token) => {
     },
     body: new URLSearchParams({
       method: 'food.get',
-      food_id: foodId
+      food_id: foodId,
+      format: 'json'
     }).toString()
   });
 
-  const data = await response.json();
+  const responseText = await response.text();
+  let data;
+  try {
+    data = JSON.parse(responseText);
+  } catch {
+    console.error('Food details response:', responseText.substring(0, 200));
+    return null;
+  }
+  
   return data.food || null;
 };
 
