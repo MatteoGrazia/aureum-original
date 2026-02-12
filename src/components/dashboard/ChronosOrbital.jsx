@@ -72,9 +72,10 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
                 </linearGradient>
                 
                 <filter id={`glow-${index}`}>
-                  <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                  <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+                  <feGaussianBlur stdDeviation="8" result="coloredBlur2"/>
                   <feMerge>
-                    <feMergeNode in="coloredBlur"/>
+                    <feMergeNode in="coloredBlur2"/>
                     <feMergeNode in="coloredBlur"/>
                     <feMergeNode in="SourceGraphic"/>
                   </feMerge>
