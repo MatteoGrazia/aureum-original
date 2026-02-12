@@ -31,6 +31,8 @@ export const useStepTracker = () => {
   const calibrationCounterRef = useRef(0);
   const zeroReadingCounterRef = useRef(0);
   const motionEventRef = useRef(null);
+  const sensorRef = useRef(null);
+  const syncIntervalRef = useRef(null);
 
   const MIN_STEP_INTERVAL = 300; // ms - minimum time between steps
   const BUFFER_SIZE = 50; // samples for moving average
@@ -89,6 +91,32 @@ export const useStepTracker = () => {
       timestamp: Date.now()
     };
     localStorage.setItem(`steps_${today}`, JSON.stringify(data));
+  };
+
+  // Sync steps to backend periodically
+  const syncStepsToBackend = async () => {
+    const today = new Date().toISOString().split('T')[0];
+    if (globalStepCount === 0) return;
+
+    try {
+      const activities = await base44.entities.DailyActivity.filter({ date: today });
+      if (activities.length > 0) {
+        await base44.entities.DailyActivity.update(activities[0].id, {
+          steps: globalStepCount
+        });
+      } else {
+        await base44.entities.DailyActivity.create({
+          date: today,
+          steps: globalStepCount,
+          active_minutes: 0,
+          sedentary_minutes: 0,
+          calories_burned: 0,
+          water_liters: 0
+        });
+      }
+    } catch (err) {
+      console.log('Backend sync skipped (offline or error)');
+    }
   };
 
   // Handle motion events
@@ -169,17 +197,34 @@ export const useStepTracker = () => {
 
     setSensorStatus('calibrating');
     setIsTracking(true);
-    
-    // Register service worker for background sync
-    if ('serviceWorker' in navigator) {
+
+    // Try modern Sensor API first (better background support on Android)
+    if ('Accelerometer' in window) {
       try {
-        await navigator.serviceWorker.register('/sw.js');
+        sensorRef.current = new Accelerometer({ frequency: 100 });
+        sensorRef.current.addEventListener('reading', () => {
+          const accel = {
+            x: sensorRef.current.x,
+            y: sensorRef.current.y,
+            z: sensorRef.current.z
+          };
+          handleMotionEvent({ acceleration: accel });
+        });
+        sensorRef.current.start();
+        console.log('Using Sensor API for background tracking');
       } catch (err) {
-        console.log('SW registration note:', err.message);
+        console.log('Sensor API unavailable, using DeviceMotion');
+        startDeviceMotionTracking();
       }
+    } else {
+      startDeviceMotionTracking();
     }
 
-    // Initialize motion listener
+    // Sync to backend every 60 seconds while tracking
+    syncIntervalRef.current = setInterval(syncStepsToBackend, 60000);
+  };
+
+  const startDeviceMotionTracking = () => {
     motionEventRef.current = (event) => handleMotionEvent(event);
     window.addEventListener('devicemotion', motionEventRef.current, true);
   };
@@ -187,13 +232,24 @@ export const useStepTracker = () => {
   const stopTracking = () => {
     setIsTracking(false);
     setSensorStatus('idle');
-    
+
+    if (sensorRef.current) {
+      sensorRef.current.stop();
+      sensorRef.current = null;
+    }
+
     if (motionEventRef.current) {
       window.removeEventListener('devicemotion', motionEventRef.current, true);
       motionEventRef.current = null;
     }
 
-    // Save final count
+    if (syncIntervalRef.current) {
+      clearInterval(syncIntervalRef.current);
+      syncIntervalRef.current = null;
+    }
+
+    // Final sync
+    syncStepsToBackend();
     saveStepData();
   };
 
@@ -208,20 +264,25 @@ export const useStepTracker = () => {
   };
 
   useEffect(() => {
-    // Load persisted steps on mount
-    const today = new Date().toISOString().split('T')[0];
-    const saved = localStorage.getItem(`steps_${today}`);
-    if (saved) {
-      const data = JSON.parse(saved);
-      globalStepCount = data.steps;
-      stepCounterRef.current = data.steps;
-      setSteps(data.steps);
-    }
+     // Load persisted steps on mount
+     const today = new Date().toISOString().split('T')[0];
+     const saved = localStorage.getItem(`steps_${today}`);
+     if (saved) {
+       const data = JSON.parse(saved);
+       globalStepCount = data.steps;
+       stepCounterRef.current = data.steps;
+       setSteps(data.steps);
+     }
 
-    return () => {
-      stopTracking();
-    };
-  }, []);
+     // Sync any pending steps when app reopens
+     if (isTracking) {
+       syncStepsToBackend();
+     }
+
+     return () => {
+       stopTracking();
+     };
+   }, []);
 
   return {
     steps,
