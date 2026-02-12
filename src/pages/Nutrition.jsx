@@ -11,6 +11,8 @@ import FoodSearch from '@/components/nutrition/FoodSearch';
 import BarcodeScanner from '@/components/nutrition/BarcodeScanner';
 import MacroHeatmap from '@/components/nutrition/MacroHeatmap';
 import WaterTracker from '@/components/nutrition/WaterTracker';
+import RecentMeals from '@/components/nutrition/RecentMeals';
+import CopyFromYesterdayButton from '@/components/nutrition/CopyFromYesterdayButton';
 
 const mealIcons = {
   breakfast: Coffee,
@@ -213,6 +215,9 @@ export default function Nutrition() {
           </VoidCard>
         </motion.div>
 
+      {/* Recent Meals */}
+      <RecentMeals onSelectFood={handleSelectFood} selectedDate={selectedDate} />
+
       {/* Search & Scan */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -366,7 +371,6 @@ export default function Nutrition() {
         className="space-y-4"
       >
         {mealGroups.map(({ type, logs }) => {
-          if (logs.length === 0) return null;
           const Icon = mealIcons[type];
           const mealCalories = logs.reduce((sum, log) => sum + (log.calories || 0), 0);
           const iconColors = { breakfast: '#F4A261', lunch: '#8ECAE6', dinner: '#E8C5A5', snack: '#C9ADA7' };
@@ -378,30 +382,41 @@ export default function Nutrition() {
                   <Icon className="w-4 h-4" style={{ color: iconColors[type] }} strokeWidth={1.5} />
                   <span className="text-white capitalize" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>{type}</span>
                 </div>
-                <span className="text-[#D4AF37] text-sm" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>{mealCalories} kcal</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[#D4AF37] text-sm" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>{mealCalories} kcal</span>
+                  <CopyFromYesterdayButton 
+                    mealType={type} 
+                    selectedDate={selectedDate}
+                    onCopied={refetch}
+                  />
+                </div>
               </div>
 
-              <div className="space-y-2">
-                {logs.map((log) => (
-                  <div
-                    key={log.id}
-                    className="flex items-center justify-between p-3 rounded-xl bg-white/5"
-                  >
-                    <div>
-                      <p className="text-white text-sm">{log.food_name}</p>
-                      <p className="text-white/40 text-xs">
-                        {log.serving_size}{log.serving_unit} • {log.calories} kcal
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => handleDeleteLog(log.id)}
-                      className="w-8 h-8 rounded-full bg-red-500/10 flex items-center justify-center hover:bg-red-500/20 transition-colors"
+              {logs.length > 0 ? (
+                <div className="space-y-2">
+                  {logs.map((log) => (
+                    <div
+                      key={log.id}
+                      className="flex items-center justify-between p-3 rounded-xl bg-white/5"
                     >
-                      <Trash2 className="w-4 h-4 text-red-400" />
-                    </button>
-                  </div>
-                ))}
-              </div>
+                      <div>
+                        <p className="text-white text-sm">{log.food_name}</p>
+                        <p className="text-white/40 text-xs">
+                          {log.serving_size}{log.serving_unit} • {log.calories} kcal
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => handleDeleteLog(log.id)}
+                        className="w-8 h-8 rounded-full bg-red-500/10 flex items-center justify-center hover:bg-red-500/20 transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4 text-red-400" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-white/40 text-sm text-center py-4">No items logged yet</p>
+              )}
             </VoidCard>
           );
         })}
