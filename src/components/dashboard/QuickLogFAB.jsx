@@ -69,21 +69,23 @@ export default function QuickLogFAB({ onUpdate }) {
 
   return (
     <>
-      {/* Gold FAB Button */}
+      {/* Gold Sidebar Toggle Button */}
       <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
+        whileHover={{ x: -2 }}
+        whileTap={{ scale: 0.98 }}
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed right-6 bottom-24 z-40 w-14 h-14 rounded-full flex items-center justify-center shadow-2xl"
+        className="fixed right-0 top-1/2 -translate-y-1/2 z-40 w-10 h-24 rounded-l-2xl flex items-center justify-center"
         style={{
           background: 'linear-gradient(135deg, #D4AF37 0%, #F4D03F 50%, #D4AF37 100%)',
-          boxShadow: '0 8px 32px rgba(212, 175, 55, 0.4), 0 0 0 1px rgba(212, 175, 55, 0.3)'
+          boxShadow: '0 8px 32px rgba(212, 175, 55, 0.5), 0 0 20px rgba(212, 175, 55, 0.3)',
+          border: '0.5px solid rgba(212, 175, 55, 0.4)',
+          borderRight: 'none'
         }}
-        initial={{ scale: 0, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ delay: 0.5, type: "spring", stiffness: 260, damping: 20 }}
+        initial={{ x: 40 }}
+        animate={{ x: 0 }}
+        transition={{ delay: 0.5, type: "spring" }}
       >
-        <Plus className="w-6 h-6 text-[#080808]" strokeWidth={2.5} />
+        <Plus className="w-5 h-5 text-[#080808]" strokeWidth={2.5} />
       </motion.button>
 
       {/* Backdrop */}
