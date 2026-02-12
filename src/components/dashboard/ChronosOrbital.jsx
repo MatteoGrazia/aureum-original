@@ -114,9 +114,9 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
       >
         <p 
           className="text-[#F4D03F] mb-2 text-5xl tracking-wider" 
-          style={{ fontWeight: 500, fontFamily: 'Montserrat, sans-serif' }}
+          style={{ fontWeight: 400, fontFamily: 'Montserrat, sans-serif' }}
         >
-          {Math.round(totalProgress)}
+          {Math.round(totalProgress)}%
         </p>
         <p 
           className="text-[10px] text-white/40 uppercase tracking-[0.35em]"
