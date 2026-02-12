@@ -7,7 +7,8 @@ import {
   Plus, Play, Calculator, Clock, Dumbbell, ChevronRight, 
   X, Trash2, Edit3, Link2, ChevronDown 
 } from 'lucide-react';
-import GlassCard from '@/components/ui/GlassCard';
+import VoidCard from '@/components/ui/VoidCard';
+import VoidBackground from '@/components/dashboard/VoidBackground';
 import GoldButton from '@/components/ui/GoldButton';
 import MuscleHeatmap from '@/components/workouts/MuscleHeatmap';
 import PlateCalculator from '@/components/workouts/PlateCalculator';
@@ -206,19 +207,31 @@ export default function Workouts() {
   ).pop();
 
   return (
-    <div className="min-h-screen p-6">
+    <div className="min-h-screen relative bg-[#080808]">
+      <VoidBackground />
       <PlateCalculator isOpen={showCalculator} onClose={() => setShowCalculator(false)} />
 
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="mb-6"
-      >
-        <h1 className="text-4xl tracking-[0.4em] font-extralight text-center">
-          <span className="text-[#D4AF37]">WORKOUTS</span>
-        </h1>
-      </motion.div>
+      <div className="relative z-10 p-6">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-6 pt-6"
+        >
+          <h1 
+            className="text-3xl tracking-[0.4em] text-center"
+            style={{ 
+              fontFamily: 'Montserrat, sans-serif', 
+              fontWeight: 400,
+              background: 'linear-gradient(135deg, #F4D03F 0%, #D4AF37 50%, #F4D03F 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text'
+            }}
+          >
+            WORKOUTS
+          </h1>
+        </motion.div>
 
       {/* Active Workout View */}
       {view === 'active' && activeWorkout && (
@@ -228,7 +241,7 @@ export default function Workouts() {
           className="space-y-6"
         >
           {/* Workout Header */}
-          <GlassCard className="p-4">
+          <VoidCard className="p-4">
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-white text-lg">{activeWorkout.name}</h2>
@@ -266,7 +279,7 @@ export default function Workouts() {
                 />
               </div>
             </div>
-          </GlassCard>
+          </VoidCard>
 
           {/* Rest Timer */}
           <AnimatePresence>
@@ -324,14 +337,19 @@ export default function Workouts() {
 
           {/* Routines List */}
           <div className="space-y-3">
-            <h2 className="text-xs uppercase tracking-widest text-[#D4AF37]">Your Routines</h2>
+            <h2 
+              className="text-[10px] uppercase tracking-[0.3em] text-[#D4AF37]"
+              style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
+            >
+              Your Routines
+            </h2>
             
             {routines.length === 0 ? (
-              <GlassCard className="p-8 text-center">
-                <Dumbbell className="w-12 h-12 text-white/20 mx-auto mb-4" />
-                <p className="text-white/40">No routines yet</p>
-                <p className="text-white/20 text-sm">Create your first workout routine</p>
-              </GlassCard>
+              <VoidCard className="p-8 text-center">
+                <Dumbbell className="w-12 h-12 text-white/20 mx-auto mb-4" strokeWidth={1} />
+                <p className="text-white/40" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>No routines yet</p>
+                <p className="text-white/20 text-sm" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>Create your first workout routine</p>
+              </VoidCard>
             ) : (
               routines.map((routine) => (
                 <motion.div
@@ -339,8 +357,8 @@ export default function Workouts() {
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.99 }}
                 >
-                  <GlassCard 
-                    className="p-4 cursor-pointer"
+                  <VoidCard 
+                    className="cursor-pointer"
                     onClick={() => setSelectedRoutine(selectedRoutine?.id === routine.id ? null : routine)}
                   >
                     <div className="flex items-center justify-between">
@@ -402,7 +420,7 @@ export default function Workouts() {
                         </motion.div>
                       )}
                     </AnimatePresence>
-                  </GlassCard>
+                  </VoidCard>
                 </motion.div>
               ))
             )}
@@ -410,11 +428,16 @@ export default function Workouts() {
 
           {/* Recent Workouts */}
           {recentWorkouts.length > 0 && (
-            <div className="space-y-3">
-              <h2 className="text-xs uppercase tracking-widest text-[#D4AF37]">Recent Workouts</h2>
+            <div className="space-y-3 mb-24">
+              <h2 
+                className="text-[10px] uppercase tracking-[0.3em] text-[#D4AF37]"
+                style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
+              >
+                Recent Workouts
+              </h2>
               
               {recentWorkouts.slice(0, 5).map((workout) => (
-                <GlassCard key={workout.id} className="p-4">
+                <VoidCard key={workout.id}>
                   <div className="flex items-center justify-between">
                     <div>
                       <h3 className="text-white">{workout.routine_name}</h3>
@@ -424,10 +447,10 @@ export default function Workouts() {
                     </div>
                     <div className="text-right">
                       <p className="text-[#D4AF37]">{workout.total_volume?.toLocaleString()}</p>
-                      <p className="text-white/30 text-xs">kg volume</p>
+                      <p className="text-white/30 text-xs" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>kg volume</p>
                     </div>
                   </div>
-                </GlassCard>
+                </VoidCard>
               ))}
             </div>
           )}
@@ -461,7 +484,7 @@ export default function Workouts() {
           {/* Selected Exercises */}
           <div className="space-y-2">
             {newRoutine.exercises.map((ex, index) => (
-              <GlassCard key={index} className="p-4">
+              <VoidCard key={index}>
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-white">{ex.exercise_name}</p>
@@ -505,7 +528,7 @@ export default function Workouts() {
                     <Trash2 className="w-4 h-4 text-red-400" />
                   </button>
                 </div>
-              </GlassCard>
+              </VoidCard>
             ))}
           </div>
 
@@ -551,7 +574,7 @@ export default function Workouts() {
                   className="w-full max-h-[80vh] rounded-t-3xl overflow-hidden"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <GlassCard className="p-6">
+                  <VoidCard className="p-6">
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="text-white text-lg">Select Exercise</h3>
                       <button
@@ -576,13 +599,14 @@ export default function Workouts() {
                         </button>
                       ))}
                     </div>
-                  </GlassCard>
+                  </VoidCard>
                 </motion.div>
               </motion.div>
             )}
           </AnimatePresence>
         </motion.div>
       )}
+      </div>
     </div>
   );
 }

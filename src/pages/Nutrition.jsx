@@ -4,7 +4,8 @@ import { format } from 'date-fns';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Scan, ChevronLeft, ChevronRight, Trash2, Coffee, Sun, Moon, Cookie } from 'lucide-react';
-import GlassCard from '@/components/ui/GlassCard';
+import VoidCard from '@/components/ui/VoidCard';
+import VoidBackground from '@/components/dashboard/VoidBackground';
 import GoldButton from '@/components/ui/GoldButton';
 import FoodSearch from '@/components/nutrition/FoodSearch';
 import BarcodeScanner from '@/components/nutrition/BarcodeScanner';
@@ -127,7 +128,8 @@ export default function Nutrition() {
   }));
 
   return (
-    <div className="min-h-screen p-6">
+    <div className="min-h-screen relative bg-[#080808]">
+      <VoidBackground />
       <BarcodeScanner
         isOpen={showScanner}
         onClose={() => setShowScanner(false)}
@@ -137,17 +139,28 @@ export default function Nutrition() {
         }}
       />
 
-      {/* Header with Date Navigation */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="mb-6"
-      >
-        <h1 className="text-4xl tracking-[0.4em] font-extralight text-center mb-4">
-          <span className="text-[#D4AF37]">NUTRITION</span>
-        </h1>
+      <div className="relative z-10 p-6">
+        {/* Header with Date Navigation */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-6 pt-6"
+        >
+          <h1 
+            className="text-3xl tracking-[0.4em] mb-4 text-center"
+            style={{ 
+              fontFamily: 'Montserrat, sans-serif', 
+              fontWeight: 400,
+              background: 'linear-gradient(135deg, #F4D03F 0%, #D4AF37 50%, #F4D03F 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text'
+            }}
+          >
+            NUTRITION
+          </h1>
 
-        <GlassCard className="p-3">
+          <VoidCard className="p-3">
           <div className="flex items-center justify-between">
             <button
               onClick={() => changeDate(-1)}
@@ -166,25 +179,26 @@ export default function Nutrition() {
               <ChevronRight className="w-5 h-5 text-white/50" />
             </button>
           </div>
-        </GlassCard>
-      </motion.div>
+        </VoidCard>
+        </motion.div>
 
-      {/* Calorie Summary */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="mb-6"
-      >
-        <GlassCard className="p-5" glow>
-          <div className="text-center">
-            <p className="text-5xl text-[#D4AF37]">{totalCalories}</p>
-            <p className="text-white/40 text-xs uppercase tracking-widest mt-2">
+        {/* Calorie Summary */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="mb-6"
+        >
+          <VoidCard className="text-center">
+            <p className="text-5xl text-[#D4AF37]" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>{totalCalories}</p>
+            <p 
+              className="text-white/40 text-xs uppercase tracking-widest mt-2"
+              style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}
+            >
               of {profile?.maintenance_calories || 2000} kcal consumed
             </p>
-          </div>
-        </GlassCard>
-      </motion.div>
+          </VoidCard>
+        </motion.div>
 
       {/* Search & Scan */}
       <motion.div
@@ -223,7 +237,7 @@ export default function Nutrition() {
               className="w-full max-w-lg"
               onClick={(e) => e.stopPropagation()}
             >
-              <GlassCard className="p-6" glow>
+              <VoidCard className="p-6">
                 <h3 className="text-xl text-white mb-1">{selectedFood.name}</h3>
                 {selectedFood.brand && (
                   <p className="text-white/40 text-sm mb-4">{selectedFood.brand}</p>
@@ -295,7 +309,7 @@ export default function Nutrition() {
                 <GoldButton onClick={handleLogFood} className="w-full" style={{ marginBottom: '20px' }}>
                   Log Food
                 </GoldButton>
-              </GlassCard>
+              </VoidCard>
             </motion.div>
           </motion.div>
         )}
@@ -342,15 +356,16 @@ export default function Nutrition() {
           if (logs.length === 0) return null;
           const Icon = mealIcons[type];
           const mealCalories = logs.reduce((sum, log) => sum + (log.calories || 0), 0);
+          const iconColors = { breakfast: '#F4A261', lunch: '#8ECAE6', dinner: '#E8C5A5', snack: '#C9ADA7' };
 
           return (
-            <GlassCard key={type} className="p-4">
+            <VoidCard key={type}>
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <Icon className="w-4 h-4 text-[#D4AF37]" />
-                  <span className="text-white capitalize">{type}</span>
+                  <Icon className="w-4 h-4" style={{ color: iconColors[type] }} strokeWidth={1.5} />
+                  <span className="text-white capitalize" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>{type}</span>
                 </div>
-                <span className="text-[#D4AF37] text-sm">{mealCalories} kcal</span>
+                <span className="text-[#D4AF37] text-sm" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>{mealCalories} kcal</span>
               </div>
 
               <div className="space-y-2">
@@ -374,10 +389,11 @@ export default function Nutrition() {
                   </div>
                 ))}
               </div>
-            </GlassCard>
+            </VoidCard>
           );
         })}
-      </motion.div>
+        </motion.div>
+      </div>
     </div>
   );
 }
