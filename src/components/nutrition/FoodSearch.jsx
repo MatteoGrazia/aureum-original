@@ -157,7 +157,7 @@ export default function FoodSearch({ onSelectFood }) {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 w-full max-w-full overflow-hidden">
       <div className="relative">
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
         <Input
@@ -210,7 +210,7 @@ export default function FoodSearch({ onSelectFood }) {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="space-y-2 max-h-80 overflow-y-auto overflow-x-hidden"
+            className="space-y-2 max-h-80 overflow-y-auto overflow-x-hidden pr-2"
           >
             {results.map((food, index) => (
               <motion.div
