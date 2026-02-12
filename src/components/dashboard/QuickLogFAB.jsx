@@ -1,15 +1,12 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Droplets, Scale, X } from 'lucide-react';
-import GlassCard from '@/components/ui/GlassCard';
+import { Plus, Droplets, Scale } from 'lucide-react';
 import GoldButton from '@/components/ui/GoldButton';
 import { base44 } from '@/api/base44Client';
 import { format } from 'date-fns';
 
 export default function QuickLogFAB({ onUpdate }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [showWaterModal, setShowWaterModal] = useState(false);
-  const [showWeightModal, setShowWeightModal] = useState(false);
   const [weight, setWeight] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -34,8 +31,6 @@ export default function QuickLogFAB({ onUpdate }) {
         });
       }
       onUpdate?.();
-      setShowWaterModal(false);
-      setIsOpen(false);
     } catch (error) {
       console.error(error);
     }
@@ -51,8 +46,6 @@ export default function QuickLogFAB({ onUpdate }) {
         weight: parseFloat(weight)
       });
       onUpdate?.();
-      setShowWeightModal(false);
-      setIsOpen(false);
       setWeight('');
     } catch (error) {
       console.error(error);
@@ -62,117 +55,112 @@ export default function QuickLogFAB({ onUpdate }) {
 
   return (
     <>
-      {/* FAB Button */}
-      <motion.div
-        className="fixed right-6 bottom-28 z-40"
+      {/* Sidebar Toggle Button */}
+      <motion.button
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={() => setIsOpen(!isOpen)}
+        className="fixed right-4 bottom-24 z-40 w-12 h-12 rounded-full bg-gradient-to-br from-[#D4AF37] to-[#B8960C] flex items-center justify-center shadow-[0_0_30px_rgba(212,175,55,0.4)]"
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ delay: 0.5, type: "spring" }}
       >
-        <AnimatePresence>
-          {isOpen && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              className="absolute bottom-16 right-0 flex flex-col gap-3"
-            >
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setShowWaterModal(true)}
-                className="w-12 h-12 rounded-full bg-blue-500/20 border border-blue-400/30 flex items-center justify-center"
-              >
-                <Droplets className="w-5 h-5 text-blue-400" />
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setShowWeightModal(true)}
-                className="w-12 h-12 rounded-full bg-[#D4AF37]/20 border border-[#D4AF37]/30 flex items-center justify-center"
-              >
-                <Scale className="w-5 h-5 text-[#D4AF37]" />
-              </motion.button>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <Plus className="w-6 h-6 text-[#080808]" />
+      </motion.button>
 
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setIsOpen(!isOpen)}
-          className="w-14 h-14 rounded-full bg-gradient-to-br from-[#D4AF37] to-[#B8960C] flex items-center justify-center shadow-[0_0_30px_rgba(212,175,55,0.4)]"
-        >
-          <motion.div
-            animate={{ rotate: isOpen ? 45 : 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            {isOpen ? <X className="w-6 h-6 text-[#080808]" /> : <Plus className="w-6 h-6 text-[#080808]" />}
-          </motion.div>
-        </motion.button>
-      </motion.div>
-
-      {/* Water Modal */}
+      {/* Backdrop */}
       <AnimatePresence>
-        {showWaterModal && (
+        {isOpen && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-6"
-            onClick={() => setShowWaterModal(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <GlassCard className="p-6 w-72 text-center">
-                <Droplets className="w-12 h-12 text-blue-400 mx-auto mb-4" />
-                <h3 className="text-xl text-white mb-2">Log Water</h3>
-                <p className="text-white/50 text-sm mb-6">Add one glass of water</p>
-                <GoldButton onClick={logWater} disabled={loading} className="w-full">
-                  {loading ? 'Logging...' : '+ 1 Glass'}
-                </GoldButton>
-              </GlassCard>
-            </motion.div>
-          </motion.div>
+            onClick={() => setIsOpen(false)}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+          />
         )}
       </AnimatePresence>
 
-      {/* Weight Modal */}
+      {/* Sliding Sidebar */}
       <AnimatePresence>
-        {showWeightModal && (
+        {isOpen && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-6"
-            onClick={() => setShowWeightModal(false)}
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            className="fixed right-0 top-0 bottom-0 w-80 z-50 p-6 flex flex-col"
+            style={{
+              background: 'linear-gradient(135deg, rgba(160,160,160,0.08) 0%, rgba(255,255,255,0.04) 50%, rgba(180,180,180,0.06) 100%)',
+              backdropFilter: 'blur(40px) saturate(180%)',
+              boxShadow: '-10px 0 40px rgba(0,0,0,0.5)',
+              borderLeft: '0.5px solid rgba(212,175,55,0.3)'
+            }}
           >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <GlassCard className="p-6 w-72">
-                <Scale className="w-12 h-12 text-[#D4AF37] mx-auto mb-4" />
-                <h3 className="text-xl text-white mb-2 text-center">Log Weight</h3>
+            <div className="flex-1 flex flex-col gap-6 pt-8">
+              <div className="mb-4">
+                <h2 
+                  className="text-lg text-[#D4AF37] tracking-[0.3em] uppercase"
+                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}
+                >
+                  Quick Log
+                </h2>
+                <p 
+                  className="text-[9px] text-white/40 uppercase tracking-wider mt-1"
+                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}
+                >
+                  Track your progress
+                </p>
+              </div>
+
+              {/* Water Log */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-400/20 flex items-center justify-center">
+                    <Droplets className="w-5 h-5 text-blue-400" />
+                  </div>
+                  <div>
+                    <p className="text-white text-sm">Water</p>
+                    <p className="text-white/40 text-xs">Log one glass</p>
+                  </div>
+                </div>
+                <GoldButton 
+                  onClick={logWater} 
+                  disabled={loading}
+                  className="w-full"
+                >
+                  {loading ? 'Logging...' : '+ 1 Glass'}
+                </GoldButton>
+              </div>
+
+              {/* Weight Log */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-[#D4AF37]/10 border border-[#D4AF37]/20 flex items-center justify-center">
+                    <Scale className="w-5 h-5 text-[#D4AF37]" />
+                  </div>
+                  <div>
+                    <p className="text-white text-sm">Weight</p>
+                    <p className="text-white/40 text-xs">Track progress</p>
+                  </div>
+                </div>
                 <input
                   type="number"
                   step="0.1"
                   placeholder="Enter weight (kg)"
                   value={weight}
                   onChange={(e) => setWeight(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl bg-white/5 border border-[#D4AF37]/20 text-white text-center text-lg mb-4 focus:outline-none focus:border-[#D4AF37]"
+                  className="w-full px-4 py-3 rounded-xl bg-white/5 border border-[#D4AF37]/20 text-white text-sm focus:outline-none focus:border-[#D4AF37]"
                 />
-                <GoldButton onClick={logWeight} disabled={loading || !weight} className="w-full">
+                <GoldButton 
+                  onClick={logWeight} 
+                  disabled={loading || !weight}
+                  className="w-full"
+                >
                   {loading ? 'Logging...' : 'Save Weight'}
                 </GoldButton>
-              </GlassCard>
-            </motion.div>
+              </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
