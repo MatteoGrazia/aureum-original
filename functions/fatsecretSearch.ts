@@ -25,8 +25,7 @@ const getAccessToken = async () => {
       body: new URLSearchParams({
         grant_type: 'client_credentials',
         client_id: clientId,
-        client_secret: clientSecret,
-        scope: 'barcode'
+        client_secret: clientSecret
       }).toString()
     });
 
