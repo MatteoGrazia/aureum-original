@@ -266,7 +266,7 @@ export default function Dashboard() {
           <img 
             src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698347d058d3014d6271ccff/974750ba9_Untitleddesign.png"
             alt="AUREUM"
-            className="h-8 mx-auto mb-3"
+            className="h-20 mx-auto mb-3"
           />
           
           {/* Muted Bronze Date */}
