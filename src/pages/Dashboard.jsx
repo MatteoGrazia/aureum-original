@@ -79,11 +79,16 @@ export default function Dashboard() {
         }
       };
       checkProfile();
-    } else if (profile && !profile.permissions_requested) {
-      setShowWelcome(true);
-    } else if (profile && profile.permissions_requested && !profile.step_tracking_enabled) {
-      // Show step permission request for existing users
-      setShowStepPermission(true);
+    } else if (profile) {
+      // Check if this is a new user (no basic profile data)
+      const isNewUser = !profile.height && !profile.current_weight && !profile.permissions_requested;
+      
+      if (isNewUser) {
+        setShowWelcome(true);
+      } else if (!profile.step_tracking_enabled) {
+        // Existing user who hasn't enabled step tracking
+        setShowStepPermission(true);
+      }
     }
   }, [profile]);
 
