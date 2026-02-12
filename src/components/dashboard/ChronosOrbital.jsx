@@ -7,7 +7,7 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
       value: calories, 
       goal: caloriesGoal, 
       color: '#D4AF37', 
-      size: 220,
+      size: 240,
       offset: { x: -8, y: -8 },
       rotation: 0
     },
@@ -15,7 +15,7 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
       value: steps, 
       goal: stepsGoal, 
       color: '#C0C0C0', 
-      size: 170,
+      size: 180,
       offset: { x: 5, y: -5 },
       rotation: 45
     },
