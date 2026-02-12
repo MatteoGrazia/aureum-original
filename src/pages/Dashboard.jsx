@@ -11,6 +11,7 @@ import VoidBackground from '@/components/dashboard/VoidBackground';
 import QuickLogFAB from '@/components/dashboard/QuickLogFAB';
 import AIInsight from '@/components/dashboard/AIInsight';
 import WelcomeModal from '@/components/shared/WelcomeModal';
+import WeightTrendMini from '@/components/dashboard/WeightTrendMini';
 
 export default function Dashboard() {
   const [showWelcome, setShowWelcome] = useState(false);
@@ -74,6 +75,13 @@ export default function Dashboard() {
     },
     staleTime: 2 * 60 * 1000,
     gcTime: 5 * 60 * 1000
+  });
+
+  const { data: weightHistory = [], isLoading: weightLoading } = useQuery({
+    queryKey: ['weightHistory90'],
+    queryFn: () => base44.entities.WeightHistory.filter({}, '-date', 90),
+    staleTime: 10 * 60 * 1000,
+    gcTime: 15 * 60 * 1000
   });
 
   useEffect(() => {
@@ -174,7 +182,7 @@ export default function Dashboard() {
     queryClient.invalidateQueries(['weightHistory']);
   };
 
-  const isLoading = profileLoading || activityLoading || foodLoading || workoutLoading;
+  const isLoading = profileLoading || activityLoading || foodLoading || workoutLoading || weightLoading;
 
   if (isLoading || !isMounted) {
     return (
@@ -376,6 +384,25 @@ export default function Dashboard() {
             />
           </VoidCard>
         </motion.div>
+
+        {/* 90-Day Weight Trend */}
+        {weightHistory.length >= 2 && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="mb-6">
+            <VoidCard>
+              <h3 
+                className="text-[10px] uppercase tracking-[0.3em] text-[#D4AF37] mb-4"
+                style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
+              >
+                90-Day Weight Evolution
+              </h3>
+              <WeightTrendMini weightHistory={weightHistory} />
+            </VoidCard>
+          </motion.div>
+        )}
 
         {/* Energy Balance */}
         <motion.div

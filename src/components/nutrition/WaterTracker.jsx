@@ -11,9 +11,12 @@ export default function WaterTracker({ glasses, goal, onAdd, onRemove }) {
 
   return (
     <GlassCard className="p-5 relative overflow-hidden">
-      {/* Water fill animation */}
+      {/* Water fill animation - Faded Pastel Blue */}
       <motion.div
-        className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-blue-500/30 via-blue-400/20 to-transparent"
+        className="absolute bottom-0 left-0 right-0"
+        style={{
+          background: 'linear-gradient(to top, rgba(173, 216, 230, 0.25), rgba(135, 206, 250, 0.15), transparent)'
+        }}
         initial={{ height: 0 }}
         animate={{ height: `${percentage}%` }}
         transition={{ duration: 0.8, ease: "easeOut" }}
@@ -38,7 +41,7 @@ export default function WaterTracker({ glasses, goal, onAdd, onRemove }) {
         >
           <svg className="w-[200%]" viewBox="0 0 1440 120" preserveAspectRatio="none">
             <path
-              fill="rgba(96, 165, 250, 0.3)"
+              fill="rgba(173, 216, 230, 0.25)"
               d="M0,60 Q360,90 720,60 T1440,60 L1440,120 L0,120 Z"
             >
               <animate
@@ -97,7 +100,7 @@ export default function WaterTracker({ glasses, goal, onAdd, onRemove }) {
               transition={{ delay: i * 0.05 }}
               className={`w-3 h-6 rounded-sm transition-all duration-300 ${
                 i < glasses 
-                  ? 'bg-blue-400 shadow-[0_0_10px_rgba(96,165,250,0.5)]' 
+                  ? 'bg-[#ADD8E6] shadow-[0_0_10px_rgba(173,216,230,0.4)]' 
                   : 'bg-white/10'
               }`}
             />

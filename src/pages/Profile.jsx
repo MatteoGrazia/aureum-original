@@ -127,7 +127,7 @@ export default function Profile() {
   ];
 
   return (
-    <div className="min-h-screen p-6">
+    <div className="min-h-screen p-6 pb-32">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
