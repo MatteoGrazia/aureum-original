@@ -109,7 +109,7 @@ export default function QuickLogFAB({ onUpdate }) {
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="fixed right-0 top-0 bottom-0 w-80 z-50 p-6 flex flex-col"
+            className="fixed right-0 top-0 bottom-0 w-72 z-50 p-6 flex flex-col"
             style={{
               background: 'linear-gradient(135deg, rgba(160,160,160,0.08) 0%, rgba(255,255,255,0.04) 50%, rgba(180,180,180,0.06) 100%)',
               backdropFilter: 'blur(40px) saturate(180%)',
