@@ -220,7 +220,7 @@ export default function FoodSearch({ onSelectFood }) {
                 transition={{ delay: index * 0.05 }}
               >
                 <div
-                  className="p-4 rounded-xl cursor-pointer hover:border-[#D4AF37]/50 transition-all"
+                  className="p-3 rounded-xl cursor-pointer hover:border-[#D4AF37]/50 transition-all w-full"
                   style={{
                     background: 'rgba(255, 255, 255, 0.03)',
                     backdropFilter: 'blur(30px) saturate(180%)',
@@ -228,42 +228,39 @@ export default function FoodSearch({ onSelectFood }) {
                   }}
                   onClick={() => onSelectFood(food)}
                 >
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="flex-1 min-w-0 overflow-hidden">
+                  <div className="flex items-start gap-2 w-full">
+                    <div className="flex-1 min-w-0">
                       <p 
-                        className="text-white truncate"
+                        className="text-sm text-white truncate"
                         style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}
                       >
                         {food.name}
                       </p>
                       {food.brand && (
                         <p 
-                          className="text-xs text-white/40 truncate mt-0.5"
+                          className="text-[11px] text-white/40 truncate mt-0.5"
                           style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 300 }}
                         >
                           {food.brand}
                         </p>
                       )}
-                      <div 
-                       className="flex flex-wrap gap-2 mt-2 text-xs"
-                       style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}
+                       <div 
+                        className="flex flex-wrap gap-x-2 gap-y-1 mt-1.5 text-[11px]"
+                        style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}
                       >
-                       <span className="text-[#D4AF37]">{food.calories} kcal</span>
-                       <span className="text-white/40">P: {food.protein}g</span>
-                       <span className="text-white/40">C: {food.carbs}g</span>
-                       <span className="text-white/40">F: {food.fat}g</span>
-                       {food.fiber > 0 && (
-                         <span className="text-white/30">Fiber: {food.fiber}g</span>
-                       )}
+                        <span className="text-[#D4AF37] whitespace-nowrap">{food.calories}kcal</span>
+                        <span className="text-white/40 whitespace-nowrap">P:{food.protein}g</span>
+                        <span className="text-white/40 whitespace-nowrap">C:{food.carbs}g</span>
+                        <span className="text-white/40 whitespace-nowrap">F:{food.fat}g</span>
                       </div>
                       {food.serving_size !== 100 && (
-                       <p className="text-[10px] text-white/30 mt-1">
-                         Per {food.serving_size}{food.serving_unit}
-                       </p>
+                        <p className="text-[10px] text-white/30 mt-1">
+                          Per {food.serving_size}{food.serving_unit}
+                        </p>
                       )}
                     </div>
-                    <button className="flex-shrink-0 w-8 h-8 rounded-full bg-[#D4AF37]/20 flex items-center justify-center hover:bg-[#D4AF37]/30 transition-colors">
-                      <Plus className="w-4 h-4 text-[#D4AF37]" />
+                    <button className="flex-shrink-0 w-7 h-7 rounded-full bg-[#D4AF37]/20 flex items-center justify-center hover:bg-[#D4AF37]/30 transition-colors mt-0.5">
+                      <Plus className="w-3.5 h-3.5 text-[#D4AF37]" />
                     </button>
                   </div>
                 </div>
