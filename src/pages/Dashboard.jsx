@@ -137,7 +137,7 @@ export default function Dashboard() {
       <VoidBackground />
       {showWelcome && <WelcomeModal onComplete={handleWelcomeComplete} />}
       
-      <div className="relative z-10 p-6">
+      <div className="relative z-10 px-6 pt-6 pb-4">
       
         {/* Minimalist Magazine Header */}
         <motion.div
