@@ -4,7 +4,8 @@ import { format } from 'date-fns';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Target, TrendingUp, Award, RefreshCw } from 'lucide-react';
-import GlassCard from '@/components/ui/GlassCard';
+import VoidCard from '@/components/ui/VoidCard';
+import VoidBackground from '@/components/dashboard/VoidBackground';
 import GoldButton from '@/components/ui/GoldButton';
 import StepCounter from '@/components/activity/StepCounter';
 import ActivityStats from '@/components/activity/ActivityStats';
@@ -187,20 +188,35 @@ export default function Activity() {
   const yearlyAverage = Math.round(yearlySteps / Math.max(yearlyActivity.length, 1));
 
   return (
-    <div className="min-h-screen p-6">
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="mb-6"
-      >
-        <h1 className="text-4xl tracking-[0.4em] font-extralight text-center mb-2">
-          <span className="text-[#D4AF37]">ACTIVITY</span>
-        </h1>
-        <p className="text-white/30 text-xs uppercase tracking-[0.3em] text-center">
-          {format(new Date(), 'EEEE, MMMM d')}
-        </p>
-      </motion.div>
+    <div className="min-h-screen relative bg-[#080808]">
+      <VoidBackground />
+      <div className="relative z-10 p-6">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-6 pt-6 text-center"
+        >
+          <h1 
+            className="text-3xl tracking-[0.4em] mb-3"
+            style={{ 
+              fontFamily: 'Montserrat, sans-serif', 
+              fontWeight: 400,
+              background: 'linear-gradient(135deg, #F4D03F 0%, #D4AF37 50%, #F4D03F 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text'
+            }}
+          >
+            ACTIVITY
+          </h1>
+          <p 
+            className="text-[#C9A961] text-[11px] uppercase tracking-[0.25em]"
+            style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
+          >
+            {format(new Date(), 'EEEE, MMMM d')}
+          </p>
+        </motion.div>
 
       {/* Step Counter */}
       <motion.div
@@ -239,8 +255,13 @@ export default function Activity() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
       >
-        <GlassCard className="p-5">
-          <h3 className="text-xs uppercase tracking-widest text-[#D4AF37] mb-4">This Week</h3>
+        <VoidCard>
+          <h3 
+            className="text-[10px] uppercase tracking-[0.3em] text-[#D4AF37] mb-4"
+            style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
+          >
+            This Week
+          </h3>
           
           {/* Weekly Bar Chart */}
           <div className="flex items-end justify-between h-32 mb-4">
@@ -273,27 +294,27 @@ export default function Activity() {
           <div className="grid grid-cols-3 gap-4 pt-4 border-t border-white/10">
             <div className="text-center">
               <div className="flex items-center justify-center gap-1 mb-1">
-                <Target className="w-3 h-3 text-[#D4AF37]" />
+                <Target className="w-3 h-3 text-[#8ECAE6]" strokeWidth={1.5} />
               </div>
-              <p className="text-white text-lg">{weeklySteps.toLocaleString()}</p>
-              <p className="text-white/30 text-[10px] uppercase">Total Steps</p>
+              <p className="text-white text-lg" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>{weeklySteps.toLocaleString()}</p>
+              <p className="text-white/30 text-[10px] uppercase tracking-wider" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>Total Steps</p>
             </div>
             <div className="text-center">
               <div className="flex items-center justify-center gap-1 mb-1">
-                <TrendingUp className="w-3 h-3 text-green-400" />
+                <TrendingUp className="w-3 h-3 text-[#A8D5BA]" strokeWidth={1.5} />
               </div>
-              <p className="text-white text-lg">{weeklyAverage.toLocaleString()}</p>
-              <p className="text-white/30 text-[10px] uppercase">Daily Avg</p>
+              <p className="text-white text-lg" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>{weeklyAverage.toLocaleString()}</p>
+              <p className="text-white/30 text-[10px] uppercase tracking-wider" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>Daily Avg</p>
             </div>
             <div className="text-center">
               <div className="flex items-center justify-center gap-1 mb-1">
-                <Award className="w-3 h-3 text-purple-400" />
+                <Award className="w-3 h-3 text-[#E8C5A5]" strokeWidth={1.5} />
               </div>
-              <p className="text-white text-lg">{bestDay.toLocaleString()}</p>
-              <p className="text-white/30 text-[10px] uppercase">Best Day</p>
+              <p className="text-white text-lg" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>{bestDay.toLocaleString()}</p>
+              <p className="text-white/30 text-[10px] uppercase tracking-wider" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>Best Day</p>
             </div>
           </div>
-        </GlassCard>
+        </VoidCard>
       </motion.div>
 
       {/* Monthly & Yearly Averages */}
@@ -301,20 +322,31 @@ export default function Activity() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
-        className="grid grid-cols-2 gap-4"
+        className="grid grid-cols-2 gap-4 mb-24"
       >
-        <GlassCard className="p-5">
-          <h3 className="text-xs uppercase tracking-widest text-[#D4AF37] mb-3">Monthly Average</h3>
-          <p className="text-3xl text-white mb-1">{monthlyAverage.toLocaleString()}</p>
-          <p className="text-white/30 text-xs">steps per day</p>
-        </GlassCard>
+        <VoidCard>
+          <h3 
+            className="text-[10px] uppercase tracking-[0.3em] text-[#D4AF37] mb-3"
+            style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
+          >
+            Monthly Average
+          </h3>
+          <p className="text-3xl text-white mb-1" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>{monthlyAverage.toLocaleString()}</p>
+          <p className="text-white/30 text-xs" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>steps per day</p>
+        </VoidCard>
         
-        <GlassCard className="p-5">
-          <h3 className="text-xs uppercase tracking-widest text-[#D4AF37] mb-3">Yearly Average</h3>
-          <p className="text-3xl text-white mb-1">{yearlyAverage.toLocaleString()}</p>
-          <p className="text-white/30 text-xs">steps per day</p>
-        </GlassCard>
+        <VoidCard>
+          <h3 
+            className="text-[10px] uppercase tracking-[0.3em] text-[#D4AF37] mb-3"
+            style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
+          >
+            Yearly Average
+          </h3>
+          <p className="text-3xl text-white mb-1" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>{yearlyAverage.toLocaleString()}</p>
+          <p className="text-white/30 text-xs" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>steps per day</p>
+        </VoidCard>
       </motion.div>
+      </div>
     </div>
   );
 }
