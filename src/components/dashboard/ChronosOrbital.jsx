@@ -38,11 +38,11 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
         <motion.div
           className="absolute top-1/2 left-1/2 w-96 h-96 -translate-x-1/2 -translate-y-1/2"
           style={{
-            background: 'radial-gradient(circle, rgba(244,208,63,0.08) 0%, transparent 70%)',
+            background: 'radial-gradient(circle, rgba(200,180,140,0.04) 0%, transparent 70%)',
           }}
           animate={{
             scale: [1, 1.1, 1],
-            opacity: [0.4, 0.6, 0.4]
+            opacity: [0.3, 0.5, 0.3]
           }}
           transition={{
             duration: 6,
