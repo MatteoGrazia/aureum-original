@@ -16,9 +16,15 @@ export default function Dashboard() {
   const [showWelcome, setShowWelcome] = useState(false);
   const [showDatePill, setShowDatePill] = useState(false);
   const [showStepPermission, setShowStepPermission] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const queryClient = useQueryClient();
   const today = format(new Date(), 'yyyy-MM-dd');
   const { scrollY } = useScroll();
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsMounted(true), 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     return scrollY.onChange((latest) => {
@@ -170,9 +176,9 @@ export default function Dashboard() {
 
   const isLoading = profileLoading || activityLoading || foodLoading || workoutLoading;
 
-  if (isLoading) {
+  if (isLoading || !isMounted) {
     return (
-      <div className="min-h-screen p-6 flex items-center justify-center">
+      <div className="min-h-screen p-6 flex items-center justify-center bg-[#080808]">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-[#D4AF37]/20 border-t-[#D4AF37] rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-white/50 text-sm">Loading...</p>
@@ -182,7 +188,11 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-[#080808]">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+      className="min-h-screen relative overflow-hidden bg-[#080808]">
       <VoidBackground />
       {showWelcome && <WelcomeModal onComplete={handleWelcomeComplete} />}
       
@@ -447,6 +457,6 @@ export default function Dashboard() {
 
         <QuickLogFAB onUpdate={handleUpdate} />
       </div>
-    </div>);
+    </motion.div>);
 
 }
