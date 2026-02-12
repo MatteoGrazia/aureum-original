@@ -160,67 +160,68 @@ export default function FoodSearch({ onSelectFood }) {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="space-y-2 max-h-80 overflow-y-auto overflow-x-hidden pr-2"
+            className="space-y-2 max-h-96 overflow-y-auto overflow-x-hidden pr-2"
           >
             {results.map((food, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.05 }}
+                transition={{ delay: index * 0.03 }}
               >
-                <div
-                  className="p-3 rounded-xl cursor-pointer hover:border-[#D4AF37]/50 transition-all w-full"
+                <button
+                  onClick={() => onSelectFood(food)}
+                  className="w-full text-left p-3 rounded-xl transition-all hover:border-[#D4AF37]/50 active:scale-95"
                   style={{
                     background: 'rgba(255, 255, 255, 0.03)',
                     backdropFilter: 'blur(30px) saturate(180%)',
                     border: '0.5px solid rgba(212, 175, 55, 0.1)'
                   }}
-                  onClick={() => onSelectFood(food)}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      onSelectFood(food);
-                    }
-                  }}
                 >
                   <div className="flex items-start gap-2 w-full">
                     <div className="flex-1 min-w-0">
-                      <p 
-                        className="text-sm text-white truncate"
-                        style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}
-                      >
-                        {food.name}
-                      </p>
+                      <div className="flex items-center gap-2 mb-1">
+                        <p 
+                          className="text-sm text-white truncate flex-1"
+                          style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}
+                        >
+                          {food.name}
+                        </p>
+                        <span className="text-xs text-[#D4AF37] font-semibold flex-shrink-0">
+                          {food.calories}kcal
+                        </span>
+                      </div>
                       {food.brand && (
                         <p 
-                          className="text-[11px] text-white/40 truncate mt-0.5"
+                          className="text-[10px] text-white/40 truncate mb-2"
                           style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 300 }}
                         >
                           {food.brand}
                         </p>
                       )}
-                       <div 
-                        className="flex flex-wrap gap-x-2 gap-y-1 mt-1.5 text-[11px]"
+                      <div 
+                        className="grid grid-cols-3 gap-2 text-[10px]"
                         style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}
                       >
-                        <span className="text-[#D4AF37] whitespace-nowrap">{food.calories}kcal</span>
-                        <span className="text-white/40 whitespace-nowrap">P:{food.protein}g</span>
-                        <span className="text-white/40 whitespace-nowrap">C:{food.carbs}g</span>
-                        <span className="text-white/40 whitespace-nowrap">F:{food.fat}g</span>
+                        <div className="flex items-center gap-1">
+                          <span className="text-white/40">P:</span>
+                          <span className="text-white">{food.protein}g</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <span className="text-white/40">C:</span>
+                          <span className="text-white">{food.carbs}g</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <span className="text-white/40">F:</span>
+                          <span className="text-white">{food.fat}g</span>
+                        </div>
                       </div>
-                      {food.serving_size !== 100 && (
-                        <p className="text-[10px] text-white/30 mt-1">
-                          Per {food.serving_size}{food.serving_unit}
-                        </p>
-                      )}
                     </div>
-                    <button className="flex-shrink-0 w-7 h-7 rounded-full bg-[#D4AF37]/20 flex items-center justify-center hover:bg-[#D4AF37]/30 transition-colors mt-0.5">
+                    <div className="flex-shrink-0 w-7 h-7 rounded-full bg-[#D4AF37]/20 flex items-center justify-center hover:bg-[#D4AF37]/30 transition-colors">
                       <Plus className="w-3.5 h-3.5 text-[#D4AF37]" />
-                    </button>
+                    </div>
                   </div>
-                </div>
+                </button>
               </motion.div>
             ))}
           </motion.div>
