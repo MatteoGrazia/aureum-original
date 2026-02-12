@@ -15,6 +15,7 @@ import WelcomeModal from '@/components/shared/WelcomeModal';
 export default function Dashboard() {
   const [showWelcome, setShowWelcome] = useState(false);
   const [showDatePill, setShowDatePill] = useState(false);
+  const [showStepPermission, setShowStepPermission] = useState(false);
   const queryClient = useQueryClient();
   const today = format(new Date(), 'yyyy-MM-dd');
   const { scrollY } = useScroll();
@@ -80,6 +81,9 @@ export default function Dashboard() {
       checkProfile();
     } else if (profile && !profile.permissions_requested) {
       setShowWelcome(true);
+    } else if (profile && profile.permissions_requested && !profile.step_tracking_enabled) {
+      // Show step permission request for existing users
+      setShowStepPermission(true);
     }
   }, [profile]);
 
@@ -100,6 +104,46 @@ export default function Dashboard() {
     }
     setShowWelcome(false);
     queryClient.invalidateQueries(['userProfile']);
+  };
+
+  const handleEnableStepTracking = async () => {
+    try {
+      // iOS native pedometer
+      if (window.webkit?.messageHandlers?.pedometer) {
+        window.webkit.messageHandlers.pedometer.postMessage({
+          action: 'requestPermission',
+          alwaysOn: true
+        });
+      }
+
+      // Web Pedometer API (experimental)
+      if ('Pedometer' in window) {
+        const pedometer = new window.Pedometer();
+        await pedometer.requestPermission();
+      }
+
+      // Update profile to mark permission as enabled
+      if (profile) {
+        await base44.entities.UserProfile.update(profile.id, { 
+          step_tracking_enabled: true 
+        });
+        queryClient.invalidateQueries(['userProfile']);
+      }
+      
+      setShowStepPermission(false);
+    } catch (error) {
+      console.error('Step tracking permission error:', error);
+    }
+  };
+
+  const handleDismissStepPermission = async () => {
+    if (profile) {
+      await base44.entities.UserProfile.update(profile.id, { 
+        step_tracking_enabled: true // Mark as "handled" even if dismissed
+      });
+      queryClient.invalidateQueries(['userProfile']);
+    }
+    setShowStepPermission(false);
   };
 
   const maintenanceCalories = profile?.maintenance_calories || 2000;
@@ -136,6 +180,66 @@ export default function Dashboard() {
     <div className="min-h-screen relative overflow-hidden bg-[#080808]">
       <VoidBackground />
       {showWelcome && <WelcomeModal onComplete={handleWelcomeComplete} />}
+      
+      {/* Step Tracking Permission Modal */}
+      {showStepPermission && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-6"
+        >
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.1 }}
+            className="w-full max-w-md"
+          >
+            <VoidCard className="text-center">
+              <div className="mb-6">
+                <div className="w-16 h-16 rounded-full bg-[#D4AF37]/10 flex items-center justify-center mx-auto mb-4">
+                  <Footprints className="w-8 h-8 text-[#D4AF37]" />
+                </div>
+                <h2 
+                  className="text-2xl text-white mb-3"
+                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}
+                >
+                  Enable Step Tracking
+                </h2>
+                <p className="text-white/60 text-sm mb-2">
+                  Aureum can automatically track your steps throughout the day, even when the app is closed.
+                </p>
+                <p className="text-white/40 text-xs">
+                  This requires permission to access your device's motion sensors for always-on tracking.
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                <button
+                  onClick={handleEnableStepTracking}
+                  className="w-full py-3 px-6 rounded-xl transition-all"
+                  style={{
+                    background: 'linear-gradient(135deg, #D4AF37 0%, #F4D03F 50%, #D4AF37 100%)',
+                    boxShadow: '0 4px 20px rgba(212, 175, 55, 0.3)',
+                    color: '#080808',
+                    fontFamily: 'Montserrat, sans-serif',
+                    fontWeight: 500
+                  }}
+                >
+                  Enable Always-On Tracking
+                </button>
+                
+                <button
+                  onClick={handleDismissStepPermission}
+                  className="w-full py-3 px-6 rounded-xl bg-white/5 text-white/60 hover:bg-white/10 transition-all"
+                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}
+                >
+                  Maybe Later
+                </button>
+              </div>
+            </VoidCard>
+          </motion.div>
+        </motion.div>
+      )}
       
       <div className="relative z-10 px-6 pt-6 pb-4">
       
