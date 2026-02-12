@@ -84,6 +84,54 @@ export default function VoidBackground() {
         />
       ))}
 
+      {/* Large illuminating stars with localized glow */}
+      {[
+        { x: 15, y: 25, size: 80, delay: 0, duration: 12 },
+        { x: 75, y: 15, size: 100, delay: 2, duration: 14 },
+        { x: 40, y: 60, size: 90, delay: 4, duration: 13 },
+        { x: 85, y: 70, size: 75, delay: 1, duration: 11 },
+        { x: 25, y: 80, size: 85, delay: 3, duration: 15 }
+      ].map((star, i) => (
+        <motion.div
+          key={`big-star-${i}`}
+          className="absolute"
+          style={{
+            left: `${star.x}%`,
+            top: `${star.y}%`,
+            width: star.size,
+            height: star.size,
+            pointerEvents: 'none'
+          }}
+          animate={{
+            opacity: [0.4, 0.8, 0.4],
+            scale: [0.9, 1.1, 0.9]
+          }}
+          transition={{
+            duration: star.duration,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: star.delay
+          }}
+        >
+          {/* Core star light */}
+          <div 
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full"
+            style={{
+              background: 'rgba(255, 255, 255, 0.9)',
+              boxShadow: '0 0 4px rgba(255, 255, 255, 1)'
+            }}
+          />
+          {/* Localized illumination glow */}
+          <div 
+            className="absolute inset-0"
+            style={{
+              background: 'radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 30%, rgba(255, 255, 255, 0.03) 50%, transparent 70%)',
+              filter: 'blur(20px)'
+            }}
+          />
+        </motion.div>
+      ))}
+
       {/* Subtle noise texture overlay */}
       <div 
         className="absolute inset-0 opacity-[0.015]"
