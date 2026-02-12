@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Flame, Footprints, Dumbbell, Droplets } from 'lucide-react';
 
-export default function AureumPulse({ label, value, goal, unit, index = 0, icon }) {
+export default function AureumPulse({ label, value, goal, unit, index = 0, icon, iconColor = '#D4AF37' }) {
   const progress = Math.min((value / goal) * 100, 100);
   const isNearGoal = progress > 80;
   
@@ -45,8 +45,8 @@ export default function AureumPulse({ label, value, goal, unit, index = 0, icon 
       <div className="flex items-center justify-between mb-4 relative z-10">
         <div className="flex items-center gap-3">
           {Icon && (
-            <div className="w-9 h-9 rounded-lg bg-[#D4AF37]/10 flex items-center justify-center">
-              <Icon className="w-5 h-5 text-[#D4AF37]" strokeWidth={1.5} />
+            <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${iconColor}15` }}>
+              <Icon className="w-5 h-5" style={{ color: iconColor }} strokeWidth={1.5} />
             </div>
           )}
           <p 
