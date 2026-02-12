@@ -104,8 +104,8 @@ export default function BarcodeScanner({ isOpen, onClose, onScan }) {
 
       {/* Scanner Area */}
       <div className="flex-1 flex flex-col items-center justify-center p-6">
-        <div className="relative w-full max-w-sm aspect-square rounded-2xl overflow-hidden">
-          <div id="barcode-reader" className="w-full h-full" />
+        <div className="relative w-full max-w-sm aspect-square rounded-2xl overflow-hidden bg-black">
+          <div id="barcode-reader" className="w-full h-full" style={{ background: 'transparent' }} />
           
           {/* Scanning overlay */}
           <div className="absolute inset-0 pointer-events-none">
