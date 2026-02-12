@@ -104,7 +104,8 @@ export default function Dashboard() {
   const remainingCalories = maintenanceCalories + activityCalories - consumedCalories;
   const stepsGoal = profile?.daily_step_goal || 10000;
   const workoutVolume = todaysWorkout?.total_volume || 0;
-  const waterGoal = profile?.water_goal_glasses || 8;
+  const waterGoal = profile?.water_goal || 2.5;
+  const waterUnit = profile?.water_unit || 'liters';
 
   // Pulse stats are now defined inline in the JSX for better icon handling
 
@@ -217,9 +218,9 @@ export default function Dashboard() {
           />
           <AureumPulse
             label="Hydration"
-            value={dailyActivity?.water_glasses || 0}
+            value={dailyActivity?.water_liters || 0}
             goal={waterGoal}
-            unit="glasses"
+            unit={waterUnit === 'glasses' ? 'glasses' : 'L'}
             icon={Droplets}
             index={3}
           />

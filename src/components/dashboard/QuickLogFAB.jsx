@@ -3,27 +3,40 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Droplets, Scale } from 'lucide-react';
 import GoldButton from '@/components/ui/GoldButton';
 import { base44 } from '@/api/base44Client';
+import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 
 export default function QuickLogFAB({ onUpdate }) {
   const [isOpen, setIsOpen] = useState(false);
   const [weight, setWeight] = useState('');
+  const [waterAmount, setWaterAmount] = useState('0.25');
   const [loading, setLoading] = useState(false);
 
   const today = format(new Date(), 'yyyy-MM-dd');
 
+  const { data: profile } = useQuery({
+    queryKey: ['userProfile'],
+    queryFn: async () => {
+      const profiles = await base44.entities.UserProfile.filter({});
+      return profiles[0] || null;
+    }
+  });
+
+  const waterUnit = profile?.water_unit || 'liters';
+
   const logWater = async () => {
     setLoading(true);
     try {
+      const amount = waterUnit === 'glasses' ? 0.25 : parseFloat(waterAmount);
       const activities = await base44.entities.DailyActivity.filter({ date: today });
       if (activities.length > 0) {
         await base44.entities.DailyActivity.update(activities[0].id, {
-          water_glasses: (activities[0].water_glasses || 0) + 1
+          water_liters: (activities[0].water_liters || 0) + amount
         });
       } else {
         await base44.entities.DailyActivity.create({
           date: today,
-          water_glasses: 1,
+          water_liters: amount,
           steps: 0,
           active_minutes: 0,
           sedentary_minutes: 0,
@@ -31,6 +44,7 @@ export default function QuickLogFAB({ onUpdate }) {
         });
       }
       onUpdate?.();
+      setWaterAmount('0.25');
     } catch (error) {
       console.error(error);
     }
@@ -121,15 +135,34 @@ export default function QuickLogFAB({ onUpdate }) {
                   </div>
                   <div>
                     <p className="text-white text-sm">Water</p>
-                    <p className="text-white/40 text-xs">Log one glass</p>
+                    <p className="text-white/40 text-xs">
+                      {waterUnit === 'glasses' ? 'Log one glass (250ml)' : 'Add liters'}
+                    </p>
                   </div>
                 </div>
+                {waterUnit === 'liters' && (
+                  <div className="flex gap-2">
+                    {['0.25', '0.5', '0.75', '1'].map((amount) => (
+                      <button
+                        key={amount}
+                        onClick={() => setWaterAmount(amount)}
+                        className={`flex-1 py-2 px-3 rounded-lg text-xs transition-all ${
+                          waterAmount === amount
+                            ? 'bg-blue-500/20 border border-blue-400/40 text-blue-400'
+                            : 'bg-white/5 border border-white/10 text-white/60'
+                        }`}
+                      >
+                        {amount}L
+                      </button>
+                    ))}
+                  </div>
+                )}
                 <GoldButton 
                   onClick={logWater} 
                   disabled={loading}
                   className="w-full"
                 >
-                  {loading ? 'Logging...' : '+ 1 Glass'}
+                  {loading ? 'Logging...' : waterUnit === 'glasses' ? '+ 1 Glass' : `+ ${waterAmount}L`}
                 </GoldButton>
               </div>
 

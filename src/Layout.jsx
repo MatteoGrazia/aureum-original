@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from './utils';
-import { House, Utensils, Dumbbell, Activity, User } from 'lucide-react';
+import { House, Utensils, Dumbbell, Activity, Settings as SettingsIcon } from 'lucide-react';
 
 export default function Layout({ children, currentPageName }) {
   const navItems = [
@@ -9,7 +9,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Nutrition', icon: Utensils, page: 'Nutrition' },
     { name: 'Workouts', icon: Dumbbell, page: 'Workouts' },
     { name: 'Activity', icon: Activity, page: 'Activity' },
-    { name: 'Profile', icon: User, page: 'Profile' },
+    { name: 'Settings', icon: SettingsIcon, page: 'Settings' },
   ];
 
   return (
