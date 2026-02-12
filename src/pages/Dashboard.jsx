@@ -13,22 +13,37 @@ import AIInsight from '@/components/dashboard/AIInsight';
 import WelcomeModal from '@/components/shared/WelcomeModal';
 import WeightTrendMini from '@/components/dashboard/WeightTrendMini';
 import MotionPermissionModal from '@/components/shared/MotionPermissionModal';
-import { useStepCounter } from '@/components/shared/useStepCounter';
+import StepTrackerPermissionModal from '@/components/shared/StepTrackerPermissionModal';
+import { useStepTracker, subscribeToSteps } from '@/components/shared/useStepTracker';
+import { useStepTrackerIntegration } from '@/components/shared/useStepTrackerIntegration';
 
 export default function Dashboard() {
   const [showWelcome, setShowWelcome] = useState(false);
   const [showDatePill, setShowDatePill] = useState(false);
   const [showStepPermission, setShowStepPermission] = useState(false);
   const [showMotionPermission, setShowMotionPermission] = useState(false);
+  const [showStepTrackerPermission, setShowStepTrackerPermission] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [globalSteps, setGlobalSteps] = useState(0);
   const queryClient = useQueryClient();
   const today = format(new Date(), 'yyyy-MM-dd');
   const { scrollY } = useScroll();
-  const { startTracking } = useStepCounter();
+  const { startTracking: startAdvancedTracking, sensorStatus } = useStepTracker();
+  useStepTrackerIntegration(new Date());
 
   useEffect(() => {
     const timer = setTimeout(() => setIsMounted(true), 100);
     return () => clearTimeout(timer);
+  }, []);
+
+  // Subscribe to global step count changes
+  useEffect(() => {
+    const unsubscribe = subscribeToSteps((steps) => {
+      setGlobalSteps(steps);
+      // Optionally refetch activity data
+      refetchActivity();
+    });
+    return unsubscribe;
   }, []);
 
   useEffect(() => {
@@ -138,12 +153,19 @@ export default function Dashboard() {
         });
       }
       
-      startTracking();
+      setShowStepTrackerPermission(true);
       setShowMotionPermission(false);
       queryClient.invalidateQueries(['userProfile']);
     } catch (error) {
       console.error('Error enabling step tracking:', error);
     }
+  };
+
+  const handleStepTrackerPermission = async (granted) => {
+    if (granted) {
+      startAdvancedTracking();
+    }
+    setShowStepTrackerPermission(false);
   };
 
   const handleMotionPermissionDismiss = async () => {
@@ -238,6 +260,12 @@ export default function Dashboard() {
         <MotionPermissionModal 
           onGrant={handleMotionPermissionGrant}
           onDismiss={handleMotionPermissionDismiss}
+        />
+      )}
+      {showStepTrackerPermission && (
+        <StepTrackerPermissionModal
+          onRequestPermission={handleStepTrackerPermission}
+          onDismiss={() => setShowStepTrackerPermission(false)}
         />
       )}
       
@@ -353,7 +381,7 @@ export default function Dashboard() {
             <ChronosOrbital
               calories={consumedCalories}
               caloriesGoal={maintenanceCalories + activityCalories}
-              steps={dailyActivity?.steps || 0}
+              steps={globalSteps || dailyActivity?.steps || 0}
               stepsGoal={stepsGoal}
               volume={workoutVolume}
               volumeGoal={5000}
@@ -374,7 +402,7 @@ export default function Dashboard() {
           />
           <AureumPulse
             label="Steps"
-            value={dailyActivity?.steps || 0}
+            value={globalSteps || dailyActivity?.steps || 0}
             goal={stepsGoal}
             unit="steps"
             icon={Footprints}

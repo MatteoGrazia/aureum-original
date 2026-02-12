@@ -11,16 +11,21 @@ import StepCounter from '@/components/activity/StepCounter';
 import ActivityStats from '@/components/activity/ActivityStats';
 import { Input } from '@/components/ui/input';
 import MotionPermissionModal from '@/components/shared/MotionPermissionModal';
-import { useStepCounter } from '@/components/shared/useStepCounter';
+import StepTrackerPermissionModal from '@/components/shared/StepTrackerPermissionModal';
+import { useStepTracker, subscribeToSteps } from '@/components/shared/useStepTracker';
+import { useStepTrackerIntegration } from '@/components/shared/useStepTrackerIntegration';
 
 export default function Activity() {
   const [pedometerSupported, setPedometerSupported] = useState(false);
   const [permissionStatus, setPermissionStatus] = useState('prompt');
   const [showMotionPermission, setShowMotionPermission] = useState(false);
+  const [showStepTrackerPermission, setShowStepTrackerPermission] = useState(false);
+  const [globalSteps, setGlobalSteps] = useState(0);
   const lastSyncTime = useRef(Date.now());
   const queryClient = useQueryClient();
   const today = format(new Date(), 'yyyy-MM-dd');
-  const { startTracking } = useStepCounter();
+  const { startTracking: startAdvancedTracking } = useStepTracker();
+  useStepTrackerIntegration(new Date());
 
   const { data: dailyActivity, refetch } = useQuery({
     queryKey: ['dailyActivity', today],
@@ -60,7 +65,15 @@ export default function Activity() {
   });
 
   const stepGoal = profile?.daily_step_goal || 10000;
-  const currentSteps = dailyActivity?.steps || 0;
+  const currentSteps = globalSteps || dailyActivity?.steps || 0;
+
+  // Subscribe to global step count changes
+  useEffect(() => {
+    const unsubscribe = subscribeToSteps((steps) => {
+      setGlobalSteps(steps);
+    });
+    return unsubscribe;
+  }, []);
 
   // Check for pedometer support
   useEffect(() => {
@@ -171,13 +184,20 @@ export default function Activity() {
         });
       }
       
-      startTracking();
+      setShowStepTrackerPermission(true);
       setShowMotionPermission(false);
       setPermissionStatus('granted');
       queryClient.invalidateQueries(['userProfile']);
     } catch (error) {
       console.error('Error enabling step tracking:', error);
     }
+  };
+
+  const handleStepTrackerPermission = async (granted) => {
+    if (granted) {
+      startAdvancedTracking();
+    }
+    setShowStepTrackerPermission(false);
   };
 
   const handleMotionPermissionDismiss = async () => {
@@ -222,6 +242,12 @@ export default function Activity() {
         <MotionPermissionModal 
           onGrant={handleMotionPermissionGrant}
           onDismiss={handleMotionPermissionDismiss}
+        />
+      )}
+      {showStepTrackerPermission && (
+        <StepTrackerPermissionModal
+          onRequestPermission={handleStepTrackerPermission}
+          onDismiss={() => setShowStepTrackerPermission(false)}
         />
       )}
       <div className="relative z-10 p-6">
