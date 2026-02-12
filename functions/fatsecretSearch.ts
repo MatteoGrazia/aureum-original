@@ -17,15 +17,15 @@ const getAccessToken = async () => {
   }
 
   try {
+    const authString = btoa(`${clientId}:${clientSecret}`);
     const response = await fetch('https://oauth.fatsecret.com/connect/token', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': `Basic ${authString}`
       },
       body: new URLSearchParams({
-        grant_type: 'client_credentials',
-        client_id: clientId,
-        client_secret: clientSecret
+        grant_type: 'client_credentials'
       }).toString()
     });
 
