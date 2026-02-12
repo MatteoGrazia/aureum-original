@@ -74,7 +74,7 @@ export default function QuickLogFAB({ onUpdate }) {
         whileHover={{ x: -2 }}
         whileTap={{ scale: 0.98 }}
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed right-0 bottom-32 z-40 w-10 h-12 rounded-l-2xl flex items-center justify-center"
+        className="fixed right-0 bottom-40 z-40 w-10 h-12 rounded-l-2xl flex items-center justify-center"
         style={{
           background: 'linear-gradient(135deg, #D4AF37 0%, #F4D03F 50%, #D4AF37 100%)',
           boxShadow: '0 8px 32px rgba(212, 175, 55, 0.5), 0 0 20px rgba(212, 175, 55, 0.3)',
@@ -109,7 +109,7 @@ export default function QuickLogFAB({ onUpdate }) {
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="fixed right-0 top-0 bottom-0 w-64 z-50 p-6 flex flex-col"
+            className="fixed right-0 top-0 bottom-0 w-64 z-50 p-6 flex flex-col pb-32"
             style={{
               background: 'linear-gradient(135deg, rgba(160,160,160,0.08) 0%, rgba(255,255,255,0.04) 50%, rgba(180,180,180,0.06) 100%)',
               backdropFilter: 'blur(40px) saturate(180%)',
