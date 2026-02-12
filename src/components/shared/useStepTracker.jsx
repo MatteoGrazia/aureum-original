@@ -172,9 +172,11 @@ export const useStepTracker = () => {
     
     // Register service worker for background sync
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').catch(err => 
-        console.log('SW registration failed:', err)
-      );
+      try {
+        await navigator.serviceWorker.register('/sw.js');
+      } catch (err) {
+        console.log('SW registration note:', err.message);
+      }
     }
 
     // Initialize motion listener
