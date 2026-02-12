@@ -57,15 +57,15 @@ export default function QuickLogFAB({ onUpdate }) {
     <>
       {/* Sidebar Toggle Button */}
       <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
+        whileHover={{ x: -2 }}
+        whileTap={{ scale: 0.98 }}
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed right-4 bottom-24 z-40 w-12 h-12 rounded-full bg-gradient-to-br from-[#D4AF37] to-[#B8960C] flex items-center justify-center shadow-[0_0_30px_rgba(212,175,55,0.4)]"
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
+        className="fixed right-0 top-1/2 -translate-y-1/2 z-40 w-10 h-24 rounded-l-2xl bg-gradient-to-br from-[#D4AF37] to-[#B8960C] flex items-center justify-center shadow-[-4px_0_20px_rgba(212,175,55,0.4)]"
+        initial={{ x: 40 }}
+        animate={{ x: 0 }}
         transition={{ delay: 0.5, type: "spring" }}
       >
-        <Plus className="w-6 h-6 text-[#080808]" />
+        <Plus className="w-5 h-5 text-[#080808]" />
       </motion.button>
 
       {/* Backdrop */}
