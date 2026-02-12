@@ -90,30 +90,43 @@ export default function Nutrition() {
   };
 
   const handleWaterAdd = async () => {
-    const currentGlasses = dailyActivity?.water_glasses || 0;
-    if (dailyActivity) {
-      await base44.entities.DailyActivity.update(dailyActivity.id, {
-        water_glasses: currentGlasses + 1
-      });
-    } else {
-      await base44.entities.DailyActivity.create({
-        date: dateStr,
-        water_glasses: 1,
-        steps: 0,
-        active_minutes: 0,
-        sedentary_minutes: 0,
-        calories_burned: 0
-      });
+    try {
+      const waterUnit = profile?.water_unit || 'liters';
+      const amount = waterUnit === 'glasses' ? 0.25 : 0.25;
+      
+      if (dailyActivity) {
+        await base44.entities.DailyActivity.update(dailyActivity.id, {
+          water_liters: (dailyActivity.water_liters || 0) + amount
+        });
+      } else {
+        await base44.entities.DailyActivity.create({
+          date: dateStr,
+          water_liters: amount,
+          steps: 0,
+          active_minutes: 0,
+          sedentary_minutes: 0,
+          calories_burned: 0
+        });
+      }
+      await refetchActivity();
+    } catch (error) {
+      console.error('Water add error:', error);
     }
-    refetchActivity();
   };
 
   const handleWaterRemove = async () => {
-    if (!dailyActivity || dailyActivity.water_glasses <= 0) return;
-    await base44.entities.DailyActivity.update(dailyActivity.id, {
-      water_glasses: dailyActivity.water_glasses - 1
-    });
-    refetchActivity();
+    if (!dailyActivity || (dailyActivity.water_liters || 0) <= 0) return;
+    try {
+      const waterUnit = profile?.water_unit || 'liters';
+      const amount = waterUnit === 'glasses' ? 0.25 : 0.25;
+      
+      await base44.entities.DailyActivity.update(dailyActivity.id, {
+        water_liters: Math.max(0, (dailyActivity.water_liters || 0) - amount)
+      });
+      await refetchActivity();
+    } catch (error) {
+      console.error('Water remove error:', error);
+    }
   };
 
   const changeDate = (days) => {
@@ -338,8 +351,8 @@ export default function Nutrition() {
         className="mb-6"
       >
         <WaterTracker
-          glasses={dailyActivity?.water_glasses || 0}
-          goal={profile?.water_goal_glasses || 8}
+          glasses={Math.round((dailyActivity?.water_liters || 0) / 0.25)}
+          goal={Math.round((profile?.water_goal || 2.5) / 0.25)}
           onAdd={handleWaterAdd}
           onRemove={handleWaterRemove}
         />
