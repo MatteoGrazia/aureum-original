@@ -56,12 +56,13 @@ export default function FoodSearch({ onSelectFood }) {
     }, 4000);
 
     try {
-      const response = await base44.functions.invoke('fatsecretSearch', {
+      // Priority 1: FatSecret for branded/restaurant items
+      const fsResponse = await base44.functions.invoke('fatsecretSearch', {
         action: 'search',
         query: searchQuery
       });
 
-      let foods = (response.data.foods || []).map(food => ({
+      let foods = (fsResponse.data.foods || []).map(food => ({
         id: food.id,
         name: food.name,
         brand: food.brand,
@@ -74,17 +75,29 @@ export default function FoodSearch({ onSelectFood }) {
         source: 'fatsecret'
       }));
 
-      // Priority 1: FatSecret results
       if (foods.length > 0) {
         clearTimeout(timeoutId);
         setResults(foods);
         setShowEmptyState(false);
       } else {
-        // Priority 2/3: OpenFoodFacts fallback for barcodes and generic items
-        const fallbackFoods = await searchOpenFoodFactsFallback(searchQuery);
-        clearTimeout(timeoutId);
-        setResults(fallbackFoods);
-        setShowEmptyState(fallbackFoods.length === 0);
+        // Priority 2: USDA for raw ingredients
+        const usdaResponse = await base44.functions.invoke('usdaFoodSearch', {
+          query: searchQuery
+        });
+
+        let usdaFoods = usdaResponse.data.foods || [];
+
+        if (usdaFoods.length > 0) {
+          clearTimeout(timeoutId);
+          setResults(usdaFoods);
+          setShowEmptyState(false);
+        } else {
+          // Priority 3: OpenFoodFacts fallback
+          const fallbackFoods = await searchOpenFoodFactsFallback(searchQuery);
+          clearTimeout(timeoutId);
+          setResults(fallbackFoods);
+          setShowEmptyState(fallbackFoods.length === 0);
+        }
       }
     } catch (error) {
       console.error('Search error:', error);
