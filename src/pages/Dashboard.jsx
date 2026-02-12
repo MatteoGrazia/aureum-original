@@ -262,20 +262,12 @@ export default function Dashboard() {
             className="w-12 h-12 mx-auto mb-3 opacity-90"
           />
           
-          {/* Ultra-thin Inter Typography */}
-          <h1 
-            className="text-3xl tracking-[0.4em] mb-3"
-            style={{ 
-              fontFamily: 'Inter, sans-serif', 
-              fontWeight: 400,
-              background: 'linear-gradient(135deg, #F4D03F 0%, #D4AF37 50%, #F4D03F 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text'
-            }}
-          >
-            A U R E U M
-          </h1>
+          {/* AUREUM Logo */}
+          <img 
+            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698347d058d3014d6271ccff/974750ba9_Untitleddesign.png"
+            alt="AUREUM"
+            className="h-8 mx-auto mb-3"
+          />
           
           {/* Muted Bronze Date */}
           <p 
