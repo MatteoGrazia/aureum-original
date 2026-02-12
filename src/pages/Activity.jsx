@@ -297,6 +297,7 @@ export default function Activity() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
+        className="mb-6"
       >
         <VoidCard>
           <h3 
@@ -337,21 +338,21 @@ export default function Activity() {
           <div className="grid grid-cols-3 gap-4 pt-4 border-t border-white/10">
             <div className="text-center">
               <div className="flex items-center justify-center gap-1 mb-1">
-                <Target className="w-3 h-3 text-[#8ECAE6]" strokeWidth={1.5} />
+                <Target className="w-3 h-3 text-[#D4AF37]" strokeWidth={1.5} />
               </div>
               <p className="text-white text-lg" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>{weeklySteps.toLocaleString()}</p>
               <p className="text-white/30 text-[10px] uppercase tracking-wider" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>Total Steps</p>
             </div>
             <div className="text-center">
               <div className="flex items-center justify-center gap-1 mb-1">
-                <TrendingUp className="w-3 h-3 text-[#A8D5BA]" strokeWidth={1.5} />
+                <TrendingUp className="w-3 h-3 text-[#D4AF37]" strokeWidth={1.5} />
               </div>
               <p className="text-white text-lg" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>{weeklyAverage.toLocaleString()}</p>
               <p className="text-white/30 text-[10px] uppercase tracking-wider" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>Daily Avg</p>
             </div>
             <div className="text-center">
               <div className="flex items-center justify-center gap-1 mb-1">
-                <Award className="w-3 h-3 text-[#E8C5A5]" strokeWidth={1.5} />
+                <Award className="w-3 h-3 text-[#D4AF37]" strokeWidth={1.5} />
               </div>
               <p className="text-white text-lg" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>{bestDay.toLocaleString()}</p>
               <p className="text-white/30 text-[10px] uppercase tracking-wider" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>Best Day</p>
@@ -365,7 +366,7 @@ export default function Activity() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
-        className="grid grid-cols-2 gap-4 mb-24"
+        className="grid grid-cols-2 gap-4 mt-6 mb-24"
       >
         <VoidCard>
           <h3 
