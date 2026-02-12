@@ -8,21 +8,21 @@ export default function MacroHeatmap({ protein, carbs, fat, goals }) {
       name: 'Protein', 
       value: protein, 
       goal: goals?.protein || 150, 
-      color: '#D4AF37',
+      color: '#F4A261',
       unit: 'g' 
     },
     { 
       name: 'Carbs', 
       value: carbs, 
       goal: goals?.carbs || 250, 
-      color: '#60A5FA',
+      color: '#8ECAE6',
       unit: 'g' 
     },
     { 
       name: 'Fat', 
       value: fat, 
       goal: goals?.fat || 70, 
-      color: '#F472B6',
+      color: '#E8C5A5',
       unit: 'g' 
     },
   ];
@@ -47,33 +47,42 @@ export default function MacroHeatmap({ protein, carbs, fat, goals }) {
                 </span>
               </div>
               
-              {/* Heatmap Bar */}
-              <div className="relative h-3 rounded-full bg-white/5 overflow-hidden">
+              {/* Thread visualization */}
+              <div className="relative h-[1px] bg-[#9C7E46]/20 overflow-hidden">
+                {/* Progress thread */}
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${percentage}%` }}
-                  transition={{ duration: 1, delay: index * 0.1 }}
-                  className="absolute inset-y-0 left-0 rounded-full"
+                  transition={{ duration: 1.5, ease: "easeOut", delay: index * 0.1 }}
+                  className="absolute left-0 top-0 h-[1px]"
                   style={{
-                    background: `linear-gradient(90deg, ${macro.color}40, ${macro.color})`,
-                    boxShadow: `0 0 ${20 * intensity}px ${macro.color}${Math.round(intensity * 80).toString(16)}`
+                    background: `linear-gradient(to right, ${macro.color}80, ${macro.color})`,
+                    boxShadow: `0 0 4px ${macro.color}99, 0 0 8px ${macro.color}66`
                   }}
+                >
+                  {/* Shimmer effect */}
+                  <motion.div
+                    className="absolute right-0 top-0 w-16 h-[1px]"
+                    style={{
+                      background: `linear-gradient(90deg, transparent, ${macro.color}, transparent)`,
+                    }}
+                    animate={{
+                      x: [-16, 16, -16],
+                      opacity: [0.5, 1, 0.5]
+                    }}
+                    transition={{
+                      duration: 1.2,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                  />
+                </motion.div>
+
+                {/* Goal marker */}
+                <div 
+                  className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-1 rounded-full bg-[#9C7E46]/40"
+                  style={{ boxShadow: '0 0 4px rgba(156,126,70,0.3)' }}
                 />
-                
-                {/* Heat cells overlay */}
-                <div className="absolute inset-0 flex">
-                  {Array.from({ length: 20 }).map((_, i) => {
-                    const cellFilled = (i / 20) < (percentage / 100);
-                    return (
-                      <div
-                        key={i}
-                        className={`flex-1 border-r border-[#080808]/50 transition-all duration-300 ${
-                          cellFilled ? '' : 'bg-white/5'
-                        }`}
-                      />
-                    );
-                  })}
-                </div>
               </div>
             </div>
           );
