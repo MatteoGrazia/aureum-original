@@ -3,13 +3,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Plus, Loader2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { Input } from '@/components/ui/input';
+import simpleIngredients from '@/data/simpleIngredients.json';
 
 export default function FoodSearch({ onSelectFood }) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showEmptyState, setShowEmptyState] = useState(false);
-  const [suggestions, setSuggestions] = useState([]);
 
   const searchOpenFoodFactsFallback = async (searchQuery) => {
     try {
@@ -56,13 +56,46 @@ export default function FoodSearch({ onSelectFood }) {
     }, 4000);
 
     try {
-      // Priority 1: FatSecret for branded/restaurant items
+      // Priority 1: Check local cache for instant match
+      const localMatch = simpleIngredients.filter(food =>
+        food.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+
+      if (localMatch.length > 0) {
+        clearTimeout(timeoutId);
+        const foods = localMatch.map(food => ({
+          ...food,
+          serving_size: '100g',
+          source: 'local'
+        }));
+        setResults(foods);
+        setShowEmptyState(false);
+        setLoading(false);
+        return;
+      }
+
+      // Priority 2: USDA for raw ingredients (SR Legacy)
+      const usdaResponse = await base44.functions.invoke('usdaFoodSearch', {
+        query: searchQuery
+      });
+
+      let foods = usdaResponse.data.foods || [];
+
+      if (foods.length > 0) {
+        clearTimeout(timeoutId);
+        setResults(foods);
+        setShowEmptyState(false);
+        setLoading(false);
+        return;
+      }
+
+      // Priority 3: FatSecret for branded/restaurant items
       const fsResponse = await base44.functions.invoke('fatsecretSearch', {
         action: 'search',
         query: searchQuery
       });
 
-      let foods = (fsResponse.data.foods || []).map(food => ({
+      foods = (fsResponse.data.foods || []).map(food => ({
         id: food.id,
         name: food.name,
         brand: food.brand,
@@ -75,30 +108,9 @@ export default function FoodSearch({ onSelectFood }) {
         source: 'fatsecret'
       }));
 
-      if (foods.length > 0) {
-        clearTimeout(timeoutId);
-        setResults(foods);
-        setShowEmptyState(false);
-      } else {
-        // Priority 2: USDA for raw ingredients
-        const usdaResponse = await base44.functions.invoke('usdaFoodSearch', {
-          query: searchQuery
-        });
-
-        let usdaFoods = usdaResponse.data.foods || [];
-
-        if (usdaFoods.length > 0) {
-          clearTimeout(timeoutId);
-          setResults(usdaFoods);
-          setShowEmptyState(false);
-        } else {
-          // Priority 3: OpenFoodFacts fallback
-          const fallbackFoods = await searchOpenFoodFactsFallback(searchQuery);
-          clearTimeout(timeoutId);
-          setResults(fallbackFoods);
-          setShowEmptyState(fallbackFoods.length === 0);
-        }
-      }
+      clearTimeout(timeoutId);
+      setResults(foods);
+      setShowEmptyState(foods.length === 0);
     } catch (error) {
       console.error('Search error:', error);
       const foods = await searchOpenFoodFactsFallback(searchQuery);
