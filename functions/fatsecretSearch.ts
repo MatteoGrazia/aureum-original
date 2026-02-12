@@ -16,30 +16,36 @@ const getAccessToken = async () => {
     throw new Error('Missing FatSecret credentials');
   }
 
-  const response = await fetch('https://oauth.fatsecret.com/connect/token', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: new URLSearchParams({
-      grant_type: 'client_credentials',
-      client_id: clientId,
-      client_secret: clientSecret,
-      scope: 'barcode'
-    }).toString()
-  });
+  try {
+    const response = await fetch('https://oauth.fatsecret.com/connect/token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        grant_type: 'client_credentials',
+        client_id: clientId,
+        client_secret: clientSecret,
+        scope: 'barcode'
+      }).toString()
+    });
 
-  const data = await response.json();
-  
-  if (!data.access_token) {
-    throw new Error('Failed to get FatSecret access token');
+    const data = await response.json();
+    
+    if (!data.access_token) {
+      console.error('FatSecret token response:', data);
+      throw new Error(`Failed to get FatSecret access token: ${data.error || 'unknown error'}`);
+    }
+
+    // Cache token for 55 minutes (FatSecret tokens expire in 1 hour)
+    cachedToken = data.access_token;
+    tokenExpiry = Date.now() + ((data.expires_in || 3600) * 1000 * 0.9);
+
+    return cachedToken;
+  } catch (error) {
+    console.error('Token fetch error:', error);
+    throw error;
   }
-
-  // Cache token for 1 hour (FatSecret tokens typically expire in 1 hour)
-  cachedToken = data.access_token;
-  tokenExpiry = Date.now() + (data.expires_in * 1000);
-
-  return cachedToken;
 };
 
 const searchFoods = async (query, token) => {
