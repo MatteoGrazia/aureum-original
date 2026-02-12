@@ -7,7 +7,7 @@ import { Flame, Footprints, Dumbbell, Droplets } from 'lucide-react';
 import VoidCard from '@/components/ui/VoidCard';
 import ChronosOrbital from '@/components/dashboard/ChronosOrbital';
 import AureumPulse from '@/components/dashboard/AureumPulse';
-import GyroGlow from '@/components/dashboard/GyroGlow';
+import VoidBackground from '@/components/dashboard/VoidBackground';
 import QuickLogFAB from '@/components/dashboard/QuickLogFAB';
 import AIInsight from '@/components/dashboard/AIInsight';
 import WelcomeModal from '@/components/shared/WelcomeModal';
@@ -133,9 +133,8 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden" style={{
-      background: 'radial-gradient(circle at 50% 40%, rgba(25, 25, 25, 1) 0%, #080808 100%)'
-    }}>
+    <div className="min-h-screen relative overflow-hidden bg-[#080808]">
+      <VoidBackground />
       {showWelcome && <WelcomeModal onComplete={handleWelcomeComplete} />}
       
       <div className="relative z-10 p-6">
