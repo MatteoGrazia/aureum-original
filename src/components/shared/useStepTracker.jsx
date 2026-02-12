@@ -157,11 +157,14 @@ export const useStepTracker = () => {
     }
   };
 
-  const startTracking = async () => {
-    const permitted = await requestPermission();
-    if (!permitted) {
-      setSensorStatus('error');
-      return;
+  const startTracking = async (skipPermissionRequest = false) => {
+    // Skip second permission request if already granted via modal
+    if (!skipPermissionRequest) {
+      const permitted = await requestPermission();
+      if (!permitted) {
+        setSensorStatus('error');
+        return;
+      }
     }
 
     setSensorStatus('calibrating');

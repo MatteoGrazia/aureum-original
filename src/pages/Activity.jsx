@@ -195,7 +195,7 @@ export default function Activity() {
 
   const handleStepTrackerPermission = async (granted) => {
     if (granted) {
-      startAdvancedTracking();
+      startAdvancedTracking(true); // Skip second permission request
     }
     setShowStepTrackerPermission(false);
   };

@@ -14,7 +14,7 @@ export default function StepTrackerPermissionModal({ onRequestPermission, onDism
       if (typeof DeviceMotionEvent !== 'undefined' && DeviceMotionEvent.requestPermission) {
         const permission = await DeviceMotionEvent.requestPermission();
         if (permission === 'granted') {
-          onRequestPermission(true);
+          onRequestPermission(true); // Pass skipPermissionRequest=true to startTracking
         } else {
           setError('Permission denied. Enable in Settings > [App] > Motion & Fitness');
         }
