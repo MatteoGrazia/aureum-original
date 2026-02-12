@@ -255,18 +255,12 @@ export default function Dashboard() {
           transition={{ duration: 0.3 }}
           className="mb-10 text-center pt-6">
 
-          {/* Subtle Golden Feather Icon */}
-          <svg className="w-8 h-8 mx-auto mb-3 opacity-40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z" stroke="url(#goldGradient)" strokeWidth="0.8" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-            <line x1="16" y1="8" x2="2" y2="22" stroke="url(#goldGradient)" strokeWidth="0.8" strokeLinecap="round" />
-            <defs>
-              <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#D4AF37" />
-                <stop offset="50%" stopColor="#F4D03F" />
-                <stop offset="100%" stopColor="#D4AF37" />
-              </linearGradient>
-            </defs>
-          </svg>
+          {/* Golden Feather Icon */}
+          <img 
+            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698347d058d3014d6271ccff/d4abef643_AUREUM.png"
+            alt="Aureum"
+            className="w-12 h-12 mx-auto mb-3 opacity-90"
+          />
           
           {/* Ultra-thin Inter Typography */}
           <h1 
