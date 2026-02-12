@@ -134,12 +134,7 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen relative overflow-hidden" style={{
-      background: '#080808',
-      backgroundImage: `
-        radial-gradient(ellipse 1200px 800px at 30% 20%, rgba(100, 100, 100, 0.08) 0%, transparent 60%),
-        radial-gradient(ellipse 1000px 600px at 70% 60%, rgba(120, 120, 120, 0.06) 0%, transparent 60%),
-        radial-gradient(ellipse 800px 500px at 50% 90%, rgba(90, 90, 90, 0.05) 0%, transparent 60%)
-      `
+      background: 'radial-gradient(circle at 50% 40%, rgba(25, 25, 25, 1) 0%, #080808 100%)'
     }}>
       {showWelcome && <WelcomeModal onComplete={handleWelcomeComplete} />}
       
@@ -193,7 +188,17 @@ export default function Dashboard() {
         <motion.div
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3 }}>
+          transition={{ duration: 0.3 }}
+          className="relative">
+          
+          {/* Ambient light glow behind orbital */}
+          <div 
+            className="absolute inset-0 -z-10"
+            style={{
+              background: 'radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.02) 0%, transparent 70%)',
+              filter: 'blur(60px)'
+            }}
+          />
 
           <VoidCard className="mb-6 p-6">
             <ChronosOrbital

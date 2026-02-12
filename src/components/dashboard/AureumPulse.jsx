@@ -22,25 +22,16 @@ export default function AureumPulse({ label, value, goal, unit, index = 0, icon 
       transition={{ duration: 0.3, delay: index * 0.05 }}
       className="relative"
       style={{
-        background: 'linear-gradient(135deg, rgba(160,160,160,0.04) 0%, rgba(200,180,140,0.03) 50%, rgba(160,160,160,0.03) 100%)',
-        backdropFilter: 'blur(30px) saturate(160%)',
-        boxShadow: 'inset 0px 1px 20px rgba(200,200,200,0.04), inset 0px 4px 12px rgba(0,0,0,0.4), 0px 10px 40px rgba(0,0,0,0.3)',
-        borderTop: '0.5px solid rgba(212,175,55,0.3)',
-        borderLeft: '0.5px solid rgba(160,160,160,0.06)',
-        borderRight: '0.5px solid rgba(160,160,160,0.06)',
+        background: 'rgba(255, 255, 255, 0.03)',
+        backdropFilter: 'blur(30px) saturate(180%)',
+        boxShadow: '0 20px 50px rgba(0, 0, 0, 0.6), 0 0 1px rgba(212, 175, 55, 0.1)',
+        border: '0.5px solid rgba(212, 175, 55, 0.15)',
         padding: '20px 18px',
         borderRadius: '14px',
         overflow: 'hidden',
         position: 'relative'
       }}
     >
-      {/* Subtle glow overlay */}
-      <div 
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: 'radial-gradient(circle at 50% 0%, rgba(200,180,140,0.02) 0%, transparent 60%)',
-        }}
-      />
       {/* Label with Icon */}
       <div className="flex items-center justify-between mb-4 relative z-10">
         <div className="flex items-center gap-3">

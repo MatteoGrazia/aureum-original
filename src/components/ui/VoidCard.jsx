@@ -6,25 +6,16 @@ export default function VoidCard({ children, className, ...props }) {
     <div
       className={cn("relative overflow-hidden", className)}
       style={{
-        background: 'linear-gradient(135deg, rgba(160,160,160,0.04) 0%, rgba(200,180,140,0.03) 50%, rgba(160,160,160,0.03) 100%)',
-        backdropFilter: 'blur(30px) saturate(160%)',
-        boxShadow: 'inset 0px 1px 20px rgba(200,200,200,0.04), inset 0px 4px 12px rgba(0,0,0,0.4), 0px 10px 40px rgba(0,0,0,0.3)',
-        borderTop: '0.5px solid rgba(212,175,55,0.3)',
-        borderLeft: '0.5px solid rgba(160,160,160,0.06)',
-        borderRight: '0.5px solid rgba(160,160,160,0.06)',
-        borderBottom: 'none',
+        background: 'rgba(255, 255, 255, 0.03)',
+        backdropFilter: 'blur(30px) saturate(180%)',
+        boxShadow: '0 20px 50px rgba(0, 0, 0, 0.6), 0 0 1px rgba(212, 175, 55, 0.1)',
+        border: '0.5px solid rgba(212, 175, 55, 0.15)',
         padding: '20px 18px',
         borderRadius: '14px'
       }}
       {...props}
     >
-      {/* Subtle ambient glow overlay */}
-      <div 
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: 'radial-gradient(circle at 50% 0%, rgba(200,180,140,0.02) 0%, transparent 70%)',
-        }}
-      />
+
       <div className="relative z-10">
         {children}
       </div>

@@ -33,24 +33,7 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
 
   return (
     <div className="relative flex items-center justify-center h-72">
-      {/* Ambient glow background */}
-      <div className="absolute inset-0 overflow-hidden rounded-2xl">
-        <motion.div
-          className="absolute top-1/2 left-1/2 w-96 h-96 -translate-x-1/2 -translate-y-1/2"
-          style={{
-            background: 'radial-gradient(circle, rgba(200,180,140,0.04) 0%, transparent 70%)',
-          }}
-          animate={{
-            scale: [1, 1.1, 1],
-            opacity: [0.3, 0.5, 0.3]
-          }}
-          transition={{
-            duration: 6,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-      </div>
+
 
       {/* Orbital rings */}
       {orbitals.map((orbital, index) => {
@@ -89,8 +72,9 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
                 </linearGradient>
                 
                 <filter id={`glow-${index}`}>
-                  <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                  <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
                   <feMerge>
+                    <feMergeNode in="coloredBlur"/>
                     <feMergeNode in="coloredBlur"/>
                     <feMergeNode in="SourceGraphic"/>
                   </feMerge>
@@ -108,20 +92,23 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
                 opacity="0.08"
               />
 
-              {/* Progress thread with pulse */}
+              {/* Progress thread with intense glow */}
               <motion.circle
                 cx={orbital.size / 2}
                 cy={orbital.size / 2}
                 r={(orbital.size - 4) / 2}
                 fill="none"
                 stroke={`url(#pulse-${index})`}
-                strokeWidth="1"
+                strokeWidth="1.5"
                 strokeLinecap="round"
                 strokeDasharray={circumference}
                 initial={{ strokeDashoffset: circumference }}
                 animate={{ strokeDashoffset }}
                 transition={{ duration: 2, ease: "easeOut", delay: index * 0.15 }}
                 filter={`url(#glow-${index})`}
+                style={{
+                  filter: 'drop-shadow(0 0 4px currentColor) drop-shadow(0 0 8px currentColor)'
+                }}
               />
             </svg>
           </div>

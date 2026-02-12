@@ -74,12 +74,19 @@ export default function QuickLogFAB({ onUpdate }) {
         whileHover={{ x: -2 }}
         whileTap={{ scale: 0.98 }}
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed right-0 top-1/2 -translate-y-1/2 z-40 w-10 h-24 rounded-l-2xl bg-gradient-to-br from-[#D4AF37] to-[#B8960C] flex items-center justify-center shadow-[-4px_0_20px_rgba(212,175,55,0.4)]"
+        className="fixed right-0 top-1/2 -translate-y-1/2 z-40 w-10 h-24 rounded-l-2xl flex items-center justify-center"
+        style={{
+          background: 'rgba(255, 255, 255, 0.03)',
+          backdropFilter: 'blur(30px) saturate(180%)',
+          boxShadow: '0 20px 50px rgba(0, 0, 0, 0.6), 0 0 1px rgba(212, 175, 55, 0.1)',
+          border: '0.5px solid rgba(212, 175, 55, 0.15)',
+          borderRight: 'none'
+        }}
         initial={{ x: 40 }}
         animate={{ x: 0 }}
         transition={{ delay: 0.5, type: "spring" }}
       >
-        <Plus className="w-5 h-5 text-[#080808]" />
+        <Plus className="w-5 h-5 text-[#D4AF37]" strokeWidth={2} />
       </motion.button>
 
       {/* Backdrop */}
