@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 export default function VoidCard({ children, className, ...props }) {
   return (
     <div
-      className={cn("relative overflow-hidden", className)}
+      className={cn("relative", className)}
       style={{
         background: 'rgba(255, 255, 255, 0.03)',
         backdropFilter: 'blur(25px) saturate(180%)',
@@ -13,7 +13,9 @@ export default function VoidCard({ children, className, ...props }) {
         padding: '20px 18px',
         borderRadius: '14px',
         width: '92%',
-        margin: '10px auto'
+        margin: '10px auto',
+        overflow: 'hidden',
+        ...props.style
       }}
       {...props}
     >

@@ -71,18 +71,40 @@ export default function Nutrition() {
         
         const detailedFood = response.data.food;
         setSelectedFood(detailedFood);
-        setSelectedUnit(detailedFood.availableUnits[0]);
-        setAmount(detailedFood.defaultAmount);
+        
+        // Set default to first available unit or default to grams
+        const defaultUnit = detailedFood.availableUnits?.[0] || {
+          unit: 'g',
+          amount: 100,
+          metricUnit: 'g',
+          calories: detailedFood.calories,
+          protein: detailedFood.protein,
+          carbs: detailedFood.carbs,
+          fat: detailedFood.fat,
+          fiber: detailedFood.fiber
+        };
+        
+        setSelectedUnit(defaultUnit);
+        setAmount(defaultUnit.amount || 100);
       } catch (error) {
         console.error('Failed to load food details:', error);
         setSelectedFood(food);
-        setSelectedUnit({ unit: 'g', amount: 100, metricUnit: 'g', ...food });
+        setSelectedUnit({ 
+          unit: 'g', 
+          amount: 100, 
+          metricUnit: 'g',
+          calories: food.calories,
+          protein: food.protein,
+          carbs: food.carbs,
+          fat: food.fat,
+          fiber: food.fiber
+        });
         setAmount(100);
       }
       setLoadingDetails(false);
     } else {
       setSelectedFood(food);
-      setSelectedUnit({ 
+      const defaultUnit = { 
         unit: 'g', 
         amount: 100, 
         metricUnit: 'g',
@@ -91,7 +113,8 @@ export default function Nutrition() {
         carbs: food.carbs,
         fat: food.fat,
         fiber: food.fiber
-      });
+      };
+      setSelectedUnit(defaultUnit);
       setAmount(100);
     }
   };
@@ -214,7 +237,7 @@ export default function Nutrition() {
         }}
       />
 
-      <div className="relative z-10 p-6 pb-32" style={{ paddingBottom: '120px' }}>
+      <div className="relative z-10 p-6" style={{ paddingBottom: 'calc(120px + env(safe-area-inset-bottom))' }}>
         {/* Header with Date Navigation */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -313,10 +336,16 @@ export default function Nutrition() {
               animate={{ y: 0 }}
               exit={{ y: 100 }}
               className="w-full max-w-lg mx-auto"
-              style={{ width: '92%', maxHeight: '85vh', overflowY: 'auto' }}
+              style={{ 
+                width: '92%', 
+                maxHeight: '85vh', 
+                overflowY: 'auto',
+                position: 'relative',
+                zIndex: 1000
+              }}
               onClick={(e) => e.stopPropagation()}
             >
-              <VoidCard className="p-6 pb-4">
+              <VoidCard className="p-6 pb-4" style={{ overflow: 'visible' }}>
                 {loadingDetails ? (
                   <div className="flex flex-col items-center justify-center py-8">
                     <Loader2 className="w-8 h-8 text-[#D4AF37] animate-spin mb-3" />
@@ -324,9 +353,25 @@ export default function Nutrition() {
                   </div>
                 ) : (
                   <>
-                <h3 className="text-xl text-white mb-1">{selectedFood.name}</h3>
+                <h3 
+                  className="text-xl text-white mb-1"
+                  style={{ 
+                    wordWrap: 'break-word',
+                    overflowWrap: 'break-word'
+                  }}
+                >
+                  {selectedFood.name}
+                </h3>
                 {selectedFood.brand && (
-                  <p className="text-white/40 text-sm mb-4">{selectedFood.brand}</p>
+                  <p 
+                    className="text-white/40 text-sm mb-4"
+                    style={{ 
+                      wordWrap: 'break-word',
+                      overflowWrap: 'break-word'
+                    }}
+                  >
+                    {selectedFood.brand}
+                  </p>
                 )}
 
                 {/* Meal Selection */}
@@ -353,7 +398,7 @@ export default function Nutrition() {
                 </div>
 
                 {/* Amount & Unit Selection */}
-                <div className="space-y-3 mb-4">
+                <div className="space-y-3 mb-4" style={{ position: 'relative', zIndex: 10 }}>
                   <div className="flex items-center gap-3">
                     <div className="flex-1">
                       <label className="text-white/40 text-xs mb-1 block">Amount</label>
@@ -365,34 +410,44 @@ export default function Nutrition() {
                         style={{ fontFamily: 'Montserrat, sans-serif', minHeight: '48px' }}
                       />
                     </div>
-                    <div className="flex-1">
+                    <div className="flex-1" style={{ position: 'relative' }}>
                       <label className="text-white/40 text-xs mb-1 block">Unit</label>
-                      <select
-                        value={selectedUnit ? JSON.stringify(selectedUnit) : ''}
-                        onChange={(e) => setSelectedUnit(JSON.parse(e.target.value))}
-                        className="w-full px-4 py-3 rounded-xl border border-[#D4AF37]/30 appearance-none cursor-pointer"
-                        style={{ 
-                          fontFamily: 'Montserrat, sans-serif',
-                          backdropFilter: 'blur(30px)',
-                          background: 'rgba(20, 20, 20, 0.95)',
-                          color: '#D4AF37',
-                          zIndex: 9999,
-                          minHeight: '48px'
-                        }}
-                      >
-                        {selectedFood?.availableUnits?.map((unit, idx) => (
-                          <option 
-                            key={idx} 
-                            value={JSON.stringify(unit)}
-                            style={{ 
-                              background: 'rgba(20, 20, 20, 0.95)', 
-                              color: '#D4AF37' 
-                            }}
-                          >
-                            {unit.unit} ({unit.amount}{unit.metricUnit})
-                          </option>
-                        ))}
-                      </select>
+                      <div style={{ position: 'relative' }}>
+                        <select
+                          value={selectedUnit ? JSON.stringify(selectedUnit) : ''}
+                          onChange={(e) => setSelectedUnit(JSON.parse(e.target.value))}
+                          className="w-full px-4 py-3 rounded-xl border border-[#D4AF37]/30 cursor-pointer"
+                          style={{ 
+                            fontFamily: 'Montserrat, sans-serif',
+                            backdropFilter: 'blur(30px)',
+                            background: '#050505',
+                            color: '#D4AF37',
+                            minHeight: '48px',
+                            position: 'relative',
+                            zIndex: 9999,
+                            WebkitAppearance: 'none',
+                            MozAppearance: 'none',
+                            appearance: 'none',
+                            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23D4AF37' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
+                            backgroundRepeat: 'no-repeat',
+                            backgroundPosition: 'right 12px center'
+                          }}
+                        >
+                          {selectedFood?.availableUnits?.map((unit, idx) => (
+                            <option 
+                              key={idx} 
+                              value={JSON.stringify(unit)}
+                              style={{ 
+                                background: '#050505', 
+                                color: '#D4AF37',
+                                padding: '8px'
+                              }}
+                            >
+                              {unit.unit} ({unit.amount}{unit.metricUnit})
+                            </option>
+                          ))}
+                        </select>
+                      </div>
                     </div>
                   </div>
                   
@@ -404,22 +459,22 @@ export default function Nutrition() {
                 </div>
 
                 {/* Nutrition Info - Live Calculation */}
-                <div className="grid grid-cols-4 gap-2 mb-6">
-                  <div className="text-center p-3 rounded-xl bg-white/5">
+                <div className="flex flex-wrap gap-2 mb-6 justify-center">
+                  <div className="text-center p-3 rounded-xl bg-white/5 flex-1 min-w-[70px]">
                     <p className="text-lg text-[#D4AF37]">{calculateLiveMacros().calories}</p>
-                    <p className="text-[10px] text-white/40 uppercase">kcal</p>
+                    <p className="text-[10px] text-white/40 uppercase" style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>kcal</p>
                   </div>
-                  <div className="text-center p-3 rounded-xl bg-white/5">
+                  <div className="text-center p-3 rounded-xl bg-white/5 flex-1 min-w-[70px]">
                     <p className="text-lg text-white">{calculateLiveMacros().protein}g</p>
-                    <p className="text-[10px] text-white/40 uppercase">protein</p>
+                    <p className="text-[10px] text-white/40 uppercase" style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>protein</p>
                   </div>
-                  <div className="text-center p-3 rounded-xl bg-white/5">
+                  <div className="text-center p-3 rounded-xl bg-white/5 flex-1 min-w-[70px]">
                     <p className="text-lg text-white">{calculateLiveMacros().carbs}g</p>
-                    <p className="text-[10px] text-white/40 uppercase">carbs</p>
+                    <p className="text-[10px] text-white/40 uppercase" style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>carbs</p>
                   </div>
-                  <div className="text-center p-3 rounded-xl bg-white/5">
+                  <div className="text-center p-3 rounded-xl bg-white/5 flex-1 min-w-[70px]">
                     <p className="text-lg text-white">{calculateLiveMacros().fat}g</p>
-                    <p className="text-[10px] text-white/40 uppercase">fat</p>
+                    <p className="text-[10px] text-white/40 uppercase" style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>fat</p>
                   </div>
                 </div>
 
