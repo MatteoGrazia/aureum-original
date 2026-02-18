@@ -172,7 +172,9 @@ Deno.serve(async (req) => {
     const token = await getAccessToken();
 
     if (action === 'search') {
+      console.log('Search query:', query);
       const results = await searchFoods(query, token);
+      console.log('Search results count:', results.length);
       
       const foods = results.map(food => ({
         id: String(food.food_id),
@@ -187,6 +189,7 @@ Deno.serve(async (req) => {
         source: 'fatsecret'
       }));
 
+      console.log('Formatted foods:', JSON.stringify(foods.slice(0, 2)));
       return Response.json({ foods });
     }
 
