@@ -15,6 +15,7 @@ export default function GoldButton({ children, className, variant = 'filled', ..
         variants[variant],
         className
       )}
+      style={{ minHeight: '48px', ...props.style }}
       {...props}
     >
       {children}

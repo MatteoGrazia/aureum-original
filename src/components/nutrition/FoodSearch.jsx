@@ -205,44 +205,44 @@ export default function FoodSearch({ onSelectFood }) {
                   }}
                 >
                   <div className="flex items-start gap-1.5 w-full">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-baseline gap-2 mb-0.5">
-                        <p 
-                          className="text-xs text-white truncate flex-1"
-                          style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}
-                        >
-                          {food.name}
-                        </p>
-                        <span className="text-[11px] text-[#D4AF37] font-semibold flex-shrink-0 whitespace-nowrap">
-                          {food.calories}kcal
-                        </span>
-                      </div>
-                      {food.brand && (
-                        <p 
-                          className="text-[9px] text-white/40 truncate mb-1"
-                          style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 300 }}
-                        >
-                          {food.brand}
-                        </p>
-                      )}
-                      <div 
-                        className="grid grid-cols-3 gap-1.5 text-[9px]"
-                        style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}
-                      >
-                        <div className="flex items-center gap-0.5">
-                          <span className="text-white/40">P:</span>
-                          <span className="text-white">{food.protein}g</span>
-                        </div>
-                        <div className="flex items-center gap-0.5">
-                          <span className="text-white/40">C:</span>
-                          <span className="text-white">{food.carbs}g</span>
-                        </div>
-                        <div className="flex items-center gap-0.5">
-                          <span className="text-white/40">F:</span>
-                          <span className="text-white">{food.fat}g</span>
-                        </div>
-                      </div>
+                  <div className="flex-1 min-w-0">
+                  <div className="flex items-baseline gap-2 mb-0.5">
+                    <p 
+                      className="text-xs text-white truncate flex-1"
+                      style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}
+                    >
+                      {food.name}
+                    </p>
+                    <span className="text-[11px] text-[#D4AF37] font-semibold flex-shrink-0 whitespace-nowrap">
+                      {food.calories}kcal
+                    </span>
+                  </div>
+                  {food.brand && (
+                    <p 
+                      className="text-[9px] text-white/40 truncate mb-1"
+                      style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 300 }}
+                    >
+                      {food.brand}
+                    </p>
+                  )}
+                  <div 
+                    className="grid grid-cols-3 gap-1.5 text-[9px]"
+                    style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}
+                  >
+                    <div className="flex items-center gap-0.5">
+                      <span style={{ color: '#9C7E46' }}>P:</span>
+                      <span style={{ color: '#9C7E46' }}>{food.protein}g</span>
                     </div>
+                    <div className="flex items-center gap-0.5">
+                      <span style={{ color: '#9C7E46' }}>C:</span>
+                      <span style={{ color: '#9C7E46' }}>{food.carbs}g</span>
+                    </div>
+                    <div className="flex items-center gap-0.5">
+                      <span style={{ color: '#9C7E46' }}>F:</span>
+                      <span style={{ color: '#9C7E46' }}>{food.fat}g</span>
+                    </div>
+                  </div>
+                  </div>
                     <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[#D4AF37]/20 flex items-center justify-center hover:bg-[#D4AF37]/30 transition-colors mt-0.5">
                       <Plus className="w-3 h-3 text-[#D4AF37]" />
                     </div>

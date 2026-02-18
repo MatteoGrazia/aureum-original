@@ -214,7 +214,7 @@ export default function Nutrition() {
         }}
       />
 
-      <div className="relative z-10 p-6">
+      <div className="relative z-10 p-6 pb-32" style={{ paddingBottom: '120px' }}>
         {/* Header with Date Navigation */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -312,10 +312,11 @@ export default function Nutrition() {
               initial={{ y: 100 }}
               animate={{ y: 0 }}
               exit={{ y: 100 }}
-              className="w-full max-w-lg"
+              className="w-full max-w-lg mx-auto"
+              style={{ width: '92%', maxHeight: '85vh', overflowY: 'auto' }}
               onClick={(e) => e.stopPropagation()}
             >
-              <VoidCard className="p-6">
+              <VoidCard className="p-6 pb-4">
                 {loadingDetails ? (
                   <div className="flex flex-col items-center justify-center py-8">
                     <Loader2 className="w-8 h-8 text-[#D4AF37] animate-spin mb-3" />
@@ -361,7 +362,7 @@ export default function Nutrition() {
                         value={amount}
                         onChange={(e) => setAmount(Math.max(1, parseFloat(e.target.value) || 1))}
                         className="w-full px-4 py-3 rounded-xl bg-white/5 border border-[#D4AF37]/20 text-white text-center"
-                        style={{ fontFamily: 'Montserrat, sans-serif' }}
+                        style={{ fontFamily: 'Montserrat, sans-serif', minHeight: '48px' }}
                       />
                     </div>
                     <div className="flex-1">
@@ -369,15 +370,25 @@ export default function Nutrition() {
                       <select
                         value={selectedUnit ? JSON.stringify(selectedUnit) : ''}
                         onChange={(e) => setSelectedUnit(JSON.parse(e.target.value))}
-                        className="w-full px-4 py-3 rounded-xl bg-[#D4AF37]/10 border border-[#D4AF37]/30 text-[#D4AF37] appearance-none cursor-pointer"
+                        className="w-full px-4 py-3 rounded-xl border border-[#D4AF37]/30 appearance-none cursor-pointer"
                         style={{ 
                           fontFamily: 'Montserrat, sans-serif',
                           backdropFilter: 'blur(30px)',
-                          background: 'rgba(212, 175, 55, 0.1)'
+                          background: 'rgba(20, 20, 20, 0.95)',
+                          color: '#D4AF37',
+                          zIndex: 9999,
+                          minHeight: '48px'
                         }}
                       >
                         {selectedFood?.availableUnits?.map((unit, idx) => (
-                          <option key={idx} value={JSON.stringify(unit)}>
+                          <option 
+                            key={idx} 
+                            value={JSON.stringify(unit)}
+                            style={{ 
+                              background: 'rgba(20, 20, 20, 0.95)', 
+                              color: '#D4AF37' 
+                            }}
+                          >
                             {unit.unit} ({unit.amount}{unit.metricUnit})
                           </option>
                         ))}
@@ -412,14 +423,16 @@ export default function Nutrition() {
                   </div>
                 </div>
 
-                <GoldButton 
-                  onClick={handleLogFood} 
-                  className="w-full" 
-                  style={{ marginBottom: '20px' }}
-                  disabled={!selectedUnit}
-                >
-                  Log Food
-                </GoldButton>
+                <div style={{ marginTop: '24px', marginBottom: '20px' }}>
+                  <GoldButton 
+                    onClick={handleLogFood} 
+                    className="w-full" 
+                    style={{ minHeight: '48px' }}
+                    disabled={!selectedUnit}
+                  >
+                    Add to Diary
+                  </GoldButton>
+                </div>
                 </>
                 )}
               </VoidCard>
