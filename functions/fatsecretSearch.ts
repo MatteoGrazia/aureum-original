@@ -165,7 +165,7 @@ Deno.serve(async (req) => {
       const results = await searchFoods(query, token);
       
       const foods = results.map(food => ({
-        id: food.food_id,
+        id: String(food.food_id),
         name: food.food_name,
         brand: food.brand_name || '',
         servingSize: food.serving_size || '100g',
@@ -174,7 +174,7 @@ Deno.serve(async (req) => {
         carbs: parseFloat(food.carbohydrates) || 0,
         fat: parseFloat(food.fat) || 0,
         fiber: parseFloat(food.fiber) || 0,
-        needsDetails: true
+        source: 'fatsecret'
       }));
 
       return Response.json({ foods });
