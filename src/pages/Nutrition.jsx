@@ -70,26 +70,27 @@ export default function Nutrition() {
         });
         
         const detailedFood = response.data.food;
+        
+        // Ensure availableUnits exists
+        if (!detailedFood.availableUnits || detailedFood.availableUnits.length === 0) {
+          detailedFood.availableUnits = [{
+            unit: 'g',
+            amount: 100,
+            metricUnit: 'g',
+            calories: detailedFood.calories,
+            protein: detailedFood.protein,
+            carbs: detailedFood.carbs,
+            fat: detailedFood.fat,
+            fiber: detailedFood.fiber
+          }];
+        }
+        
         setSelectedFood(detailedFood);
-        
-        // Set default to first available unit or default to grams
-        const defaultUnit = detailedFood.availableUnits?.[0] || {
-          unit: 'g',
-          amount: 100,
-          metricUnit: 'g',
-          calories: detailedFood.calories,
-          protein: detailedFood.protein,
-          carbs: detailedFood.carbs,
-          fat: detailedFood.fat,
-          fiber: detailedFood.fiber
-        };
-        
-        setSelectedUnit(defaultUnit);
-        setAmount(defaultUnit.amount || 100);
+        setSelectedUnit(detailedFood.availableUnits[0]);
+        setAmount(detailedFood.availableUnits[0].amount || 100);
       } catch (error) {
         console.error('Failed to load food details:', error);
-        setSelectedFood(food);
-        setSelectedUnit({ 
+        const fallbackUnit = { 
           unit: 'g', 
           amount: 100, 
           metricUnit: 'g',
@@ -98,12 +99,13 @@ export default function Nutrition() {
           carbs: food.carbs,
           fat: food.fat,
           fiber: food.fiber
-        });
+        };
+        setSelectedFood({ ...food, availableUnits: [fallbackUnit] });
+        setSelectedUnit(fallbackUnit);
         setAmount(100);
       }
       setLoadingDetails(false);
     } else {
-      setSelectedFood(food);
       const defaultUnit = { 
         unit: 'g', 
         amount: 100, 
@@ -114,6 +116,7 @@ export default function Nutrition() {
         fat: food.fat,
         fiber: food.fiber
       };
+      setSelectedFood({ ...food, availableUnits: [defaultUnit] });
       setSelectedUnit(defaultUnit);
       setAmount(100);
     }
