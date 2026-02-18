@@ -73,15 +73,25 @@ const searchFoods = async (query, token) => {
   });
 
   const responseText = await response.text();
+  console.log('FatSecret search response:', responseText.substring(0, 500));
+  
   let data;
   try {
     data = JSON.parse(responseText);
   } catch {
-    console.error('Search response:', responseText.substring(0, 200));
+    console.error('Search parse error:', responseText.substring(0, 200));
     return [];
   }
   
+  console.log('Parsed data structure:', JSON.stringify(data).substring(0, 500));
+  
   let foods = data.foods_search?.results || data.foods?.food || [];
+  
+  if (!Array.isArray(foods) && foods) {
+    foods = [foods];
+  }
+  
+  console.log(`Found ${foods.length} foods`);
   
   // Sort by relevance: branded items first, then generic
   foods = foods.sort((a, b) => {
