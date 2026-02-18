@@ -134,8 +134,7 @@ export default function Nutrition() {
   const handleLogFood = async () => {
     if (!selectedFood || !selectedUnit) return;
     
-    // Calculate multiplier based on amount vs. unit's base amount
-    const multiplier = amount / selectedUnit.amount;
+    const macros = calculateLiveMacros();
     
     await base44.entities.FoodLog.create({
       date: dateStr,
@@ -143,31 +142,38 @@ export default function Nutrition() {
       food_name: selectedFood.name,
       brand: selectedFood.brand || '',
       serving_size: amount,
-      serving_unit: selectedUnit.metricUnit,
-      calories: Math.round(selectedUnit.calories * multiplier),
-      protein: Math.round(selectedUnit.protein * multiplier),
-      carbs: Math.round(selectedUnit.carbs * multiplier),
-      fat: Math.round(selectedUnit.fat * multiplier),
-      fiber: Math.round((selectedUnit.fiber || 0) * multiplier),
+      serving_unit: getSmartLabel(selectedUnit.servingDescription || selectedUnit.unit),
+      calories: macros.calories,
+      protein: macros.protein,
+      carbs: macros.carbs,
+      fat: macros.fat,
+      fiber: Math.round((selectedUnit.fiber || 0) * amount),
       barcode: selectedFood.barcode
     });
 
     setSelectedFood(null);
-    setAmount(100);
+    setAmount(1);
     setSelectedUnit(null);
     refetch();
   };
 
   // Live calculation of displayed macros
+  // Formula: Total Macros = Quantity × Macros Per Selected Serving
   const calculateLiveMacros = () => {
-    if (!selectedUnit) return { calories: 0, protein: 0, carbs: 0, fat: 0 };
-    const multiplier = amount / selectedUnit.amount;
+    if (!selectedUnit || !amount) return { calories: 0, protein: 0, carbs: 0, fat: 0 };
     return {
-      calories: Math.round(selectedUnit.calories * multiplier),
-      protein: Math.round(selectedUnit.protein * multiplier),
-      carbs: Math.round(selectedUnit.carbs * multiplier),
-      fat: Math.round(selectedUnit.fat * multiplier)
+      calories: Math.round(selectedUnit.calories * amount),
+      protein: Math.round(selectedUnit.protein * amount),
+      carbs: Math.round(selectedUnit.carbs * amount),
+      fat: Math.round(selectedUnit.fat * amount)
     };
+  };
+
+  // Smart label: Strip "1 " from serving descriptions
+  const getSmartLabel = (servingDesc) => {
+    if (!servingDesc) return 'Serving';
+    const cleaned = servingDesc.replace(/^1\s+/i, '');
+    return cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
   };
 
   // Convert units based on user preference
