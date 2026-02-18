@@ -195,7 +195,26 @@ Deno.serve(async (req) => {
       }
 
       const servings = food.servings?.serving || [];
-      const defaultServing = Array.isArray(servings) ? servings[0] : servings;
+      const servingArray = Array.isArray(servings) ? servings : [servings];
+      const defaultServing = servingArray.find(s => s.is_default === "1") || servingArray[0];
+
+      const availableUnits = servingArray.map(serving => {
+        const servingDesc = serving.serving_description || serving.measurement_description || 'serving';
+        const isDefault = serving.is_default === "1";
+        
+        return {
+          servingDescription: servingDesc,
+          unit: serving.measurement_description || 'serving',
+          amount: parseFloat(serving.metric_serving_amount) || 100,
+          metricUnit: serving.metric_serving_unit || 'g',
+          calories: parseFloat(serving.calories) || 0,
+          protein: parseFloat(serving.protein) || 0,
+          carbs: parseFloat(serving.carbohydrates) || 0,
+          fat: parseFloat(serving.fat) || 0,
+          fiber: parseFloat(serving.fiber) || 0,
+          isDefault: isDefault
+        };
+      });
 
       const foodData = {
         id: food.food_id,
@@ -209,7 +228,7 @@ Deno.serve(async (req) => {
         fat: parseFloat(defaultServing?.fat) || 0,
         fiber: parseFloat(defaultServing?.fiber) || 0,
         barcode: barcode,
-        servings: servings
+        availableUnits: availableUnits
       };
 
       return Response.json({ food: foodData });
@@ -224,19 +243,28 @@ Deno.serve(async (req) => {
 
       const servings = food.servings?.serving || [];
       const servingArray = Array.isArray(servings) ? servings : [servings];
-      const defaultServing = servingArray[0];
+      
+      // Find default serving (is_default: "1") or use first
+      const defaultServing = servingArray.find(s => s.is_default === "1") || servingArray[0];
 
       // Extract all available units with their nutritional data
-      const availableUnits = servingArray.map(serving => ({
-        unit: serving.measurement_description || 'serving',
-        amount: parseFloat(serving.metric_serving_amount) || 100,
-        metricUnit: serving.metric_serving_unit || 'g',
-        calories: parseFloat(serving.calories) || 0,
-        protein: parseFloat(serving.protein) || 0,
-        carbs: parseFloat(serving.carbohydrates) || 0,
-        fat: parseFloat(serving.fat) || 0,
-        fiber: parseFloat(serving.fiber) || 0
-      }));
+      const availableUnits = servingArray.map(serving => {
+        const servingDesc = serving.serving_description || serving.measurement_description || 'serving';
+        const isDefault = serving.is_default === "1";
+        
+        return {
+          servingDescription: servingDesc,
+          unit: serving.measurement_description || 'serving',
+          amount: parseFloat(serving.metric_serving_amount) || 100,
+          metricUnit: serving.metric_serving_unit || 'g',
+          calories: parseFloat(serving.calories) || 0,
+          protein: parseFloat(serving.protein) || 0,
+          carbs: parseFloat(serving.carbohydrates) || 0,
+          fat: parseFloat(serving.fat) || 0,
+          fiber: parseFloat(serving.fiber) || 0,
+          isDefault: isDefault
+        };
+      });
 
       const foodData = {
         id: food.food_id,

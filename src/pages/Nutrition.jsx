@@ -74,6 +74,7 @@ export default function Nutrition() {
         // Ensure availableUnits exists
         if (!detailedFood.availableUnits || detailedFood.availableUnits.length === 0) {
           detailedFood.availableUnits = [{
+            servingDescription: '100 g',
             unit: 'g',
             amount: 100,
             metricUnit: 'g',
@@ -81,16 +82,21 @@ export default function Nutrition() {
             protein: detailedFood.protein,
             carbs: detailedFood.carbs,
             fat: detailedFood.fat,
-            fiber: detailedFood.fiber
+            fiber: detailedFood.fiber,
+            isDefault: true
           }];
         }
         
+        // Find default serving or use first
+        const defaultUnit = detailedFood.availableUnits.find(u => u.isDefault) || detailedFood.availableUnits[0];
+        
         setSelectedFood(detailedFood);
-        setSelectedUnit(detailedFood.availableUnits[0]);
-        setAmount(detailedFood.availableUnits[0].amount || 100);
+        setSelectedUnit(defaultUnit);
+        setAmount(1); // Default to 1 quantity
       } catch (error) {
         console.error('Failed to load food details:', error);
         const fallbackUnit = { 
+          servingDescription: '100 g',
           unit: 'g', 
           amount: 100, 
           metricUnit: 'g',
@@ -98,15 +104,17 @@ export default function Nutrition() {
           protein: food.protein,
           carbs: food.carbs,
           fat: food.fat,
-          fiber: food.fiber
+          fiber: food.fiber,
+          isDefault: true
         };
         setSelectedFood({ ...food, availableUnits: [fallbackUnit] });
         setSelectedUnit(fallbackUnit);
-        setAmount(100);
+        setAmount(1);
       }
       setLoadingDetails(false);
     } else {
       const defaultUnit = { 
+        servingDescription: '100 g',
         unit: 'g', 
         amount: 100, 
         metricUnit: 'g',
@@ -114,11 +122,12 @@ export default function Nutrition() {
         protein: food.protein,
         carbs: food.carbs,
         fat: food.fat,
-        fiber: food.fiber
+        fiber: food.fiber,
+        isDefault: true
       };
       setSelectedFood({ ...food, availableUnits: [defaultUnit] });
       setSelectedUnit(defaultUnit);
-      setAmount(100);
+      setAmount(1);
     }
   };
 
@@ -400,26 +409,27 @@ export default function Nutrition() {
                   })}
                 </div>
 
-                {/* Amount & Unit Selection */}
+                {/* Quantity & Serving Size Selection */}
                 <div className="space-y-3 mb-4" style={{ position: 'relative', zIndex: 10 }}>
                   <div className="flex items-center gap-3">
                     <div className="flex-1">
-                      <label className="text-white/40 text-xs mb-1 block">Amount</label>
+                      <label className="text-white/40 text-xs mb-1 block">Quantity</label>
                       <input
                         type="number"
+                        step="0.1"
                         value={amount}
-                        onChange={(e) => setAmount(Math.max(1, parseFloat(e.target.value) || 1))}
+                        onChange={(e) => setAmount(Math.max(0.1, parseFloat(e.target.value) || 1))}
                         className="w-full px-4 py-3 rounded-xl bg-white/5 border border-[#D4AF37]/20 text-white text-center"
                         style={{ fontFamily: 'Montserrat, sans-serif', minHeight: '48px' }}
                       />
                     </div>
                     <div className="flex-1" style={{ position: 'relative' }}>
-                      <label className="text-white/40 text-xs mb-1 block">Unit</label>
+                      <label className="text-white/40 text-xs mb-1 block">Serving Size</label>
                       <div style={{ position: 'relative' }}>
                         <select
                           value={selectedUnit ? JSON.stringify(selectedUnit) : ''}
                           onChange={(e) => setSelectedUnit(JSON.parse(e.target.value))}
-                          className="w-full px-4 py-3 rounded-xl border border-[#D4AF37]/30 cursor-pointer"
+                          className="w-full px-3 py-3 rounded-xl border border-[#D4AF37]/30 cursor-pointer"
                           style={{ 
                             fontFamily: 'Montserrat, sans-serif',
                             backdropFilter: 'blur(30px)',
@@ -427,13 +437,17 @@ export default function Nutrition() {
                             color: '#D4AF37',
                             minHeight: '48px',
                             position: 'relative',
-                            zIndex: 9999,
+                            zIndex: 10000,
                             WebkitAppearance: 'none',
                             MozAppearance: 'none',
                             appearance: 'none',
                             backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23D4AF37' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
                             backgroundRepeat: 'no-repeat',
-                            backgroundPosition: 'right 12px center'
+                            backgroundPosition: 'right 12px center',
+                            paddingRight: '36px',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis'
                           }}
                         >
                           {selectedFood?.availableUnits?.map((unit, idx) => (
@@ -446,7 +460,7 @@ export default function Nutrition() {
                                 padding: '8px'
                               }}
                             >
-                              {unit.unit} ({unit.amount}{unit.metricUnit})
+                              {getSmartLabel(unit.servingDescription)}
                             </option>
                           ))}
                         </select>
