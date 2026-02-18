@@ -32,34 +32,37 @@ export default function BarcodeScanner({ isOpen, onClose, onScan }) {
             aspectRatio: 1.0,
           },
           async (decodedText) => {
-            // Barcode scanned
+            // Barcode scanned - use FatSecret Premier barcode database
             try {
-              const response = await fetch(
-                `https://world.openfoodfacts.org/api/v0/product/${decodedText}.json`
-              );
-              const data = await response.json();
+              const { base44 } = await import('@/api/base44Client');
+              const response = await base44.functions.invoke('fatsecretSearch', {
+                action: 'barcode',
+                barcode: decodedText
+              });
 
-              if (data.status === 1 && data.product) {
-                const product = data.product;
+              if (response.data.food) {
+                const product = response.data.food;
                 const food = {
-                  name: product.product_name || 'Unknown Product',
-                  brand: product.brands || '',
-                  calories: Math.round(product.nutriments?.['energy-kcal_100g'] || 0),
-                  protein: Math.round(product.nutriments?.proteins_100g || 0),
-                  carbs: Math.round(product.nutriments?.carbohydrates_100g || 0),
-                  fat: Math.round(product.nutriments?.fat_100g || 0),
-                  fiber: Math.round(product.nutriments?.fiber_100g || 0),
-                  serving_size: 100,
-                  serving_unit: 'g',
-                  barcode: decodedText
+                  id: product.id,
+                  name: product.name,
+                  brand: product.brand || '',
+                  calories: Math.round(product.calories),
+                  protein: Math.round(product.protein),
+                  carbs: Math.round(product.carbs),
+                  fat: Math.round(product.fat),
+                  fiber: Math.round(product.fiber),
+                  serving_size: product.servingSize || '100g',
+                  barcode: decodedText,
+                  source: 'fatsecret'
                 };
                 await html5QrCode.stop();
                 onScan(food);
               } else {
-                setError('Product not found in database');
+                setError('Product not found in Premier database');
               }
             } catch (err) {
-              setError('Error looking up product');
+              console.error('Barcode lookup error:', err);
+              setError('Error looking up product. Please try again.');
             }
           },
           (errorMessage) => {

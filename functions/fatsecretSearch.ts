@@ -55,6 +55,7 @@ const getAccessToken = async () => {
 };
 
 const searchFoods = async (query, token) => {
+  // Use Premier API foods.search.v3 for enhanced accuracy and full US dataset
   const response = await fetch('https://platform.fatsecret.com/rest/server.api', {
     method: 'POST',
     headers: {
@@ -62,10 +63,12 @@ const searchFoods = async (query, token) => {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
     body: new URLSearchParams({
-      method: 'foods.search',
+      method: 'foods.search.v3',
       search_expression: query,
-      page_size: '30',
-      format: 'json'
+      page_size: '50',
+      format: 'json',
+      region: 'US',
+      language: 'en'
     }).toString()
   });
 
@@ -78,7 +81,7 @@ const searchFoods = async (query, token) => {
     return [];
   }
   
-  let foods = data.foods?.food || [];
+  let foods = data.foods_search?.results || data.foods?.food || [];
   
   // Sort by relevance: branded items first, then generic
   foods = foods.sort((a, b) => {
@@ -87,7 +90,35 @@ const searchFoods = async (query, token) => {
     return bBranded - aBranded;
   });
 
-  return foods.slice(0, 15);
+  return foods.slice(0, 20);
+};
+
+const searchBarcode = async (barcode, token) => {
+  // Premier API barcode lookup with full US dataset
+  const response = await fetch('https://platform.fatsecret.com/rest/server.api', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: new URLSearchParams({
+      method: 'food.find_id_for_barcode',
+      barcode: barcode,
+      format: 'json',
+      region: 'US'
+    }).toString()
+  });
+
+  const responseText = await response.text();
+  let data;
+  try {
+    data = JSON.parse(responseText);
+  } catch {
+    console.error('Barcode response:', responseText.substring(0, 200));
+    return null;
+  }
+
+  return data.food_id?.value || null;
 };
 
 const getFoodDetails = async (foodId, token) => {
@@ -125,7 +156,7 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { action, query, foodId } = await req.json();
+    const { action, query, foodId, barcode } = await req.json();
 
     const token = await getAccessToken();
 
@@ -145,6 +176,41 @@ Deno.serve(async (req) => {
       }));
 
       return Response.json({ foods });
+    }
+
+    if (action === 'barcode') {
+      const foodId = await searchBarcode(barcode, token);
+      
+      if (!foodId) {
+        return Response.json({ error: 'Product not found' }, { status: 404 });
+      }
+
+      // Fetch full food details
+      const food = await getFoodDetails(foodId, token);
+      
+      if (!food) {
+        return Response.json({ error: 'Food details not found' }, { status: 404 });
+      }
+
+      const servings = food.servings?.serving || [];
+      const defaultServing = Array.isArray(servings) ? servings[0] : servings;
+
+      const foodData = {
+        id: food.food_id,
+        name: food.food_name,
+        brand: food.brand_name || '',
+        servingSize: defaultServing?.serving_size || '100g',
+        servingDescription: defaultServing?.measurement_description || 'serving',
+        calories: parseFloat(defaultServing?.calories) || 0,
+        protein: parseFloat(defaultServing?.protein) || 0,
+        carbs: parseFloat(defaultServing?.carbohydrates) || 0,
+        fat: parseFloat(defaultServing?.fat) || 0,
+        fiber: parseFloat(defaultServing?.fiber) || 0,
+        barcode: barcode,
+        servings: servings
+      };
+
+      return Response.json({ food: foodData });
     }
 
     if (action === 'get') {
