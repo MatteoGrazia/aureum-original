@@ -55,7 +55,7 @@ const getAccessToken = async () => {
 };
 
 const searchFoods = async (query, token) => {
-  // Use Premier API foods.search.v3 for enhanced accuracy and full US dataset
+  // Use Standard API foods.search method (more compatible)
   const response = await fetch('https://platform.fatsecret.com/rest/server.api', {
     method: 'POST',
     headers: {
@@ -63,17 +63,14 @@ const searchFoods = async (query, token) => {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
     body: new URLSearchParams({
-      method: 'foods.search.v3',
+      method: 'foods.search',
       search_expression: query,
-      page_size: '50',
-      format: 'json',
-      region: 'US',
-      language: 'en'
+      max_results: '50',
+      format: 'json'
     }).toString()
   });
 
   const responseText = await response.text();
-  console.log('FatSecret search response:', responseText.substring(0, 500));
   
   let data;
   try {
@@ -83,15 +80,11 @@ const searchFoods = async (query, token) => {
     return [];
   }
   
-  console.log('Parsed data structure:', JSON.stringify(data).substring(0, 500));
-  
-  let foods = data.foods_search?.results || data.foods?.food || [];
+  let foods = data.foods?.food || [];
   
   if (!Array.isArray(foods) && foods) {
     foods = [foods];
   }
-  
-  console.log(`Found ${foods.length} foods`);
   
   // Sort by relevance: branded items first, then generic
   foods = foods.sort((a, b) => {
