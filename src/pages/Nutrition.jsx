@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Scan, ChevronLeft, ChevronRight, Trash2, Coffee, Sun, Moon, Cookie } from 'lucide-react';
+import { Scan, ChevronLeft, ChevronRight, Trash2, Coffee, Sun, Moon, Cookie, Loader2 } from 'lucide-react';
 import VoidCard from '@/components/ui/VoidCard';
 import VoidBackground from '@/components/dashboard/VoidBackground';
 import GoldButton from '@/components/ui/GoldButton';
@@ -26,7 +26,9 @@ export default function Nutrition() {
   const [showScanner, setShowScanner] = useState(false);
   const [selectedFood, setSelectedFood] = useState(null);
   const [selectedMeal, setSelectedMeal] = useState('lunch');
-  const [servings, setServings] = useState(1);
+  const [amount, setAmount] = useState(100);
+  const [selectedUnit, setSelectedUnit] = useState(null);
+  const [loadingDetails, setLoadingDetails] = useState(false);
   const queryClient = useQueryClient();
 
   const dateStr = format(selectedDate, 'yyyy-MM-dd');
@@ -57,33 +59,91 @@ export default function Nutrition() {
   const totalCarbs = foodLogs.reduce((sum, log) => sum + (log.carbs || 0), 0);
   const totalFat = foodLogs.reduce((sum, log) => sum + (log.fat || 0), 0);
 
-  const handleSelectFood = (food) => {
-    setSelectedFood(food);
-    setServings(1);
+  const handleSelectFood = async (food) => {
+    // Fetch detailed serving data for FatSecret foods
+    if (food.needsDetails && food.id) {
+      setLoadingDetails(true);
+      try {
+        const response = await base44.functions.invoke('fatsecretSearch', {
+          action: 'get',
+          foodId: food.id
+        });
+        
+        const detailedFood = response.data.food;
+        setSelectedFood(detailedFood);
+        setSelectedUnit(detailedFood.availableUnits[0]);
+        setAmount(detailedFood.defaultAmount);
+      } catch (error) {
+        console.error('Failed to load food details:', error);
+        setSelectedFood(food);
+        setSelectedUnit({ unit: 'g', amount: 100, metricUnit: 'g', ...food });
+        setAmount(100);
+      }
+      setLoadingDetails(false);
+    } else {
+      setSelectedFood(food);
+      setSelectedUnit({ 
+        unit: 'g', 
+        amount: 100, 
+        metricUnit: 'g',
+        calories: food.calories,
+        protein: food.protein,
+        carbs: food.carbs,
+        fat: food.fat,
+        fiber: food.fiber
+      });
+      setAmount(100);
+    }
   };
 
   const handleLogFood = async () => {
-    if (!selectedFood) return;
+    if (!selectedFood || !selectedUnit) return;
     
-    const multiplier = servings;
+    // Calculate multiplier based on amount vs. unit's base amount
+    const multiplier = amount / selectedUnit.amount;
+    
     await base44.entities.FoodLog.create({
       date: dateStr,
       meal_type: selectedMeal,
       food_name: selectedFood.name,
-      brand: selectedFood.brand,
-      serving_size: selectedFood.serving_size * multiplier,
-      serving_unit: selectedFood.serving_unit,
-      calories: Math.round(selectedFood.calories * multiplier),
-      protein: Math.round(selectedFood.protein * multiplier),
-      carbs: Math.round(selectedFood.carbs * multiplier),
-      fat: Math.round(selectedFood.fat * multiplier),
-      fiber: Math.round((selectedFood.fiber || 0) * multiplier),
+      brand: selectedFood.brand || '',
+      serving_size: amount,
+      serving_unit: selectedUnit.metricUnit,
+      calories: Math.round(selectedUnit.calories * multiplier),
+      protein: Math.round(selectedUnit.protein * multiplier),
+      carbs: Math.round(selectedUnit.carbs * multiplier),
+      fat: Math.round(selectedUnit.fat * multiplier),
+      fiber: Math.round((selectedUnit.fiber || 0) * multiplier),
       barcode: selectedFood.barcode
     });
 
     setSelectedFood(null);
-    setServings(1);
+    setAmount(100);
+    setSelectedUnit(null);
     refetch();
+  };
+
+  // Live calculation of displayed macros
+  const calculateLiveMacros = () => {
+    if (!selectedUnit) return { calories: 0, protein: 0, carbs: 0, fat: 0 };
+    const multiplier = amount / selectedUnit.amount;
+    return {
+      calories: Math.round(selectedUnit.calories * multiplier),
+      protein: Math.round(selectedUnit.protein * multiplier),
+      carbs: Math.round(selectedUnit.carbs * multiplier),
+      fat: Math.round(selectedUnit.fat * multiplier)
+    };
+  };
+
+  // Convert units based on user preference
+  const convertToPreferredUnit = (value, fromUnit, userPreference) => {
+    if (userPreference === 'imperial' && fromUnit === 'g') {
+      return { value: (value / 28.35).toFixed(1), unit: 'oz' };
+    }
+    if (userPreference === 'metric' && fromUnit === 'oz') {
+      return { value: (value * 28.35).toFixed(0), unit: 'g' };
+    }
+    return { value, unit: fromUnit };
   };
 
   const handleDeleteLog = async (logId) => {
@@ -256,6 +316,13 @@ export default function Nutrition() {
               onClick={(e) => e.stopPropagation()}
             >
               <VoidCard className="p-6">
+                {loadingDetails ? (
+                  <div className="flex flex-col items-center justify-center py-8">
+                    <Loader2 className="w-8 h-8 text-[#D4AF37] animate-spin mb-3" />
+                    <p className="text-white/40 text-sm">Loading detailed nutrition...</p>
+                  </div>
+                ) : (
+                  <>
                 <h3 className="text-xl text-white mb-1">{selectedFood.name}</h3>
                 {selectedFood.brand && (
                   <p className="text-white/40 text-sm mb-4">{selectedFood.brand}</p>
@@ -284,49 +351,77 @@ export default function Nutrition() {
                   })}
                 </div>
 
-                {/* Serving Size */}
-                <div className="flex items-center justify-between mb-4 p-3 rounded-xl bg-white/5">
-                  <span className="text-white/60">Servings</span>
+                {/* Amount & Unit Selection */}
+                <div className="space-y-3 mb-4">
                   <div className="flex items-center gap-3">
-                    <button
-                      onClick={() => setServings(Math.max(0.5, servings - 0.5))}
-                      className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center"
-                    >
-                      -
-                    </button>
-                    <span className="text-white w-12 text-center">{servings}</span>
-                    <button
-                      onClick={() => setServings(servings + 0.5)}
-                      className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center"
-                    >
-                      +
-                    </button>
+                    <div className="flex-1">
+                      <label className="text-white/40 text-xs mb-1 block">Amount</label>
+                      <input
+                        type="number"
+                        value={amount}
+                        onChange={(e) => setAmount(Math.max(1, parseFloat(e.target.value) || 1))}
+                        className="w-full px-4 py-3 rounded-xl bg-white/5 border border-[#D4AF37]/20 text-white text-center"
+                        style={{ fontFamily: 'Montserrat, sans-serif' }}
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <label className="text-white/40 text-xs mb-1 block">Unit</label>
+                      <select
+                        value={selectedUnit ? JSON.stringify(selectedUnit) : ''}
+                        onChange={(e) => setSelectedUnit(JSON.parse(e.target.value))}
+                        className="w-full px-4 py-3 rounded-xl bg-[#D4AF37]/10 border border-[#D4AF37]/30 text-[#D4AF37] appearance-none cursor-pointer"
+                        style={{ 
+                          fontFamily: 'Montserrat, sans-serif',
+                          backdropFilter: 'blur(30px)',
+                          background: 'rgba(212, 175, 55, 0.1)'
+                        }}
+                      >
+                        {selectedFood?.availableUnits?.map((unit, idx) => (
+                          <option key={idx} value={JSON.stringify(unit)}>
+                            {unit.unit} ({unit.amount}{unit.metricUnit})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
+                  
+                  {profile?.measurement_system === 'imperial' && selectedUnit?.metricUnit === 'g' && (
+                    <p className="text-white/30 text-xs text-center">
+                      ≈ {(amount / 28.35).toFixed(1)} oz
+                    </p>
+                  )}
                 </div>
 
-                {/* Nutrition Info */}
+                {/* Nutrition Info - Live Calculation */}
                 <div className="grid grid-cols-4 gap-2 mb-6">
                   <div className="text-center p-3 rounded-xl bg-white/5">
-                    <p className="text-lg text-[#D4AF37]">{Math.round(selectedFood.calories * servings)}</p>
+                    <p className="text-lg text-[#D4AF37]">{calculateLiveMacros().calories}</p>
                     <p className="text-[10px] text-white/40 uppercase">kcal</p>
                   </div>
                   <div className="text-center p-3 rounded-xl bg-white/5">
-                    <p className="text-lg text-white">{Math.round(selectedFood.protein * servings)}</p>
+                    <p className="text-lg text-white">{calculateLiveMacros().protein}g</p>
                     <p className="text-[10px] text-white/40 uppercase">protein</p>
                   </div>
                   <div className="text-center p-3 rounded-xl bg-white/5">
-                    <p className="text-lg text-white">{Math.round(selectedFood.carbs * servings)}</p>
+                    <p className="text-lg text-white">{calculateLiveMacros().carbs}g</p>
                     <p className="text-[10px] text-white/40 uppercase">carbs</p>
                   </div>
                   <div className="text-center p-3 rounded-xl bg-white/5">
-                    <p className="text-lg text-white">{Math.round(selectedFood.fat * servings)}</p>
+                    <p className="text-lg text-white">{calculateLiveMacros().fat}g</p>
                     <p className="text-[10px] text-white/40 uppercase">fat</p>
                   </div>
                 </div>
 
-                <GoldButton onClick={handleLogFood} className="w-full" style={{ marginBottom: '20px' }}>
+                <GoldButton 
+                  onClick={handleLogFood} 
+                  className="w-full" 
+                  style={{ marginBottom: '20px' }}
+                  disabled={!selectedUnit}
+                >
                   Log Food
                 </GoldButton>
+                </>
+                )}
               </VoidCard>
             </motion.div>
           </motion.div>

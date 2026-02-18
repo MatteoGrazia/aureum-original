@@ -105,7 +105,8 @@ export default function FoodSearch({ onSelectFood }) {
         fat: Math.round(food.fat),
         fiber: Math.round(food.fiber),
         serving_size: food.servingSize || '100g',
-        source: 'fatsecret'
+        source: 'fatsecret',
+        needsDetails: food.needsDetails
       }));
 
       clearTimeout(timeoutId);

@@ -122,6 +122,7 @@ const searchBarcode = async (barcode, token) => {
 };
 
 const getFoodDetails = async (foodId, token) => {
+  // Use food.get.v2 for Premier detailed serving data
   const response = await fetch('https://platform.fatsecret.com/rest/server.api', {
     method: 'POST',
     headers: {
@@ -129,7 +130,7 @@ const getFoodDetails = async (foodId, token) => {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
     body: new URLSearchParams({
-      method: 'food.get',
+      method: 'food.get.v2',
       food_id: foodId,
       format: 'json'
     }).toString()
@@ -172,7 +173,8 @@ Deno.serve(async (req) => {
         protein: parseFloat(food.protein) || 0,
         carbs: parseFloat(food.carbohydrates) || 0,
         fat: parseFloat(food.fat) || 0,
-        fiber: parseFloat(food.fiber) || 0
+        fiber: parseFloat(food.fiber) || 0,
+        needsDetails: true
       }));
 
       return Response.json({ foods });
@@ -221,20 +223,34 @@ Deno.serve(async (req) => {
       }
 
       const servings = food.servings?.serving || [];
-      const defaultServing = Array.isArray(servings) ? servings[0] : servings;
+      const servingArray = Array.isArray(servings) ? servings : [servings];
+      const defaultServing = servingArray[0];
+
+      // Extract all available units with their nutritional data
+      const availableUnits = servingArray.map(serving => ({
+        unit: serving.measurement_description || 'serving',
+        amount: parseFloat(serving.metric_serving_amount) || 100,
+        metricUnit: serving.metric_serving_unit || 'g',
+        calories: parseFloat(serving.calories) || 0,
+        protein: parseFloat(serving.protein) || 0,
+        carbs: parseFloat(serving.carbohydrates) || 0,
+        fat: parseFloat(serving.fat) || 0,
+        fiber: parseFloat(serving.fiber) || 0
+      }));
 
       const foodData = {
         id: food.food_id,
         name: food.food_name,
         brand: food.brand_name || '',
-        servingSize: defaultServing?.serving_size || '100g',
-        servingDescription: defaultServing?.measurement_description || 'serving',
+        defaultUnit: defaultServing?.measurement_description || 'g',
+        defaultAmount: parseFloat(defaultServing?.metric_serving_amount) || 100,
+        defaultMetricUnit: defaultServing?.metric_serving_unit || 'g',
         calories: parseFloat(defaultServing?.calories) || 0,
         protein: parseFloat(defaultServing?.protein) || 0,
         carbs: parseFloat(defaultServing?.carbohydrates) || 0,
         fat: parseFloat(defaultServing?.fat) || 0,
         fiber: parseFloat(defaultServing?.fiber) || 0,
-        servings: servings
+        availableUnits: availableUnits
       };
 
       return Response.json({ food: foodData });
