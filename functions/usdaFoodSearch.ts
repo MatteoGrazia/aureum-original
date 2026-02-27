@@ -70,20 +70,6 @@ const buildServingUnits = (food) => {
     });
   }
 
-  // Always add 1g option for custom amounts
-  units.push({
-    servingDescription: '1g',
-    unit: 'g',
-    amount: 1,
-    metricUnit: 'g',
-    calories: Math.round((per100g.calories / 100) * 10) / 10,
-    protein: Math.round((per100g.protein / 100) * 10) / 10,
-    carbs: Math.round((per100g.carbs / 100) * 10) / 10,
-    fat: Math.round((per100g.fat / 100) * 10) / 10,
-    fiber: Math.round((per100g.fiber / 100) * 10) / 10,
-    isDefault: false,
-  });
-
   // Always add 100g option
   units.push({
     servingDescription: '100g',
