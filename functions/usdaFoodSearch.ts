@@ -117,9 +117,15 @@ const searchUSDA = async (query) => {
       const availableUnits = buildServingUnits(detail);
       const defaultUnit = availableUnits.find(u => u.isDefault) || availableUnits[0];
 
+      // Clean up USDA description: "Egg, whole, raw, fresh" → "Egg, whole"
+      const cleanName = (food.description || '')
+        .replace(/,\s*(raw|fresh|cooked|boiled|fried|roasted|dried|frozen|canned|plain|unprepared|prepared|ns as to|NFS|NES|fluid|salted|unsalted|with skin|without skin|with bone|boneless|skinless|all types|commercial|home-prepared|restaurant|fast food|generic)\b.*/gi, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+
       return {
         id: String(food.fdcId),
-        name: food.description,
+        name: cleanName || food.description,
         brand: food.brandOwner || '',
         calories: defaultUnit.calories,
         protein: defaultUnit.protein,
