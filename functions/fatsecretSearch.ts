@@ -55,28 +55,33 @@ const getAccessToken = async () => {
 };
 
 const searchFoods = async (query, token) => {
+  console.log('[searchFoods] starting, token length:', token?.length);
+  const params = new URLSearchParams({
+    method: 'foods.search',
+    search_expression: query,
+    max_results: '20',
+    format: 'json'
+  });
+  console.log('[searchFoods] params:', params.toString());
+
   const response = await fetch('https://platform.fatsecret.com/rest/server.api', {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/x-www-form-urlencoded',
     },
-    body: new URLSearchParams({
-      method: 'foods.search',
-      search_expression: query,
-      max_results: '20',
-      format: 'json'
-    }).toString()
+    body: params.toString()
   });
 
+  console.log('[searchFoods] HTTP status:', response.status);
   const responseText = await response.text();
-  console.log('FatSecret search raw response (first 500):', responseText.substring(0, 500));
+  console.log('[searchFoods] response (first 600):', responseText.substring(0, 600));
 
   let data;
   try {
     data = JSON.parse(responseText);
   } catch {
-    console.error('Search parse error:', responseText.substring(0, 200));
+    console.error('[searchFoods] parse error');
     return [];
   }
 
@@ -85,7 +90,7 @@ const searchFoods = async (query, token) => {
     foods = [foods];
   }
 
-  console.log('foods count:', foods.length, 'first item keys:', foods[0] ? Object.keys(foods[0]) : []);
+  console.log('[searchFoods] foods count:', foods.length);
   return foods.slice(0, 20);
 };
 
