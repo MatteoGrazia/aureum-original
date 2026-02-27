@@ -326,24 +326,22 @@ export default function Nutrition() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/80 z-50 flex items-end justify-center p-4"
+            className="fixed inset-0 bg-black/80 z-50 flex flex-col justify-end"
             onClick={() => setSelectedFood(null)}
           >
             <motion.div
               initial={{ y: 100 }}
               animate={{ y: 0 }}
               exit={{ y: 100 }}
-              className="w-full max-w-lg mx-auto"
+              className="w-full"
               style={{ 
-                width: '92%', 
-                maxHeight: '85vh', 
+                maxHeight: '90vh',
                 overflowY: 'auto',
-                position: 'relative',
-                zIndex: 1000
+                paddingBottom: 'calc(1.5rem + env(safe-area-inset-bottom, 0px))',
               }}
               onClick={(e) => e.stopPropagation()}
             >
-              <VoidCard className="p-6 pb-4" style={{ overflow: 'visible' }}>
+              <VoidCard className="p-5 rounded-b-none" style={{ overflow: 'visible', borderBottomLeftRadius: 0, borderBottomRightRadius: 0, margin: 0, width: '100%' }}>
                 {loadingDetails ? (
                   <div className="flex flex-col items-center justify-center py-8">
                     <Loader2 className="w-8 h-8 text-[#D4AF37] animate-spin mb-3" />
