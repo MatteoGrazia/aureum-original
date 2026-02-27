@@ -153,7 +153,15 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { action, query, foodId, barcode } = await req.json();
+    let body;
+    try {
+      body = await req.json();
+    } catch (e) {
+      console.error('Body parse error:', e.message);
+      return Response.json({ error: 'Invalid JSON body' }, { status: 400 });
+    }
+    const { action, query, foodId, barcode } = body;
+    console.log('Parsed body:', JSON.stringify(body));
 
     const token = await getAccessToken();
     console.log('Got token, action =', action, ', query =', query);
