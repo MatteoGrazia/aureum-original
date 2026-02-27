@@ -233,6 +233,7 @@ export const useStepTracker = () => {
 
   const stopTracking = () => {
     setIsTracking(false);
+    isTrackingRef.current = false;
     setSensorStatus('idle');
 
     if (sensorRef.current) {
