@@ -167,9 +167,9 @@ Deno.serve(async (req) => {
     console.log('Got token, action =', action, ', query =', query);
 
     if (action === 'search') {
-      console.log('Searching for:', query);
+      console.log('Calling searchFoods...');
       const results = await searchFoods(query, token);
-      console.log('Results count:', results.length);
+      console.log('Results count:', results.length, JSON.stringify(results[0] || {}));
       
       const foods = results.map(food => ({
         id: String(food.food_id),
@@ -184,7 +184,6 @@ Deno.serve(async (req) => {
         source: 'fatsecret'
       }));
 
-      console.log('Formatted foods:', JSON.stringify(foods.slice(0, 2)));
       return Response.json({ foods });
     }
 
