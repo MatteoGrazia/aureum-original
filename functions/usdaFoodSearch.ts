@@ -86,7 +86,7 @@ const buildServingUnits = (food) => {
 };
 
 const searchUSDA = async (query) => {
-  const url = `${USDA_BASE_URL}/search?query=${encodeURIComponent(query)}&pageSize=20&dataType=SR%20Legacy,Foundation&api_key=${USDA_API_KEY}`;
+  const url = `${USDA_BASE_URL}/foods/search?query=${encodeURIComponent(query)}&pageSize=50&dataType=SR%20Legacy,Foundation&api_key=${USDA_API_KEY}`;
   const response = await fetch(url);
 
   if (!response.ok) {
