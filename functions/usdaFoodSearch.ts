@@ -1,7 +1,7 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 
 const USDA_API_KEY = Deno.env.get('USDA_FOODDATA_API_KEY');
-const USDA_BASE_URL = 'https://fdc.nal.usda.gov/api/foods';
+const USDA_BASE_URL = 'https://api.nal.usda.gov/fdc/v1';
 
 // Fetch detailed food info including food portions (serving sizes)
 const getFoodDetails = async (fdcId) => {
