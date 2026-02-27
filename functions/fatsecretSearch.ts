@@ -55,7 +55,6 @@ const getAccessToken = async () => {
 };
 
 const searchFoods = async (query, token) => {
-  // Use Standard API foods.search method (more compatible)
   const response = await fetch('https://platform.fatsecret.com/rest/server.api', {
     method: 'POST',
     headers: {
@@ -65,13 +64,14 @@ const searchFoods = async (query, token) => {
     body: new URLSearchParams({
       method: 'foods.search',
       search_expression: query,
-      max_results: '50',
+      max_results: '20',
       format: 'json'
     }).toString()
   });
 
   const responseText = await response.text();
-  
+  console.log('FatSecret search raw response (first 500):', responseText.substring(0, 500));
+
   let data;
   try {
     data = JSON.parse(responseText);
@@ -79,20 +79,13 @@ const searchFoods = async (query, token) => {
     console.error('Search parse error:', responseText.substring(0, 200));
     return [];
   }
-  
+
   let foods = data.foods?.food || [];
-  
   if (!Array.isArray(foods) && foods) {
     foods = [foods];
   }
-  
-  // Sort by relevance: branded items first, then generic
-  foods = foods.sort((a, b) => {
-    const aBranded = a.brand_name ? 1 : 0;
-    const bBranded = b.brand_name ? 1 : 0;
-    return bBranded - aBranded;
-  });
 
+  console.log('foods count:', foods.length, 'first item keys:', foods[0] ? Object.keys(foods[0]) : []);
   return foods.slice(0, 20);
 };
 
