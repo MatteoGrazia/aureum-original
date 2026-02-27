@@ -1,79 +1,129 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 
 const USDA_API_KEY = Deno.env.get('USDA_FOODDATA_API_KEY');
-const USDA_BASE_URL = 'https://fdc.nal.usda.gov/api/foods/search';
+const USDA_BASE_URL = 'https://fdc.nal.usda.gov/api/foods';
 
-const searchUSDA = async (query) => {
-  try {
-    const response = await fetch(
-      `${USDA_BASE_URL}?query=${encodeURIComponent(query)}&pageSize=20&api_key=${USDA_API_KEY}`
-    );
+// Fetch detailed food info including food portions (serving sizes)
+const getFoodDetails = async (fdcId) => {
+  const response = await fetch(
+    `${USDA_BASE_URL}/${fdcId}?format=abridged&api_key=${USDA_API_KEY}`
+  );
+  if (!response.ok) return null;
+  return response.json();
+};
 
-    if (!response.ok) {
-      console.error('USDA API error:', response.status);
-      return [];
+const getNutrientValue = (nutrients, id) => {
+  const n = nutrients.find(n => n.nutrientId === id || n.nutrient?.id === id);
+  return n ? parseFloat(n.value || n.amount || 0) : 0;
+};
+
+// Build all available serving units from USDA food portions
+const buildServingUnits = (food) => {
+  const nutrients = food.foodNutrients || [];
+  // All values are per 100g in USDA
+  const per100g = {
+    calories: getNutrientValue(nutrients, 1008),
+    protein: getNutrientValue(nutrients, 1003),
+    carbs: getNutrientValue(nutrients, 1005),
+    fat: getNutrientValue(nutrients, 1004),
+    fiber: getNutrientValue(nutrients, 1079),
+  };
+
+  const units = [];
+
+  // Add named portions (e.g. "1 large", "1 medium", "1 cup")
+  const portions = food.foodPortions || [];
+  for (const portion of portions) {
+    const grams = parseFloat(portion.gramWeight) || 0;
+    if (grams <= 0) continue;
+
+    // Build a human-readable description
+    let desc = '';
+    if (portion.portionDescription) {
+      desc = portion.portionDescription;
+    } else if (portion.modifier && portion.amount) {
+      desc = `${portion.amount} ${portion.modifier}`;
+    } else if (portion.modifier) {
+      desc = portion.modifier;
+    } else {
+      desc = `${grams}g`;
     }
 
-    const data = await response.json();
-    const foods = data.foods || [];
+    units.push({
+      servingDescription: desc,
+      unit: 'g',
+      amount: grams,
+      metricUnit: 'g',
+      calories: Math.round((per100g.calories / 100) * grams * 10) / 10,
+      protein: Math.round((per100g.protein / 100) * grams * 10) / 10,
+      carbs: Math.round((per100g.carbs / 100) * grams * 10) / 10,
+      fat: Math.round((per100g.fat / 100) * grams * 10) / 10,
+      fiber: Math.round((per100g.fiber / 100) * grams * 10) / 10,
+      isDefault: false,
+    });
+  }
 
-    // Filter and process results - prioritize raw ingredients
-    return foods
-      .filter(food => {
-        const description = food.description?.toLowerCase() || '';
-        // Exclude heavily processed items
-        const isProcessed = description.includes('cooked') || 
-                           description.includes('prepared') || 
-                           description.includes('frozen') ||
-                           description.includes('canned');
-        return !isProcessed && food.foodNutrients;
-      })
-      .slice(0, 12)
-      .map(food => {
-        const nutrients = food.foodNutrients || [];
-        
-        const getKcal = () => {
-          const kcal = nutrients.find(n => n.nutrient?.id === 1008);
-          return kcal ? Math.round(kcal.value) : 0;
-        };
+  // Always add 100g option
+  units.push({
+    servingDescription: '100g',
+    unit: 'g',
+    amount: 100,
+    metricUnit: 'g',
+    calories: Math.round(per100g.calories * 10) / 10,
+    protein: Math.round(per100g.protein * 10) / 10,
+    carbs: Math.round(per100g.carbs * 10) / 10,
+    fat: Math.round(per100g.fat * 10) / 10,
+    fiber: Math.round(per100g.fiber * 10) / 10,
+    isDefault: units.length === 0, // default if no portions
+  });
 
-        const getProtein = () => {
-          const protein = nutrients.find(n => n.nutrient?.id === 1003);
-          return protein ? Math.round(protein.value) : 0;
-        };
+  // Mark first named portion as default if we have portions
+  if (units.length > 1) {
+    units[0].isDefault = true;
+  }
 
-        const getCarbs = () => {
-          const carbs = nutrients.find(n => n.nutrient?.id === 1005);
-          return carbs ? Math.round(carbs.value) : 0;
-        };
+  return units;
+};
 
-        const getFat = () => {
-          const fat = nutrients.find(n => n.nutrient?.id === 1004);
-          return fat ? Math.round(fat.value) : 0;
-        };
+const searchUSDA = async (query) => {
+  const response = await fetch(
+    `${USDA_BASE_URL}/search?query=${encodeURIComponent(query)}&pageSize=20&dataType=SR%20Legacy,Foundation&api_key=${USDA_API_KEY}`
+  );
 
-        const getFiber = () => {
-          const fiber = nutrients.find(n => n.nutrient?.id === 1079);
-          return fiber ? Math.round(fiber.value) : 0;
-        };
-
-        return {
-          id: food.fdcId,
-          name: food.description,
-          brand: '',
-          calories: getKcal(),
-          protein: getProtein(),
-          carbs: getCarbs(),
-          fat: getFat(),
-          fiber: getFiber(),
-          serving_size: '100g',
-          source: 'usda'
-        };
-      });
-  } catch (error) {
-    console.error('USDA search error:', error);
+  if (!response.ok) {
+    console.error('USDA API error:', response.status);
     return [];
   }
+
+  const data = await response.json();
+  const foods = (data.foods || []).slice(0, 10);
+
+  // Fetch details for each food to get portions
+  const detailed = await Promise.all(
+    foods.map(async (food) => {
+      const detail = await getFoodDetails(food.fdcId);
+      if (!detail) return null;
+      const nutrients = detail.foodNutrients || [];
+      const availableUnits = buildServingUnits(detail);
+      const defaultUnit = availableUnits.find(u => u.isDefault) || availableUnits[0];
+
+      return {
+        id: String(food.fdcId),
+        name: food.description,
+        brand: food.brandOwner || '',
+        calories: defaultUnit.calories,
+        protein: defaultUnit.protein,
+        carbs: defaultUnit.carbs,
+        fat: defaultUnit.fat,
+        fiber: defaultUnit.fiber,
+        serving_size: defaultUnit.amount + defaultUnit.metricUnit,
+        source: 'usda',
+        availableUnits,
+      };
+    })
+  );
+
+  return detailed.filter(Boolean);
 };
 
 Deno.serve(async (req) => {
