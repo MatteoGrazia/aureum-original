@@ -198,6 +198,7 @@ export const useStepTracker = () => {
 
     setSensorStatus('calibrating');
     setIsTracking(true);
+    isTrackingRef.current = true;
 
     // Try modern Sensor API first (better background support on Android)
     if ('Accelerometer' in window) {
