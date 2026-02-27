@@ -156,9 +156,12 @@ Deno.serve(async (req) => {
     const { action, query, foodId, barcode } = await req.json();
 
     const token = await getAccessToken();
+    console.log('Got token, action =', action, ', query =', query);
 
     if (action === 'search') {
+      console.log('Searching for:', query);
       const results = await searchFoods(query, token);
+      console.log('Results count:', results.length);
       
       const foods = results.map(food => ({
         id: String(food.food_id),
