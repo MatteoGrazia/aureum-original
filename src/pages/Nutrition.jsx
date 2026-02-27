@@ -60,65 +60,26 @@ export default function Nutrition() {
   const totalFat = foodLogs.reduce((sum, log) => sum + (log.fat || 0), 0);
 
   const handleSelectFood = async (food) => {
+    // If food already has availableUnits (e.g. from USDA search), use directly
+    if (food.availableUnits && food.availableUnits.length > 0) {
+      const defaultUnit = food.availableUnits.find(u => u.isDefault) || food.availableUnits[0];
+      setSelectedFood(food);
+      setSelectedUnit(defaultUnit);
+      setAmount(1);
+      return;
+    }
+
     setLoadingDetails(true);
-    
-    // Try to fetch detailed FatSecret data if food has an ID
-    if (food.id) {
+
+    // Try to fetch detailed FatSecret data if food has a FatSecret ID
+    if (food.id && food.source === 'fatsecret') {
       try {
         const response = await base44.functions.invoke('fatsecretSearch', {
           action: 'get',
           foodId: food.id
         });
-        
         const detailedFood = response.data.food;
-        
-        // Ensure availableUnits exists with proper data
-        if (!detailedFood.availableUnits || detailedFood.availableUnits.length === 0) {
-          detailedFood.availableUnits = [{
-            servingDescription: '100 g',
-            unit: 'g',
-            amount: 100,
-            metricUnit: 'g',
-            calories: detailedFood.calories,
-            protein: detailedFood.protein,
-            carbs: detailedFood.carbs,
-            fat: detailedFood.fat,
-            fiber: detailedFood.fiber,
-            isDefault: true
-          }];
-        }
-        
-        // Find default serving or use first
-        const defaultUnit = detailedFood.availableUnits.find(u => u.isDefault) || detailedFood.availableUnits[0];
-        
-        setSelectedFood(detailedFood);
-        setSelectedUnit(defaultUnit);
-        setAmount(1);
-        setLoadingDetails(false);
-        return;
-      } catch (error) {
-        console.error('FatSecret fetch failed, trying search fallback:', error);
-      }
-    }
-    
-    // Fallback: Search FatSecret for this food name to get detailed servings
-    try {
-      const searchResponse = await base44.functions.invoke('fatsecretSearch', {
-        action: 'search',
-        query: food.name
-      });
-      
-      const searchResults = searchResponse.data.foods || [];
-      if (searchResults.length > 0 && searchResults[0].id) {
-        // Get detailed data for first result
-        const detailResponse = await base44.functions.invoke('fatsecretSearch', {
-          action: 'get',
-          foodId: searchResults[0].id
-        });
-        
-        const detailedFood = detailResponse.data.food;
-        
-        if (detailedFood.availableUnits && detailedFood.availableUnits.length > 0) {
+        if (detailedFood?.availableUnits?.length > 0) {
           const defaultUnit = detailedFood.availableUnits.find(u => u.isDefault) || detailedFood.availableUnits[0];
           setSelectedFood(detailedFood);
           setSelectedUnit(defaultUnit);
@@ -126,22 +87,22 @@ export default function Nutrition() {
           setLoadingDetails(false);
           return;
         }
+      } catch (error) {
+        console.error('FatSecret fetch failed:', error);
       }
-    } catch (error) {
-      console.error('FatSecret search fallback failed:', error);
     }
-    
-    // Ultimate fallback: Use simple 100g serving
-    const fallbackUnit = { 
-      servingDescription: '100 g',
-      unit: 'g', 
-      amount: 100, 
+
+    // Fallback: 100g serving
+    const fallbackUnit = {
+      servingDescription: '100g',
+      unit: 'g',
+      amount: 100,
       metricUnit: 'g',
       calories: food.calories,
       protein: food.protein,
       carbs: food.carbs,
       fat: food.fat,
-      fiber: food.fiber,
+      fiber: food.fiber || 0,
       isDefault: true
     };
     setSelectedFood({ ...food, availableUnits: [fallbackUnit] });
