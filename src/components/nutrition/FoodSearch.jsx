@@ -79,6 +79,7 @@ export default function FoodSearch({ onSelectFood }) {
         query: searchQuery
       });
 
+      // USDA foods already include availableUnits with serving sizes
       let foods = usdaResponse.data.foods || [];
 
       if (foods.length > 0) {
