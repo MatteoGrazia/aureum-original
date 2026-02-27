@@ -479,11 +479,11 @@ export default function Nutrition() {
                   </div>
                 </div>
 
-                <div style={{ marginTop: '24px', marginBottom: '20px' }}>
+                <div className="mt-4">
                   <GoldButton 
                     onClick={handleLogFood} 
                     className="w-full" 
-                    style={{ minHeight: '48px' }}
+                    style={{ minHeight: '52px' }}
                     disabled={!selectedUnit}
                   >
                     Add to Diary
