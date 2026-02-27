@@ -56,25 +56,7 @@ export default function FoodSearch({ onSelectFood }) {
     }, 4000);
 
     try {
-      // Priority 1: Check local cache for instant match
-      const localMatch = simpleIngredients.filter(food =>
-        food.name.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-
-      if (localMatch.length > 0) {
-        clearTimeout(timeoutId);
-        const foods = localMatch.map(food => ({
-          ...food,
-          serving_size: '100g',
-          source: 'local'
-        }));
-        setResults(foods);
-        setShowEmptyState(false);
-        setLoading(false);
-        return;
-      }
-
-      // Priority 2: USDA for raw ingredients (SR Legacy)
+      // Priority 1: USDA for raw ingredients (SR Legacy)
       const usdaResponse = await base44.functions.invoke('usdaFoodSearch', {
         query: searchQuery
       });
