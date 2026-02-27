@@ -160,12 +160,11 @@ export const useStepTracker = () => {
     if (shouldCountStep(magnitude)) {
       stepCounterRef.current++;
       lastStepTimeRef.current = Date.now();
-
-      // Update global state every 5 steps for efficiency
-      if (stepCounterRef.current % 5 === 0) {
-        globalStepCount = stepCounterRef.current;
-        setSteps(stepCounterRef.current);
-        notifyListeners(stepCounterRef.current);
+      globalStepCount = stepCounterRef.current;
+      setSteps(stepCounterRef.current);
+      notifyListeners(stepCounterRef.current);
+      // Save every 10 steps for efficiency
+      if (stepCounterRef.current % 10 === 0) {
         saveStepData();
       }
     }
