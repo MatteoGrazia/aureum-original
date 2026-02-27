@@ -33,6 +33,7 @@ export const useStepTracker = () => {
   const motionEventRef = useRef(null);
   const sensorRef = useRef(null);
   const syncIntervalRef = useRef(null);
+  const isTrackingRef = useRef(false); // ref to avoid stale closure in event handler
 
   const MIN_STEP_INTERVAL = 300; // ms - minimum time between steps
   const BUFFER_SIZE = 50; // samples for moving average
