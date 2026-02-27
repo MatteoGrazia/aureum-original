@@ -95,7 +95,18 @@ const searchUSDA = async (query) => {
   }
 
   const data = await response.json();
-  const foods = (data.foods || []).slice(0, 10);
+  const lowerQuery = query.toLowerCase().trim();
+
+  // Sort: exact name match first, then starts-with, then contains
+  const sorted = (data.foods || []).sort((a, b) => {
+    const aName = (a.description || '').toLowerCase();
+    const bName = (b.description || '').toLowerCase();
+    const aExact = aName === lowerQuery ? 0 : aName.startsWith(lowerQuery) ? 1 : 2;
+    const bExact = bName === lowerQuery ? 0 : bName.startsWith(lowerQuery) ? 1 : 2;
+    return aExact - bExact;
+  });
+
+  const foods = sorted.slice(0, 8);
 
   // Fetch details for each food to get portions
   const detailed = await Promise.all(
