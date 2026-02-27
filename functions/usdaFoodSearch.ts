@@ -87,18 +87,14 @@ const buildServingUnits = (food) => {
 
 const searchUSDA = async (query) => {
   const url = `${USDA_BASE_URL}/search?query=${encodeURIComponent(query)}&pageSize=20&dataType=SR%20Legacy,Foundation&api_key=${USDA_API_KEY}`;
-  console.log('USDA URL:', url);
   const response = await fetch(url);
 
-  console.log('USDA status:', response.status);
   if (!response.ok) {
-    const errText = await response.text();
-    console.error('USDA API error:', response.status, errText.substring(0, 200));
+    console.error('USDA API error:', response.status);
     return [];
   }
 
   const data = await response.json();
-  console.log('USDA total hits:', data.totalHits, 'foods count:', data.foods?.length);
   const foods = (data.foods || []).slice(0, 10);
 
   // Fetch details for each food to get portions
