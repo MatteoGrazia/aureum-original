@@ -167,8 +167,14 @@ Deno.serve(async (req) => {
     console.log('Got token, action =', action, ', query =', query);
 
     if (action === 'search') {
-      console.log('Calling searchFoods...');
-      const results = await searchFoods(query, token);
+      console.log('Calling searchFoods with query:', query);
+      let results;
+      try {
+        results = await searchFoods(query, token);
+      } catch (searchErr) {
+        console.error('searchFoods threw:', searchErr.message);
+        return Response.json({ foods: [], error: searchErr.message });
+      }
       console.log('Results count:', results.length, JSON.stringify(results[0] || {}));
       
       const foods = results.map(food => ({
