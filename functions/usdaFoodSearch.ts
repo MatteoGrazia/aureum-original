@@ -159,7 +159,15 @@ const searchUSDA = async (query) => {
     })
   );
 
-  return detailed.filter(Boolean);
+  // Deduplicate by clean name — keep the entry with the most serving units
+  const seen = new Map();
+  for (const food of detailed.filter(Boolean)) {
+    const key = food.name.toLowerCase();
+    if (!seen.has(key) || food.availableUnits.length > seen.get(key).availableUnits.length) {
+      seen.set(key, food);
+    }
+  }
+  return Array.from(seen.values());
 };
 
 Deno.serve(async (req) => {
