@@ -33,6 +33,10 @@ const buildServingUnits = (food) => {
 
   // Add named portions (e.g. "1 large", "1 medium", "1 cup")
   const portions = food.foodPortions || [];
+
+  // Useful portion keywords — skip tiny measurement units like tbsp, tsp, oz, fl oz
+  const skipPattern = /\b(tbsp|tsp|tablespoon|teaspoon|fl oz|fluid ounce|pat|pats|sifted|cup sifted)\b/i;
+
   for (const portion of portions) {
     const grams = parseFloat(portion.gramWeight) || 0;
     if (grams <= 0) continue;
@@ -48,6 +52,9 @@ const buildServingUnits = (food) => {
     } else {
       desc = `${grams}g`;
     }
+
+    // Skip unhelpful tiny-measurement servings
+    if (skipPattern.test(desc)) continue;
 
     units.push({
       servingDescription: desc,
