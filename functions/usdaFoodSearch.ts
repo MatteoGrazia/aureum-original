@@ -96,18 +96,23 @@ const searchUSDA = async (query) => {
 
   const data = await response.json();
   const lowerQuery = query.toLowerCase().trim();
-  const queryWords = lowerQuery.split(/\s+/);
 
   const scoreFood = (desc) => {
     const name = desc.toLowerCase();
-    // Starts with the query word(s) = best
-    if (name.startsWith(lowerQuery)) return 0;
-    // First word matches the first query word exactly
-    const firstWord = name.split(/[\s,]/)[0];
-    if (firstWord === queryWords[0]) return 1;
-    // Contains all query words
-    if (queryWords.every(w => name.includes(w))) return 2;
-    return 3;
+    const firstToken = name.split(/[\s,]/)[0];
+    const firstQueryWord = lowerQuery.split(/\s+/)[0];
+
+    // Exact match on first word (e.g. "egg" matches "egg, whole" but not "egg substitute")
+    if (firstToken === firstQueryWord) {
+      // Prefer "whole" entries higher
+      if (name.includes('whole')) return 0;
+      return 1;
+    }
+    // Starts with full query
+    if (name.startsWith(lowerQuery)) return 2;
+    // Contains query word
+    if (name.includes(lowerQuery)) return 3;
+    return 4;
   };
 
   const sorted = (data.foods || []).sort((a, b) =>
