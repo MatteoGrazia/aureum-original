@@ -122,7 +122,7 @@ export const useStepTracker = () => {
 
   // Handle motion events
   const handleMotionEvent = (event) => {
-    if (!isTracking) return;
+    if (!isTrackingRef.current) return;
 
     const { acceleration } = event;
     if (!acceleration) return;
