@@ -59,7 +59,7 @@ export default function VoidBackground() {
 
 
       {/* Floating star particles */}
-      {particles.map((particle) => (
+      {PARTICLES.map((particle) => (
         <motion.div
           key={particle.id}
           className="absolute rounded-full"
