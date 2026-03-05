@@ -9,7 +9,6 @@ import VoidBackground from '@/components/dashboard/VoidBackground';
 import GoldButton from '@/components/ui/GoldButton';
 import StepCounter from '@/components/activity/StepCounter';
 import ActivityStats from '@/components/activity/ActivityStats';
-import { Input } from '@/components/ui/input';
 import MotionPermissionModal from '@/components/shared/MotionPermissionModal';
 import { useStepTracker, requestMotionPermission } from '@/components/shared/useStepTracker';
 
