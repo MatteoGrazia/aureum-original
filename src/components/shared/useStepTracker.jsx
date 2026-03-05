@@ -19,238 +19,185 @@ export const subscribeToSteps = (callback) => {
 
 export const getGlobalStepCount = () => globalStepCount;
 
+// Request iOS DeviceMotion permission (must be called from user gesture)
+export const requestMotionPermission = async () => {
+  if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+    try {
+      const result = await DeviceMotionEvent.requestPermission();
+      return result === 'granted';
+    } catch {
+      return false;
+    }
+  }
+  // Android / desktop — no explicit permission needed
+  return true;
+};
+
 export const useStepTracker = () => {
-  const [steps, setSteps] = useState(0);
+  const [steps, setSteps] = useState(() => {
+    // Load today's persisted steps immediately
+    const today = new Date().toISOString().split('T')[0];
+    const saved = localStorage.getItem(`steps_${today}`);
+    if (saved) {
+      try {
+        const data = JSON.parse(saved);
+        return data.steps || 0;
+      } catch { return 0; }
+    }
+    return 0;
+  });
   const [isTracking, setIsTracking] = useState(false);
-  const [sensorStatus, setSensorStatus] = useState('idle'); // idle, calibrating, active, error
-  
+  const [sensorStatus, setSensorStatus] = useState('idle'); // idle | calibrating | active | error
+
   const accelRef = useRef([0, 0, 0]);
   const magnitudeBufferRef = useRef([]);
-  const stepCounterRef = useRef(0);
+  const stepCounterRef = useRef(globalStepCount);
   const lastStepTimeRef = useRef(0);
   const calibrationCounterRef = useRef(0);
-  const zeroReadingCounterRef = useRef(0);
-  const motionEventRef = useRef(null);
+  const motionListenerRef = useRef(null);
   const sensorRef = useRef(null);
   const syncIntervalRef = useRef(null);
-  const isTrackingRef = useRef(false); // ref to avoid stale closure in event handler
+  const isTrackingRef = useRef(false);
 
-  const MIN_STEP_INTERVAL = 300; // ms - minimum time between steps
-  const BUFFER_SIZE = 50; // samples for moving average
-  const CALIBRATION_SAMPLES = 200;
-  const ZERO_READING_THRESHOLD = 100; // triggers recalibration warning
+  const MIN_STEP_INTERVAL = 300; // ms
+  const BUFFER_SIZE = 50;
+  const CALIBRATION_SAMPLES = 100;
 
-  // Low-pass filter (5Hz cutoff for ~100Hz sampling)
-  const lowPassFilter = (acceleration) => {
-    const alpha = 0.2; // Filter coefficient for 5Hz cutoff at 100Hz sampling
-    accelRef.current[0] = accelRef.current[0] * (1 - alpha) + acceleration.x * alpha;
-    accelRef.current[1] = accelRef.current[1] * (1 - alpha) + acceleration.y * alpha;
-    accelRef.current[2] = accelRef.current[2] * (1 - alpha) + acceleration.z * alpha;
+  const lowPassFilter = (accel) => {
+    const alpha = 0.2;
+    accelRef.current[0] = accelRef.current[0] * (1 - alpha) + accel.x * alpha;
+    accelRef.current[1] = accelRef.current[1] * (1 - alpha) + accel.y * alpha;
+    accelRef.current[2] = accelRef.current[2] * (1 - alpha) + accel.z * alpha;
     return accelRef.current;
   };
 
-  // Calculate magnitude of acceleration vector
-  const calculateMagnitude = (accel) => {
-    return Math.sqrt(accel[0] ** 2 + accel[1] ** 2 + accel[2] ** 2);
-  };
+  const calculateMagnitude = (a) => Math.sqrt(a[0] ** 2 + a[1] ** 2 + a[2] ** 2);
 
-  // Dynamic thresholding with moving average
   const shouldCountStep = (magnitude) => {
     const now = Date.now();
-    
-    // Enforce minimum step interval
-    if (now - lastStepTimeRef.current < MIN_STEP_INTERVAL) {
-      return false;
-    }
+    if (now - lastStepTimeRef.current < MIN_STEP_INTERVAL) return false;
 
     magnitudeBufferRef.current.push(magnitude);
-    if (magnitudeBufferRef.current.length > BUFFER_SIZE) {
-      magnitudeBufferRef.current.shift();
-    }
-
-    // Need enough samples for meaningful average
-    if (magnitudeBufferRef.current.length < 10) {
-      return false;
-    }
+    if (magnitudeBufferRef.current.length > BUFFER_SIZE) magnitudeBufferRef.current.shift();
+    if (magnitudeBufferRef.current.length < 10) return false;
 
     const mean = magnitudeBufferRef.current.reduce((a, b) => a + b) / magnitudeBufferRef.current.length;
-    const variance = magnitudeBufferRef.current.reduce((sum, val) => sum + (val - mean) ** 2, 0) / magnitudeBufferRef.current.length;
-    const stdDev = Math.sqrt(variance);
-
-    // Step detected when magnitude exceeds mean + 1.5 standard deviations
-    const threshold = mean + stdDev * 1.5;
-    
-    return magnitude > threshold && magnitude > 15; // Also enforce minimum magnitude
+    const stdDev = Math.sqrt(
+      magnitudeBufferRef.current.reduce((s, v) => s + (v - mean) ** 2, 0) / magnitudeBufferRef.current.length
+    );
+    const threshold = mean + stdDev * 1.2;
+    return magnitude > threshold && magnitude > 10;
   };
 
-  // Save step data to localStorage for persistence
   const saveStepData = () => {
     const today = new Date().toISOString().split('T')[0];
-    const data = {
-      date: today,
-      steps: globalStepCount,
-      timestamp: Date.now()
-    };
-    localStorage.setItem(`steps_${today}`, JSON.stringify(data));
+    localStorage.setItem(`steps_${today}`, JSON.stringify({ date: today, steps: globalStepCount, timestamp: Date.now() }));
   };
 
-  // Sync steps to backend periodically
   const syncStepsToBackend = async () => {
     const today = new Date().toISOString().split('T')[0];
     if (globalStepCount === 0) return;
-
     try {
       const activities = await base44.entities.DailyActivity.filter({ date: today });
+      const caloriesBurned = Math.round(globalStepCount * 0.04);
+      const activeMinutes = Math.round(globalStepCount / 100);
       if (activities.length > 0) {
         await base44.entities.DailyActivity.update(activities[0].id, {
-          steps: globalStepCount
+          steps: globalStepCount,
+          calories_burned: caloriesBurned,
+          active_minutes: activeMinutes
         });
       } else {
         await base44.entities.DailyActivity.create({
           date: today,
           steps: globalStepCount,
-          active_minutes: 0,
+          calories_burned: caloriesBurned,
+          active_minutes: activeMinutes,
           sedentary_minutes: 0,
-          calories_burned: 0,
           water_liters: 0
         });
       }
-    } catch (err) {
-      console.log('Backend sync skipped (offline or error)');
+    } catch {
+      // ignore offline errors
     }
   };
 
-  // Handle motion events
-  const handleMotionEvent = (event) => {
+  const processAcceleration = (accel) => {
     if (!isTrackingRef.current) return;
+    if (!accel || (accel.x === null && accel.y === null && accel.z === null)) return;
 
-    const { acceleration } = event;
-    if (!acceleration) return;
+    const x = accel.x || 0, y = accel.y || 0, z = accel.z || 0;
+    if (x === 0 && y === 0 && z === 0) return;
 
-    // Check for zero readings (sensor issue)
-    if (acceleration.x === 0 && acceleration.y === 0 && acceleration.z === 0) {
-      zeroReadingCounterRef.current++;
-      if (zeroReadingCounterRef.current > ZERO_READING_THRESHOLD) {
-        setSensorStatus('error');
-      }
-      return;
-    }
-
-    zeroReadingCounterRef.current = 0;
-
-    // Apply low-pass filter
-    const filteredAccel = lowPassFilter(acceleration);
-    const magnitude = calculateMagnitude(filteredAccel);
+    const filtered = lowPassFilter({ x, y, z });
+    const magnitude = calculateMagnitude(filtered);
 
     // Calibration phase
     if (calibrationCounterRef.current < CALIBRATION_SAMPLES) {
       magnitudeBufferRef.current.push(magnitude);
-      if (magnitudeBufferRef.current.length > BUFFER_SIZE) {
-        magnitudeBufferRef.current.shift();
-      }
+      if (magnitudeBufferRef.current.length > BUFFER_SIZE) magnitudeBufferRef.current.shift();
       calibrationCounterRef.current++;
-      
       if (calibrationCounterRef.current === CALIBRATION_SAMPLES) {
         setSensorStatus('active');
       }
       return;
     }
 
-    // Step detection
     if (shouldCountStep(magnitude)) {
       stepCounterRef.current++;
       lastStepTimeRef.current = Date.now();
       globalStepCount = stepCounterRef.current;
       setSteps(stepCounterRef.current);
       notifyListeners(stepCounterRef.current);
-      // Save every 10 steps for efficiency
-      if (stepCounterRef.current % 10 === 0) {
-        saveStepData();
-      }
+      if (stepCounterRef.current % 10 === 0) saveStepData();
     }
   };
 
-  // Request device motion permission (iOS 13+)
-  const requestPermission = async () => {
-    try {
-      if (typeof DeviceMotionEvent !== 'undefined' && DeviceMotionEvent.requestPermission) {
-        const permission = await DeviceMotionEvent.requestPermission();
-        return permission === 'granted';
-      }
-      // Non-iOS devices allow by default
-      return true;
-    } catch (error) {
-      console.error('Permission request failed:', error);
-      return false;
-    }
-  };
-
-  const startTracking = async (skipPermissionRequest = false) => {
-    // Skip second permission request if already granted via modal
-    if (!skipPermissionRequest) {
-      const permitted = await requestPermission();
-      if (!permitted) {
-        setSensorStatus('error');
-        return;
-      }
-    }
-
-    setSensorStatus('calibrating');
-    setIsTracking(true);
+  const startTracking = () => {
+    if (isTrackingRef.current) return;
     isTrackingRef.current = true;
+    setIsTracking(true);
+    setSensorStatus('calibrating');
+    calibrationCounterRef.current = 0;
 
-    // Try modern Sensor API first (better background support on Android)
+    // Try modern Accelerometer API first (better on Android)
     if ('Accelerometer' in window) {
       try {
-        sensorRef.current = new Accelerometer({ frequency: 100 });
+        sensorRef.current = new Accelerometer({ frequency: 60 });
         sensorRef.current.addEventListener('reading', () => {
-          const accel = {
-            x: sensorRef.current.x,
-            y: sensorRef.current.y,
-            z: sensorRef.current.z
-          };
-          handleMotionEvent({ acceleration: accel });
+          processAcceleration({ x: sensorRef.current.x, y: sensorRef.current.y, z: sensorRef.current.z });
+        });
+        sensorRef.current.addEventListener('error', () => {
+          // fallback to DeviceMotion
+          sensorRef.current = null;
+          attachDeviceMotion();
         });
         sensorRef.current.start();
-        console.log('Using Sensor API for background tracking');
-      } catch (err) {
-        console.log('Sensor API unavailable, using DeviceMotion');
-        startDeviceMotionTracking();
+        return;
+      } catch {
+        // fall through
       }
-    } else {
-      startDeviceMotionTracking();
     }
-
-    // Sync to backend every 60 seconds while tracking
-    syncIntervalRef.current = setInterval(syncStepsToBackend, 60000);
+    attachDeviceMotion();
   };
 
-  const startDeviceMotionTracking = () => {
-    motionEventRef.current = (event) => handleMotionEvent(event);
-    window.addEventListener('devicemotion', motionEventRef.current, true);
+  const attachDeviceMotion = () => {
+    const handler = (e) => processAcceleration(e.acceleration || e.accelerationIncludingGravity);
+    motionListenerRef.current = handler;
+    window.addEventListener('devicemotion', handler);
   };
 
   const stopTracking = () => {
-    setIsTracking(false);
     isTrackingRef.current = false;
+    setIsTracking(false);
     setSensorStatus('idle');
 
-    if (sensorRef.current) {
-      sensorRef.current.stop();
-      sensorRef.current = null;
+    if (sensorRef.current) { sensorRef.current.stop(); sensorRef.current = null; }
+    if (motionListenerRef.current) {
+      window.removeEventListener('devicemotion', motionListenerRef.current);
+      motionListenerRef.current = null;
     }
-
-    if (motionEventRef.current) {
-      window.removeEventListener('devicemotion', motionEventRef.current, true);
-      motionEventRef.current = null;
-    }
-
-    if (syncIntervalRef.current) {
-      clearInterval(syncIntervalRef.current);
-      syncIntervalRef.current = null;
-    }
-
-    // Final sync
+    if (syncIntervalRef.current) { clearInterval(syncIntervalRef.current); syncIntervalRef.current = null; }
     syncStepsToBackend();
     saveStepData();
   };
@@ -265,33 +212,32 @@ export const useStepTracker = () => {
     localStorage.removeItem(`steps_${new Date().toISOString().split('T')[0]}`);
   };
 
+  // On mount: restore persisted steps, set up backend sync interval
   useEffect(() => {
-     // Load persisted steps on mount
-     const today = new Date().toISOString().split('T')[0];
-     const saved = localStorage.getItem(`steps_${today}`);
-     if (saved) {
-       const data = JSON.parse(saved);
-       globalStepCount = data.steps;
-       stepCounterRef.current = data.steps;
-       setSteps(data.steps);
-     }
+    const today = new Date().toISOString().split('T')[0];
+    const saved = localStorage.getItem(`steps_${today}`);
+    if (saved) {
+      try {
+        const data = JSON.parse(saved);
+        const count = data.steps || 0;
+        globalStepCount = count;
+        stepCounterRef.current = count;
+        setSteps(count);
+        notifyListeners(count);
+      } catch { /* ignore */ }
+    }
+    return () => stopTracking();
+  }, []);
 
-     // Sync any pending steps when app reopens
-     if (isTracking) {
-       syncStepsToBackend();
-     }
+  // Start backend sync interval when tracking
+  useEffect(() => {
+    if (isTracking) {
+      syncIntervalRef.current = setInterval(syncStepsToBackend, 30000);
+    } else {
+      if (syncIntervalRef.current) { clearInterval(syncIntervalRef.current); syncIntervalRef.current = null; }
+    }
+    return () => { if (syncIntervalRef.current) clearInterval(syncIntervalRef.current); };
+  }, [isTracking]);
 
-     return () => {
-       stopTracking();
-     };
-   }, []);
-
-  return {
-    steps,
-    isTracking,
-    sensorStatus,
-    startTracking,
-    stopTracking,
-    resetSteps
-  };
+  return { steps, isTracking, sensorStatus, startTracking, stopTracking, resetSteps };
 };
