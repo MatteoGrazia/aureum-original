@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { motion } from 'framer-motion';
 
-export default function VoidBackground() {
-  const particles = Array.from({ length: 50 }, (_, i) => ({
+// Generate once at module level so particles never re-randomize on re-render
+const PARTICLES = Array.from({ length: 50 }, (_, i) => ({
     id: i,
     x: Math.random() * 100,
     y: Math.random() * 100,
