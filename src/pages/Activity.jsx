@@ -176,7 +176,7 @@ export default function Activity() {
                 Allow Aureum to track your steps continuously, even when the app is closed, to give you accurate activity insights.
               </p>
             </div>
-            <GoldButton onClick={requestPedometerPermission} className="w-full">
+            <GoldButton onClick={() => setShowPermissionModal(true)} className="w-full">
               Enable Always-On Tracking
             </GoldButton>
           </VoidCard>
