@@ -73,42 +73,16 @@ export default function Activity() {
 
 
 
-  const requestPedometerPermission = async () => {
-    setShowMotionPermission(true);
-  };
-
-  const handleMotionPermissionGrant = async () => {
-    try {
-      if (profile) {
-        await base44.entities.UserProfile.update(profile.id, { 
-          step_tracking_enabled: true 
-        });
-      }
-      
-      setShowStepTrackerPermission(true);
-      setShowMotionPermission(false);
-      setPermissionStatus('granted');
-      queryClient.invalidateQueries(['userProfile']);
-    } catch (error) {
-      console.error('Error enabling step tracking:', error);
-    }
-  };
-
-  const handleStepTrackerPermission = async (granted) => {
+  const handleEnableTracking = async () => {
+    const granted = await requestMotionPermission();
     if (granted) {
-      startAdvancedTracking(true); // Skip second permission request
+      localStorage.setItem('step_tracking_enabled', 'true');
+      setPermissionGranted(true);
+      setShowPermissionModal(false);
+      startTracking();
+    } else {
+      alert('Motion permission denied. Please enable it in your device settings.');
     }
-    setShowStepTrackerPermission(false);
-  };
-
-  const handleMotionPermissionDismiss = async () => {
-    if (profile) {
-      await base44.entities.UserProfile.update(profile.id, { 
-        step_tracking_enabled: true
-      });
-      queryClient.invalidateQueries(['userProfile']);
-    }
-    setShowMotionPermission(false);
   };
 
   // Calculate weekly stats
