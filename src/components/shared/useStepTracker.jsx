@@ -85,8 +85,8 @@ export const useStepTracker = () => {
     const stdDev = Math.sqrt(
       magnitudeBufferRef.current.reduce((s, v) => s + (v - mean) ** 2, 0) / magnitudeBufferRef.current.length
     );
-    const threshold = mean + stdDev * 1.2;
-    return magnitude > threshold && magnitude > 10;
+    const threshold = mean + stdDev * 1.8; // higher multiplier = less sensitive
+    return magnitude > threshold && magnitude > 12;
   };
 
   const saveStepData = () => {
