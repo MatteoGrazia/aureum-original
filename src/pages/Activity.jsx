@@ -63,15 +63,8 @@ export default function Activity() {
   });
 
   const stepGoal = profile?.daily_step_goal || 10000;
-  const currentSteps = globalSteps || dailyActivity?.steps || 0;
-
-  // Subscribe to global step count changes
-  useEffect(() => {
-    const unsubscribe = subscribeToSteps((steps) => {
-      setGlobalSteps(steps);
-    });
-    return unsubscribe;
-  }, []);
+  // Prefer live tracker steps; fall back to persisted DB value
+  const currentSteps = trackerSteps > 0 ? trackerSteps : (dailyActivity?.steps || 0);
 
   // Check for pedometer support
   useEffect(() => {
