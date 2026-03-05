@@ -5,33 +5,8 @@ import VoidCard from '@/components/ui/VoidCard';
 import GoldButton from '@/components/ui/GoldButton';
 
 export default function MotionPermissionModal({ onGrant, onDismiss }) {
-  const handleGrant = async () => {
-    try {
-      // Request DeviceMotion and DeviceOrientation permissions
-      if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
-        const permission = await DeviceMotionEvent.requestPermission();
-        if (permission === 'granted') {
-          onGrant();
-        } else {
-          alert('Motion permission was denied. Step tracking will not work.');
-          onDismiss();
-        }
-      } else if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
-        const permission = await DeviceOrientationEvent.requestPermission();
-        if (permission === 'granted') {
-          onGrant();
-        } else {
-          alert('Motion permission was denied. Step tracking will not work.');
-          onDismiss();
-        }
-      } else {
-        // No permission needed (Android or older browsers)
-        onGrant();
-      }
-    } catch (error) {
-      console.error('Permission error:', error);
-      onDismiss();
-    }
+  const handleGrant = () => {
+    onGrant();
   };
 
   return (
