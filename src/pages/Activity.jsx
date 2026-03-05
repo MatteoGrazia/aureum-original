@@ -64,100 +64,12 @@ export default function Activity() {
   // Prefer live tracker steps; fall back to persisted DB value
   const currentSteps = trackerSteps > 0 ? trackerSteps : (dailyActivity?.steps || 0);
 
-  // Check for pedometer support
+  // Auto-start tracking if user previously granted permission
   useEffect(() => {
-    const checkSupport = async () => {
-      // Check if running in iOS native context
-      if (window.webkit?.messageHandlers?.pedometer) {
-        setPedometerSupported(true);
-        return;
-      }
-
-      // Check for Web Pedometer API (experimental)
-      if ('Pedometer' in window) {
-        try {
-          const result = await navigator.permissions.query({ name: 'pedometer' });
-          setPermissionStatus(result.state);
-          setPedometerSupported(true);
-        } catch (err) {
-          setPedometerSupported(false);
-        }
-      } else {
-        setPedometerSupported(false);
-      }
-    };
-
-    checkSupport();
-  }, []);
-
-  // Sync steps periodically when app is open
-  useEffect(() => {
-    if (!pedometerSupported || !dailyActivity) return;
-
-    const syncSteps = async () => {
-      try {
-        // iOS native pedometer
-        if (window.webkit?.messageHandlers?.pedometer) {
-          window.webkit.messageHandlers.pedometer.postMessage({
-            action: 'getSteps',
-            startDate: today
-          });
-          return;
-        }
-
-        // Web Pedometer API
-        if ('Pedometer' in window && permissionStatus === 'granted') {
-          const pedometer = new Pedometer();
-          const steps = await pedometer.getSteps({
-            startTime: new Date(today).getTime()
-          });
-
-          if (steps && steps !== dailyActivity.steps) {
-            const caloriesBurned = Math.round(steps * 0.04);
-            const activeMinutes = Math.round(steps / 100);
-
-            await base44.entities.DailyActivity.update(dailyActivity.id, {
-              steps: steps,
-              calories_burned: caloriesBurned,
-              active_minutes: activeMinutes
-            });
-
-            refetch();
-          }
-        }
-      } catch (error) {
-        console.error('Step sync error:', error);
-      }
-    };
-
-    // Sync immediately
-    syncSteps();
-
-    // Sync every 60 seconds
-    const syncInterval = setInterval(syncSteps, 60000);
-
-    return () => clearInterval(syncInterval);
-  }, [pedometerSupported, permissionStatus, dailyActivity, today]);
-
-  // Listen for iOS native pedometer updates
-  useEffect(() => {
-    const handlePedometerUpdate = (event) => {
-      const { steps } = event.detail;
-      if (steps && dailyActivity && steps !== dailyActivity.steps) {
-        const caloriesBurned = Math.round(steps * 0.04);
-        const activeMinutes = Math.round(steps / 100);
-
-        base44.entities.DailyActivity.update(dailyActivity.id, {
-          steps: steps,
-          calories_burned: caloriesBurned,
-          active_minutes: activeMinutes
-        }).then(() => refetch());
-      }
-    };
-
-    window.addEventListener('pedometerUpdate', handlePedometerUpdate);
-    return () => window.removeEventListener('pedometerUpdate', handlePedometerUpdate);
-  }, [dailyActivity]);
+    if (permissionGranted) {
+      startTracking();
+    }
+  }, [permissionGranted]);
 
 
 
