@@ -12,8 +12,7 @@ import ActivityStats from '@/components/activity/ActivityStats';
 import { Input } from '@/components/ui/input';
 import MotionPermissionModal from '@/components/shared/MotionPermissionModal';
 import StepTrackerPermissionModal from '@/components/shared/StepTrackerPermissionModal';
-import { useStepTracker, subscribeToSteps } from '@/components/shared/useStepTracker';
-import { useStepTrackerIntegration } from '@/components/shared/useStepTrackerIntegration';
+import { useStepTracker, subscribeToSteps, requestMotionPermission } from '@/components/shared/useStepTracker';
 
 export default function Activity() {
   const [pedometerSupported, setPedometerSupported] = useState(false);
