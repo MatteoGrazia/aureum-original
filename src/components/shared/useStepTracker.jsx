@@ -59,9 +59,9 @@ export const useStepTracker = () => {
   const syncIntervalRef = useRef(null);
   const isTrackingRef = useRef(false);
 
-  const MIN_STEP_INTERVAL = 300; // ms
-  const BUFFER_SIZE = 50;
-  const CALIBRATION_SAMPLES = 100;
+  const MIN_STEP_INTERVAL = 500; // ms — stricter to avoid double/triple counting
+  const BUFFER_SIZE = 60;
+  const CALIBRATION_SAMPLES = 150;
 
   const lowPassFilter = (accel) => {
     const alpha = 0.2;
