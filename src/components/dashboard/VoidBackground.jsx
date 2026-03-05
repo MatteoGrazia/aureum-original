@@ -3,14 +3,15 @@ import { motion } from 'framer-motion';
 
 // Generate once at module level so particles never re-randomize on re-render
 const PARTICLES = Array.from({ length: 50 }, (_, i) => ({
-    id: i,
-    x: Math.random() * 100,
-    y: Math.random() * 100,
-    size: Math.random() * 2 + 0.5,
-    duration: Math.random() * 20 + 15,
-    delay: Math.random() * 5
-  }));
+  id: i,
+  x: Math.random() * 100,
+  y: Math.random() * 100,
+  size: Math.random() * 2 + 0.5,
+  duration: Math.random() * 20 + 15,
+  delay: Math.random() * 5
+}));
 
+export default function VoidBackground() {
   return (
     <div className="fixed inset-0 overflow-hidden pointer-events-none">
       {/* Base void gradient */}
