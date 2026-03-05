@@ -23,8 +23,7 @@ export default function Activity() {
   const lastSyncTime = useRef(Date.now());
   const queryClient = useQueryClient();
   const today = format(new Date(), 'yyyy-MM-dd');
-  const { startTracking: startAdvancedTracking } = useStepTracker();
-  useStepTrackerIntegration(new Date());
+  const { steps: trackerSteps, isTracking, sensorStatus, startTracking, stopTracking } = useStepTracker();
 
   const { data: dailyActivity, refetch } = useQuery({
     queryKey: ['dailyActivity', today],
