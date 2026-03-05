@@ -158,7 +158,7 @@ export default function Activity() {
       </motion.div>
 
       {/* Permission Request Banner */}
-      {pedometerSupported && permissionStatus !== 'granted' && (
+      {!permissionGranted && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
