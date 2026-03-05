@@ -15,12 +15,10 @@ import StepTrackerPermissionModal from '@/components/shared/StepTrackerPermissio
 import { useStepTracker, subscribeToSteps, requestMotionPermission } from '@/components/shared/useStepTracker';
 
 export default function Activity() {
-  const [pedometerSupported, setPedometerSupported] = useState(false);
-  const [permissionStatus, setPermissionStatus] = useState('prompt');
-  const [showMotionPermission, setShowMotionPermission] = useState(false);
-  const [showStepTrackerPermission, setShowStepTrackerPermission] = useState(false);
-  const [globalSteps, setGlobalSteps] = useState(0);
-  const lastSyncTime = useRef(Date.now());
+  const [showPermissionModal, setShowPermissionModal] = useState(false);
+  const [permissionGranted, setPermissionGranted] = useState(
+    () => localStorage.getItem('step_tracking_enabled') === 'true'
+  );
   const queryClient = useQueryClient();
   const today = format(new Date(), 'yyyy-MM-dd');
   const { steps: trackerSteps, isTracking, sensorStatus, startTracking, stopTracking } = useStepTracker();
