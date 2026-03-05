@@ -113,16 +113,10 @@ export default function Activity() {
   return (
     <div className="min-h-screen relative bg-[#080808]">
       <VoidBackground />
-      {showMotionPermission && (
+      {showPermissionModal && (
         <MotionPermissionModal 
-          onGrant={handleMotionPermissionGrant}
-          onDismiss={handleMotionPermissionDismiss}
-        />
-      )}
-      {showStepTrackerPermission && (
-        <StepTrackerPermissionModal
-          onRequestPermission={handleStepTrackerPermission}
-          onDismiss={() => setShowStepTrackerPermission(false)}
+          onGrant={handleEnableTracking}
+          onDismiss={() => setShowPermissionModal(false)}
         />
       )}
       <div className="relative z-10 p-6">
