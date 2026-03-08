@@ -166,10 +166,10 @@ export default function HevyLogger({ activeWorkout, allExercises, onUpdateWorkou
 
         {/* Fixed Finish button */}
         <div
-          className="fixed bottom-0 left-0 right-0 z-40 px-4 pt-4"
+          className="fixed bottom-0 left-0 right-0 z-[60] px-4 pt-4"
           style={{
             background: 'linear-gradient(to top, rgba(8,8,8,1) 70%, transparent)',
-            paddingBottom: 'calc(1.5rem + env(safe-area-inset-bottom, 80px))',
+            paddingBottom: 'calc(6rem + env(safe-area-inset-bottom, 0px))',
           }}
         >
           <GoldButton onClick={onFinish} className="w-full py-4 text-base">
