@@ -1,55 +1,54 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Calculator, Settings } from 'lucide-react';
-import GlassCard from '@/components/ui/GlassCard';
-import { Input } from '@/components/ui/input';
-import { Switch } from '@/components/ui/switch';
+import { X, Calculator } from 'lucide-react';
 
 const PLATES = [
-  { weight: 25, color: '#EF4444', name: 'Red' },
-  { weight: 20, color: '#3B82F6', name: 'Blue' },
-  { weight: 15, color: '#FACC15', name: 'Yellow' },
-  { weight: 10, color: '#22C55E', name: 'Green' },
-  { weight: 5, color: '#F8FAFC', name: 'White' },
-  { weight: 2.5, color: '#EF4444', name: 'Red' },
-  { weight: 1.25, color: '#6B7280', name: 'Gray' },
+  { weight: 25, bg: 'rgba(185, 70, 70, 0.25)', border: 'rgba(185, 70, 70, 0.6)', label: '25' },
+  { weight: 20, bg: 'rgba(70, 110, 185, 0.25)', border: 'rgba(70, 110, 185, 0.6)', label: '20' },
+  { weight: 15, bg: 'rgba(212, 175, 55, 0.22)', border: 'rgba(212, 175, 55, 0.55)', label: '15' },
+  { weight: 10, bg: 'rgba(80, 150, 100, 0.25)', border: 'rgba(80, 150, 100, 0.6)', label: '10' },
+  { weight: 5, bg: 'rgba(180, 180, 180, 0.18)', border: 'rgba(200, 200, 200, 0.5)', label: '5' },
+  { weight: 2.5, bg: 'rgba(160, 160, 160, 0.15)', border: 'rgba(180, 180, 180, 0.45)', label: '2.5' },
+  { weight: 1.25, bg: 'rgba(120, 120, 120, 0.15)', border: 'rgba(150, 150, 150, 0.4)', label: '1.25' },
 ];
 
-const BAR_WEIGHT = 20; // Olympic bar
+const haptic = () => { if ('vibrate' in navigator) navigator.vibrate(18); };
 
 export default function PlateCalculator({ isOpen, onClose }) {
   const [targetWeight, setTargetWeight] = useState('');
-  const [showSettings, setShowSettings] = useState(false);
+  const [isSmith, setIsSmith] = useState(false);
+  const [smithOffset, setSmithOffset] = useState('7');
   const [enabledPlates, setEnabledPlates] = useState(
-    PLATES.reduce((acc, plate) => ({ ...acc, [plate.weight]: true }), {})
+    PLATES.reduce((acc, p) => ({ ...acc, [p.weight]: true }), {})
   );
 
+  const barWeight = isSmith ? (parseFloat(smithOffset) || 0) : 20;
+
   const togglePlate = (weight) => {
+    haptic();
     setEnabledPlates(prev => ({ ...prev, [weight]: !prev[weight] }));
   };
 
   const calculatePlates = (total) => {
-    if (!total || total <= BAR_WEIGHT) return [];
-    
-    let remaining = (total - BAR_WEIGHT) / 2; // Per side
-    const platesToUse = [];
-
-    const availablePlates = PLATES.filter(plate => enabledPlates[plate.weight]);
-    
-    for (const plate of availablePlates) {
-      while (remaining >= plate.weight) {
-        platesToUse.push(plate);
+    if (!total || total <= barWeight) return [];
+    let remaining = (total - barWeight) / 2;
+    const result = [];
+    for (const plate of PLATES.filter(p => enabledPlates[p.weight])) {
+      while (remaining >= plate.weight - 0.001) {
+        result.push(plate);
         remaining -= plate.weight;
       }
     }
-
-    return platesToUse;
+    return result;
   };
 
   const plates = calculatePlates(parseFloat(targetWeight));
-  const actualWeight = BAR_WEIGHT + (plates.reduce((sum, p) => sum + p.weight, 0) * 2);
+  const actualWeight = barWeight + plates.reduce((s, p) => s + p.weight, 0) * 2;
 
   if (!isOpen) return null;
+
+  const plateHeight = (w) => Math.max(22, Math.min(56, 14 + w * 1.7));
+  const plateWidth = (w) => Math.max(7, Math.min(16, 5 + w * 0.35));
 
   return (
     <AnimatePresence>
@@ -57,163 +56,284 @@ export default function PlateCalculator({ isOpen, onClose }) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-6"
-        onClick={onClose}
+        className="fixed inset-0 z-50 flex flex-col"
+        style={{ background: '#080808' }}
       >
-        <motion.div
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0.9, opacity: 0 }}
-          onClick={(e) => e.stopPropagation()}
-          className="w-full max-w-sm"
+        {/* Header */}
+        <div
+          className="flex items-center justify-between px-5 pt-10 pb-4"
+          style={{ borderBottom: '0.5px solid rgba(212,175,55,0.15)' }}
         >
-          <GlassCard className="p-6" glow>
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <Calculator className="w-5 h-5 text-[#D4AF37]" />
-                <h3 className="text-lg text-white">Plate Calculator</h3>
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setShowSettings(!showSettings)}
-                  className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
-                >
-                  <Settings className={`w-4 h-4 text-[#D4AF37] transition-transform ${showSettings ? 'rotate-90' : ''}`} />
-                </button>
-                <button
-                  onClick={onClose}
-                  className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
-                >
-                  <X className="w-4 h-4 text-white" />
-                </button>
-              </div>
+          <div className="flex items-center gap-3">
+            <Calculator className="w-5 h-5 text-[#D4AF37]" />
+            <h2 className="text-white tracking-[0.15em] text-base uppercase" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>
+              Plate Calculator
+            </h2>
+          </div>
+          <button onClick={onClose} className="w-10 h-10 rounded-xl bg-white/8 flex items-center justify-center">
+            <X className="w-5 h-5 text-white/60" />
+          </button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto px-5 space-y-5 py-5" style={{ paddingBottom: 120 }}>
+
+          {/* Bar mode toggle */}
+          <div
+            className="rounded-2xl p-4 flex items-center justify-between"
+            style={{ background: 'rgba(255,255,255,0.03)', border: '0.5px solid rgba(212,175,55,0.18)' }}
+          >
+            <div>
+              <p className="text-white/80 text-sm" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                {isSmith ? 'Smith Machine' : 'Olympic Bar'}
+              </p>
+              <p className="text-white/30 text-xs mt-0.5">
+                {isSmith ? `Starting resistance: ${smithOffset}kg` : 'Bar: 20kg'}
+              </p>
             </div>
+            {/* Amber Glass Toggle */}
+            <button
+              onClick={() => { haptic(); setIsSmith(s => !s); }}
+              className="relative w-14 h-7 rounded-full transition-all duration-300 flex items-center"
+              style={{
+                background: isSmith
+                  ? 'rgba(156, 126, 70, 0.35)'
+                  : 'rgba(255,255,255,0.08)',
+                border: isSmith ? '0.5px solid rgba(212,175,55,0.5)' : '0.5px solid rgba(255,255,255,0.15)',
+              }}
+            >
+              <motion.div
+                animate={{ x: isSmith ? 30 : 2 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 28 }}
+                className="w-5 h-5 rounded-full absolute"
+                style={{
+                  background: isSmith
+                    ? 'linear-gradient(135deg, #D4AF37, #F4D03F)'
+                    : 'rgba(255,255,255,0.4)',
+                  boxShadow: isSmith ? '0 0 8px rgba(212,175,55,0.6)' : 'none',
+                }}
+              />
+            </button>
+          </div>
 
-            {/* Settings Panel */}
-            <AnimatePresence>
-              {showSettings && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  className="mb-6 overflow-hidden"
+          {/* Smith offset input */}
+          <AnimatePresence>
+            {isSmith && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                className="overflow-hidden"
+              >
+                <div
+                  className="rounded-2xl p-4"
+                  style={{ background: 'rgba(156,126,70,0.08)', border: '0.5px solid rgba(156,126,70,0.3)' }}
                 >
-                  <div className="bg-white/5 rounded-xl p-4 border border-[#D4AF37]/20">
-                    <p className="text-xs text-white/40 uppercase tracking-wider mb-3">Available Plates</p>
-                    <div className="space-y-2">
-                      {PLATES.map((plate) => (
-                        <div
-                          key={plate.weight}
-                          className="flex items-center justify-between py-2"
-                        >
-                          <div className="flex items-center gap-3">
-                            <div
-                              className="w-4 h-4 rounded"
-                              style={{ backgroundColor: plate.color }}
-                            />
-                            <span className="text-white text-sm">{plate.weight}kg</span>
-                            <span className="text-white/40 text-xs">({plate.name})</span>
-                          </div>
-                          <Switch
-                            checked={enabledPlates[plate.weight]}
-                            onCheckedChange={() => togglePlate(plate.weight)}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            <Input
-              type="number"
-              placeholder="Target weight (kg)"
-              value={targetWeight}
-              onChange={(e) => setTargetWeight(e.target.value)}
-              className="mb-6 text-center text-2xl py-6 bg-white/5 border-[#D4AF37]/20"
-            />
-
-            {/* Barbell Visualization */}
-            <div className="relative h-20 mb-6">
-              {/* Bar */}
-              <div className="absolute top-1/2 left-0 right-0 h-3 bg-gradient-to-b from-gray-400 to-gray-600 rounded-full -translate-y-1/2" />
-              
-              {/* Plates on left */}
-              <div className="absolute top-1/2 left-4 flex items-center -translate-y-1/2">
-                {[...plates].reverse().map((plate, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ delay: i * 0.05 }}
-                    className="rounded"
+                  <p className="text-[#9C7E46] text-xs uppercase tracking-[0.15em] mb-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                    Starting Resistance (kg)
+                  </p>
+                  <input
+                    type="number"
+                    inputMode="decimal"
+                    value={smithOffset}
+                    onChange={e => setSmithOffset(e.target.value)}
+                    className="w-full text-center text-white text-xl py-3 rounded-xl outline-none"
                     style={{
-                      width: 8 + plate.weight * 0.5,
-                      height: 30 + plate.weight * 1.5,
-                      backgroundColor: plate.color,
-                      marginLeft: i === 0 ? 0 : -2,
-                      boxShadow: 'inset 0 0 10px rgba(0,0,0,0.3)'
+                      background: 'rgba(0,0,0,0.3)',
+                      border: '0.5px solid rgba(156,126,70,0.4)',
+                      fontFamily: 'Montserrat, sans-serif',
                     }}
                   />
-                ))}
-              </div>
-
-              {/* Plates on right */}
-              <div className="absolute top-1/2 right-4 flex items-center -translate-y-1/2 flex-row-reverse">
-                {[...plates].reverse().map((plate, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ delay: i * 0.05 }}
-                    className="rounded"
-                    style={{
-                      width: 8 + plate.weight * 0.5,
-                      height: 30 + plate.weight * 1.5,
-                      backgroundColor: plate.color,
-                      marginRight: i === 0 ? 0 : -2,
-                      boxShadow: 'inset 0 0 10px rgba(0,0,0,0.3)'
-                    }}
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* Plate breakdown */}
-            {plates.length > 0 && (
-              <div className="space-y-3">
-                <p className="text-center text-white/40 text-xs uppercase tracking-wider">
-                  Per Side
-                </p>
-                
-                <div className="flex flex-wrap gap-2 justify-center">
-                  {[...new Set(plates.map(p => p.weight))].map((weight) => {
-                    const count = plates.filter(p => p.weight === weight).length;
-                    const plate = PLATES.find(p => p.weight === weight);
-                    return (
-                      <div
-                        key={weight}
-                        className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5"
-                      >
-                        <div
-                          className="w-4 h-4 rounded"
-                          style={{ backgroundColor: plate?.color }}
-                        />
-                        <span className="text-white text-sm">{count}× {weight}kg</span>
-                      </div>
-                    );
-                  })}
                 </div>
-
-                <div className="text-center pt-4 border-t border-white/10">
-                  <p className="text-white/40 text-xs">Bar: {BAR_WEIGHT}kg</p>
-                  <p className="text-2xl text-[#D4AF37] mt-1">{actualWeight}kg</p>
-                </div>
-              </div>
+              </motion.div>
             )}
-          </GlassCard>
-        </motion.div>
+          </AnimatePresence>
+
+          {/* Target weight input */}
+          <div
+            className="rounded-2xl p-4"
+            style={{ background: 'rgba(255,255,255,0.03)', border: '0.5px solid rgba(212,175,55,0.18)' }}
+          >
+            <p className="text-white/30 text-xs uppercase tracking-[0.15em] mb-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              Target Weight (kg)
+            </p>
+            <input
+              type="number"
+              inputMode="decimal"
+              placeholder="e.g. 100"
+              value={targetWeight}
+              onChange={e => setTargetWeight(e.target.value)}
+              className="w-full text-center text-white text-3xl py-3 rounded-xl outline-none"
+              style={{
+                background: 'rgba(0,0,0,0.25)',
+                border: '0.5px solid rgba(212,175,55,0.2)',
+                fontFamily: 'Montserrat, sans-serif',
+                fontWeight: 300,
+              }}
+            />
+          </div>
+
+          {/* Available plates */}
+          <div>
+            <p className="text-white/30 text-xs uppercase tracking-[0.2em] mb-3" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              Available Plates
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {PLATES.map(plate => {
+                const on = enabledPlates[plate.weight];
+                return (
+                  <button
+                    key={plate.weight}
+                    onClick={() => togglePlate(plate.weight)}
+                    className="px-3 py-2 rounded-xl text-xs transition-all"
+                    style={{
+                      background: on ? plate.bg : 'rgba(255,255,255,0.04)',
+                      border: `0.5px solid ${on ? plate.border : 'rgba(255,255,255,0.1)'}`,
+                      color: on ? '#fff' : 'rgba(255,255,255,0.3)',
+                      fontFamily: 'Montserrat, sans-serif',
+                    }}
+                  >
+                    {plate.label}kg
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Barbell visualization */}
+          {plates.length > 0 && (
+            <div>
+              <p className="text-white/30 text-xs uppercase tracking-[0.2em] mb-3" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                Barbell
+              </p>
+              <div
+                className="rounded-2xl p-4"
+                style={{ background: 'rgba(255,255,255,0.025)', border: '0.5px solid rgba(212,175,55,0.12)' }}
+              >
+                <div className="relative h-16 flex items-center">
+                  {/* Bar line */}
+                  <div
+                    className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-2 rounded-full"
+                    style={{
+                      background: isSmith
+                        ? 'linear-gradient(90deg, rgba(156,126,70,0.5), rgba(156,126,70,0.8), rgba(156,126,70,0.5))'
+                        : 'linear-gradient(90deg, rgba(140,140,140,0.4), rgba(200,200,200,0.7), rgba(140,140,140,0.4))',
+                      boxShadow: isSmith ? '0 0 12px rgba(156,126,70,0.4)' : 'none',
+                    }}
+                  />
+
+                  {/* Left plates */}
+                  <div className="absolute left-4 flex items-center h-full">
+                    {[...plates].reverse().map((plate, i) => (
+                      <motion.div
+                        key={i}
+                        initial={{ scaleY: 0 }}
+                        animate={{ scaleY: 1 }}
+                        transition={{ delay: i * 0.04, type: 'spring', stiffness: 300 }}
+                        style={{
+                          width: plateWidth(plate.weight),
+                          height: plateHeight(plate.weight),
+                          background: plate.bg,
+                          border: `0.5px solid ${plate.border}`,
+                          borderRadius: 3,
+                          marginLeft: i === 0 ? 0 : -1,
+                          boxShadow: `inset 0 0 6px rgba(0,0,0,0.3), 0 0 4px rgba(212,175,55,0.12)`,
+                          outline: '0.5px solid rgba(212,175,55,0.25)',
+                          outlineOffset: '-1px',
+                        }}
+                      />
+                    ))}
+                  </div>
+
+                  {/* Right plates */}
+                  <div className="absolute right-4 flex items-center h-full flex-row-reverse">
+                    {[...plates].reverse().map((plate, i) => (
+                      <motion.div
+                        key={i}
+                        initial={{ scaleY: 0 }}
+                        animate={{ scaleY: 1 }}
+                        transition={{ delay: i * 0.04, type: 'spring', stiffness: 300 }}
+                        style={{
+                          width: plateWidth(plate.weight),
+                          height: plateHeight(plate.weight),
+                          background: plate.bg,
+                          border: `0.5px solid ${plate.border}`,
+                          borderRadius: 3,
+                          marginRight: i === 0 ? 0 : -1,
+                          boxShadow: `inset 0 0 6px rgba(0,0,0,0.3), 0 0 4px rgba(212,175,55,0.12)`,
+                          outline: '0.5px solid rgba(212,175,55,0.25)',
+                          outlineOffset: '-1px',
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Plate breakdown */}
+          {plates.length > 0 && (
+            <div
+              className="rounded-2xl p-4 space-y-3"
+              style={{ background: 'rgba(255,255,255,0.025)', border: '0.5px solid rgba(212,175,55,0.12)' }}
+            >
+              <p className="text-white/30 text-xs uppercase tracking-[0.2em]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                Per Side
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {[...new Set(plates.map(p => p.weight))].map(w => {
+                  const count = plates.filter(p => p.weight === w).length;
+                  const plate = PLATES.find(p => p.weight === w);
+                  return (
+                    <div
+                      key={w}
+                      className="flex items-center gap-2 px-3 py-2 rounded-xl"
+                      style={{ background: plate.bg, border: `0.5px solid ${plate.border}` }}
+                    >
+                      <span className="text-white/80 text-sm" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                        {count}× {w}kg
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="pt-3 border-t border-white/8 flex items-center justify-between">
+                <div>
+                  <p className="text-white/30 text-xs uppercase tracking-[0.1em]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                    {isSmith ? 'Smith Machine' : 'Bar'}
+                  </p>
+                  <p className="text-white/50 text-sm">{barWeight}kg</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-white/30 text-xs uppercase tracking-[0.1em]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                    Total
+                  </p>
+                  <p className="text-2xl" style={{
+                    fontFamily: 'Montserrat, sans-serif',
+                    background: 'linear-gradient(135deg, #F4D03F, #D4AF37)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                  }}>
+                    {actualWeight}kg
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Clear button */}
+          <button
+            onClick={() => { setTargetWeight(''); haptic(); }}
+            className="w-full py-4 rounded-2xl text-white/30 text-sm tracking-[0.15em] uppercase transition-all hover:text-white/50"
+            style={{
+              border: '0.5px dashed rgba(255,255,255,0.12)',
+              fontFamily: 'Montserrat, sans-serif',
+            }}
+          >
+            Clear
+          </button>
+        </div>
       </motion.div>
     </AnimatePresence>
   );
