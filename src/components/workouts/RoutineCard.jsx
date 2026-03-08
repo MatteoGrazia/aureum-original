@@ -35,15 +35,15 @@ export default function RoutineCard({ routine, isExpanded, onToggle, onStart, on
       className="cursor-pointer rounded-2xl overflow-hidden transition-all duration-300"
       style={{
         backdropFilter: 'blur(35px) saturate(180%)',
-        background: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.6)',
+        background: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(255, 248, 220, 0.52)',
         border: isExpanded
           ? '0.5px solid rgba(212,175,55,0.6)'
-          : '0.5px solid rgba(212,175,55,0.18)',
+          : `0.5px solid rgba(212,175,55,${isDarkMode ? '0.18' : '0.32'})`,
         boxShadow: isExpanded
           ? '0 0 40px rgba(212,175,55,0.15), inset 0 0 20px rgba(212,175,55,0.03)'
           : isDarkMode
             ? '0 8px 40px rgba(0,0,0,0.5)'
-            : '0 10px 30px rgba(225,193,110,0.15)',
+            : '0 8px 32px rgba(180, 130, 30, 0.13)',
         padding: '18px',
       }}
     >
