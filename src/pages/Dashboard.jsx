@@ -10,7 +10,6 @@ import AureumPulse from '@/components/dashboard/AureumPulse';
 import VoidBackground from '@/components/dashboard/VoidBackground';
 import QuickLogFAB from '@/components/dashboard/QuickLogFAB';
 import AIInsight from '@/components/dashboard/AIInsight';
-import SupplementStreak from '@/components/dashboard/SupplementStreak';
 import WelcomeModal from '@/components/shared/WelcomeModal';
 import WeightTrendMini from '@/components/dashboard/WeightTrendMini';
 import PowerliftingTotals from '@/components/dashboard/PowerliftingTotals';
@@ -456,17 +455,6 @@ export default function Dashboard() {
                 workedOut: !!todaysWorkout
               }}
             />
-          </VoidCard>
-        </motion.div>
-
-        {/* Supplement Streak */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-          className="mb-6">
-          <VoidCard>
-            <SupplementStreak />
           </VoidCard>
         </motion.div>
 

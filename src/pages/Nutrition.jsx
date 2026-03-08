@@ -242,19 +242,27 @@ export default function Nutrition() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-6 pt-6"
         >
-          <h1 
-            className="text-3xl tracking-[0.4em] mb-4 text-center"
-            style={{ 
-              fontFamily: 'Montserrat, sans-serif', 
-              fontWeight: 400,
-              background: 'linear-gradient(135deg, #F4D03F 0%, #D4AF37 50%, #F4D03F 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text'
-            }}
-          >
-            NUTRITION
-          </h1>
+          <div className="text-center mb-4">
+            <img
+              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698347d058d3014d6271ccff/d15227ea9_AUREUM1.png"
+              alt="Aureum"
+              className="w-10 h-10 mx-auto mb-2 opacity-90"
+              style={{ filter: 'drop-shadow(0 0 12px rgba(212,175,55,0.4))' }}
+            />
+            <h1
+              className="text-3xl tracking-[0.4em]"
+              style={{
+                fontFamily: 'Montserrat, sans-serif',
+                fontWeight: 400,
+                background: 'linear-gradient(135deg, #F4D03F 0%, #D4AF37 50%, #F4D03F 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text'
+              }}
+            >
+              NUTRITION
+            </h1>
+          </div>
 
           <VoidCard className="p-3">
           <div className="flex items-center justify-between">
