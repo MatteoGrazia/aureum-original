@@ -1,10 +1,50 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Plus, Clock } from 'lucide-react';
 import ExerciseBlock from './ExerciseBlock';
 import RestTimerBar from './RestTimerBar';
 import ExercisePicker from './ExercisePicker';
 import GoldButton from '@/components/ui/GoldButton';
+
+// Default rest times by muscle group (seconds)
+const REST_BY_MUSCLE = {
+  legs: 180, back: 150, chest: 120, shoulders: 90,
+  biceps: 60, triceps: 60, core: 60, glutes: 120,
+  calves: 60, forearms: 60,
+};
+
+// Known exercise overrides
+const REST_BY_NAME = {
+  'squat': 180, 'deadlift': 210, 'bench press': 120,
+  'romanian deadlift': 150, 'leg press': 150,
+  'shoulder press': 90, 'barbell row': 120,
+};
+
+const getRestDuration = (exercise) => {
+  if (exercise.default_rest) return exercise.default_rest;
+  const lname = (exercise.exercise_name || '').toLowerCase();
+  for (const [key, val] of Object.entries(REST_BY_NAME)) {
+    if (lname.includes(key)) return val;
+  }
+  return REST_BY_MUSCLE[exercise.muscle_group] || 90;
+};
+
+const requestNotificationPermission = async () => {
+  if ('Notification' in window && Notification.permission === 'default') {
+    await Notification.requestPermission();
+  }
+};
+
+const sendRestCompleteNotification = (exerciseName) => {
+  if ('Notification' in window && Notification.permission === 'granted') {
+    new Notification('Rest Over — Aureum', {
+      body: `Time to hit your next set on ${exerciseName}`,
+      icon: '/favicon.ico',
+      vibrate: [200, 100, 200],
+    });
+  }
+  if ('vibrate' in navigator) navigator.vibrate([200, 100, 200]);
+};
 
 const createSet = (type = 'normal', weight = 0, reps = 0) => ({
   id: Math.random().toString(36).slice(2),
@@ -15,14 +55,17 @@ const createSet = (type = 'normal', weight = 0, reps = 0) => ({
   completed: false,
 });
 
-export default function HevyLogger({ activeWorkout, allExercises, onUpdateWorkout, onFinish, onCancel }) {
+export default function HevyLogger({ activeWorkout, allExercises, onUpdateWorkout, onFinish, onCancel, previousWorkoutSets = {} }) {
   const [elapsed, setElapsed] = useState(0);
   const [showRestTimer, setShowRestTimer] = useState(false);
+  const [restDuration, setRestDuration] = useState(90);
   const [restKey, setRestKey] = useState(0);
+  const [currentRestExercise, setCurrentRestExercise] = useState('');
   const [showExercisePicker, setShowExercisePicker] = useState(false);
   const [replaceIndex, setReplaceIndex] = useState(null);
 
   useEffect(() => {
+    requestNotificationPermission();
     const interval = setInterval(() => setElapsed(e => e + 1), 1000);
     return () => clearInterval(interval);
   }, []);
@@ -33,19 +76,25 @@ export default function HevyLogger({ activeWorkout, allExercises, onUpdateWorkou
     return `${m}:${s.toString().padStart(2, '0')}`;
   };
 
-  const triggerRestTimer = () => {
+  const triggerRestTimer = (exercise) => {
+    const dur = getRestDuration(exercise);
+    setRestDuration(dur);
+    setCurrentRestExercise(exercise?.exercise_name || '');
     setRestKey(k => k + 1);
     setShowRestTimer(true);
   };
 
-  // Non-structural update (weight/reps/completed changes only)
+  const handleRestComplete = () => {
+    sendRestCompleteNotification(currentRestExercise);
+    setShowRestTimer(false);
+  };
+
   const updateExercise = (index, exercise) => {
     const exercises = [...activeWorkout.exercises];
     exercises[index] = exercise;
     onUpdateWorkout({ ...activeWorkout, exercises });
   };
 
-  // Structural update (add/remove sets)
   const structuralUpdateExercise = (index, exercise) => {
     const exercises = [...activeWorkout.exercises];
     exercises[index] = exercise;
@@ -60,11 +109,7 @@ export default function HevyLogger({ activeWorkout, allExercises, onUpdateWorkou
       equipment: ex.equipment,
       sets: [createSet()],
     };
-    onUpdateWorkout({
-      ...activeWorkout,
-      exercises: [...activeWorkout.exercises, newEx],
-      is_modified: true,
-    });
+    onUpdateWorkout({ ...activeWorkout, exercises: [...activeWorkout.exercises, newEx], is_modified: true });
     setShowExercisePicker(false);
   };
 
@@ -114,7 +159,6 @@ export default function HevyLogger({ activeWorkout, allExercises, onUpdateWorkou
               <X className="w-5 h-5 text-red-400" />
             </button>
           </div>
-          {/* Progress bar */}
           <div className="h-0.5 bg-white/5 rounded-full overflow-hidden">
             <motion.div
               className="h-full bg-gradient-to-r from-[#D4AF37] to-[#F4D03F] rounded-full"
@@ -126,19 +170,17 @@ export default function HevyLogger({ activeWorkout, allExercises, onUpdateWorkou
 
         {/* Body */}
         <div className="px-4 pt-3 space-y-3">
-          {/* Rest Timer Bar */}
           <AnimatePresence>
             {showRestTimer && (
               <RestTimerBar
                 key={restKey}
-                duration={90}
-                onComplete={() => setShowRestTimer(false)}
+                duration={restDuration}
+                onComplete={handleRestComplete}
                 onDismiss={() => setShowRestTimer(false)}
               />
             )}
           </AnimatePresence>
 
-          {/* Exercise blocks */}
           {activeWorkout.exercises.map((exercise, i) => (
             <ExerciseBlock
               key={`${exercise.exercise_id || i}-${i}`}
@@ -147,17 +189,14 @@ export default function HevyLogger({ activeWorkout, allExercises, onUpdateWorkou
               onStructuralUpdate={updated => structuralUpdateExercise(i, updated)}
               onReplace={() => { setReplaceIndex(i); setShowExercisePicker(true); }}
               onTimerStart={triggerRestTimer}
+              previousSets={previousWorkoutSets[exercise.exercise_name] || []}
             />
           ))}
 
-          {/* Add exercise */}
           <button
             onClick={() => { setReplaceIndex(null); setShowExercisePicker(true); }}
             className="w-full py-4 rounded-2xl text-white/30 text-sm flex items-center justify-center gap-2 transition-all hover:text-[#D4AF37]/50"
-            style={{
-              border: '1.5px dashed rgba(255,255,255,0.12)',
-              background: 'rgba(255,255,255,0.02)',
-            }}
+            style={{ border: '1.5px dashed rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.02)' }}
           >
             <Plus className="w-4 h-4" />
             Add Exercise
@@ -178,7 +217,6 @@ export default function HevyLogger({ activeWorkout, allExercises, onUpdateWorkou
         </div>
       </div>
 
-      {/* Exercise Picker */}
       <AnimatePresence>
         {showExercisePicker && (
           <ExercisePicker
