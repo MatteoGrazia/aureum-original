@@ -98,10 +98,18 @@ function LayoutInner({ children, currentPageName }) {
           box-shadow: 0 4px 24px rgba(0, 0, 0, 0.07) !important;
         }
 
-        /* Page backgrounds */
-        html[data-theme="light"] [class*="bg-[#080808]"] {
-          background-color: #F5F5F7 !important;
+        /* Page backgrounds — override all dark bg references */
+        html[data-theme="light"] [class*="bg-[#080808]"],
+        html[data-theme="light"] [style*="background: #080808"],
+        html[data-theme="light"] [style*="background-color: #080808"],
+        html[data-theme="light"] [style*="background: rgb(8, 8, 8)"] {
+          background-color: #F8F8F6 !important;
           background-image: none !important;
+        }
+
+        /* The #0a0a0a used in ExercisePicker */
+        html[data-theme="light"] [style*="background: #0a0a0a"] {
+          background-color: #F8F8F6 !important;
         }
 
         /* Hide animated void/star backgrounds */
