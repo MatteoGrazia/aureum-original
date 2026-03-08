@@ -72,7 +72,7 @@ export default function PowerliftingTotals({ bodyweight = 80 }) {
           Powerlifting Totals
         </p>
         <p className="text-[10px] uppercase tracking-[0.15em] text-white/20" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-          90-Day Peak
+          All Time
         </p>
       </div>
 
