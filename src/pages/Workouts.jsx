@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Plus, Play, Calculator, Dumbbell, ChevronDown, Trash2, X } from 'lucide-react';
+import { Plus, Play, Calculator, Dumbbell, ChevronDown, Trash2, X, History } from 'lucide-react';
 import VoidCard from '@/components/ui/VoidCard';
 import VoidBackground from '@/components/dashboard/VoidBackground';
 import GoldButton from '@/components/ui/GoldButton';
