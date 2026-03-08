@@ -420,22 +420,36 @@ export default function Workouts() {
 
               {recentWorkouts.length > 0 && (
                 <div className="space-y-3 mb-24">
-                  <p className="text-[10px] uppercase tracking-[0.3em] text-[#D4AF37]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                    Recent Workouts
-                  </p>
-                  {recentWorkouts.slice(0, 5).map(w => (
-                    <VoidCard key={w.id}>
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h3 className="text-white text-sm" style={{ fontFamily: 'Montserrat, sans-serif' }}>{w.routine_name}</h3>
-                          <p className="text-white/35 text-xs mt-0.5">{format(new Date(w.date), 'MMM d')} · {w.duration_minutes} min</p>
+                  <div className="flex items-center justify-between">
+                    <p className="text-[10px] uppercase tracking-[0.3em] text-[#D4AF37]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                      History
+                    </p>
+                    <p className="text-white/20 text-[10px]">{recentWorkouts.length} sessions</p>
+                  </div>
+                  {recentWorkouts.map(w => (
+                    <motion.div key={w.id} whileTap={{ scale: 0.98 }}>
+                      <VoidCard
+                        className="cursor-pointer"
+                        onClick={() => { setSelectedLog(w); setView('logDetail'); }}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <h3 className="text-white text-sm" style={{ fontFamily: 'Montserrat, sans-serif' }}>{w.routine_name || 'Workout'}</h3>
+                            <p className="text-white/35 text-xs mt-0.5">
+                              {format(new Date(w.date), 'MMM d, yyyy')}
+                              {w.duration_minutes ? ` · ${w.duration_minutes} min` : ''}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <div className="text-right">
+                              <p className="text-[#D4AF37] text-sm">{w.total_volume ? `${(w.total_volume / 1000).toFixed(1)}k` : '—'}</p>
+                              <p className="text-white/25 text-[10px]">kg vol</p>
+                            </div>
+                            <History className="w-4 h-4 text-white/15" />
+                          </div>
                         </div>
-                        <div className="text-right">
-                          <p className="text-[#D4AF37] text-sm">{w.total_volume?.toLocaleString()}</p>
-                          <p className="text-white/25 text-xs">kg</p>
-                        </div>
-                      </div>
-                    </VoidCard>
+                      </VoidCard>
+                    </motion.div>
                   ))}
                 </div>
               )}
