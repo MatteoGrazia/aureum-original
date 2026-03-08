@@ -11,7 +11,13 @@ const createSet = (type = 'normal', weight = 0, reps = 0) => ({
   completed: false,
 });
 
-export default function ExerciseBlock({ exercise, onUpdate, onStructuralUpdate, onReplace, onTimerStart }) {
+const epley1RM = (weight, reps) => {
+  if (!weight || !reps || reps <= 1) return weight || 0;
+  return Math.round(weight * (1 + reps / 30));
+};
+
+export default function ExerciseBlock({ exercise, onUpdate, onStructuralUpdate, onReplace, onTimerStart, previousSets = [] }) {
+
   const addSet = (type = 'normal') => {
     const last = exercise.sets[exercise.sets.length - 1];
     const newSet = createSet(type, last?.weight || 0, last?.reps || 0);
@@ -35,11 +41,17 @@ export default function ExerciseBlock({ exercise, onUpdate, onStructuralUpdate, 
     onUpdate({ ...exercise, sets });
     if (updated.completed) {
       if ('vibrate' in navigator) navigator.vibrate(50);
-      onTimerStart();
+      onTimerStart(exercise);
     }
   };
 
   const completedCount = exercise.sets.filter(s => s.completed).length;
+
+  // Calculate the 90-day peak 1RM for PR detection from previousSets
+  const peak1RM = previousSets.reduce((max, s) => {
+    const rm = epley1RM(s.weight, s.reps);
+    return rm > max ? rm : max;
+  }, 0);
 
   return (
     <div
@@ -58,6 +70,9 @@ export default function ExerciseBlock({ exercise, onUpdate, onStructuralUpdate, 
           <p className="text-white/35 text-xs capitalize mt-0.5">
             {exercise.muscle_group && `${exercise.muscle_group} · `}
             {completedCount}/{exercise.sets.length} sets
+            {exercise.default_rest && (
+              <span className="text-[#9C7E46]/70 ml-1">· {exercise.default_rest}s rest</span>
+            )}
           </p>
         </div>
         <button
@@ -68,6 +83,15 @@ export default function ExerciseBlock({ exercise, onUpdate, onStructuralUpdate, 
           <span className="text-white/40 text-xs">Replace</span>
         </button>
       </div>
+
+      {/* Previous session ghost label */}
+      {previousSets.length > 0 && (
+        <div className="px-4 pb-1">
+          <p className="text-[9px] uppercase tracking-[0.15em]" style={{ color: '#9C7E46', fontFamily: 'Montserrat, sans-serif' }}>
+            Last session · {previousSets[0]?.weight}kg × {previousSets[0]?.reps}
+          </p>
+        </div>
+      )}
 
       {/* Column headers */}
       <div className="flex items-center gap-2 px-4 pt-1 pb-0.5">
@@ -90,6 +114,8 @@ export default function ExerciseBlock({ exercise, onUpdate, onStructuralUpdate, 
             onUpdate={updated => updateSet(i, updated)}
             onDelete={() => deleteSet(i)}
             onComplete={updated => completeSet(i, updated)}
+            previousSet={previousSets[i] || previousSets[0] || null}
+            peak1RM={peak1RM}
           />
         ))}
       </div>
