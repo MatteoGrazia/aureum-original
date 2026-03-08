@@ -12,6 +12,7 @@ import QuickLogFAB from '@/components/dashboard/QuickLogFAB';
 import AIInsight from '@/components/dashboard/AIInsight';
 import WelcomeModal from '@/components/shared/WelcomeModal';
 import WeightTrendMini from '@/components/dashboard/WeightTrendMini';
+import PowerliftingTotals from '@/components/dashboard/PowerliftingTotals';
 import MotionPermissionModal from '@/components/shared/MotionPermissionModal';
 import StepTrackerPermissionModal from '@/components/shared/StepTrackerPermissionModal';
 import { useStepTracker, subscribeToSteps } from '@/components/shared/useStepTracker';
