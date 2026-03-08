@@ -25,8 +25,8 @@ const wilks = (total, bodyweight = 80) => {
 
 export default function PowerliftingTotals({ bodyweight = 80 }) {
   const { data: allLogs = [] } = useQuery({
-    queryKey: ['workoutLogs90'],
-    queryFn: () => base44.entities.WorkoutLog.filter({}, '-date', 90),
+    queryKey: ['workoutLogsAll'],
+    queryFn: () => base44.entities.WorkoutLog.list('-date', 500),
     staleTime: 5 * 60 * 1000,
   });
 
