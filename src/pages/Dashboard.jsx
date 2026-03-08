@@ -451,6 +451,9 @@ export default function Dashboard() {
           </VoidCard>
         </motion.div>
 
+        {/* Powerlifting Totals */}
+        <PowerliftingTotals bodyweight={profile?.current_weight || 80} />
+
         {/* 90-Day Weight Trend */}
         {weightHistory.length >= 2 && (
           <motion.div
