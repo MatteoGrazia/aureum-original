@@ -12,6 +12,7 @@ import HevyLogger from '@/components/workouts/HevyLogger';
 import SmartSaveModal from '@/components/workouts/SmartSaveModal';
 import WorkoutSummary from '@/components/workouts/WorkoutSummary';
 import ExercisePicker from '@/components/workouts/ExercisePicker';
+import WorkoutLogDetail from '@/components/workouts/WorkoutLogDetail';
 import { Input } from '@/components/ui/input';
 
 const STORAGE_KEY = 'aureum_active_workout';
