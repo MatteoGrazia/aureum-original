@@ -341,7 +341,7 @@ export default function Dashboard() {
 
           {/* Golden Feather Icon */}
           <img 
-            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698347d058d3014d6271ccff/d4abef643_AUREUM.png"
+            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698347d058d3014d6271ccff/d15227ea9_AUREUM1.png"
             alt="Aureum"
             className="w-12 h-12 mx-auto mb-3 opacity-90"
           />
