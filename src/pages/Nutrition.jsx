@@ -378,11 +378,11 @@ export default function Nutrition() {
                       <button
                         key={meal}
                         onClick={() => setSelectedMeal(meal)}
-                        className={`flex-1 py-2 px-3 rounded-xl flex items-center justify-center gap-2 transition-all ${
-                          selectedMeal === meal
-                            ? 'bg-[#D4AF37]/20 border border-[#D4AF37]/50'
-                            : 'bg-white/5 border border-transparent'
-                        }`}
+                        className="flex-1 py-2 px-3 rounded-xl flex items-center justify-center gap-2 transition-all"
+                        style={{
+                          background: selectedMeal === meal ? 'rgba(255,191,0,0.20)' : 'rgba(255,255,255,0.05)',
+                          border: selectedMeal === meal ? '1px solid rgba(255,191,0,0.45)' : '1px solid transparent'
+                        }}
                       >
                         <Icon className={`w-4 h-4 ${selectedMeal === meal ? 'text-[#D4AF37]' : 'text-white/40'}`} />
                         <span className={`text-xs capitalize ${selectedMeal === meal ? 'text-[#D4AF37]' : 'text-white/40'}`}>
@@ -483,7 +483,7 @@ export default function Nutrition() {
                   <GoldButton 
                     onClick={handleLogFood} 
                     className="w-full" 
-                    style={{ minHeight: '52px' }}
+                    style={{ minHeight: '52px', marginBottom: '20px' }}
                     disabled={!selectedUnit}
                   >
                     Add to Diary

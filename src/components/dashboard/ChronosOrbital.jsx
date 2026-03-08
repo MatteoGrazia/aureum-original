@@ -16,9 +16,9 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
     100
   );
 
-  const trackOpacity = isDarkMode ? 0.08 : 0.35;
-  const centerPctColor = isDarkMode ? '#F4D03F' : '#D4AF37';
-  const centerSubColor = isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(29,29,31,0.45)';
+  const trackOpacity = isDarkMode ? 0.08 : 1; // light mode uses explicit rgba color below
+  const centerPctColor = isDarkMode ? '#F4D03F' : '#1D1D1F';
+  const centerSubColor = isDarkMode ? 'rgba(255,255,255,0.4)' : '#1D1D1F';
 
   return (
     <div className="relative flex items-center justify-center h-72">
@@ -58,9 +58,9 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
                 cy={orbital.size / 2}
                 r={(orbital.size - 4) / 2}
                 fill="none"
-                stroke={orbital.color}
+                stroke={isDarkMode ? orbital.color : 'rgba(156,126,70,0.10)'}
                 strokeWidth={isDarkMode ? "1" : "1.5"}
-                opacity={trackOpacity}
+                opacity={isDarkMode ? trackOpacity : 1}
               />
 
               {/* Progress thread */}
@@ -69,8 +69,8 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
                 cy={orbital.size / 2}
                 r={(orbital.size - 4) / 2}
                 fill="none"
-                stroke={`url(#pulse-${index})`}
-                strokeWidth={isDarkMode ? "1.5" : "2"}
+                stroke={isDarkMode ? `url(#pulse-${index})` : '#D4AF37'}
+                strokeWidth={isDarkMode ? "1.5" : "2.5"}
                 strokeLinecap="round"
                 strokeDasharray={circumference}
                 initial={{ strokeDashoffset: circumference }}
@@ -79,7 +79,7 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
                 style={{
                   filter: isDarkMode
                     ? `drop-shadow(0 0 2px ${orbital.color}80) drop-shadow(0 0 4px ${orbital.color}40)`
-                    : `drop-shadow(0 0 4px ${orbital.color}90) drop-shadow(0 0 8px ${orbital.color}50)`
+                    : `drop-shadow(0 0 3px rgba(212,175,55,0.5))`
                 }}
               />
             </svg>
@@ -121,7 +121,7 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
               style={{
                 fontFamily: 'Montserrat, sans-serif',
                 fontWeight: 400,
-                color: isDarkMode ? 'rgba(255,255,255,0.3)' : 'rgba(29,29,31,0.4)'
+                color: isDarkMode ? 'rgba(255,255,255,0.3)' : '#1D1D1F'
               }}
             >
               {i === 0 ? 'Calories' : i === 1 ? 'Steps' : 'Volume'}

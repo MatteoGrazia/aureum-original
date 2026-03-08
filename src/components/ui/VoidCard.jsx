@@ -11,11 +11,11 @@ export default function VoidCard({ children, className, style, ...props }) {
       style={{
         background: isDarkMode
           ? 'rgba(255, 255, 255, 0.03)'
-          : 'rgba(255, 255, 255, 0.72)',
-        backdropFilter: 'blur(25px) saturate(180%)',
+          : 'rgba(255, 255, 255, 0.6)',
+        backdropFilter: 'blur(20px) saturate(180%)',
         boxShadow: isDarkMode
           ? '0 20px 50px rgba(0, 0, 0, 0.6)'
-          : '0 8px 32px rgba(0, 0, 0, 0.06)',
+          : '0 10px 30px rgba(225, 193, 110, 0.15)',
         border: isDarkMode
           ? '0.5px solid rgba(212, 175, 55, 0.2)'
           : '0.5px solid rgba(225, 193, 110, 0.45)',

@@ -197,11 +197,11 @@ function LayoutInner({ children, currentPageName }) {
           transition={{ duration: 0.4, ease: 'easeInOut' }}
         >
           {isDarkMode ? (
-            /* In dark mode: show Sun icon → tap to go light */
-            <Sun className="w-[18px] h-[18px]" style={{ color: '#D4AF37' }} strokeWidth={1.5} />
+            /* In dark mode: show Moon icon → tap to go light */
+            <Moon className="w-[18px] h-[18px]" style={{ color: '#D4AF37' }} strokeWidth={1.5} />
           ) : (
-            /* In light mode: show Moon icon → tap to go dark. Deep Charcoal color for visibility on alabaster */
-            <Moon className="w-[18px] h-[18px]" style={{ color: '#1D1D1F' }} strokeWidth={1.5} />
+            /* In light mode: show Sun icon (gold) → tap to go dark */
+            <Sun className="w-[18px] h-[18px]" style={{ color: '#D4AF37' }} strokeWidth={1.5} />
           )}
         </motion.div>
       </motion.button>
@@ -240,7 +240,13 @@ function LayoutInner({ children, currentPageName }) {
                     strokeWidth={1}
                   />
                   {isActive && (
-                    <div className="absolute -bottom-1 w-8 h-0.5 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent rounded-full" />
+                    <div
+                      className="absolute -bottom-1 w-8 h-0.5 rounded-full"
+                      style={{
+                        background: 'linear-gradient(90deg, transparent, #D4AF37, transparent)',
+                        boxShadow: '0 0 8px rgba(212,175,55,0.7), 0 0 16px rgba(212,175,55,0.3)'
+                      }}
+                    />
                   )}
                 </Link>
               );

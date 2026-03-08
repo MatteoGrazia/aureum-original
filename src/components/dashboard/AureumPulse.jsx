@@ -28,9 +28,9 @@ export default function AureumPulse({ label, value, goal, unit, index = 0, icon,
         border: '0.5px solid rgba(212, 175, 55, 0.1)',
       }
     : {
-        background: 'rgba(255, 255, 255, 0.7)',
-        backdropFilter: 'blur(25px) saturate(180%)',
-        boxShadow: '0 4px 15px rgba(0, 0, 0, 0.03)',
+        background: 'rgba(255, 255, 255, 0.6)',
+        backdropFilter: 'blur(20px) saturate(180%)',
+        boxShadow: '0 10px 30px rgba(225, 193, 110, 0.15)',
         border: '0.5px solid rgba(225, 193, 110, 0.35)',
       };
 
