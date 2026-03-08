@@ -325,18 +325,38 @@ export default function Workouts() {
 
       {(view === 'routines' || view === 'create') && (
         <div className="relative z-10 p-5">
-          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-6 pt-8">
+          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-4 pt-10">
             <h1
-              className="text-3xl tracking-[0.4em] text-center"
+              className="text-2xl tracking-[0.5em] text-center"
               style={{
-                fontFamily: 'Montserrat, sans-serif', fontWeight: 400,
-                background: 'linear-gradient(135deg, #F4D03F 0%, #D4AF37 50%, #F4D03F 100%)',
-                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+                fontFamily: 'Montserrat, sans-serif', fontWeight: 300,
+                color: 'rgba(212,175,55,0.5)',
+                letterSpacing: '0.5em',
               }}
             >
-              WORKOUTS
+              STRENGTH
             </h1>
           </motion.div>
+
+          {/* Floating Gold Orb FAB */}
+          {view === 'routines' && (
+            <motion.button
+              onClick={() => setView('create')}
+              whileTap={{ scale: 0.93 }}
+              className="fixed right-5 z-50 flex items-center justify-center rounded-full"
+              style={{
+                bottom: '120px',
+                width: 56,
+                height: 56,
+                background: 'linear-gradient(135deg, #F4D03F 0%, #D4AF37 100%)',
+                boxShadow: '0 0 30px rgba(212,175,55,0.5), 0 0 60px rgba(212,175,55,0.2)',
+              }}
+              animate={{ boxShadow: ['0 0 20px rgba(212,175,55,0.4)', '0 0 40px rgba(212,175,55,0.7)', '0 0 20px rgba(212,175,55,0.4)'] }}
+              transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+            >
+              <Plus className="w-6 h-6 text-black" strokeWidth={2} />
+            </motion.button>
+          )}
 
           {view === 'routines' && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
