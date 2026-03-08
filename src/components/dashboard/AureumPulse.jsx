@@ -1,19 +1,43 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Flame, Footprints, Dumbbell, Droplets } from 'lucide-react';
+import { useTheme } from '@/components/shared/ThemeContext';
 
 export default function AureumPulse({ label, value, goal, unit, index = 0, icon, iconColor = '#D4AF37' }) {
+  const { isDarkMode } = useTheme();
   const progress = Math.min((value / goal) * 100, 100);
   const isNearGoal = progress > 80;
-  
+
   const iconMap = {
     'Energy Remaining': Flame,
     'Steps': Footprints,
     'Training Volume': Dumbbell,
-    'Hydration': Droplets
+    'Hydration': Droplets,
   };
-  
+
   const Icon = icon || iconMap[label];
+
+  // Use iconColor for progress bar too so Steps = Pastel Blue, etc.
+  const progressColor = iconColor;
+
+  const cardStyle = isDarkMode
+    ? {
+        background: 'rgba(255, 255, 255, 0.03)',
+        backdropFilter: 'blur(30px) saturate(180%)',
+        boxShadow: '0 20px 50px rgba(0, 0, 0, 0.6)',
+        border: '0.5px solid rgba(212, 175, 55, 0.1)',
+      }
+    : {
+        background: 'rgba(255, 255, 255, 0.7)',
+        backdropFilter: 'blur(25px) saturate(180%)',
+        boxShadow: '0 4px 15px rgba(0, 0, 0, 0.03)',
+        border: '0.5px solid rgba(225, 193, 110, 0.35)',
+      };
+
+  const valueColor = isDarkMode ? 'rgba(255,255,255,0.6)' : 'rgba(29,29,31,0.7)';
+  const goalColor = isDarkMode ? 'rgba(255,255,255,0.3)' : 'rgba(29,29,31,0.35)';
+  const trackColor = isDarkMode ? 'rgba(156,126,70,0.2)' : 'rgba(156,126,70,0.15)';
+  const pctColor = progress >= 100 ? '#F4D03F' : (isDarkMode ? '#C9A961' : '#9C7E46');
 
   return (
     <motion.div
@@ -22,132 +46,71 @@ export default function AureumPulse({ label, value, goal, unit, index = 0, icon,
       transition={{ duration: 0.3, delay: index * 0.05 }}
       className="relative"
       style={{
-        background: 'rgba(255, 255, 255, 0.03)',
-        backdropFilter: 'blur(30px) saturate(180%)',
-        boxShadow: '0 20px 50px rgba(0, 0, 0, 0.6)',
-        border: '0.5px solid rgba(212, 175, 55, 0.1)',
+        ...cardStyle,
         padding: '20px 18px',
         borderRadius: '14px',
         overflow: 'hidden',
-        position: 'relative'
       }}
     >
-      {/* Subtle white reflection */}
-      <div 
-        className="absolute top-0 left-0 right-0 h-1/3 pointer-events-none"
-        style={{
-          background: 'radial-gradient(ellipse 100% 80% at 50% 0%, rgba(255, 255, 255, 0.01) 0%, transparent 60%)',
-          borderRadius: '14px 14px 0 0'
-        }}
-      />
-
       {/* Label with Icon */}
       <div className="flex items-center justify-between mb-4 relative z-10">
         <div className="flex items-center gap-3">
           {Icon && (
-            <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${iconColor}15` }}>
+            <div
+              className="w-9 h-9 rounded-lg flex items-center justify-center"
+              style={{ backgroundColor: `${iconColor}18` }}
+            >
               <Icon className="w-5 h-5" style={{ color: iconColor }} strokeWidth={1.5} />
             </div>
           )}
-          <p 
+          <p
             className="text-[10px] uppercase tracking-[0.3em] text-[#D4AF37]"
             style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
           >
             {label}
           </p>
         </div>
-        <p 
-          className="text-white/60 text-[11px] tracking-wider"
-          style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
+        <p
+          className="text-[11px] tracking-wider"
+          style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500, color: valueColor }}
         >
-          {value.toLocaleString()} {unit && <span className="text-white/30">/ {goal.toLocaleString()} {unit}</span>}
+          {value.toLocaleString()}{' '}
+          {unit && <span style={{ color: goalColor }}>/ {goal.toLocaleString()} {unit}</span>}
         </p>
       </div>
 
       {/* Thread visualization */}
-      <div className="relative h-[1px] bg-[#9C7E46]/20 overflow-hidden z-10">
-        {/* Progress thread */}
+      <div className="relative h-[1px] overflow-hidden z-10" style={{ background: trackColor }}>
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${progress}%` }}
-          transition={{ duration: 1.5, ease: "easeOut", delay: index * 0.1 }}
-          className="absolute left-0 top-0 h-[1px] bg-gradient-to-r from-[#9C7E46] via-[#D4AF37] to-[#D4AF37]"
+          transition={{ duration: 1.5, ease: 'easeOut', delay: index * 0.1 }}
+          className="absolute left-0 top-0 h-[1px]"
           style={{
-            boxShadow: isNearGoal 
-              ? '0 0 8px rgba(212,175,55,0.6), 0 0 16px rgba(212,175,55,0.3)' 
-              : '0 0 4px rgba(212,175,55,0.4)',
+            background: `linear-gradient(90deg, ${progressColor}80, ${progressColor}cc, ${progressColor})`,
+            boxShadow: isNearGoal
+              ? `0 0 8px ${progressColor}90, 0 0 16px ${progressColor}50`
+              : `0 0 4px ${progressColor}60`,
           }}
         >
-          {/* Enhanced Multi-layer Shimmer */}
           <motion.div
             className="absolute right-0 top-0 w-16 h-[1px]"
-            style={{
-              background: 'linear-gradient(90deg, transparent, rgba(212,175,55,1), rgba(244,208,63,0.8), transparent)',
-            }}
-            animate={{
-              x: [-16, 16, -16],
-              opacity: [0.5, 1, 0.5]
-            }}
-            transition={{
-              duration: 1.2,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
+            style={{ background: `linear-gradient(90deg, transparent, ${progressColor}, transparent)` }}
+            animate={{ x: [-16, 16, -16], opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
           />
-          {isNearGoal && (
-            <>
-              <motion.div
-                className="absolute right-0 top-0 w-12 h-[1px]"
-                style={{
-                  background: 'linear-gradient(90deg, transparent, rgba(244,208,63,0.9), transparent)',
-                }}
-                animate={{
-                  x: [0, 20, 0],
-                  opacity: [0.3, 0.9, 0.3]
-                }}
-                transition={{
-                  duration: 0.9,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: 0.2
-                }}
-              />
-              <motion.div
-                className="absolute right-0 top-0 w-8 h-[1px]"
-                style={{
-                  background: 'linear-gradient(90deg, transparent, rgba(255,215,0,0.7), transparent)',
-                }}
-                animate={{
-                  x: [-8, 12, -8],
-                  opacity: [0.2, 0.8, 0.2]
-                }}
-                transition={{
-                  duration: 0.6,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: 0.4
-                }}
-              />
-            </>
-          )}
         </motion.div>
-
-        {/* Goal marker */}
-        <div 
-          className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-1 rounded-full bg-[#9C7E46]/40"
-          style={{ boxShadow: '0 0 4px rgba(156,126,70,0.3)' }}
+        <div
+          className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-1 rounded-full"
+          style={{ background: `${progressColor}50`, boxShadow: `0 0 4px ${progressColor}40` }}
         />
       </div>
 
-      {/* Percentage indicator */}
+      {/* Percentage */}
       <div className="mt-3 text-right relative z-10">
-        <span 
+        <span
           className="text-xs tracking-wider"
-          style={{ 
-            fontFamily: 'Montserrat, sans-serif',
-            fontWeight: 500,
-            color: progress >= 100 ? '#F4D03F' : '#C9A961'
-          }}
+          style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500, color: pctColor }}
         >
           {Math.round(progress)}%
         </span>

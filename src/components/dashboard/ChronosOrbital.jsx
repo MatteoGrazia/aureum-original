@@ -16,7 +16,7 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
     100
   );
 
-  const trackOpacity = isDarkMode ? 0.08 : 0.18;
+  const trackOpacity = isDarkMode ? 0.08 : 0.35;
   const centerPctColor = isDarkMode ? '#F4D03F' : '#D4AF37';
   const centerSubColor = isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(29,29,31,0.45)';
 
@@ -44,10 +44,10 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
             >
               <defs>
                 <linearGradient id={`pulse-${index}`} x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor={orbital.color} stopOpacity={isDarkMode ? "0.1" : "0.25"} />
-                  <stop offset="50%" stopColor={orbital.color} stopOpacity={isDarkMode ? "0.3" : "0.6"} />
+                  <stop offset="0%" stopColor={orbital.color} stopOpacity={isDarkMode ? "0.1" : "0.45"} />
+                  <stop offset="50%" stopColor={orbital.color} stopOpacity={isDarkMode ? "0.3" : "0.75"} />
                   <stop offset="100%" stopColor={orbital.color} stopOpacity="1">
-                    <animate attributeName="stop-opacity" values="1;0.4;1" dur="2s" repeatCount="indefinite" />
+                    <animate attributeName="stop-opacity" values="1;0.5;1" dur="2s" repeatCount="indefinite" />
                   </stop>
                 </linearGradient>
               </defs>
