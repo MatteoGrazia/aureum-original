@@ -87,7 +87,7 @@ export default function HevyLogger({ activeWorkout, allExercises, onUpdateWorkou
 
   return (
     <>
-      <div className="min-h-screen bg-[#080808]" style={{ paddingBottom: '120px' }}>
+      <div className="relative z-10 min-h-screen bg-[#080808]" style={{ paddingBottom: '120px' }}>
         {/* Sticky header */}
         <div
           className="sticky top-0 z-30 pt-10 pb-3 px-5"
