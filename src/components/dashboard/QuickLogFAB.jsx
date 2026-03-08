@@ -112,9 +112,9 @@ export default function QuickLogFAB({ onUpdate }) {
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
             className="fixed right-0 top-0 bottom-0 w-64 z-50 p-6 flex flex-col pb-32"
             style={{
-              background: 'linear-gradient(135deg, rgba(160,160,160,0.08) 0%, rgba(255,255,255,0.04) 50%, rgba(180,180,180,0.06) 100%)',
+              background: 'var(--fab-sidebar-bg, linear-gradient(135deg, rgba(160,160,160,0.08) 0%, rgba(255,255,255,0.04) 50%, rgba(180,180,180,0.06) 100%))',
               backdropFilter: 'blur(40px) saturate(180%)',
-              boxShadow: '-10px 0 40px rgba(0,0,0,0.5)',
+              boxShadow: '-10px 0 40px rgba(0,0,0,0.2)',
               borderLeft: '0.5px solid rgba(212,175,55,0.3)'
             }}
           >

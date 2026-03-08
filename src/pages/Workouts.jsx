@@ -326,16 +326,24 @@ export default function Workouts() {
       {(view === 'routines' || view === 'create') && (
         <div className="relative z-10 p-5">
           <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-4 pt-10">
-            <h1
-              className="text-2xl tracking-[0.5em] text-center"
-              style={{
-                fontFamily: 'Montserrat, sans-serif', fontWeight: 300,
-                color: 'rgba(212,175,55,0.5)',
-                letterSpacing: '0.5em',
-              }}
-            >
-              STRENGTH
-            </h1>
+            <div className="text-center">
+              <img
+                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698347d058d3014d6271ccff/d15227ea9_AUREUM1.png"
+                alt="Aureum"
+                className="w-9 h-9 mx-auto mb-2 opacity-90"
+                style={{ filter: 'drop-shadow(0 0 10px rgba(212,175,55,0.4))' }}
+              />
+              <h1
+                className="text-2xl tracking-[0.5em] text-center"
+                style={{
+                  fontFamily: 'Montserrat, sans-serif', fontWeight: 300,
+                  color: 'rgba(212,175,55,0.5)',
+                  letterSpacing: '0.5em',
+                }}
+              >
+                STRENGTH
+              </h1>
+            </div>
           </motion.div>
 
           {/* Floating Gold Orb FAB */}
