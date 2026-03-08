@@ -11,77 +11,11 @@ const PARTICLES = Array.from({ length: 50 }, (_, i) => ({
   delay: Math.random() * 5
 }));
 
-const LIGHT_BREACHES = [
-  { x: 12,  y: 8,  size: 420, delay: 0,   duration: 14 },
-  { x: 80,  y: 12, size: 360, delay: 3.5, duration: 16 },
-  { x: 55,  y: 55, size: 480, delay: 7,   duration: 13 },
-  { x: 85,  y: 78, size: 300, delay: 2,   duration: 17 },
-  { x: 5,   y: 72, size: 340, delay: 5,   duration: 12 },
-];
-
 import { useTheme } from '@/components/shared/ThemeContext';
 
 export default function VoidBackground() {
   const { isDarkMode } = useTheme();
-
-  if (!isDarkMode) {
-    return (
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        {LIGHT_BREACHES.map((breach, i) => (
-          <motion.div
-            key={`breach-${i}`}
-            className="absolute"
-            style={{
-              left: `${breach.x}%`,
-              top: `${breach.y}%`,
-              width: breach.size,
-              height: breach.size,
-              transform: 'translate(-50%, -50%)',
-            }}
-            animate={{ opacity: [0.55, 0.85, 0.55], scale: [0.95, 1.05, 0.95] }}
-            transition={{ duration: breach.duration, repeat: Infinity, ease: 'easeInOut', delay: breach.delay }}
-          >
-            {/* Darker inner core — the "breach" */}
-            <div
-              className="absolute inset-0"
-              style={{
-                background: `radial-gradient(circle at 50% 50%,
-                  rgba(160, 110, 20, 0.22) 0%,
-                  rgba(180, 130, 30, 0.14) 18%,
-                  rgba(212, 175, 55, 0.10) 35%,
-                  rgba(244, 208, 63, 0.05) 55%,
-                  transparent 72%)`,
-                filter: 'blur(36px)',
-                borderRadius: '50%',
-              }}
-            />
-            {/* Outer golden halo glow */}
-            <div
-              className="absolute inset-0"
-              style={{
-                background: `radial-gradient(circle at 50% 50%,
-                  transparent 30%,
-                  rgba(225, 193, 110, 0.07) 50%,
-                  rgba(212, 175, 55, 0.04) 65%,
-                  transparent 80%)`,
-                filter: 'blur(50px)',
-                borderRadius: '50%',
-              }}
-            />
-          </motion.div>
-        ))}
-        {/* Subtle golden grain noise */}
-        <div
-          className="absolute inset-0 opacity-[0.018]"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
-            backgroundRepeat: 'repeat',
-            mixBlendMode: 'multiply',
-          }}
-        />
-      </div>
-    );
-  }
+  if (!isDarkMode) return null;
 
   return (
     <div className="fixed inset-0 overflow-hidden pointer-events-none void-bg-container">

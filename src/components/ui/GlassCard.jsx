@@ -11,11 +11,10 @@ export default function GlassCard({ children, className, glow = false, style, ..
         className
       )}
       style={{
-        background: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(255, 248, 220, 0.52)',
+        background: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.6)',
         boxShadow: isDarkMode
           ? (glow ? '0 0 20px rgba(212,175,55,0.15)' : undefined)
-          : '0 8px 32px rgba(180, 130, 30, 0.13), 0 0 0 0.5px rgba(212, 175, 55, 0.18) inset',
-        border: isDarkMode ? undefined : '0.5px solid rgba(212, 175, 55, 0.32)',
+          : '0 10px 30px rgba(225,193,110,0.15)',
         ...style,
       }}
       {...props}

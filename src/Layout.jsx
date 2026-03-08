@@ -93,10 +93,9 @@ function LayoutInner({ children, currentPageName }) {
         ============================================ */
 
         html[data-theme="light"] .glass-card {
-          background: rgba(255, 248, 220, 0.62) !important;
-          border: 0.5px solid rgba(212, 175, 55, 0.32) !important;
-          box-shadow: 0 8px 32px rgba(180, 130, 30, 0.13) !important;
-          backdrop-filter: blur(24px) saturate(200%) !important;
+          background: rgba(255, 255, 255, 0.88) !important;
+          border: 0.5px solid rgba(225, 193, 110, 0.45) !important;
+          box-shadow: 0 4px 24px rgba(0, 0, 0, 0.07) !important;
         }
 
         /* Page backgrounds — override all dark bg references */
