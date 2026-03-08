@@ -83,7 +83,7 @@ export default function Workouts() {
 
   const { data: recentWorkouts = [] } = useQuery({
     queryKey: ['recentWorkouts'],
-    queryFn: () => base44.entities.WorkoutLog.filter({}, '-date', 10),
+    queryFn: () => base44.entities.WorkoutLog.list('-date', 200),
   });
 
   // Build a map of exercise_name -> last sets for ghosting
