@@ -82,12 +82,6 @@ export default function QuickLogFAB({ onUpdate }) {
           border: '0.5px solid rgba(212, 175, 55, 0.4)',
           borderRight: 'none'
         }}
-        style={{
-          background: 'linear-gradient(135deg, #D4AF37 0%, #F4D03F 50%, #D4AF37 100%)',
-          boxShadow: '0 8px 32px rgba(212, 175, 55, 0.5), 0 0 20px rgba(212, 175, 55, 0.3)',
-          border: '0.5px solid rgba(212, 175, 55, 0.4)',
-          borderRight: 'none'
-        }}
         initial={{ x: 40 }}
         animate={{ x: 0 }}
         transition={{ delay: 0.5, type: "spring" }}
