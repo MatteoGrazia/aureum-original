@@ -178,9 +178,11 @@ function LayoutInner({ children, currentPageName }) {
           transition={{ duration: 0.4, ease: 'easeInOut' }}
         >
           {isDarkMode ? (
+            /* In dark mode: show Sun icon → tap to go light */
             <Sun className="w-[18px] h-[18px]" style={{ color: '#D4AF37' }} strokeWidth={1.5} />
           ) : (
-            <Moon className="w-[18px] h-[18px]" style={{ color: '#D4AF37' }} strokeWidth={1.5} />
+            /* In light mode: show Moon icon → tap to go dark. Deep Charcoal color for visibility on alabaster */
+            <Moon className="w-[18px] h-[18px]" style={{ color: '#1D1D1F' }} strokeWidth={1.5} />
           )}
         </motion.div>
       </motion.button>
