@@ -340,23 +340,26 @@ export default function Workouts() {
 
           {view === 'routines' && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
-              <div className="flex gap-3">
-                <GoldButton onClick={() => setView('create')} className="flex-1 flex items-center justify-center gap-2">
-                  <Plus className="w-4 h-4" />
-                  New Routine
-                </GoldButton>
+
+              {/* Hero: Big 3 Total + Wilks */}
+              <WorkoutHero logs={recentWorkouts} />
+
+              {/* Routines label */}
+              <div className="flex items-center justify-between">
+                <p className="text-[10px] uppercase tracking-[0.3em] text-[#D4AF37]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                  Routines
+                </p>
                 <button
                   onClick={() => setShowCalculator(true)}
-                  className="w-14 h-14 rounded-xl bg-white/10 flex items-center justify-center"
+                  className="w-9 h-9 rounded-xl flex items-center justify-center"
+                  style={{ background: 'rgba(255,255,255,0.05)' }}
                 >
-                  <Calculator className="w-5 h-5 text-white/50" />
+                  <Calculator className="w-4 h-4 text-white/30" />
                 </button>
               </div>
 
+              {/* Routine Cards */}
               <div className="space-y-3">
-                <p className="text-[10px] uppercase tracking-[0.3em] text-[#D4AF37]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                  Your Routines
-                </p>
                 {routines.length === 0 ? (
                   <VoidCard className="py-12 text-center">
                     <Dumbbell className="w-10 h-10 text-white/20 mx-auto mb-3" strokeWidth={1} />
@@ -364,69 +367,25 @@ export default function Workouts() {
                   </VoidCard>
                 ) : (
                   routines.map(routine => (
-                    <motion.div key={routine.id} whileTap={{ scale: 0.98 }}>
-                      <VoidCard
-                        className="cursor-pointer"
-                        onClick={() => setSelectedRoutine(selectedRoutine?.id === routine.id ? null : routine)}
-                      >
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <h3 className="text-white" style={{ fontFamily: 'Montserrat, sans-serif' }}>{routine.name}</h3>
-                            <p className="text-white/35 text-sm mt-0.5">{routine.exercises?.length || 0} exercises</p>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <button onClick={(e) => deleteRoutine(e, routine.id)} className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center">
-                              <Trash2 className="w-3.5 h-3.5 text-red-400/70" />
-                            </button>
-                            <ChevronDown
-                              className={`w-5 h-5 text-white/25 transition-transform ${selectedRoutine?.id === routine.id ? 'rotate-180' : ''}`}
-                            />
-                          </div>
-                        </div>
-
-                        <AnimatePresence>
-                          {selectedRoutine?.id === routine.id && (
-                            <motion.div
-                              initial={{ height: 0, opacity: 0 }}
-                              animate={{ height: 'auto', opacity: 1 }}
-                              exit={{ height: 0, opacity: 0 }}
-                              className="mt-4 pt-4 border-t border-white/10"
-                            >
-                              <div className="space-y-1.5 mb-4">
-                                {routine.exercises?.map((ex, i) => (
-                                  <div key={i} className="flex items-center justify-between text-sm">
-                                    <span className="text-white/55">{ex.exercise_name}</span>
-                                    <span className="text-white/25">{ex.sets} × {ex.reps}</span>
-                                  </div>
-                                ))}
-                              </div>
-                              {routine.target_muscles?.length > 0 && (
-                                <div className="flex flex-wrap gap-1.5 mb-4">
-                                  {routine.target_muscles.map(m => (
-                                    <span key={m} className="px-2 py-1 rounded-full bg-[#D4AF37]/10 text-[#D4AF37] text-xs capitalize">
-                                      {m}
-                                    </span>
-                                  ))}
-                                </div>
-                              )}
-                              <GoldButton
-                                onClick={(e) => { e.stopPropagation(); startWorkout(routine); }}
-                                className="w-full flex items-center justify-center gap-2"
-                              >
-                                <Play className="w-4 h-4" />
-                                Start Workout
-                              </GoldButton>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </VoidCard>
-                    </motion.div>
+                    <RoutineCard
+                      key={routine.id}
+                      routine={routine}
+                      isExpanded={selectedRoutine?.id === routine.id}
+                      onToggle={() => setSelectedRoutine(selectedRoutine?.id === routine.id ? null : routine)}
+                      onStart={startWorkout}
+                      onDelete={deleteRoutine}
+                      allLogs={recentWorkouts}
+                    />
                   ))
                 )}
               </div>
 
+              {/* Weekly Muscle Volume */}
+              <WeeklyMuscleVolume logs={recentWorkouts} />
+
+              {/* History */}
               {recentWorkouts.length > 0 && (
-                <div className="space-y-3 mb-24">
+                <div className="space-y-3 mb-8">
                   <div className="flex items-center justify-between">
                     <p className="text-[10px] uppercase tracking-[0.3em] text-[#D4AF37]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                       History
