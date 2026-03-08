@@ -227,11 +227,7 @@ function LayoutInner({ children, currentPageName }) {
                 <Link
                   key={item.page}
                   to={createPageUrl(item.page)}
-                  className={`flex items-center justify-center p-3 rounded-xl transition-all duration-300 relative ${
-                    isActive
-                      ? 'bg-gradient-to-t from-[#D4AF37]/20 to-transparent'
-                      : 'hover:bg-white/5'
-                  }`}
+                  className="flex items-center justify-center p-3 relative transition-all duration-300"
                 >
                   <Icon
                     className={`w-6 h-6 transition-all duration-300 ${

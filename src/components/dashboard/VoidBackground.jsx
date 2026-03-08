@@ -11,11 +11,75 @@ const PARTICLES = Array.from({ length: 50 }, (_, i) => ({
   delay: Math.random() * 5
 }));
 
+const GOLD_ORBS = Array.from({ length: 38 }, (_, i) => ({
+  id: i,
+  x: Math.random() * 100,
+  y: Math.random() * 100,
+  size: Math.random() * 2.5 + 0.8,
+  duration: Math.random() * 18 + 12,
+  delay: Math.random() * 8,
+  opacity: Math.random() * 0.4 + 0.2,
+}));
+
+const GOLD_BLOOMS = [
+  { x: 20, y: 15, size: 180, delay: 0, duration: 14 },
+  { x: 78, y: 25, size: 220, delay: 3, duration: 17 },
+  { x: 45, y: 65, size: 160, delay: 6, duration: 13 },
+  { x: 88, y: 72, size: 140, delay: 1.5, duration: 15 },
+  { x: 12, y: 80, size: 170, delay: 4, duration: 16 },
+];
+
 import { useTheme } from '@/components/shared/ThemeContext';
 
 export default function VoidBackground() {
   const { isDarkMode } = useTheme();
-  if (!isDarkMode) return null;
+
+  if (!isDarkMode) {
+    return (
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        {/* Soft golden ambient blooms */}
+        {GOLD_BLOOMS.map((bloom, i) => (
+          <motion.div
+            key={`bloom-${i}`}
+            className="absolute rounded-full"
+            style={{
+              left: `${bloom.x}%`,
+              top: `${bloom.y}%`,
+              width: bloom.size,
+              height: bloom.size,
+              transform: 'translate(-50%, -50%)',
+              background: 'radial-gradient(circle, rgba(212,175,55,0.12) 0%, rgba(212,175,55,0.05) 40%, transparent 70%)',
+              filter: 'blur(30px)',
+            }}
+            animate={{ opacity: [0.5, 1, 0.5], scale: [0.9, 1.1, 0.9] }}
+            transition={{ duration: bloom.duration, repeat: Infinity, ease: 'easeInOut', delay: bloom.delay }}
+          />
+        ))}
+
+        {/* Tiny golden star particles */}
+        {GOLD_ORBS.map((orb) => (
+          <motion.div
+            key={orb.id}
+            className="absolute rounded-full"
+            style={{
+              left: `${orb.x}%`,
+              top: `${orb.y}%`,
+              width: orb.size,
+              height: orb.size,
+              background: 'rgba(212,175,55,0.9)',
+              boxShadow: `0 0 ${orb.size * 3}px rgba(212,175,55,0.6), 0 0 ${orb.size}px rgba(244,208,63,0.8)`,
+            }}
+            animate={{
+              y: [0, -20, 0],
+              opacity: [orb.opacity * 0.4, orb.opacity, orb.opacity * 0.4],
+              scale: [0.6, 1.3, 0.6],
+            }}
+            transition={{ duration: orb.duration, repeat: Infinity, ease: 'easeInOut', delay: orb.delay }}
+          />
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 overflow-hidden pointer-events-none void-bg-container">
