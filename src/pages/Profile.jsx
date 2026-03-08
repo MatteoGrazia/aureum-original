@@ -134,8 +134,18 @@ export default function Profile() {
         animate={{ opacity: 1, y: 0 }}
         className="mb-6"
       >
-        <h1 className="text-4xl tracking-[0.4em] font-extralight text-center">
-          <span className="text-[#D4AF37]">{user?.full_name?.toUpperCase() || 'PROFILE'}</span>
+        <h1
+          className="text-3xl tracking-[0.4em] text-center"
+          style={{
+            fontFamily: 'Montserrat, sans-serif',
+            fontWeight: 400,
+            background: 'linear-gradient(135deg, #F4D03F 0%, #D4AF37 50%, #F4D03F 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text'
+          }}
+        >
+          {user?.full_name?.toUpperCase() || 'PROFILE'}
         </h1>
       </motion.div>
 
