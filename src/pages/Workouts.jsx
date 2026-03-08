@@ -56,6 +56,7 @@ const playGoldenChime = () => {
 
 export default function Workouts() {
   const [view, setView] = useState('routines');
+  const [selectedLog, setSelectedLog] = useState(null);
   const [showCalculator, setShowCalculator] = useState(false);
   const [selectedRoutine, setSelectedRoutine] = useState(null);
   const [activeWorkout, setActiveWorkout] = useState(null);
