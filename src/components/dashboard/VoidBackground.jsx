@@ -11,9 +11,14 @@ const PARTICLES = Array.from({ length: 50 }, (_, i) => ({
   delay: Math.random() * 5
 }));
 
+import { useTheme } from '@/components/shared/ThemeContext';
+
 export default function VoidBackground() {
+  const { isDarkMode } = useTheme();
+  if (!isDarkMode) return null;
+
   return (
-    <div className="fixed inset-0 overflow-hidden pointer-events-none">
+    <div className="fixed inset-0 overflow-hidden pointer-events-none void-bg-container">
       {/* Base void gradient */}
       <div 
         className="absolute inset-0"
