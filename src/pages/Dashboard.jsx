@@ -240,10 +240,17 @@ export default function Dashboard() {
 
   if (isLoading || !isMounted) {
     return (
-      <div className="min-h-screen p-6 flex items-center justify-center bg-[#080808]">
+      <div className="min-h-screen flex items-center justify-center" style={{
+        background: 'linear-gradient(to bottom, #ffffff 0%, #888888 40%, #080808 100%)'
+      }}>
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-[#D4AF37]/20 border-t-[#D4AF37] rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-white/50 text-sm">Loading...</p>
+          <img
+            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698347d058d3014d6271ccff/d15227ea9_AUREUM1.png"
+            alt="Aureum"
+            className="w-24 h-24 mx-auto mb-6"
+            style={{ filter: 'drop-shadow(0 0 20px rgba(212,175,55,0.4))' }}
+          />
+          <div className="w-8 h-8 border-2 border-[#D4AF37]/40 border-t-[#D4AF37] rounded-full animate-spin mx-auto"></div>
         </div>
       </div>
     );
