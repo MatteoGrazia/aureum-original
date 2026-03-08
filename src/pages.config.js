@@ -53,7 +53,6 @@ import Nutrition from './pages/Nutrition';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import Profile from './pages/Profile';
 import TermsOfService from './pages/TermsOfService';
-import Workouts from './pages/Workouts';
 import __Layout from './Layout.jsx';
 
 
@@ -64,7 +63,6 @@ export const PAGES = {
     "PrivacyPolicy": PrivacyPolicy,
     "Profile": Profile,
     "TermsOfService": TermsOfService,
-    "Workouts": Workouts,
 }
 
 export const pagesConfig = {
