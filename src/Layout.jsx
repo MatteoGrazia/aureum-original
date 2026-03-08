@@ -162,6 +162,17 @@ function LayoutInner({ children, currentPageName }) {
         html[data-theme="light"] [class*="border-white/"] {
           border-color: rgba(225, 193, 110, 0.3) !important;
         }
+
+        /* FAB sidebar */
+        html[data-theme="light"] {
+          --fab-sidebar-bg: linear-gradient(135deg, rgba(248,248,246,0.95) 0%, rgba(255,255,255,0.9) 100%);
+        }
+
+        /* AureumPulse & VoidCard light body text */
+        html[data-theme="light"] .text-white\\/60,
+        html[data-theme="light"] .text-white\\/40 {
+          color: rgba(29,29,31,0.55) !important;
+        }
       `}</style>
 
       {/* ── Theme Toggle: fixed top-right, 48×48 tap target ── */}
