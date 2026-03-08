@@ -84,6 +84,22 @@ export default function Workouts() {
     queryFn: () => base44.entities.WorkoutLog.filter({}, '-date', 10),
   });
 
+  // Build a map of exercise_name -> last sets for ghosting
+  const previousWorkoutSets = React.useMemo(() => {
+    const map = {};
+    if (!recentWorkouts.length) return map;
+    // Go through recent logs oldest-first so latest overwrites
+    [...recentWorkouts].reverse().forEach(log => {
+      const grouped = {};
+      (log.sets || []).forEach(s => {
+        if (!grouped[s.exercise_name]) grouped[s.exercise_name] = [];
+        grouped[s.exercise_name].push(s);
+      });
+      Object.assign(map, grouped);
+    });
+    return map;
+  }, [recentWorkouts]);
+
   // Restore from localStorage on mount
   useEffect(() => {
     try {
