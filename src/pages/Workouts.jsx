@@ -85,7 +85,7 @@ export default function Workouts() {
   });
 
   // Build a map of exercise_name -> last sets for ghosting
-  const previousWorkoutSets = React.useMemo(() => {
+  const previousWorkoutSets = useMemo(() => {
     const map = {};
     if (!recentWorkouts.length) return map;
     // Go through recent logs oldest-first so latest overwrites
