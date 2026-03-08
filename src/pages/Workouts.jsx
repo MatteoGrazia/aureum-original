@@ -293,6 +293,7 @@ export default function Workouts() {
           onUpdateWorkout={setActiveWorkout}
           onFinish={handleFinishWorkout}
           onCancel={cancelWorkout}
+          previousWorkoutSets={previousWorkoutSets}
         />
       )}
 
