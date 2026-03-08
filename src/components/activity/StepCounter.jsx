@@ -1,9 +1,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Footprints } from 'lucide-react';
-import GlassCard from '@/components/ui/GlassCard';
+import { useTheme } from '@/components/shared/ThemeContext';
 
 export default function StepCounter({ steps, goal }) {
+  const { isDarkMode } = useTheme();
   const progress = Math.min(steps / goal, 1);
   const circumference = 2 * Math.PI * 90;
   const strokeDashoffset = circumference - (progress * circumference);
@@ -15,10 +16,10 @@ export default function StepCounter({ steps, goal }) {
     <div 
       className="relative overflow-hidden"
       style={{
-        background: 'rgba(255, 255, 255, 0.03)',
-        backdropFilter: 'blur(30px) saturate(180%)',
-        boxShadow: '0 20px 50px rgba(0, 0, 0, 0.6)',
-        border: '0.5px solid rgba(212, 175, 55, 0.1)',
+        background: isDarkMode ? 'rgba(255, 255, 255, 0.03)' : 'rgba(255, 255, 255, 0.6)',
+        backdropFilter: 'blur(20px) saturate(180%)',
+        boxShadow: isDarkMode ? '0 20px 50px rgba(0, 0, 0, 0.6)' : '0 10px 30px rgba(225, 193, 110, 0.15)',
+        border: '0.5px solid rgba(212, 175, 55, 0.18)',
         padding: '20px 18px',
         borderRadius: '14px'
       }}

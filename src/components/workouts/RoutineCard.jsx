@@ -2,6 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Trash2, ChevronDown } from 'lucide-react';
 import GoldButton from '@/components/ui/GoldButton';
+import { useTheme } from '@/components/shared/ThemeContext';
 
 const epley1RM = (weight, reps) => {
   if (!weight || !reps || reps <= 1) return weight || 0;
@@ -9,6 +10,7 @@ const epley1RM = (weight, reps) => {
 };
 
 export default function RoutineCard({ routine, isExpanded, onToggle, onStart, onDelete, allLogs = [] }) {
+  const { isDarkMode } = useTheme();
   const routineLogs = allLogs.filter(l =>
     l.routine_id === routine.id || l.routine_name === routine.name
   );
@@ -33,13 +35,15 @@ export default function RoutineCard({ routine, isExpanded, onToggle, onStart, on
       className="cursor-pointer rounded-2xl overflow-hidden transition-all duration-300"
       style={{
         backdropFilter: 'blur(35px) saturate(180%)',
-        background: 'rgba(255,255,255,0.04)',
+        background: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.6)',
         border: isExpanded
           ? '0.5px solid rgba(212,175,55,0.6)'
           : '0.5px solid rgba(212,175,55,0.18)',
         boxShadow: isExpanded
-          ? '0 0 40px rgba(212,175,55,0.12), inset 0 0 20px rgba(212,175,55,0.03)'
-          : '0 8px 40px rgba(0,0,0,0.5)',
+          ? '0 0 40px rgba(212,175,55,0.15), inset 0 0 20px rgba(212,175,55,0.03)'
+          : isDarkMode
+            ? '0 8px 40px rgba(0,0,0,0.5)'
+            : '0 10px 30px rgba(225,193,110,0.15)',
         padding: '18px',
       }}
     >
