@@ -1,612 +1,533 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { 
-  Plus, Play, Calculator, Clock, Dumbbell, ChevronRight, 
-  X, Trash2, Edit3, Link2, ChevronDown 
-} from 'lucide-react';
+import { Plus, Play, Calculator, Dumbbell, ChevronDown, Trash2, X } from 'lucide-react';
 import VoidCard from '@/components/ui/VoidCard';
 import VoidBackground from '@/components/dashboard/VoidBackground';
 import GoldButton from '@/components/ui/GoldButton';
-import MuscleHeatmap from '@/components/workouts/MuscleHeatmap';
 import PlateCalculator from '@/components/workouts/PlateCalculator';
-import RestTimer from '@/components/workouts/RestTimer';
-import LiveLogger from '@/components/workouts/LiveLogger';
+import HevyLogger from '@/components/workouts/HevyLogger';
+import SmartSaveModal from '@/components/workouts/SmartSaveModal';
+import WorkoutSummary from '@/components/workouts/WorkoutSummary';
+import ExercisePicker from '@/components/workouts/ExercisePicker';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+const STORAGE_KEY = 'aureum_active_workout';
+
+const createSetDefault = () => ({
+  id: Math.random().toString(36).slice(2),
+  type: 'normal',
+  weight: 0,
+  reps: 0,
+  rpe: 7,
+  completed: false,
+});
+
+const buildWorkoutExercises = (routine) => {
+  return (routine.exercises || []).map(ex => ({
+    ...ex,
+    sets: Array.from({ length: ex.sets || 3 }, createSetDefault),
+  }));
+};
+
+// Golden chime sound
+const playGoldenChime = () => {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const notes = [523, 659, 784, 1047];
+    notes.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.frequency.value = freq;
+      osc.type = 'sine';
+      const t = ctx.currentTime + i * 0.18;
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(0.35, t + 0.04);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.6);
+      osc.start(t);
+      osc.stop(t + 0.6);
+    });
+  } catch (_) {}
+};
 
 export default function Workouts() {
-  const [view, setView] = useState('routines'); // routines, create, active
+  const [view, setView] = useState('routines'); // routines | create | active | summary
   const [showCalculator, setShowCalculator] = useState(false);
   const [selectedRoutine, setSelectedRoutine] = useState(null);
   const [activeWorkout, setActiveWorkout] = useState(null);
-  const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
-  const [currentSetNumber, setCurrentSetNumber] = useState(1);
-  const [completedSets, setCompletedSets] = useState([]);
   const [workoutStartTime, setWorkoutStartTime] = useState(null);
-  const [showRestTimer, setShowRestTimer] = useState(false);
+  const [showSmartSave, setShowSmartSave] = useState(false);
+  const [pendingSave, setPendingSave] = useState(null); // {sets, duration, volume}
+  const [workoutSummary, setWorkoutSummary] = useState(null);
 
   // Create routine state
   const [newRoutine, setNewRoutine] = useState({ name: '', exercises: [] });
-  const [showExerciseSelect, setShowExerciseSelect] = useState(false);
+  const [showExercisePicker, setShowExercisePicker] = useState(false);
 
   const queryClient = useQueryClient();
   const today = format(new Date(), 'yyyy-MM-dd');
+  const persistTimerRef = useRef(null);
 
   const { data: routines = [] } = useQuery({
     queryKey: ['routines'],
-    queryFn: () => base44.entities.Routine.list()
+    queryFn: () => base44.entities.Routine.list(),
   });
 
   const { data: exercises = [] } = useQuery({
     queryKey: ['exercises'],
-    queryFn: () => base44.entities.Exercise.list()
+    queryFn: () => base44.entities.Exercise.list(),
   });
 
   const { data: recentWorkouts = [] } = useQuery({
     queryKey: ['recentWorkouts'],
-    queryFn: () => base44.entities.WorkoutLog.filter({}, '-date', 10)
+    queryFn: () => base44.entities.WorkoutLog.filter({}, '-date', 10),
   });
 
+  // Restore from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      const data = JSON.parse(saved);
+      setActiveWorkout(data.workout);
+      setWorkoutStartTime(new Date(data.startTime));
+      setView('active');
+    }
+  }, []);
+
+  // Persist every 10s
+  useEffect(() => {
+    if (view === 'active' && activeWorkout) {
+      persistTimerRef.current = setInterval(() => {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          workout: activeWorkout,
+          startTime: workoutStartTime,
+        }));
+      }, 10000);
+    }
+    return () => clearInterval(persistTimerRef.current);
+  }, [view, activeWorkout, workoutStartTime]);
+
+  // Seed exercises
+  useEffect(() => {
+    if (exercises.length === 0) {
+      const defaults = [
+        { name: 'Bench Press', muscle_group: 'chest', equipment: 'barbell' },
+        { name: 'Squat', muscle_group: 'legs', equipment: 'barbell' },
+        { name: 'Deadlift', muscle_group: 'back', equipment: 'barbell' },
+        { name: 'Shoulder Press', muscle_group: 'shoulders', equipment: 'barbell' },
+        { name: 'Barbell Row', muscle_group: 'back', equipment: 'barbell' },
+        { name: 'Pull-ups', muscle_group: 'back', equipment: 'bodyweight' },
+        { name: 'Dumbbell Curl', muscle_group: 'biceps', equipment: 'dumbbell' },
+        { name: 'Tricep Pushdown', muscle_group: 'triceps', equipment: 'cable' },
+        { name: 'Leg Press', muscle_group: 'legs', equipment: 'machine' },
+        { name: 'Lat Pulldown', muscle_group: 'back', equipment: 'cable' },
+        { name: 'Incline Dumbbell Press', muscle_group: 'chest', equipment: 'dumbbell' },
+        { name: 'Romanian Deadlift', muscle_group: 'legs', equipment: 'barbell' },
+        { name: 'Plank', muscle_group: 'core', equipment: 'bodyweight' },
+        { name: 'Cable Fly', muscle_group: 'chest', equipment: 'cable' },
+        { name: 'Hip Thrust', muscle_group: 'glutes', equipment: 'barbell' },
+      ];
+      base44.entities.Exercise.bulkCreate(defaults).then(() =>
+        queryClient.invalidateQueries(['exercises'])
+      );
+    }
+  }, [exercises.length]);
+
   const startWorkout = (routine) => {
-    setActiveWorkout(routine);
+    const built = {
+      routine_id: routine.id,
+      routine_name: routine.name,
+      original_exercises: routine.exercises,
+      exercises: buildWorkoutExercises(routine),
+      is_modified: false,
+    };
+    setActiveWorkout(built);
     setWorkoutStartTime(new Date());
-    setCurrentExerciseIndex(0);
-    setCurrentSetNumber(1);
-    setCompletedSets([]);
     setView('active');
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ workout: built, startTime: new Date() }));
   };
 
-  const handleSetComplete = async (setData) => {
-    const newSets = [...completedSets, setData];
-    setCompletedSets(newSets);
-
-    const currentExercise = activeWorkout.exercises[currentExerciseIndex];
-    
-    // Check if we need to move to next set or next exercise
-    if (currentSetNumber < currentExercise.sets) {
-      setCurrentSetNumber(currentSetNumber + 1);
-      setShowRestTimer(true);
-    } else {
-      // Move to next exercise
-      if (currentExerciseIndex < activeWorkout.exercises.length - 1) {
-        setCurrentExerciseIndex(currentExerciseIndex + 1);
-        setCurrentSetNumber(1);
-        setShowRestTimer(true);
-      } else {
-        // Workout complete
-        await finishWorkout(newSets);
-      }
-    }
-  };
-
-  const handleSkipSet = () => {
-    const currentExercise = activeWorkout.exercises[currentExerciseIndex];
-    
-    if (currentSetNumber < currentExercise.sets) {
-      setCurrentSetNumber(currentSetNumber + 1);
-    } else {
-      if (currentExerciseIndex < activeWorkout.exercises.length - 1) {
-        setCurrentExerciseIndex(currentExerciseIndex + 1);
-        setCurrentSetNumber(1);
-      } else {
-        finishWorkout(completedSets);
-      }
-    }
-  };
-
-  const finishWorkout = async (sets) => {
-    const duration = Math.round((new Date() - workoutStartTime) / 60000);
-    const totalVolume = sets.reduce((sum, set) => 
-      set.is_warmup ? sum : sum + (set.weight * set.reps), 0
+  const handleFinishWorkout = () => {
+    const duration = Math.round((new Date() - new Date(workoutStartTime)) / 60000) || 1;
+    const allSets = activeWorkout.exercises.flatMap(ex =>
+      ex.sets.filter(s => s.completed).map(s => ({
+        exercise_id: ex.exercise_id,
+        exercise_name: ex.exercise_name,
+        set_number: ex.sets.indexOf(s) + 1,
+        weight: s.weight,
+        reps: s.reps,
+        rpe: s.rpe,
+        is_warmup: s.type === 'warmup',
+        set_type: s.type,
+      }))
     );
+    const totalVolume = allSets
+      .filter(s => s.set_type !== 'warmup')
+      .reduce((sum, s) => sum + s.weight * s.reps, 0);
 
+    const saveData = { allSets, duration, totalVolume };
+
+    if (activeWorkout.is_modified) {
+      setPendingSave(saveData);
+      setShowSmartSave(true);
+    } else {
+      commitSave(saveData, false, false);
+    }
+  };
+
+  const commitSave = async ({ allSets, duration, totalVolume }, updateTemplate, cancelled) => {
+    if (cancelled) { setShowSmartSave(false); return; }
+
+    // Update routine template if chosen
+    if (updateTemplate && activeWorkout.routine_id) {
+      const exercises = activeWorkout.exercises.map(ex => ({
+        exercise_id: ex.exercise_id,
+        exercise_name: ex.exercise_name,
+        muscle_group: ex.muscle_group,
+        sets: ex.sets.length,
+        reps: ex.sets[0]?.reps?.toString() || '8-12',
+      }));
+      await base44.entities.Routine.update(activeWorkout.routine_id, { exercises });
+    }
+
+    // Log workout
     await base44.entities.WorkoutLog.create({
-      routine_id: activeWorkout.id,
-      routine_name: activeWorkout.name,
+      routine_id: activeWorkout.routine_id,
+      routine_name: activeWorkout.routine_name,
       date: today,
       duration_minutes: duration,
       total_volume: totalVolume,
-      sets: sets
+      sets: allSets,
     });
 
-    // Update lifetime volume in profile
+    // Update lifetime volume
     const profiles = await base44.entities.UserProfile.filter({});
     if (profiles.length > 0) {
       await base44.entities.UserProfile.update(profiles[0].id, {
-        lifetime_volume: (profiles[0].lifetime_volume || 0) + totalVolume
+        lifetime_volume: (profiles[0].lifetime_volume || 0) + totalVolume,
       });
     }
 
-    // Play completion sound
-    try {
-      const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBgoOEhYaHiImKi4yNjo+QkZKTlJWWl5iZmpucnZ6foKGio6SlpqeoqaqrrK2ur7CxsrO0tba3uLm6u7y9vr/AwcLDxMXGx8jJysvMzc7P0NHS09TV1tfY2drb3N3e3+Dh4uPk5ebn6Onq6+zt7u/w8fLz9PX29/j5+vv8/f7/AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8gISIjJCUmJygpKissLS4vMDEyMzQ1Njc4OTo7PD0+P0BBQkNERUZHSElKS0xNTk9QUVJTVFVWV1hZWltcXV5fYGFiY2RlZmdoaWprbG1ub3BxcnN0dXZ3eHl6e3x9fn+AgYKDhIWGh4iJiouMjY6PkJGSk5SVlpeYmZqbnJ2en6ChoqOkpaanqKmqq6ytrq+wsbKztLW2t7i5uru8vb6/wMHCw8TFxsfIycrLzM3Oz9DR0tPU1dbX2Nna29zd3t/g4eLj5OXm5+jp6uvs7e7v8PHy8/T19vf4+fr7/P3+/w==');
-      audio.volume = 0.5;
-      audio.play().catch(() => {});
-    } catch (error) {}
+    // Haptic + chime
+    if ('vibrate' in navigator) navigator.vibrate([100, 50, 100, 50, 300]);
+    playGoldenChime();
 
-    setActiveWorkout(null);
-    setView('routines');
+    // Cleanup
+    localStorage.removeItem(STORAGE_KEY);
+    setShowSmartSave(false);
+
+    // Show summary
+    setWorkoutSummary({
+      routineName: activeWorkout.routine_name,
+      duration,
+      totalVolume,
+      exercises: activeWorkout.exercises,
+    });
+    setView('summary');
     queryClient.invalidateQueries(['recentWorkouts']);
   };
 
+  const handleSummaryDone = () => {
+    setWorkoutSummary(null);
+    setActiveWorkout(null);
+    setWorkoutStartTime(null);
+    setView('routines');
+  };
+
   const cancelWorkout = () => {
-    if (completedSets.length > 0 && !window.confirm('Are you sure you want to cancel? Progress will be lost.')) {
-      return;
-    }
+    if (!window.confirm('Cancel workout? Progress will be lost.')) return;
+    localStorage.removeItem(STORAGE_KEY);
     setActiveWorkout(null);
     setView('routines');
   };
 
-  const addExerciseToRoutine = (exercise) => {
+  // Create routine helpers
+  const addExerciseToRoutine = (ex) => {
     setNewRoutine(prev => ({
       ...prev,
       exercises: [...prev.exercises, {
-        exercise_id: exercise.id,
-        exercise_name: exercise.name,
-        muscle_group: exercise.muscle_group,
+        exercise_id: ex.id,
+        exercise_name: ex.name,
+        muscle_group: ex.muscle_group,
         sets: 3,
         reps: '8-12',
-        is_superset: false,
-        superset_with: null
-      }]
+      }],
     }));
-    setShowExerciseSelect(false);
+    setShowExercisePicker(false);
   };
 
   const saveRoutine = async () => {
     if (!newRoutine.name || newRoutine.exercises.length === 0) return;
-
     const targetMuscles = [...new Set(newRoutine.exercises.map(e => e.muscle_group))];
-    
-    await base44.entities.Routine.create({
-      name: newRoutine.name,
-      exercises: newRoutine.exercises,
-      target_muscles: targetMuscles
-    });
-
+    await base44.entities.Routine.create({ ...newRoutine, target_muscles: targetMuscles });
     setNewRoutine({ name: '', exercises: [] });
     setView('routines');
     queryClient.invalidateQueries(['routines']);
   };
 
-  // Seed exercises if empty
-  useEffect(() => {
-    const seedExercises = async () => {
-      if (exercises.length === 0) {
-        const defaultExercises = [
-          { name: 'Bench Press', muscle_group: 'chest', equipment: 'barbell' },
-          { name: 'Squat', muscle_group: 'legs', equipment: 'barbell' },
-          { name: 'Deadlift', muscle_group: 'back', equipment: 'barbell' },
-          { name: 'Shoulder Press', muscle_group: 'shoulders', equipment: 'barbell' },
-          { name: 'Barbell Row', muscle_group: 'back', equipment: 'barbell' },
-          { name: 'Pull-ups', muscle_group: 'back', equipment: 'bodyweight' },
-          { name: 'Dumbbell Curl', muscle_group: 'biceps', equipment: 'dumbbell' },
-          { name: 'Tricep Pushdown', muscle_group: 'triceps', equipment: 'cable' },
-          { name: 'Leg Press', muscle_group: 'legs', equipment: 'machine' },
-          { name: 'Lat Pulldown', muscle_group: 'back', equipment: 'cable' },
-          { name: 'Incline Dumbbell Press', muscle_group: 'chest', equipment: 'dumbbell' },
-          { name: 'Romanian Deadlift', muscle_group: 'legs', equipment: 'barbell' },
-          { name: 'Plank', muscle_group: 'core', equipment: 'bodyweight' },
-          { name: 'Cable Fly', muscle_group: 'chest', equipment: 'cable' },
-          { name: 'Hip Thrust', muscle_group: 'glutes', equipment: 'barbell' },
-        ];
-        
-        await base44.entities.Exercise.bulkCreate(defaultExercises);
-        queryClient.invalidateQueries(['exercises']);
-      }
-    };
-    seedExercises();
-  }, [exercises.length]);
-
-  const currentExercise = activeWorkout?.exercises?.[currentExerciseIndex];
-  const previousSet = completedSets.filter(s => 
-    s.exercise_name === currentExercise?.exercise_name
-  ).pop();
+  const deleteRoutine = async (e, id) => {
+    e.stopPropagation();
+    if (!window.confirm('Delete this routine?')) return;
+    await base44.entities.Routine.delete(id);
+    queryClient.invalidateQueries(['routines']);
+  };
 
   return (
     <div className="min-h-screen relative bg-[#080808]">
       <VoidBackground />
       <PlateCalculator isOpen={showCalculator} onClose={() => setShowCalculator(false)} />
 
-      <div className="relative z-10 p-6">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-6 pt-6"
-        >
-          <h1 
-            className="text-3xl tracking-[0.4em] text-center"
-            style={{ 
-              fontFamily: 'Montserrat, sans-serif', 
-              fontWeight: 400,
-              background: 'linear-gradient(135deg, #F4D03F 0%, #D4AF37 50%, #F4D03F 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text'
-            }}
-          >
-            WORKOUTS
-          </h1>
-        </motion.div>
-
-      {/* Active Workout View */}
+      {/* Active Workout Logger */}
       {view === 'active' && activeWorkout && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="space-y-6"
-        >
-          {/* Workout Header */}
-          <VoidCard className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-white text-lg">{activeWorkout.name}</h2>
-                <p className="text-white/40 text-sm">
-                  {Math.round((new Date() - workoutStartTime) / 60000)} min
-                </p>
-              </div>
-              <div className="flex gap-2">
+        <HevyLogger
+          activeWorkout={activeWorkout}
+          allExercises={exercises}
+          onUpdateWorkout={setActiveWorkout}
+          onFinish={handleFinishWorkout}
+          onCancel={cancelWorkout}
+        />
+      )}
+
+      {/* Smart Save Modal */}
+      <AnimatePresence>
+        {showSmartSave && (
+          <SmartSaveModal
+            routineName={activeWorkout?.routine_name}
+            onUpdateTemplate={() => commitSave(pendingSave, true, false)}
+            onSaveAsLog={() => commitSave(pendingSave, false, false)}
+            onCancel={() => setShowSmartSave(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Workout Summary */}
+      <AnimatePresence>
+        {view === 'summary' && workoutSummary && (
+          <WorkoutSummary summary={workoutSummary} onDone={handleSummaryDone} />
+        )}
+      </AnimatePresence>
+
+      {/* Routines & Create views */}
+      {(view === 'routines' || view === 'create') && (
+        <div className="relative z-10 p-5">
+          {/* Header */}
+          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-6 pt-8">
+            <h1
+              className="text-3xl tracking-[0.4em] text-center"
+              style={{
+                fontFamily: 'Montserrat, sans-serif', fontWeight: 400,
+                background: 'linear-gradient(135deg, #F4D03F 0%, #D4AF37 50%, #F4D03F 100%)',
+                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+              }}
+            >
+              WORKOUTS
+            </h1>
+          </motion.div>
+
+          {/* Routines view */}
+          {view === 'routines' && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
+              <div className="flex gap-3">
+                <GoldButton onClick={() => setView('create')} className="flex-1 flex items-center justify-center gap-2">
+                  <Plus className="w-4 h-4" />
+                  New Routine
+                </GoldButton>
                 <button
                   onClick={() => setShowCalculator(true)}
-                  className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center"
+                  className="w-14 h-14 rounded-xl bg-white/10 flex items-center justify-center"
                 >
                   <Calculator className="w-5 h-5 text-white/50" />
                 </button>
-                <button
-                  onClick={cancelWorkout}
-                  className="w-10 h-10 rounded-xl bg-red-500/20 flex items-center justify-center"
-                >
-                  <X className="w-5 h-5 text-red-400" />
-                </button>
               </div>
-            </div>
 
-            {/* Progress */}
-            <div className="mt-4">
-              <div className="flex justify-between text-xs text-white/40 mb-2">
-                <span>Progress</span>
-                <span>{currentExerciseIndex + 1}/{activeWorkout.exercises.length}</span>
+              <div className="space-y-3">
+                <p className="text-[10px] uppercase tracking-[0.3em] text-[#D4AF37]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                  Your Routines
+                </p>
+                {routines.length === 0 ? (
+                  <VoidCard className="py-12 text-center">
+                    <Dumbbell className="w-10 h-10 text-white/20 mx-auto mb-3" strokeWidth={1} />
+                    <p className="text-white/40 text-sm">No routines yet</p>
+                  </VoidCard>
+                ) : (
+                  routines.map(routine => (
+                    <motion.div key={routine.id} whileTap={{ scale: 0.98 }}>
+                      <VoidCard
+                        className="cursor-pointer"
+                        onClick={() => setSelectedRoutine(selectedRoutine?.id === routine.id ? null : routine)}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <h3 className="text-white" style={{ fontFamily: 'Montserrat, sans-serif' }}>{routine.name}</h3>
+                            <p className="text-white/35 text-sm mt-0.5">{routine.exercises?.length || 0} exercises</p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <button onClick={(e) => deleteRoutine(e, routine.id)} className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center">
+                              <Trash2 className="w-3.5 h-3.5 text-red-400/70" />
+                            </button>
+                            <ChevronDown
+                              className={`w-5 h-5 text-white/25 transition-transform ${selectedRoutine?.id === routine.id ? 'rotate-180' : ''}`}
+                            />
+                          </div>
+                        </div>
+
+                        <AnimatePresence>
+                          {selectedRoutine?.id === routine.id && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: 'auto', opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              className="mt-4 pt-4 border-t border-white/10"
+                            >
+                              <div className="space-y-1.5 mb-4">
+                                {routine.exercises?.map((ex, i) => (
+                                  <div key={i} className="flex items-center justify-between text-sm">
+                                    <span className="text-white/55">{ex.exercise_name}</span>
+                                    <span className="text-white/25">{ex.sets} × {ex.reps}</span>
+                                  </div>
+                                ))}
+                              </div>
+                              {routine.target_muscles?.length > 0 && (
+                                <div className="flex flex-wrap gap-1.5 mb-4">
+                                  {routine.target_muscles.map(m => (
+                                    <span key={m} className="px-2 py-1 rounded-full bg-[#D4AF37]/10 text-[#D4AF37] text-xs capitalize">
+                                      {m}
+                                    </span>
+                                  ))}
+                                </div>
+                              )}
+                              <GoldButton
+                                onClick={(e) => { e.stopPropagation(); startWorkout(routine); }}
+                                className="w-full flex items-center justify-center gap-2"
+                              >
+                                <Play className="w-4 h-4" />
+                                Start Workout
+                              </GoldButton>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </VoidCard>
+                    </motion.div>
+                  ))
+                )}
               </div>
-              <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                <motion.div
-                  className="h-full bg-[#D4AF37]"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${((currentExerciseIndex + 1) / activeWorkout.exercises.length) * 100}%` }}
-                />
-              </div>
-            </div>
-          </VoidCard>
 
-          {/* Rest Timer */}
-          <AnimatePresence>
-            {showRestTimer && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-              >
-                <RestTimer
-                  defaultTime={60}
-                  onComplete={() => setShowRestTimer(false)}
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Live Logger */}
-          {currentExercise && (
-            <LiveLogger
-              exercise={currentExercise}
-              setNumber={currentSetNumber}
-              previousSet={previousSet}
-              isSuperset={currentExercise.is_superset}
-              onComplete={handleSetComplete}
-              onSkip={handleSkipSet}
-            />
+              {recentWorkouts.length > 0 && (
+                <div className="space-y-3 mb-24">
+                  <p className="text-[10px] uppercase tracking-[0.3em] text-[#D4AF37]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                    Recent Workouts
+                  </p>
+                  {recentWorkouts.slice(0, 5).map(w => (
+                    <VoidCard key={w.id}>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h3 className="text-white text-sm" style={{ fontFamily: 'Montserrat, sans-serif' }}>{w.routine_name}</h3>
+                          <p className="text-white/35 text-xs mt-0.5">{format(new Date(w.date), 'MMM d')} · {w.duration_minutes} min</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-[#D4AF37] text-sm">{w.total_volume?.toLocaleString()}</p>
+                          <p className="text-white/25 text-xs">kg</p>
+                        </div>
+                      </div>
+                    </VoidCard>
+                  ))}
+                </div>
+              )}
+            </motion.div>
           )}
 
-          {/* Muscle Heatmap */}
-          <MuscleHeatmap targetMuscles={activeWorkout.target_muscles || []} />
-        </motion.div>
-      )}
+          {/* Create routine view */}
+          {view === 'create' && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
+              <div className="flex items-center gap-4">
+                <button onClick={() => setView('routines')} className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
+                  <X className="w-5 h-5 text-white" />
+                </button>
+                <h2 className="text-white text-lg" style={{ fontFamily: 'Montserrat, sans-serif' }}>Create Routine</h2>
+              </div>
 
-      {/* Routines View */}
-      {view === 'routines' && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="space-y-6"
-        >
-          {/* Action Buttons */}
-          <div className="flex gap-3">
-            <GoldButton onClick={() => setView('create')} className="flex-1 flex items-center justify-center gap-2">
-              <Plus className="w-4 h-4" />
-              New Routine
-            </GoldButton>
-            <button
-              onClick={() => setShowCalculator(true)}
-              className="w-14 h-14 rounded-xl bg-white/10 flex items-center justify-center"
-            >
-              <Calculator className="w-5 h-5 text-white/50" />
-            </button>
-          </div>
+              <Input
+                placeholder="Routine name..."
+                value={newRoutine.name}
+                onChange={e => setNewRoutine(p => ({ ...p, name: e.target.value }))}
+                className="py-5 bg-white/5 border-[#D4AF37]/20 text-white"
+              />
 
-          {/* Routines List */}
-          <div className="space-y-3">
-            <h2 
-              className="text-[10px] uppercase tracking-[0.3em] text-[#D4AF37]"
-              style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
-            >
-              Your Routines
-            </h2>
-            
-            {routines.length === 0 ? (
-              <VoidCard className="p-8 text-center">
-                <Dumbbell className="w-12 h-12 text-white/20 mx-auto mb-4" strokeWidth={1} />
-                <p className="text-white/40" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>No routines yet</p>
-                <p className="text-white/20 text-sm" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>Create your first workout routine</p>
-              </VoidCard>
-            ) : (
-              routines.map((routine) => (
-                <motion.div
-                  key={routine.id}
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.99 }}
-                >
-                  <VoidCard 
-                    className="cursor-pointer"
-                    onClick={() => setSelectedRoutine(selectedRoutine?.id === routine.id ? null : routine)}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h3 className="text-white">{routine.name}</h3>
-                        <p className="text-white/40 text-sm">
-                          {routine.exercises?.length || 0} exercises
-                        </p>
-                      </div>
-                      <ChevronDown 
-                        className={`w-5 h-5 text-white/30 transition-transform ${
-                          selectedRoutine?.id === routine.id ? 'rotate-180' : ''
-                        }`}
-                      />
-                    </div>
-
-                    <AnimatePresence>
-                      {selectedRoutine?.id === routine.id && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: 'auto', opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          className="mt-4 pt-4 border-t border-white/10"
-                        >
-                          {/* Exercise list */}
-                          <div className="space-y-2 mb-4">
-                            {routine.exercises?.map((ex, i) => (
-                              <div key={i} className="flex items-center justify-between text-sm">
-                                <span className="text-white/60">{ex.exercise_name}</span>
-                                <span className="text-white/30">{ex.sets} × {ex.reps}</span>
-                              </div>
-                            ))}
-                          </div>
-
-                          {/* Muscle preview */}
-                          {routine.target_muscles && (
-                            <div className="flex flex-wrap gap-1 mb-4">
-                              {routine.target_muscles.map(muscle => (
-                                <span
-                                  key={muscle}
-                                  className="px-2 py-1 rounded-full bg-[#D4AF37]/10 text-[#D4AF37] text-xs capitalize"
-                                >
-                                  {muscle}
-                                </span>
-                              ))}
-                            </div>
-                          )}
-
-                          <GoldButton 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              startWorkout(routine);
-                            }}
-                            className="w-full flex items-center justify-center gap-2"
-                          >
-                            <Play className="w-4 h-4" />
-                            Start Workout
-                          </GoldButton>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </VoidCard>
-                </motion.div>
-              ))
-            )}
-          </div>
-
-          {/* Recent Workouts */}
-          {recentWorkouts.length > 0 && (
-            <div className="space-y-3 mb-24">
-              <h2 
-                className="text-[10px] uppercase tracking-[0.3em] text-[#D4AF37]"
-                style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
-              >
-                Recent Workouts
-              </h2>
-              
-              {recentWorkouts.slice(0, 5).map((workout) => (
-                <VoidCard key={workout.id}>
+              {newRoutine.exercises.map((ex, i) => (
+                <VoidCard key={i}>
                   <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-white">{workout.routine_name}</h3>
-                      <p className="text-white/40 text-sm">
-                        {format(new Date(workout.date), 'MMM d')} • {workout.duration_minutes} min
-                      </p>
+                    <div className="flex-1 min-w-0 mr-3">
+                      <p className="text-white text-sm truncate" style={{ fontFamily: 'Montserrat, sans-serif' }}>{ex.exercise_name}</p>
+                      <div className="flex items-center gap-3 mt-2">
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="number"
+                            value={ex.sets}
+                            onChange={e => {
+                              const updated = [...newRoutine.exercises];
+                              updated[i].sets = parseInt(e.target.value) || 1;
+                              setNewRoutine(p => ({ ...p, exercises: updated }));
+                            }}
+                            className="w-14 text-center text-white rounded-lg py-2 bg-white/5 border border-white/10 outline-none"
+                          />
+                          <span className="text-white/30 text-xs">sets</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <input
+                            value={ex.reps}
+                            onChange={e => {
+                              const updated = [...newRoutine.exercises];
+                              updated[i].reps = e.target.value;
+                              setNewRoutine(p => ({ ...p, exercises: updated }));
+                            }}
+                            className="w-16 text-center text-white rounded-lg py-2 bg-white/5 border border-white/10 outline-none"
+                          />
+                          <span className="text-white/30 text-xs">reps</span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-[#D4AF37]">{workout.total_volume?.toLocaleString()}</p>
-                      <p className="text-white/30 text-xs" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>kg volume</p>
-                    </div>
+                    <button onClick={() => setNewRoutine(p => ({ ...p, exercises: p.exercises.filter((_, idx) => idx !== i) }))} className="w-8 h-8 rounded-full bg-red-500/10 flex items-center justify-center">
+                      <Trash2 className="w-4 h-4 text-red-400" />
+                    </button>
                   </div>
                 </VoidCard>
               ))}
-            </div>
-          )}
-        </motion.div>
-      )}
 
-      {/* Create Routine View */}
-      {view === 'create' && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="space-y-6"
-        >
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => setView('routines')}
-              className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center"
-            >
-              <X className="w-5 h-5 text-white" />
-            </button>
-            <h2 className="text-white text-lg">Create Routine</h2>
-          </div>
-
-          <Input
-            placeholder="Routine name..."
-            value={newRoutine.name}
-            onChange={(e) => setNewRoutine(prev => ({ ...prev, name: e.target.value }))}
-            className="py-6 bg-white/5 border-[#D4AF37]/20"
-          />
-
-          {/* Selected Exercises */}
-          <div className="space-y-2">
-            {newRoutine.exercises.map((ex, index) => (
-              <VoidCard key={index}>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-white">{ex.exercise_name}</p>
-                    <div className="flex items-center gap-4 mt-2">
-                      <div className="flex items-center gap-2">
-                        <Input
-                          type="number"
-                          value={ex.sets}
-                          onChange={(e) => {
-                            const updated = [...newRoutine.exercises];
-                            updated[index].sets = parseInt(e.target.value) || 1;
-                            setNewRoutine(prev => ({ ...prev, exercises: updated }));
-                          }}
-                          className="w-16 text-center bg-white/5 border-white/10"
-                        />
-                        <span className="text-white/40 text-sm">sets</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Input
-                          value={ex.reps}
-                          onChange={(e) => {
-                            const updated = [...newRoutine.exercises];
-                            updated[index].reps = e.target.value;
-                            setNewRoutine(prev => ({ ...prev, exercises: updated }));
-                          }}
-                          className="w-20 text-center bg-white/5 border-white/10"
-                        />
-                        <span className="text-white/40 text-sm">reps</span>
-                      </div>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => {
-                      setNewRoutine(prev => ({
-                        ...prev,
-                        exercises: prev.exercises.filter((_, i) => i !== index)
-                      }));
-                    }}
-                    className="w-8 h-8 rounded-full bg-red-500/10 flex items-center justify-center"
-                  >
-                    <Trash2 className="w-4 h-4 text-red-400" />
-                  </button>
-                </div>
-              </VoidCard>
-            ))}
-          </div>
-
-          {/* Add Exercise Button */}
-          <button
-            onClick={() => setShowExerciseSelect(true)}
-            className="w-full py-4 rounded-xl border-2 border-dashed border-white/20 text-white/40 hover:border-[#D4AF37]/50 hover:text-[#D4AF37] transition-all flex items-center justify-center gap-2"
-          >
-            <Plus className="w-5 h-5" />
-            Add Exercise
-          </button>
-
-          {/* Muscle Preview */}
-          {newRoutine.exercises.length > 0 && (
-            <MuscleHeatmap 
-              targetMuscles={[...new Set(newRoutine.exercises.map(e => e.muscle_group))]} 
-            />
-          )}
-
-          {/* Save Button */}
-          <GoldButton 
-            onClick={saveRoutine} 
-            className="w-full"
-            disabled={!newRoutine.name || newRoutine.exercises.length === 0}
-          >
-            Save Routine
-          </GoldButton>
-
-          {/* Exercise Selector Modal */}
-          <AnimatePresence>
-            {showExerciseSelect && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="fixed inset-0 bg-black/80 z-50 flex items-end"
-                onClick={() => setShowExerciseSelect(false)}
+              <button
+                onClick={() => setShowExercisePicker(true)}
+                className="w-full py-4 rounded-2xl text-white/30 text-sm flex items-center justify-center gap-2"
+                style={{ border: '1.5px dashed rgba(255,255,255,0.15)' }}
               >
-                <motion.div
-                  initial={{ y: '100%' }}
-                  animate={{ y: 0 }}
-                  exit={{ y: '100%' }}
-                  className="w-full max-h-[80vh] rounded-t-3xl overflow-hidden"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <VoidCard className="p-6">
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-white text-lg">Select Exercise</h3>
-                      <button
-                        onClick={() => setShowExerciseSelect(false)}
-                        className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center"
-                      >
-                        <X className="w-4 h-4 text-white" />
-                      </button>
-                    </div>
+                <Plus className="w-4 h-4" />
+                Add Exercise
+              </button>
 
-                    <div className="max-h-96 overflow-y-auto space-y-2">
-                      {exercises.map((exercise) => (
-                        <button
-                          key={exercise.id}
-                          onClick={() => addExerciseToRoutine(exercise)}
-                          className="w-full p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-left"
-                        >
-                          <p className="text-white">{exercise.name}</p>
-                          <p className="text-white/40 text-sm capitalize">
-                            {exercise.muscle_group} • {exercise.equipment}
-                          </p>
-                        </button>
-                      ))}
-                    </div>
-                  </VoidCard>
-                </motion.div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </motion.div>
+              <GoldButton
+                onClick={saveRoutine}
+                className="w-full"
+                disabled={!newRoutine.name || newRoutine.exercises.length === 0}
+              >
+                Save Routine
+              </GoldButton>
+
+              <AnimatePresence>
+                {showExercisePicker && (
+                  <ExercisePicker
+                    exercises={exercises}
+                    mode="add"
+                    onSelect={addExerciseToRoutine}
+                    onClose={() => setShowExercisePicker(false)}
+                  />
+                )}
+              </AnimatePresence>
+            </motion.div>
+          )}
+        </div>
       )}
-      </div>
     </div>
   );
 }

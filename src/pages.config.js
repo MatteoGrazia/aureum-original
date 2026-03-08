@@ -50,10 +50,10 @@
 import Activity from './pages/Activity';
 import Dashboard from './pages/Dashboard';
 import Nutrition from './pages/Nutrition';
-import Profile from './pages/Profile';
-import Workouts from './pages/Workouts';
 import PrivacyPolicy from './pages/PrivacyPolicy';
+import Profile from './pages/Profile';
 import TermsOfService from './pages/TermsOfService';
+import Workouts from './pages/Workouts';
 import __Layout from './Layout.jsx';
 
 
@@ -61,10 +61,10 @@ export const PAGES = {
     "Activity": Activity,
     "Dashboard": Dashboard,
     "Nutrition": Nutrition,
-    "Profile": Profile,
-    "Workouts": Workouts,
     "PrivacyPolicy": PrivacyPolicy,
+    "Profile": Profile,
     "TermsOfService": TermsOfService,
+    "Workouts": Workouts,
 }
 
 export const pagesConfig = {
