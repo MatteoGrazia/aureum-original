@@ -52,6 +52,8 @@ import Dashboard from './pages/Dashboard';
 import Nutrition from './pages/Nutrition';
 import Profile from './pages/Profile';
 import Workouts from './pages/Workouts';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
 import __Layout from './Layout.jsx';
 
 
@@ -61,6 +63,8 @@ export const PAGES = {
     "Nutrition": Nutrition,
     "Profile": Profile,
     "Workouts": Workouts,
+    "PrivacyPolicy": PrivacyPolicy,
+    "TermsOfService": TermsOfService,
 }
 
 export const pagesConfig = {
