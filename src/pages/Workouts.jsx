@@ -74,6 +74,7 @@ export default function Workouts() {
   const queryClient = useQueryClient();
   const today = format(new Date(), 'yyyy-MM-dd');
   const persistTimerRef = useRef(null);
+  const seededRef = useRef(false);
 
   const { data: routines = [] } = useQuery({
     queryKey: ['routines'],
