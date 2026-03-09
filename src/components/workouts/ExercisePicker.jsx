@@ -242,7 +242,7 @@ export default function ExercisePicker({ exercises, onSelect, onClose, mode = 'a
               backdropFilter: 'blur(25px)',
               border: `0.5px solid ${isDarkMode ? 'rgba(212,175,55,0.25)' : 'rgba(225,193,110,0.5)'}`,
               borderBottom: 'none',
-              padding: '20px 24px 40px',
+              padding: '20px 24px calc(40px + env(safe-area-inset-bottom, 0px))',
             }}
           >
             <div className="w-10 h-1 rounded-full mx-auto mb-5"
