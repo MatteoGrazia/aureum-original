@@ -1,275 +1,45 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Search, Plus } from 'lucide-react';
 import { useTheme } from '@/components/shared/ThemeContext';
 
 const MUSCLES = ['all','chest','back','shoulders','biceps','triceps','legs','core','glutes','forearms','calves'];
 const EQUIPMENT = ['all','barbell','dumbbell','cable','machine','bodyweight','kettlebell','bands'];
+const IMG_BASE = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/';
 
-// Movement-specific SVG icons
-function ExerciseIcon({ name = '', muscle = '', size = 20, color = '#D4AF37' }) {
-  const n = name.toLowerCase();
-  const s = { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: color, strokeWidth: 1.6, strokeLinecap: "round", strokeLinejoin: "round" };
+// Module-level cache — JSON is only fetched once per session
+let _extCache = null;
+let _extPromise = null;
 
-  // Bench / Chest Press / Push-up
-  if (n.includes('bench') || n.includes('push-up') || n.includes('pushup') || n.includes('chest press') || n.includes('chest dip')) {
-    return <svg {...s}>
-      <line x1="2" y1="7" x2="22" y2="7"/>
-      <line x1="2" y1="5.5" x2="2" y2="8.5"/><line x1="5" y1="5" x2="5" y2="9"/><line x1="19" y1="5" x2="19" y2="9"/><line x1="22" y1="5.5" x2="22" y2="8.5"/>
-      <circle cx="12" cy="14" r="2"/>
-      <line x1="10.2" y1="13" x2="7" y2="7.5"/><line x1="13.8" y1="13" x2="17" y2="7.5"/>
-      <line x1="12" y1="16" x2="9" y2="21"/><line x1="12" y1="16" x2="15" y2="21"/>
-    </svg>;
-  }
+// ─── Lazy Image ───────────────────────────────────────────────────────────────
+function LazyImage({ src, alt, fallback }) {
+  const [inView, setInView] = useState(false);
+  const [err, setErr] = useState(false);
+  const ref = useRef(null);
 
-  // Overhead / Shoulder Press / Arnold / Military
-  if (n.includes('overhead') || n.includes('ohp') || (n.includes('press') && (n.includes('shoulder') || n.includes('arnold') || n.includes('military') || n.includes('z press'))) || n.includes('push press')) {
-    return <svg {...s}>
-      <line x1="3" y1="4" x2="21" y2="4"/>
-      <line x1="3" y1="2.5" x2="3" y2="5.5"/><line x1="6" y1="2" x2="6" y2="6"/><line x1="18" y1="2" x2="18" y2="6"/><line x1="21" y1="2.5" x2="21" y2="5.5"/>
-      <circle cx="12" cy="10" r="2"/>
-      <line x1="10.2" y1="9.2" x2="7" y2="5.5"/><line x1="13.8" y1="9.2" x2="17" y2="5.5"/>
-      <line x1="12" y1="12" x2="12" y2="17"/>
-      <line x1="12" y1="17" x2="9" y2="21"/><line x1="12" y1="17" x2="15" y2="21"/>
-    </svg>;
-  }
+  useEffect(() => {
+    if (!src) return;
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setInView(true); obs.disconnect(); } },
+      { rootMargin: '250px' }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [src]);
 
-  // Deadlift (standard)
-  if (n.includes('deadlift') && !n.includes('romanian') && !n.includes('rdl') && !n.includes('stiff') && !n.includes('sumo')) {
-    return <svg {...s}>
-      <line x1="3" y1="21" x2="21" y2="21"/>
-      <line x1="3" y1="19" x2="3" y2="23"/><line x1="6" y1="18" x2="6" y2="24"/><line x1="18" y1="18" x2="18" y2="24"/><line x1="21" y1="19" x2="21" y2="23"/>
-      <circle cx="16" cy="4" r="2"/>
-      <line x1="16" y1="6" x2="10" y2="13"/><line x1="10" y1="13" x2="8" y2="21"/><line x1="10" y1="13" x2="12" y2="21"/>
-      <line x1="13" y1="10" x2="10" y2="21"/>
-    </svg>;
-  }
-
-  // Romanian / Sumo / RDL
-  if (n.includes('romanian') || n.includes('rdl') || n.includes('stiff') || (n.includes('deadlift') && n.includes('sumo'))) {
-    return <svg {...s}>
-      <line x1="3" y1="21" x2="21" y2="21"/>
-      <line x1="6" y1="18.5" x2="6" y2="23.5"/><line x1="18" y1="18.5" x2="18" y2="23.5"/>
-      <circle cx="17" cy="5" r="2"/>
-      <line x1="17" y1="7" x2="10" y2="14"/>
-      <line x1="10" y1="14" x2="9" y2="21"/><line x1="10" y1="14" x2="12" y2="21"/>
-      <line x1="14" y1="11" x2="6" y2="21"/>
-    </svg>;
-  }
-
-  // Hip Thrust / Glute Bridge
-  if (n.includes('hip thrust') || n.includes('glute bridge') || n.includes('bridge')) {
-    return <svg {...s}>
-      <line x1="2" y1="19" x2="8" y2="19"/>
-      <circle cx="10" cy="18" r="2"/>
-      <line x1="12" y1="17" x2="17" y2="12"/><line x1="17" y1="12" x2="20" y2="8"/>
-      <circle cx="21.5" cy="7" r="1.5" fill={color} stroke="none"/>
-      <line x1="8" y1="19" x2="12" y2="17"/>
-      <line x1="10" y1="16" x2="12" y2="22"/>
-    </svg>;
-  }
-
-  // Squat / Hack Squat / Goblet / Front Squat
-  if (n.includes('squat') || n.includes('hack')) {
-    return <svg {...s}>
-      <line x1="3" y1="8" x2="21" y2="8"/>
-      <line x1="3" y1="6.5" x2="3" y2="9.5"/><line x1="6" y1="6" x2="6" y2="10"/><line x1="18" y1="6" x2="18" y2="10"/><line x1="21" y1="6.5" x2="21" y2="9.5"/>
-      <circle cx="12" cy="5" r="1.8"/>
-      <line x1="12" y1="6.8" x2="12" y2="8"/>
-      <line x1="12" y1="8" x2="12" y2="13"/>
-      <line x1="12" y1="13" x2="7" y2="18"/><line x1="12" y1="13" x2="17" y2="18"/>
-      <line x1="7" y1="18" x2="6" y2="22"/><line x1="17" y1="18" x2="18" y2="22"/>
-    </svg>;
-  }
-
-  // Lunge / Split Squat
-  if (n.includes('lunge') || n.includes('split squat') || n.includes('bulgarian')) {
-    return <svg {...s}>
-      <circle cx="12" cy="4" r="2"/>
-      <line x1="12" y1="6" x2="12" y2="11"/>
-      <line x1="9" y1="8" x2="15" y2="8"/>
-      <line x1="12" y1="11" x2="7" y2="16"/><line x1="7" y1="16" x2="5" y2="22"/>
-      <line x1="12" y1="11" x2="17" y2="14"/><line x1="17" y1="14" x2="19" y2="22"/>
-      <line x1="3" y1="22" x2="9" y2="22"/>
-    </svg>;
-  }
-
-  // Pull-up / Chin-up / Lat Pulldown
-  if (n.includes('pull-up') || n.includes('pullup') || n.includes('chin-up') || n.includes('chinup') || n.includes('lat pull') || n.includes('pulldown')) {
-    return <svg {...s}>
-      <line x1="2" y1="3" x2="22" y2="3"/>
-      <circle cx="12" cy="9" r="2"/>
-      <line x1="8" y1="5" x2="12" y2="9"/><line x1="16" y1="5" x2="12" y2="9"/>
-      <line x1="12" y1="11" x2="12" y2="17"/>
-      <line x1="12" y1="17" x2="9" y2="22"/><line x1="12" y1="17" x2="15" y2="22"/>
-    </svg>;
-  }
-
-  // Row / T-Bar / Seated Row
-  if (n.includes('row') || n.includes('t-bar') || n.includes('tbar')) {
-    return <svg {...s}>
-      <circle cx="18" cy="5" r="2"/>
-      <line x1="18" y1="7" x2="11" y2="13"/>
-      <line x1="11" y1="13" x2="9" y2="20"/><line x1="11" y1="13" x2="13" y2="20"/>
-      <line x1="15" y1="10" x2="4" y2="14"/><line x1="13" y1="11.5" x2="4" y2="16"/>
-      <line x1="2" y1="14" x2="5" y2="14"/>
-      <line x1="2" y1="12.5" x2="2" y2="15.5"/>
-    </svg>;
-  }
-
-  // Curl (bicep, hammer, concentration, preacher, incline curl)
-  if (n.includes('curl') && !n.includes('wrist') && !n.includes('leg curl')) {
-    return <svg {...s}>
-      <line x1="7" y1="6" x2="13" y2="6"/>
-      <circle cx="6" cy="6" r="1.5" fill={color} stroke="none"/>
-      <circle cx="14" cy="6" r="1.5" fill={color} stroke="none"/>
-      <circle cx="10" cy="10" r="2"/>
-      <line x1="10" y1="12" x2="10" y2="17"/>
-      <path d="M 10 8 Q 10 6.5 12 6"/>
-      <line x1="8" y1="10" x2="6" y2="6"/>
-      <line x1="10" y1="17" x2="7" y2="22"/><line x1="10" y1="17" x2="13" y2="22"/>
-    </svg>;
-  }
-
-  // Tricep Pushdown / Extension / Skull Crusher / Close Grip
-  if (n.includes('pushdown') || (n.includes('tricep') && (n.includes('extension') || n.includes('dip') || n.includes('kickback'))) || n.includes('skull') || n.includes('close grip') || n.includes('overhead tricep')) {
-    return <svg {...s}>
-      <circle cx="12" cy="3" r="2"/>
-      <line x1="12" y1="5" x2="12" y2="10"/>
-      <line x1="8" y1="10" x2="16" y2="10"/>
-      <line x1="8" y1="10" x2="7" y2="17"/><line x1="16" y1="10" x2="17" y2="17"/>
-      <line x1="6" y1="17" x2="8" y2="17"/>
-      <line x1="6" y1="15.5" x2="6" y2="18.5"/>
-      <line x1="16" y1="17" x2="18" y2="17"/>
-      <line x1="18" y1="15.5" x2="18" y2="18.5"/>
-    </svg>;
-  }
-
-  // Lateral Raise / Front Raise / Upright Row
-  if (n.includes('lateral raise') || n.includes('lat raise') || n.includes('front raise') || n.includes('upright row')) {
-    return <svg {...s}>
-      <circle cx="12" cy="8" r="2"/>
-      <line x1="12" y1="10" x2="12" y2="16"/>
-      <line x1="4" y1="10" x2="12" y2="10"/><line x1="12" y1="10" x2="20" y2="10"/>
-      <circle cx="3" cy="11" r="1.5" fill={color} stroke="none"/>
-      <circle cx="21" cy="11" r="1.5" fill={color} stroke="none"/>
-      <line x1="12" y1="16" x2="9" y2="21"/><line x1="12" y1="16" x2="15" y2="21"/>
-    </svg>;
-  }
-
-  // Fly / Pec Deck / Cable Crossover
-  if (n.includes('fly') || n.includes('flye') || n.includes('pec deck') || n.includes('cable cross')) {
-    return <svg {...s}>
-      <circle cx="12" cy="8" r="2"/>
-      <path d="M 10.5 9.5 Q 7 12 3.5 10.5"/>
-      <path d="M 13.5 9.5 Q 17 12 20.5 10.5"/>
-      <circle cx="3" cy="10.5" r="1.5" fill={color} stroke="none"/>
-      <circle cx="21" cy="10.5" r="1.5" fill={color} stroke="none"/>
-      <line x1="12" y1="10" x2="12" y2="16"/>
-      <line x1="12" y1="16" x2="9" y2="21"/><line x1="12" y1="16" x2="15" y2="21"/>
-    </svg>;
-  }
-
-  // Dip
-  if (n.includes('dip')) {
-    return <svg {...s}>
-      <line x1="4" y1="6" x2="4" y2="20"/><line x1="20" y1="6" x2="20" y2="20"/>
-      <line x1="4" y1="9" x2="7" y2="9"/><line x1="17" y1="9" x2="20" y2="9"/>
-      <circle cx="12" cy="6" r="2"/>
-      <line x1="12" y1="8" x2="12" y2="13"/>
-      <line x1="7" y1="9" x2="12" y2="11.5"/><line x1="17" y1="9" x2="12" y2="11.5"/>
-      <line x1="12" y1="13" x2="9" y2="19"/><line x1="12" y1="13" x2="15" y2="19"/>
-    </svg>;
-  }
-
-  // Leg Press / Leg Curl / Leg Extension
-  if (n.includes('leg press') || n.includes('leg curl') || n.includes('leg extension')) {
-    return <svg {...s}>
-      <circle cx="5" cy="9" r="2"/>
-      <line x1="7" y1="9" x2="14" y2="9"/><line x1="14" y1="9" x2="19" y2="14"/>
-      <circle cx="21" cy="15" r="1.5" fill={color} stroke="none"/>
-      <line x1="5" y1="11" x2="5" y2="16"/>
-      <line x1="5" y1="16" x2="3" y2="21"/><line x1="5" y1="16" x2="8" y2="21"/>
-    </svg>;
-  }
-
-  // Calf Raise
-  if (n.includes('calf')) {
-    return <svg {...s}>
-      <circle cx="12" cy="4" r="2"/>
-      <line x1="12" y1="6" x2="12" y2="12"/>
-      <line x1="12" y1="12" x2="9" y2="17"/><line x1="12" y1="12" x2="15" y2="17"/>
-      <line x1="9" y1="17" x2="8.5" y2="22"/><line x1="15" y1="17" x2="15.5" y2="22"/>
-      <line x1="6" y1="22" x2="11" y2="22"/><line x1="14" y1="22" x2="18" y2="22"/>
-    </svg>;
-  }
-
-  // Plank / Carry / Farmer
-  if (n.includes('plank') || n.includes('farmer') || n.includes('carry')) {
-    return <svg {...s}>
-      <circle cx="18" cy="11" r="2"/>
-      <line x1="16" y1="11" x2="6" y2="11"/>
-      <line x1="6" y1="11" x2="4" y2="14"/><line x1="6" y1="11" x2="4" y2="8"/>
-      <line x1="4" y1="13.5" x2="4" y2="16.5"/><line x1="4" y1="7.5" x2="4" y2="10.5"/>
-      <line x1="11" y1="11" x2="11" y2="16"/><line x1="14" y1="11" x2="14" y2="16"/>
-      <line x1="3" y1="16" x2="22" y2="16"/>
-    </svg>;
-  }
-
-  // Core / Crunch / Ab Rollout / Leg Raise / Russian Twist / Cable Crunch
-  if (n.includes('crunch') || n.includes('ab roll') || n.includes('leg raise') || n.includes('russian twist') || n.includes('cable crunch') || n.includes('decline crunch') || muscle === 'core') {
-    return <svg {...s}>
-      <circle cx="12" cy="5" r="2"/>
-      <path d="M 12 7 Q 11 11 8 13 Q 6 14 7 18"/>
-      <path d="M 12 7 Q 13 11 16 13 Q 18 14 17 18"/>
-      <line x1="12" y1="7" x2="12" y2="13"/>
-      <line x1="6" y1="18" x2="18" y2="18"/>
-    </svg>;
-  }
-
-  // Wrist Curl / Reverse Curl / Forearm work
-  if (n.includes('wrist') || n.includes('reverse curl') || muscle === 'forearms') {
-    return <svg {...s}>
-      <line x1="6" y1="9" x2="18" y2="9"/>
-      <line x1="6" y1="7" x2="6" y2="11"/><line x1="9" y1="6.5" x2="9" y2="11.5"/>
-      <line x1="15" y1="6.5" x2="15" y2="11.5"/><line x1="18" y1="7" x2="18" y2="11"/>
-      <path d="M 9 11.5 Q 9 16 12 16 Q 15 16 15 11.5"/>
-      <line x1="12" y1="16" x2="12" y2="20"/>
-      <line x1="10" y1="20" x2="14" y2="20"/>
-    </svg>;
-  }
-
-  // Cable (generic cable exercise)
-  if (n.includes('cable') && !n.includes('row') && !n.includes('fly') && !n.includes('cross') && !n.includes('curl') && !n.includes('crunch')) {
-    return <svg {...s}>
-      <circle cx="12" cy="7" r="2"/>
-      <line x1="12" y1="9" x2="12" y2="14"/>
-      <line x1="9" y1="14" x2="15" y2="14"/>
-      <line x1="9" y1="14" x2="7" y2="20"/><line x1="15" y1="14" x2="17" y2="20"/>
-      <path d="M 2 4 Q 4 7 2 10" strokeDasharray="1.5 1.5"/>
-      <circle cx="2" cy="4" r="1" fill={color} stroke="none"/>
-    </svg>;
-  }
-
-  // Fallback: muscle-group based icons
-  const fallback = {
-    chest:     <><path d="M4 10 Q8 5 12 10 Q8 15 4 10z"/><path d="M20 10 Q16 5 12 10 Q16 15 20 10z"/></>,
-    back:      <><line x1="7" y1="4" x2="7" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/><line x1="17" y1="4" x2="17" y2="20"/><line x1="5" y1="12" x2="19" y2="12"/></>,
-    shoulders: <><circle cx="7" cy="9" r="3.5"/><circle cx="17" cy="9" r="3.5"/><line x1="10.5" y1="9" x2="13.5" y2="9"/></>,
-    biceps:    <><path d="M7 18 Q4 12 8 8 Q12 4 15 7 Q18 10 16 15"/></>,
-    triceps:   <><path d="M6 7 Q4 12 7 16 Q10 20 14 18 Q18 16 18 11 Q17 7 13 6"/></>,
-    legs:      <><path d="M9 4 L9 12 L7 20 M15 4 L15 12 L17 20 M9 12 L15 12"/></>,
-    core:      <><rect x="7" y="4" width="4" height="3" rx="0.8"/><rect x="13" y="4" width="4" height="3" rx="0.8"/><rect x="7" y="9" width="4" height="3" rx="0.8"/><rect x="13" y="9" width="4" height="3" rx="0.8"/><rect x="7" y="14" width="4" height="3" rx="0.8"/><rect x="13" y="14" width="4" height="3" rx="0.8"/></>,
-    glutes:    <><path d="M5 14 Q5 7 12 6 Q19 7 19 14 Q19 21 12 22 Q5 21 5 14z"/></>,
-    forearms:  <><path d="M10 3 L8 20 M14 3 L16 20 M8 11 L16 9"/></>,
-    calves:    <><path d="M9 4 Q7 10 9 14 Q11 18 12 21 Q13 18 15 14 Q17 10 15 4"/></>,
-  };
   return (
-    <svg {...s}>{fallback[muscle] || <circle cx="12" cy="12" r="8"/>}</svg>
+    <div ref={ref} style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      {inView && src && !err
+        ? <img src={src} alt={alt} onError={() => setErr(true)}
+            style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+        : fallback}
+    </div>
   );
 }
 
-// Muscle-group icon (used in filter pills only)
+// ─── Muscle icons for filter pills ───────────────────────────────────────────
 function MuscleIcon({ muscle, size = 11, color }) {
   const paths = {
     chest:     <><path d="M4 10 Q8 5 12 10 Q8 15 4 10z M20 10 Q16 5 12 10 Q16 15 20 10z"/></>,
@@ -290,12 +60,108 @@ function MuscleIcon({ muscle, size = 11, color }) {
   );
 }
 
+// ─── Movement SVG fallback icons ──────────────────────────────────────────────
+function ExerciseIcon({ name = '', muscle = '', size = 20, color = '#D4AF37' }) {
+  const n = name.toLowerCase();
+  const s = { width: size, height: size, viewBox: '0 0 24 24', fill: 'none', stroke: color, strokeWidth: 1.6, strokeLinecap: 'round', strokeLinejoin: 'round' };
+
+  if (n.includes('bench') || n.includes('push-up') || n.includes('pushup') || n.includes('chest press') || (n.includes('chest') && n.includes('dip')))
+    return <svg {...s}><line x1="2" y1="7" x2="22" y2="7"/><line x1="2" y1="5.5" x2="2" y2="8.5"/><line x1="5" y1="5" x2="5" y2="9"/><line x1="19" y1="5" x2="19" y2="9"/><line x1="22" y1="5.5" x2="22" y2="8.5"/><circle cx="12" cy="14" r="2"/><line x1="10.2" y1="13" x2="7" y2="7.5"/><line x1="13.8" y1="13" x2="17" y2="7.5"/><line x1="12" y1="16" x2="9" y2="21"/><line x1="12" y1="16" x2="15" y2="21"/></svg>;
+
+  if ((n.includes('press') && (n.includes('shoulder') || n.includes('overhead') || n.includes('arnold') || n.includes('military') || n.includes('ohp'))) || n.includes('push press'))
+    return <svg {...s}><line x1="3" y1="4" x2="21" y2="4"/><line x1="3" y1="2.5" x2="3" y2="5.5"/><line x1="6" y1="2" x2="6" y2="6"/><line x1="18" y1="2" x2="18" y2="6"/><line x1="21" y1="2.5" x2="21" y2="5.5"/><circle cx="12" cy="10" r="2"/><line x1="10.2" y1="9.2" x2="7" y2="5.5"/><line x1="13.8" y1="9.2" x2="17" y2="5.5"/><line x1="12" y1="12" x2="12" y2="17"/><line x1="12" y1="17" x2="9" y2="21"/><line x1="12" y1="17" x2="15" y2="21"/></svg>;
+
+  if (n.includes('deadlift') && !n.includes('romanian') && !n.includes('rdl') && !n.includes('sumo'))
+    return <svg {...s}><line x1="3" y1="21" x2="21" y2="21"/><line x1="3" y1="19" x2="3" y2="23"/><line x1="6" y1="18" x2="6" y2="24"/><line x1="18" y1="18" x2="18" y2="24"/><line x1="21" y1="19" x2="21" y2="23"/><circle cx="16" cy="4" r="2"/><line x1="16" y1="6" x2="10" y2="13"/><line x1="10" y1="13" x2="8" y2="21"/><line x1="10" y1="13" x2="12" y2="21"/></svg>;
+
+  if (n.includes('romanian') || n.includes('rdl') || n.includes('sumo'))
+    return <svg {...s}><line x1="3" y1="21" x2="21" y2="21"/><line x1="6" y1="18.5" x2="6" y2="23.5"/><line x1="18" y1="18.5" x2="18" y2="23.5"/><circle cx="17" cy="5" r="2"/><line x1="17" y1="7" x2="10" y2="14"/><line x1="10" y1="14" x2="9" y2="21"/><line x1="10" y1="14" x2="12" y2="21"/></svg>;
+
+  if (n.includes('hip thrust') || n.includes('glute bridge') || n.includes('bridge'))
+    return <svg {...s}><line x1="2" y1="19" x2="8" y2="19"/><circle cx="10" cy="18" r="2"/><line x1="12" y1="17" x2="17" y2="12"/><line x1="17" y1="12" x2="20" y2="8"/><circle cx="21.5" cy="7" r="1.5" fill={color} stroke="none"/><line x1="8" y1="19" x2="12" y2="17"/><line x1="10" y1="16" x2="12" y2="22"/></svg>;
+
+  if (n.includes('squat') || n.includes('hack'))
+    return <svg {...s}><line x1="3" y1="8" x2="21" y2="8"/><line x1="3" y1="6.5" x2="3" y2="9.5"/><line x1="6" y1="6" x2="6" y2="10"/><line x1="18" y1="6" x2="18" y2="10"/><line x1="21" y1="6.5" x2="21" y2="9.5"/><circle cx="12" cy="5" r="1.8"/><line x1="12" y1="6.8" x2="12" y2="8"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="13" x2="7" y2="18"/><line x1="12" y1="13" x2="17" y2="18"/><line x1="7" y1="18" x2="6" y2="22"/><line x1="17" y1="18" x2="18" y2="22"/></svg>;
+
+  if (n.includes('lunge') || n.includes('split squat') || n.includes('bulgarian'))
+    return <svg {...s}><circle cx="12" cy="4" r="2"/><line x1="12" y1="6" x2="12" y2="11"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="12" y1="11" x2="7" y2="16"/><line x1="7" y1="16" x2="5" y2="22"/><line x1="12" y1="11" x2="17" y2="14"/><line x1="17" y1="14" x2="19" y2="22"/><line x1="3" y1="22" x2="9" y2="22"/></svg>;
+
+  if (n.includes('pull-up') || n.includes('pullup') || n.includes('chin-up') || n.includes('chinup') || n.includes('lat pull') || n.includes('pulldown'))
+    return <svg {...s}><line x1="2" y1="3" x2="22" y2="3"/><circle cx="12" cy="9" r="2"/><line x1="8" y1="5" x2="12" y2="9"/><line x1="16" y1="5" x2="12" y2="9"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="12" y1="17" x2="9" y2="22"/><line x1="12" y1="17" x2="15" y2="22"/></svg>;
+
+  if (n.includes('row') || n.includes('t-bar') || n.includes('tbar'))
+    return <svg {...s}><circle cx="18" cy="5" r="2"/><line x1="18" y1="7" x2="11" y2="13"/><line x1="11" y1="13" x2="9" y2="20"/><line x1="11" y1="13" x2="13" y2="20"/><line x1="15" y1="10" x2="4" y2="14"/><line x1="13" y1="11.5" x2="4" y2="16"/><line x1="2" y1="14" x2="5" y2="14"/><line x1="2" y1="12.5" x2="2" y2="15.5"/></svg>;
+
+  if (n.includes('curl') && !n.includes('wrist') && !n.includes('leg curl'))
+    return <svg {...s}><line x1="7" y1="6" x2="13" y2="6"/><circle cx="6" cy="6" r="1.5" fill={color} stroke="none"/><circle cx="14" cy="6" r="1.5" fill={color} stroke="none"/><circle cx="10" cy="10" r="2"/><line x1="10" y1="12" x2="10" y2="17"/><path d="M 10 8 Q 10 6.5 12 6"/><line x1="8" y1="10" x2="6" y2="6"/><line x1="10" y1="17" x2="7" y2="22"/><line x1="10" y1="17" x2="13" y2="22"/></svg>;
+
+  if (n.includes('pushdown') || (n.includes('tricep') && !n.includes('push')) || n.includes('skull') || n.includes('close grip'))
+    return <svg {...s}><circle cx="12" cy="3" r="2"/><line x1="12" y1="5" x2="12" y2="10"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="10" x2="7" y2="17"/><line x1="16" y1="10" x2="17" y2="17"/><line x1="6" y1="17" x2="8" y2="17"/><line x1="6" y1="15.5" x2="6" y2="18.5"/><line x1="16" y1="17" x2="18" y2="17"/><line x1="18" y1="15.5" x2="18" y2="18.5"/></svg>;
+
+  if (n.includes('lateral raise') || n.includes('front raise') || n.includes('upright row'))
+    return <svg {...s}><circle cx="12" cy="8" r="2"/><line x1="12" y1="10" x2="12" y2="16"/><line x1="4" y1="10" x2="12" y2="10"/><line x1="12" y1="10" x2="20" y2="10"/><circle cx="3" cy="11" r="1.5" fill={color} stroke="none"/><circle cx="21" cy="11" r="1.5" fill={color} stroke="none"/><line x1="12" y1="16" x2="9" y2="21"/><line x1="12" y1="16" x2="15" y2="21"/></svg>;
+
+  if (n.includes('fly') || n.includes('flye') || n.includes('pec deck') || n.includes('cable cross'))
+    return <svg {...s}><circle cx="12" cy="8" r="2"/><path d="M 10.5 9.5 Q 7 12 3.5 10.5"/><path d="M 13.5 9.5 Q 17 12 20.5 10.5"/><circle cx="3" cy="10.5" r="1.5" fill={color} stroke="none"/><circle cx="21" cy="10.5" r="1.5" fill={color} stroke="none"/><line x1="12" y1="10" x2="12" y2="16"/><line x1="12" y1="16" x2="9" y2="21"/><line x1="12" y1="16" x2="15" y2="21"/></svg>;
+
+  if (n.includes('leg press') || n.includes('leg curl') || n.includes('leg extension'))
+    return <svg {...s}><circle cx="5" cy="9" r="2"/><line x1="7" y1="9" x2="14" y2="9"/><line x1="14" y1="9" x2="19" y2="14"/><circle cx="21" cy="15" r="1.5" fill={color} stroke="none"/><line x1="5" y1="11" x2="5" y2="16"/><line x1="5" y1="16" x2="3" y2="21"/><line x1="5" y1="16" x2="8" y2="21"/></svg>;
+
+  if (n.includes('calf'))
+    return <svg {...s}><circle cx="12" cy="4" r="2"/><line x1="12" y1="6" x2="12" y2="12"/><line x1="12" y1="12" x2="9" y2="17"/><line x1="12" y1="12" x2="15" y2="17"/><line x1="9" y1="17" x2="8.5" y2="22"/><line x1="15" y1="17" x2="15.5" y2="22"/><line x1="6" y1="22" x2="11" y2="22"/><line x1="14" y1="22" x2="18" y2="22"/></svg>;
+
+  if (n.includes('plank') || n.includes('farmer') || n.includes('carry'))
+    return <svg {...s}><circle cx="18" cy="11" r="2"/><line x1="16" y1="11" x2="6" y2="11"/><line x1="6" y1="11" x2="4" y2="14"/><line x1="6" y1="11" x2="4" y2="8"/><line x1="4" y1="13.5" x2="4" y2="16.5"/><line x1="4" y1="7.5" x2="4" y2="10.5"/><line x1="11" y1="11" x2="11" y2="16"/><line x1="14" y1="11" x2="14" y2="16"/><line x1="3" y1="16" x2="22" y2="16"/></svg>;
+
+  if (n.includes('dip') && !n.includes('chest'))
+    return <svg {...s}><line x1="4" y1="6" x2="4" y2="20"/><line x1="20" y1="6" x2="20" y2="20"/><line x1="4" y1="9" x2="7" y2="9"/><line x1="17" y1="9" x2="20" y2="9"/><circle cx="12" cy="6" r="2"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="7" y1="9" x2="12" y2="11.5"/><line x1="17" y1="9" x2="12" y2="11.5"/><line x1="12" y1="13" x2="9" y2="19"/><line x1="12" y1="13" x2="15" y2="19"/></svg>;
+
+  // muscle-group fallback
+  const fallback = {
+    chest:     <><path d="M4 10 Q8 5 12 10 Q8 15 4 10z"/><path d="M20 10 Q16 5 12 10 Q16 15 20 10z"/></>,
+    back:      <><line x1="7" y1="4" x2="7" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/><line x1="17" y1="4" x2="17" y2="20"/><line x1="5" y1="12" x2="19" y2="12"/></>,
+    shoulders: <><circle cx="7" cy="9" r="3.5"/><circle cx="17" cy="9" r="3.5"/><line x1="10.5" y1="9" x2="13.5" y2="9"/></>,
+    biceps:    <><path d="M7 18 Q4 12 8 8 Q12 4 15 7 Q18 10 16 15"/></>,
+    triceps:   <><path d="M6 7 Q4 12 7 16 Q10 20 14 18 Q18 16 18 11 Q17 7 13 6"/></>,
+    legs:      <><path d="M9 4 L9 12 L7 20 M15 4 L15 12 L17 20 M9 12 L15 12"/></>,
+    core:      <><rect x="7" y="4" width="4" height="3" rx="0.8"/><rect x="13" y="4" width="4" height="3" rx="0.8"/><rect x="7" y="9" width="4" height="3" rx="0.8"/><rect x="13" y="9" width="4" height="3" rx="0.8"/><rect x="7" y="14" width="4" height="3" rx="0.8"/><rect x="13" y="14" width="4" height="3" rx="0.8"/></>,
+    glutes:    <><path d="M5 14 Q5 7 12 6 Q19 7 19 14 Q19 21 12 22 Q5 21 5 14z"/></>,
+    forearms:  <><path d="M10 3 L8 20 M14 3 L16 20 M8 11 L16 9"/></>,
+    calves:    <><path d="M9 4 Q7 10 9 14 Q11 18 12 21 Q13 18 15 14 Q17 10 15 4"/></>,
+  };
+  return <svg {...s}>{fallback[muscle] || <circle cx="12" cy="12" r="8"/>}</svg>;
+}
+
+// ─── Amber-glass circle wrapper ───────────────────────────────────────────────
+function GlassCircle({ size = 48, children, isDarkMode }) {
+  return (
+    <div style={{
+      width: size, height: size,
+      borderRadius: '50%',
+      border: '0.5px solid #D4AF37',
+      background: isDarkMode ? 'rgba(212,175,55,0.06)' : 'rgba(212,175,55,0.09)',
+      backdropFilter: 'blur(5px)',
+      WebkitBackdropFilter: 'blur(5px)',
+      overflow: 'hidden',
+      flexShrink: 0,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+    }}>
+      {children}
+    </div>
+  );
+}
+
+// ─── Main Component ───────────────────────────────────────────────────────────
 export default function ExercisePicker({ exercises, onSelect, onClose, mode = 'add', previousWorkoutSets = {} }) {
   const { isDarkMode } = useTheme();
   const [search, setSearch] = useState('');
   const [muscleFilter, setMuscleFilter] = useState('all');
   const [equipFilter, setEquipFilter] = useState('all');
   const [selected, setSelected] = useState(null);
+  const [extData, setExtData] = useState(_extCache || []);
+  const [detailFrame, setDetailFrame] = useState(0);
   const sectionRefs = useRef({});
 
   const iconColor = isDarkMode ? '#D4AF37' : '#9C7E46';
@@ -304,6 +170,52 @@ export default function ExercisePicker({ exercises, onSelect, onClose, mode = 'a
   const textPrimary = isDarkMode ? '#FFFFFF' : '#1D1D1F';
   const textMuted = isDarkMode ? 'rgba(255,255,255,0.35)' : 'rgba(29,29,31,0.4)';
   const borderColor = isDarkMode ? 'rgba(212,175,55,0.15)' : 'rgba(225,193,110,0.38)';
+
+  // Fetch external exercise data (cached at module level)
+  useEffect(() => {
+    if (_extCache) { setExtData(_extCache); return; }
+    if (!_extPromise) {
+      _extPromise = fetch('https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/dist/exercises.json')
+        .then(r => r.json())
+        .then(data => { _extCache = data; return data; })
+        .catch(() => []);
+    }
+    _extPromise.then(data => setExtData(data));
+  }, []);
+
+  // Animate between frame 0 and frame 1 in the detail sheet
+  useEffect(() => {
+    if (!selected) return;
+    setDetailFrame(0);
+    const iv = setInterval(() => setDetailFrame(f => 1 - f), 900);
+    return () => clearInterval(iv);
+  }, [selected?.name]);
+
+  // Normalized lookup array from external data (built once per fetch)
+  const extLookup = useMemo(() => {
+    const norm = s => s.toLowerCase().replace(/[^a-z0-9]/g, '');
+    return extData
+      .filter(ex => ex.images?.length)
+      .map(ex => ({ key: norm(ex.name), images: ex.images }));
+  }, [extData]);
+
+  // Map each DB exercise name → [img0_url, img1_url]
+  const imageMap = useMemo(() => {
+    const norm = s => s.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const map = {};
+    exercises.forEach(dbEx => {
+      const key = norm(dbEx.name);
+      let found = extLookup.find(e => e.key === key);
+      if (!found) {
+        const words = dbEx.name.toLowerCase().replace(/[^a-z]/g, ' ').trim().split(/\s+/).filter(w => w.length > 2);
+        if (words.length > 0) found = extLookup.find(e => words.every(w => e.key.includes(w)));
+      }
+      if (found) {
+        map[dbEx.name] = found.images.map(img => `${IMG_BASE}${img}`);
+      }
+    });
+    return map;
+  }, [exercises, extLookup]);
 
   const filtered = useMemo(() => {
     const seen = new Set();
@@ -362,8 +274,7 @@ export default function ExercisePicker({ exercises, onSelect, onClose, mode = 'a
       {/* Search */}
       <div className="px-5 mb-3 flex-shrink-0">
         <div className="flex items-center gap-3 rounded-xl px-4 py-3"
-          style={{ background: cardBg, border: `0.5px solid ${borderColor}` }}
-        >
+          style={{ background: cardBg, border: `0.5px solid ${borderColor}` }}>
           <Search className="w-4 h-4 flex-shrink-0" style={{ color: textMuted }} />
           <input
             autoFocus
@@ -382,7 +293,7 @@ export default function ExercisePicker({ exercises, onSelect, onClose, mode = 'a
         </div>
       </div>
 
-      {/* Muscle filters */}
+      {/* Muscle filter pills */}
       <div className="px-5 mb-2 overflow-x-auto flex-shrink-0" style={{ scrollbarWidth: 'none' }}>
         <div className="flex gap-2 pb-1">
           {MUSCLES.map(m => {
@@ -391,14 +302,12 @@ export default function ExercisePicker({ exercises, onSelect, onClose, mode = 'a
               <button
                 key={m}
                 onClick={() => setMuscleFilter(m)}
-                className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs capitalize transition-all"
+                className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs capitalize"
                 style={{
-                  background: isActive
-                    ? (isDarkMode ? 'rgba(212,175,55,0.18)' : 'rgba(212,175,55,0.14)')
-                    : (isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'),
+                  background: isActive ? 'rgba(212,175,55,0.18)' : (isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'),
                   color: isActive ? '#D4AF37' : textMuted,
                   border: `0.5px solid ${isActive ? 'rgba(212,175,55,0.55)' : borderColor}`,
-                  boxShadow: isActive ? '0 0 10px rgba(212,175,55,0.35), 0 0 20px rgba(212,175,55,0.15)' : 'none',
+                  boxShadow: isActive ? '0 0 10px rgba(212,175,55,0.4), 0 0 22px rgba(212,175,55,0.15)' : 'none',
                   transition: 'all 0.2s ease',
                 }}
               >
@@ -410,7 +319,7 @@ export default function ExercisePicker({ exercises, onSelect, onClose, mode = 'a
         </div>
       </div>
 
-      {/* Equipment filters */}
+      {/* Equipment filter pills */}
       <div className="px-5 mb-3 overflow-x-auto flex-shrink-0" style={{ scrollbarWidth: 'none' }}>
         <div className="flex gap-2 pb-1">
           {EQUIPMENT.map(eq => {
@@ -419,14 +328,12 @@ export default function ExercisePicker({ exercises, onSelect, onClose, mode = 'a
               <button
                 key={eq}
                 onClick={() => setEquipFilter(eq)}
-                className="flex-shrink-0 px-3 py-1.5 rounded-full text-xs capitalize transition-all"
+                className="flex-shrink-0 px-3 py-1.5 rounded-full text-xs capitalize"
                 style={{
-                  background: isActive
-                    ? (isDarkMode ? 'rgba(156,126,70,0.18)' : 'rgba(156,126,70,0.14)')
-                    : (isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'),
+                  background: isActive ? 'rgba(156,126,70,0.18)' : (isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'),
                   color: isActive ? iconColor : textMuted,
                   border: `0.5px solid ${isActive ? 'rgba(156,126,70,0.55)' : borderColor}`,
-                  boxShadow: isActive ? '0 0 10px rgba(212,175,55,0.3), 0 0 20px rgba(212,175,55,0.1)' : 'none',
+                  boxShadow: isActive ? '0 0 10px rgba(212,175,55,0.35), 0 0 20px rgba(212,175,55,0.12)' : 'none',
                   transition: 'all 0.2s ease',
                 }}
               >
@@ -448,6 +355,7 @@ export default function ExercisePicker({ exercises, onSelect, onClose, mode = 'a
               </p>
               <div className="space-y-1">
                 {letterGroups[letter].map(ex => {
+                  const imgs = imageMap[ex.name];
                   const ghostSets = (previousWorkoutSets[ex.name] || []).filter(s => !s.is_warmup && s.weight > 0);
                   const topSet = [...ghostSets].sort((a, b) => (b.weight * b.reps) - (a.weight * a.reps))[0];
                   return (
@@ -457,20 +365,13 @@ export default function ExercisePicker({ exercises, onSelect, onClose, mode = 'a
                       className="w-full px-3 py-2.5 rounded-xl text-left flex items-center gap-3 transition-all active:scale-[0.98]"
                       style={{ background: cardBg, border: `0.5px solid ${borderColor}` }}
                     >
-                      {/* Amber-glass icon circle */}
-                      <div
-                        className="flex-shrink-0 flex items-center justify-center rounded-full"
-                        style={{
-                          width: 44,
-                          height: 44,
-                          background: isDarkMode ? 'rgba(212,175,55,0.06)' : 'rgba(212,175,55,0.08)',
-                          border: '0.5px solid #D4AF37',
-                          backdropFilter: 'blur(5px)',
-                          WebkitBackdropFilter: 'blur(5px)',
-                        }}
-                      >
-                        <ExerciseIcon name={ex.name} muscle={ex.muscle_group} size={20} color={iconColor} />
-                      </div>
+                      <GlassCircle size={48} isDarkMode={isDarkMode}>
+                        <LazyImage
+                          src={imgs?.[0]}
+                          alt={ex.name}
+                          fallback={<ExerciseIcon name={ex.name} muscle={ex.muscle_group} size={20} color={iconColor} />}
+                        />
+                      </GlassCircle>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm truncate" style={{ fontFamily: 'Montserrat, sans-serif', color: textPrimary }}>{ex.name}</p>
                         <p className="text-[11px] capitalize mt-0.5" style={{ color: textMuted }}>{ex.muscle_group} · {ex.equipment}</p>
@@ -491,14 +392,14 @@ export default function ExercisePicker({ exercises, onSelect, onClose, mode = 'a
           )}
         </div>
 
-        {/* A-Z scroll jumper */}
+        {/* A-Z jumper */}
         {letters.length > 4 && (
           <div className="absolute right-0.5 top-0 bottom-0 flex flex-col justify-center py-4">
             {letters.map(letter => (
               <button
                 key={letter}
                 onClick={() => jumpTo(letter)}
-                className="w-5 py-px text-[9px] text-center transition-all"
+                className="w-5 py-px text-[9px] text-center"
                 style={{ color: isDarkMode ? 'rgba(212,175,55,0.6)' : 'rgba(156,126,70,0.75)', fontFamily: 'Montserrat' }}
               >
                 {letter}
@@ -510,105 +411,115 @@ export default function ExercisePicker({ exercises, onSelect, onClose, mode = 'a
 
       {/* Detail bottom sheet */}
       <AnimatePresence>
-        {selected && (
-          <motion.div
-            initial={{ y: '100%' }}
-            animate={{ y: 0 }}
-            exit={{ y: '100%' }}
-            transition={{ type: 'spring', damping: 28, stiffness: 280 }}
-            className="absolute bottom-0 left-0 right-0 rounded-t-3xl z-10"
-            style={{
-              background: isDarkMode
-                ? 'linear-gradient(180deg, rgba(18,14,5,0.98) 0%, rgba(12,10,4,1) 100%)'
-                : 'linear-gradient(180deg, rgba(255,252,240,0.98) 0%, rgba(255,248,220,1) 100%)',
-              backdropFilter: 'blur(25px)',
-              border: `0.5px solid ${isDarkMode ? 'rgba(212,175,55,0.25)' : 'rgba(225,193,110,0.5)'}`,
-              borderBottom: 'none',
-              padding: '20px 24px calc(40px + env(safe-area-inset-bottom, 0px))',
-            }}
-          >
-            <div className="w-10 h-1 rounded-full mx-auto mb-5"
-              style={{ background: isDarkMode ? 'rgba(212,175,55,0.25)' : 'rgba(156,126,70,0.3)' }} />
+        {selected && (() => {
+          const imgs = imageMap[selected.name];
+          const detailSrc = imgs?.[detailFrame] || imgs?.[0];
+          return (
+            <motion.div
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 28, stiffness: 280 }}
+              className="absolute bottom-0 left-0 right-0 rounded-t-3xl z-10"
+              style={{
+                background: isDarkMode
+                  ? 'linear-gradient(180deg, rgba(18,14,5,0.98) 0%, rgba(12,10,4,1) 100%)'
+                  : 'linear-gradient(180deg, rgba(255,252,240,0.98) 0%, rgba(255,248,220,1) 100%)',
+                backdropFilter: 'blur(25px)',
+                border: `0.5px solid ${isDarkMode ? 'rgba(212,175,55,0.25)' : 'rgba(225,193,110,0.5)'}`,
+                borderBottom: 'none',
+                padding: '20px 24px calc(40px + env(safe-area-inset-bottom, 0px))',
+              }}
+            >
+              <div className="w-10 h-1 rounded-full mx-auto mb-5"
+                style={{ background: isDarkMode ? 'rgba(212,175,55,0.25)' : 'rgba(156,126,70,0.3)' }} />
 
-            <div className="flex items-start gap-4 mb-4">
-              {/* Amber-glass circle for detail view */}
-              <div
-                className="flex-shrink-0 flex items-center justify-center rounded-full"
-                style={{
-                  width: 56,
-                  height: 56,
-                  background: isDarkMode ? 'rgba(212,175,55,0.08)' : 'rgba(212,175,55,0.1)',
+              <div className="flex items-start gap-4 mb-4">
+                {/* Animated amber-glass circle */}
+                <div style={{
+                  width: 64, height: 64,
+                  borderRadius: '50%',
                   border: '0.5px solid #D4AF37',
+                  background: isDarkMode ? 'rgba(212,175,55,0.08)' : 'rgba(212,175,55,0.1)',
                   backdropFilter: 'blur(5px)',
                   WebkitBackdropFilter: 'blur(5px)',
-                  boxShadow: '0 0 16px rgba(212,175,55,0.2)',
-                }}
-              >
-                <ExerciseIcon name={selected.name} muscle={selected.muscle_group} size={26} color={iconColor} />
-              </div>
-              <div className="flex-1">
-                <h3 className="text-base" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400, color: textPrimary }}>
-                  {selected.name}
-                </h3>
-                <p className="text-xs capitalize mt-1" style={{ color: textMuted }}>
-                  {selected.muscle_group} · {selected.equipment}
-                </p>
-              </div>
-              <button onClick={() => setSelected(null)}>
-                <X className="w-5 h-5" style={{ color: textMuted }} />
-              </button>
-            </div>
-
-            {/* Ghost PRs */}
-            {(() => {
-              const sets = (previousWorkoutSets[selected.name] || []).filter(s => !s.is_warmup && s.weight > 0);
-              if (!sets.length) return null;
-              return (
-                <div className="mb-5 p-4 rounded-2xl"
-                  style={{
-                    background: isDarkMode ? 'rgba(212,175,55,0.07)' : 'rgba(156,126,70,0.08)',
-                    border: `0.5px solid ${isDarkMode ? 'rgba(212,175,55,0.2)' : 'rgba(156,126,70,0.25)'}`,
-                  }}
-                >
-                  <p className="text-[10px] uppercase tracking-[0.25em] mb-3"
-                    style={{ color: isDarkMode ? 'rgba(212,175,55,0.6)' : '#9C7E46', fontFamily: 'Montserrat' }}>
-                    Previous Session
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {sets.slice(0, 5).map((s, idx) => (
-                      <div key={idx} className="flex flex-col items-center px-3 py-2 rounded-xl"
-                        style={{ background: isDarkMode ? 'rgba(212,175,55,0.06)' : 'rgba(156,126,70,0.08)' }}>
-                        <span className="text-sm tabular-nums" style={{ color: iconColor, fontFamily: 'Montserrat' }}>
-                          {s.weight}kg
-                        </span>
-                        <span className="text-[10px]" style={{ color: textMuted }}>× {s.reps}</span>
-                      </div>
-                    ))}
-                  </div>
+                  boxShadow: '0 0 18px rgba(212,175,55,0.22)',
+                  overflow: 'hidden',
+                  flexShrink: 0,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  {detailSrc ? (
+                    <img
+                      src={detailSrc}
+                      alt={selected.name}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%', transition: 'opacity 0.2s' }}
+                    />
+                  ) : (
+                    <ExerciseIcon name={selected.name} muscle={selected.muscle_group} size={28} color={iconColor} />
+                  )}
                 </div>
-              );
-            })()}
+                <div className="flex-1">
+                  <h3 className="text-base" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400, color: textPrimary }}>
+                    {selected.name}
+                  </h3>
+                  <p className="text-xs capitalize mt-1" style={{ color: textMuted }}>
+                    {selected.muscle_group} · {selected.equipment}
+                  </p>
+                </div>
+                <button onClick={() => setSelected(null)}>
+                  <X className="w-5 h-5" style={{ color: textMuted }} />
+                </button>
+              </div>
 
-            <div className="flex gap-3">
-              <button
-                onClick={() => setSelected(null)}
-                className="flex-1 py-3.5 rounded-2xl text-sm"
-                style={{ background: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)', color: textMuted }}
-              >
-                Back
-              </button>
-              <motion.button
-                whileTap={{ scale: 0.96 }}
-                onClick={() => { onSelect(selected); setSelected(null); }}
-                className="flex-[2] py-3.5 rounded-2xl text-sm flex items-center justify-center gap-2"
-                style={{ background: 'linear-gradient(135deg, #F4D03F 0%, #D4AF37 100%)', color: '#0a0a0a', fontFamily: 'Montserrat, sans-serif' }}
-              >
-                <Plus className="w-4 h-4" />
-                Add to Routine
-              </motion.button>
-            </div>
-          </motion.div>
-        )}
+              {/* Ghost PRs */}
+              {(() => {
+                const sets = (previousWorkoutSets[selected.name] || []).filter(s => !s.is_warmup && s.weight > 0);
+                if (!sets.length) return null;
+                return (
+                  <div className="mb-5 p-4 rounded-2xl"
+                    style={{
+                      background: isDarkMode ? 'rgba(212,175,55,0.07)' : 'rgba(156,126,70,0.08)',
+                      border: `0.5px solid ${isDarkMode ? 'rgba(212,175,55,0.2)' : 'rgba(156,126,70,0.25)'}`,
+                    }}
+                  >
+                    <p className="text-[10px] uppercase tracking-[0.25em] mb-3"
+                      style={{ color: isDarkMode ? 'rgba(212,175,55,0.6)' : '#9C7E46', fontFamily: 'Montserrat' }}>
+                      Previous Session
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {sets.slice(0, 5).map((s, idx) => (
+                        <div key={idx} className="flex flex-col items-center px-3 py-2 rounded-xl"
+                          style={{ background: isDarkMode ? 'rgba(212,175,55,0.06)' : 'rgba(156,126,70,0.08)' }}>
+                          <span className="text-sm tabular-nums" style={{ color: iconColor, fontFamily: 'Montserrat' }}>{s.weight}kg</span>
+                          <span className="text-[10px]" style={{ color: textMuted }}>× {s.reps}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setSelected(null)}
+                  className="flex-1 py-3.5 rounded-2xl text-sm"
+                  style={{ background: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)', color: textMuted }}
+                >
+                  Back
+                </button>
+                <motion.button
+                  whileTap={{ scale: 0.96 }}
+                  onClick={() => { onSelect(selected); setSelected(null); }}
+                  className="flex-[2] py-3.5 rounded-2xl text-sm flex items-center justify-center gap-2"
+                  style={{ background: 'linear-gradient(135deg, #F4D03F 0%, #D4AF37 100%)', color: '#0a0a0a', fontFamily: 'Montserrat, sans-serif' }}
+                >
+                  <Plus className="w-4 h-4" />
+                  Add to Routine
+                </motion.button>
+              </div>
+            </motion.div>
+          );
+        })()}
       </AnimatePresence>
     </motion.div>
   );
