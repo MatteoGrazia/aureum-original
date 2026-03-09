@@ -627,17 +627,7 @@ export default function Workouts() {
                 Save Routine
               </GoldButton>
 
-              <AnimatePresence>
-                {showExercisePicker && (
-                  <ExercisePicker
-                    exercises={exercises}
-                    mode="add"
-                    onSelect={addExerciseToRoutine}
-                    onClose={() => setShowExercisePicker(false)}
-                    previousWorkoutSets={previousWorkoutSets}
-                  />
-                )}
-              </AnimatePresence>
+
             </motion.div>
           )}
         </div>
