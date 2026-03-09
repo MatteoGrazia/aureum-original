@@ -133,10 +133,26 @@ export default function Workouts() {
     return () => clearInterval(persistTimerRef.current);
   }, [view, activeWorkout, workoutStartTime]);
 
-  // Seed exercises
+  // Deduplicate + seed exercises
   useEffect(() => {
-    if (exercises.length > 0 || seededRef.current) return;
-    seededRef.current = true;
+    if (exercises.length === 0) return; // wait for data to load
+
+    // Deduplicate: keep only the first occurrence of each exercise name
+    const seen = new Set();
+    const toDelete = [];
+    exercises.forEach(ex => {
+      if (seen.has(ex.name)) {
+        toDelete.push(ex.id);
+      } else {
+        seen.add(ex.name);
+      }
+    });
+    if (toDelete.length > 0) {
+      Promise.all(toDelete.map(id => base44.entities.Exercise.delete(id))).then(() =>
+        queryClient.invalidateQueries(['exercises'])
+      );
+      return;
+    }
     if (false) {
       const defaults = [
         // CHEST
