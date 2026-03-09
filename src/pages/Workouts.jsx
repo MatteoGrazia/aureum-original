@@ -235,7 +235,7 @@ export default function Workouts() {
         queryClient.invalidateQueries(['exercises'])
       );
     }
-  }, [exercises.length]);
+  }, [exercises]);
 
   const startWorkout = (routine) => {
     const built = {
