@@ -56,7 +56,7 @@ export default function VoidBackground() {
           />
         ))}
 
-        {/* Tiny golden star particles */}
+        {/* Tiny bronze star particles */}
         {GOLD_ORBS.map((orb) => (
           <motion.div
             key={orb.id}
@@ -66,16 +66,41 @@ export default function VoidBackground() {
               top: `${orb.y}%`,
               width: orb.size,
               height: orb.size,
-              background: 'rgba(212,175,55,0.9)',
-              boxShadow: `0 0 ${orb.size * 3}px rgba(212,175,55,0.6), 0 0 ${orb.size}px rgba(244,208,63,0.8)`,
+              background: 'rgba(156,126,70,0.85)',
+              boxShadow: `0 0 ${orb.size * 3}px rgba(156,126,70,0.5), 0 0 ${orb.size}px rgba(156,126,70,0.7)`,
             }}
             animate={{
               y: [0, -20, 0],
-              opacity: [orb.opacity * 0.4, orb.opacity, orb.opacity * 0.4],
+              opacity: [orb.opacity * 0.3, orb.opacity * 0.75, orb.opacity * 0.3],
               scale: [0.6, 1.3, 0.6],
             }}
             transition={{ duration: orb.duration, repeat: Infinity, ease: 'easeInOut', delay: orb.delay }}
           />
+        ))}
+
+        {/* Large illuminating bronze stars */}
+        {[
+          { x: 15, y: 25, size: 80, delay: 0,   duration: 12 },
+          { x: 75, y: 15, size: 100, delay: 2,   duration: 14 },
+          { x: 40, y: 60, size: 90,  delay: 4,   duration: 13 },
+          { x: 85, y: 70, size: 75,  delay: 1,   duration: 11 },
+          { x: 25, y: 80, size: 85,  delay: 3,   duration: 15 },
+        ].map((star, i) => (
+          <motion.div
+            key={`light-star-${i}`}
+            className="absolute"
+            style={{ left: `${star.x}%`, top: `${star.y}%`, width: star.size, height: star.size, pointerEvents: 'none' }}
+            animate={{ opacity: [0.3, 0.65, 0.3], scale: [0.9, 1.1, 0.9] }}
+            transition={{ duration: star.duration, repeat: Infinity, ease: 'easeInOut', delay: star.delay }}
+          >
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full"
+              style={{ background: 'rgba(156,126,70,0.9)', boxShadow: '0 0 4px rgba(156,126,70,1)' }} />
+            <div className="absolute inset-0"
+              style={{
+                background: 'radial-gradient(circle, rgba(156,126,70,0.18) 0%, rgba(156,126,70,0.08) 30%, rgba(156,126,70,0.03) 50%, transparent 70%)',
+                filter: 'blur(18px)',
+              }} />
+          </motion.div>
         ))}
       </div>
     );
