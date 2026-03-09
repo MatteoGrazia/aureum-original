@@ -411,6 +411,18 @@ export default function Workouts() {
         <WorkoutLogDetail log={selectedLog} onBack={() => { setSelectedLog(null); setView('routines'); }} />
       )}
 
+      <AnimatePresence>
+        {showExercisePicker && (
+          <ExercisePicker
+            exercises={exercises}
+            mode="add"
+            onSelect={addExerciseToRoutine}
+            onClose={() => setShowExercisePicker(false)}
+            previousWorkoutSets={previousWorkoutSets}
+          />
+        )}
+      </AnimatePresence>
+
       {(view === 'routines' || view === 'create') && (
         <div className="relative z-10 p-5">
           <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-4 pt-10">
