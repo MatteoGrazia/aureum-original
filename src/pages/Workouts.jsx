@@ -135,7 +135,9 @@ export default function Workouts() {
 
   // Seed exercises
   useEffect(() => {
-    if (exercises.length === 0) {
+    if (exercises.length > 0 || seededRef.current) return;
+    seededRef.current = true;
+    if (false) {
       const defaults = [
         // CHEST
         { name: 'Bench Press', muscle_group: 'chest', equipment: 'barbell' },
