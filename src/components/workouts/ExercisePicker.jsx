@@ -3,44 +3,26 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Search, Plus } from 'lucide-react';
 import { useTheme } from '@/components/shared/ThemeContext';
 
-const MUSCLES  = ['all','chest','back','shoulders','biceps','triceps','legs','core','glutes','forearms','calves'];
+const MUSCLES   = ['all','chest','back','shoulders','biceps','triceps','legs','core','glutes','forearms','calves'];
 const EQUIPMENT = ['all','barbell','dumbbell','cable','machine','bodyweight','kettlebell','bands'];
-const NORM = s => s.toLowerCase().replace(/[^a-z0-9]/g, '');
 
-// ─── Module-level cache (one fetch per session) ───────────────────────────────
-let _wgerMap = null;       // { normName: imageUrl }
-let _wgerPromise = null;
+// Map our DB muscle groups → API parameter
+const MUSCLE_API = {
+  chest:     'Chest',
+  back:      'Lats,Traps',
+  shoulders: 'Shoulders',
+  biceps:    'Biceps',
+  triceps:   'Triceps',
+  legs:      'Quads,Hamstrings',
+  core:      'Abs',
+  glutes:    'Glutes',
+  forearms:  'Forearms',
+  calves:    'Calves',
+};
 
-async function loadWger() {
-  if (_wgerMap) return _wgerMap;
-  if (_wgerPromise) return _wgerPromise;
-  _wgerPromise = (async () => {
-    const map = {};
-    const endpoint = (offset) =>
-      `https://wger.de/api/v2/exerciseinfo/?format=json&language=2&limit=100&offset=${offset}`;
-    const first = await fetch(endpoint(0)).then(r => r.json()).catch(() => null);
-    if (!first) return map;
-    const processPage = ({ results = [] }) =>
-      results.forEach(ex => {
-        const name = ex.name || ex.translations?.[0]?.name;
-        const img  = (ex.images || []).find(i => i.is_main) || ex.images?.[0];
-        if (name && img?.image) map[NORM(name)] = img.image;
-      });
-    processPage(first);
-    // Fetch up to 5 more pages in parallel (600 exercises total)
-    const extra = Math.min(Math.ceil(((first.count || 0) - 100) / 100), 5);
-    if (extra > 0) {
-      const pages = await Promise.all(
-        Array.from({ length: extra }, (_, i) =>
-          fetch(endpoint((i + 1) * 100)).then(r => r.json()).catch(() => ({ results: [] }))
-        )
-      );
-      pages.forEach(processPage);
-    }
-    _wgerMap = map;
-    return map;
-  })().catch(() => { _wgerMap = {}; return {}; });
-  return _wgerPromise;
+function getMuscleImageUrl(muscleGroup) {
+  const m = MUSCLE_API[muscleGroup] || (muscleGroup ? muscleGroup.charAt(0).toUpperCase() + muscleGroup.slice(1) : 'Chest');
+  return `https://musclegroup-image-generator.vercel.app/getImage?muscleGroups=${encodeURIComponent(m)}&color=D4AF37&transparentBackground=1`;
 }
 
 // ─── Muscle-group icons (filter pills only) ───────────────────────────────────
@@ -65,7 +47,7 @@ function MuscleIcon({ muscle, size = 11, color }) {
   );
 }
 
-// ─── Movement SVG fallback (when no wger image found) ─────────────────────────
+// ─── SVG fallback icon (when image fails) ─────────────────────────────────────
 function ExerciseIcon({ name = '', muscle = '', size = 20, color = '#D4AF37' }) {
   const n = name.toLowerCase();
   const s = { width: size, height: size, viewBox: '0 0 24 24', fill: 'none', stroke: color, strokeWidth: 1.6, strokeLinecap: 'round', strokeLinejoin: 'round' };
@@ -81,9 +63,9 @@ function ExerciseIcon({ name = '', muscle = '', size = 20, color = '#D4AF37' }) 
   if (n.includes('hip thrust') || n.includes('glute bridge') || n.includes('bridge'))
     return <svg {...s}><line x1="2" y1="19" x2="8" y2="19"/><circle cx="10" cy="18" r="2"/><line x1="12" y1="17" x2="17" y2="12"/><line x1="17" y1="12" x2="20" y2="8"/><circle cx="21.5" cy="7" r="1.5" fill={color} stroke="none"/><line x1="8" y1="19" x2="12" y2="17"/><line x1="10" y1="16" x2="12" y2="22"/></svg>;
   if (n.includes('squat') || n.includes('hack'))
-    return <svg {...s}><line x1="3" y1="8" x2="21" y2="8"/><line x1="3" y1="6.5" x2="3" y2="9.5"/><line x1="6" y1="6" x2="6" y2="10"/><line x1="18" y1="6" x2="18" y2="10"/><line x1="21" y1="6.5" x2="21" y2="9.5"/><circle cx="12" cy="5" r="1.8"/><line x1="12" y1="6.8" x2="12" y2="8"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="13" x2="7" y2="18"/><line x1="12" y1="13" x2="17" y2="18"/><line x1="7" y1="18" x2="6" y2="22"/><line x1="17" y1="18" x2="18" y2="22"/></svg>;
+    return <svg {...s}><line x1="3" y1="8" x2="21" y2="8"/><line x1="3" y1="6.5" x2="3" y2="9.5"/><line x1="6" y1="6" x2="6" y2="10"/><line x1="18" y1="6" x2="18" y2="10"/><line x1="21" y1="6.5" x2="21" y2="9.5"/><circle cx="12" cy="5" r="1.8"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="13" x2="7" y2="18"/><line x1="12" y1="13" x2="17" y2="18"/><line x1="7" y1="18" x2="6" y2="22"/><line x1="17" y1="18" x2="18" y2="22"/></svg>;
   if (n.includes('lunge') || n.includes('split squat') || n.includes('bulgarian'))
-    return <svg {...s}><circle cx="12" cy="4" r="2"/><line x1="12" y1="6" x2="12" y2="11"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="12" y1="11" x2="7" y2="16"/><line x1="7" y1="16" x2="5" y2="22"/><line x1="12" y1="11" x2="17" y2="14"/><line x1="17" y1="14" x2="19" y2="22"/><line x1="3" y1="22" x2="9" y2="22"/></svg>;
+    return <svg {...s}><circle cx="12" cy="4" r="2"/><line x1="12" y1="6" x2="12" y2="11"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="12" y1="11" x2="7" y2="16"/><line x1="7" y1="16" x2="5" y2="22"/><line x1="12" y1="11" x2="17" y2="14"/><line x1="17" y1="14" x2="19" y2="22"/></svg>;
   if (n.includes('pull-up') || n.includes('pullup') || n.includes('chin-up') || n.includes('lat pull') || n.includes('pulldown'))
     return <svg {...s}><line x1="2" y1="3" x2="22" y2="3"/><circle cx="12" cy="9" r="2"/><line x1="8" y1="5" x2="12" y2="9"/><line x1="16" y1="5" x2="12" y2="9"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="12" y1="17" x2="9" y2="22"/><line x1="12" y1="17" x2="15" y2="22"/></svg>;
   if (n.includes('row') || n.includes('t-bar'))
@@ -100,10 +82,10 @@ function ExerciseIcon({ name = '', muscle = '', size = 20, color = '#D4AF37' }) 
     return <svg {...s}><circle cx="12" cy="4" r="2"/><line x1="12" y1="6" x2="12" y2="12"/><line x1="12" y1="12" x2="9" y2="17"/><line x1="12" y1="12" x2="15" y2="17"/><line x1="9" y1="17" x2="8.5" y2="22"/><line x1="15" y1="17" x2="15.5" y2="22"/><line x1="6" y1="22" x2="11" y2="22"/><line x1="14" y1="22" x2="18" y2="22"/></svg>;
   if (n.includes('plank') || n.includes('farmer') || n.includes('carry'))
     return <svg {...s}><circle cx="18" cy="11" r="2"/><line x1="16" y1="11" x2="6" y2="11"/><line x1="6" y1="11" x2="4" y2="14"/><line x1="6" y1="11" x2="4" y2="8"/><line x1="11" y1="11" x2="11" y2="16"/><line x1="14" y1="11" x2="14" y2="16"/><line x1="3" y1="16" x2="22" y2="16"/></svg>;
-  if (n.includes('leg press') || n.includes('leg curl') || n.includes('leg extension'))
-    return <svg {...s}><circle cx="5" cy="9" r="2"/><line x1="7" y1="9" x2="14" y2="9"/><line x1="14" y1="9" x2="19" y2="14"/><circle cx="21" cy="15" r="1.5" fill={color} stroke="none"/><line x1="5" y1="11" x2="5" y2="16"/><line x1="5" y1="16" x2="3" y2="21"/><line x1="5" y1="16" x2="8" y2="21"/></svg>;
   if (n.includes('dip'))
     return <svg {...s}><line x1="4" y1="6" x2="4" y2="20"/><line x1="20" y1="6" x2="20" y2="20"/><line x1="4" y1="9" x2="7" y2="9"/><line x1="17" y1="9" x2="20" y2="9"/><circle cx="12" cy="6" r="2"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="7" y1="9" x2="12" y2="11.5"/><line x1="17" y1="9" x2="12" y2="11.5"/><line x1="12" y1="13" x2="9" y2="19"/><line x1="12" y1="13" x2="15" y2="19"/></svg>;
+  if (n.includes('leg press') || n.includes('leg curl') || n.includes('leg extension'))
+    return <svg {...s}><circle cx="5" cy="9" r="2"/><line x1="7" y1="9" x2="14" y2="9"/><line x1="14" y1="9" x2="19" y2="14"/><circle cx="21" cy="15" r="1.5" fill={color} stroke="none"/><line x1="5" y1="11" x2="5" y2="16"/><line x1="5" y1="16" x2="3" y2="21"/><line x1="5" y1="16" x2="8" y2="21"/></svg>;
 
   const fallback = {
     chest:     <><path d="M4 10 Q8 5 12 10 Q8 15 4 10z"/><path d="M20 10 Q16 5 12 10 Q16 15 20 10z"/></>,
@@ -120,47 +102,47 @@ function ExerciseIcon({ name = '', muscle = '', size = 20, color = '#D4AF37' }) 
   return <svg {...s}>{fallback[muscle] || <circle cx="12" cy="12" r="8"/>}</svg>;
 }
 
-// ─── Pearl Glass circle ───────────────────────────────────────────────────────
-function PearlCircle({ size = 48, children }) {
+// ─── Pearl Glass circle — theme-aware border + glow ───────────────────────────
+function PearlCircle({ size = 48, isDarkMode, children }) {
   return (
     <div style={{
       width: size, height: size, borderRadius: '50%',
-      border: '0.5px solid #D4AF37',
+      border: `0.5px solid ${isDarkMode ? '#D4AF37' : '#9C7E46'}`,
       background: 'rgba(255,255,255,0.05)',
       backdropFilter: 'blur(15px)',
       WebkitBackdropFilter: 'blur(15px)',
       overflow: 'hidden', flexShrink: 0,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
+      boxShadow: isDarkMode ? '0 0 10px rgba(212,175,55,0.1)' : 'none',
     }}>
       {children}
     </div>
   );
 }
 
-// ─── Lazy anatomical image ────────────────────────────────────────────────────
-function AnatomicalImg({ src, alt, filter, size, fallback }) {
+// ─── Lazy image — IntersectionObserver + error fallback ───────────────────────
+function LazyAnatomical({ src, alt, fallback }) {
   const [shouldLoad, setShouldLoad] = useState(false);
   const [err, setErr] = useState(false);
   const ref = useRef(null);
 
   useEffect(() => {
-    if (!src) return;
     const el = ref.current;
     if (!el) return;
     const obs = new IntersectionObserver(
       ([e]) => { if (e.isIntersecting) { setShouldLoad(true); obs.disconnect(); } },
-      { rootMargin: '350px' }
+      { rootMargin: '400px' }
     );
     obs.observe(el);
     return () => obs.disconnect();
-  }, [src]);
+  }, []);
 
   return (
     <div ref={ref} style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      {shouldLoad && src && !err
+      {shouldLoad && !err
         ? <img src={src} alt={alt} loading="lazy" onError={() => setErr(true)}
-            style={{ width: '100%', height: '100%', objectFit: 'cover', filter }} />
-        : (err || !src) ? fallback : null}
+            style={{ width: '90%', height: '90%', objectFit: 'contain' }} />
+        : err ? fallback : null}
     </div>
   );
 }
@@ -178,11 +160,10 @@ function MuscleLabel({ label, value, color, borderColor, bg }) {
 // ─── Main ─────────────────────────────────────────────────────────────────────
 export default function ExercisePicker({ exercises, onSelect, onClose, mode = 'add', previousWorkoutSets = {} }) {
   const { isDarkMode } = useTheme();
-  const [search, setSearch]           = useState('');
+  const [search, setSearch]             = useState('');
   const [muscleFilter, setMuscleFilter] = useState('all');
-  const [equipFilter, setEquipFilter]  = useState('all');
-  const [selected, setSelected]        = useState(null);
-  const [wgerMap, setWgerMap]          = useState(_wgerMap || {});
+  const [equipFilter, setEquipFilter]   = useState('all');
+  const [selected, setSelected]         = useState(null);
   const sectionRefs = useRef({});
 
   const iconColor   = isDarkMode ? '#D4AF37' : '#9C7E46';
@@ -191,38 +172,8 @@ export default function ExercisePicker({ exercises, onSelect, onClose, mode = 'a
   const textPrimary = isDarkMode ? '#FFFFFF' : '#1D1D1F';
   const textMuted   = isDarkMode ? 'rgba(255,255,255,0.35)' : 'rgba(29,29,31,0.4)';
   const borderColor = isDarkMode ? 'rgba(212,175,55,0.15)' : 'rgba(225,193,110,0.38)';
-
-  // CSS tint: grayscale → gold (dark) or bronze (light)
-  const imgFilter = isDarkMode
-    ? 'grayscale(1) sepia(0.85) saturate(4) hue-rotate(5deg) brightness(0.88)'
-    : 'grayscale(1) sepia(0.65) saturate(2.5) hue-rotate(10deg) brightness(0.76)';
-
-  // Load wger images (anatomical illustrations)
-  useEffect(() => {
-    if (_wgerMap) { setWgerMap(_wgerMap); return; }
-    loadWger().then(map => setWgerMap(map));
-  }, []);
-
-  // Map each DB exercise name → wger anatomical image URL
-  const imageMap = useMemo(() => {
-    const map = {};
-    const wgerEntries = Object.entries(wgerMap);
-    exercises.forEach(dbEx => {
-      const key = NORM(dbEx.name);
-      let url = wgerMap[key];
-      if (!url) {
-        // Fuzzy: all significant words must appear in the wger key
-        const words = key.match(/[a-z]{4,}/g) || [];
-        if (words.length >= 1) {
-          for (const [k, u] of wgerEntries) {
-            if (words.every(w => k.includes(w))) { url = u; break; }
-          }
-        }
-      }
-      if (url) map[dbEx.name] = url;
-    });
-    return map;
-  }, [exercises, wgerMap]);
+  const chipBg      = isDarkMode ? 'rgba(212,175,55,0.07)' : 'rgba(156,126,70,0.08)';
+  const chipBorder  = isDarkMode ? 'rgba(212,175,55,0.22)' : 'rgba(156,126,70,0.28)';
 
   const filtered = useMemo(() => {
     const seen = new Set();
@@ -262,10 +213,6 @@ export default function ExercisePicker({ exercises, onSelect, onClose, mode = 'a
     onSelect(ex);
     setSelected(null);
   }, [onSelect]);
-
-  // Detail sheet muscle label styles
-  const chipBg     = isDarkMode ? 'rgba(212,175,55,0.07)' : 'rgba(156,126,70,0.08)';
-  const chipBorder = isDarkMode ? 'rgba(212,175,55,0.22)' : 'rgba(156,126,70,0.28)';
 
   return (
     <motion.div
@@ -344,7 +291,7 @@ export default function ExercisePicker({ exercises, onSelect, onClose, mode = 'a
 
       {/* ── Exercise list + A-Z jumper ── */}
       <div className="flex-1 flex overflow-hidden relative">
-        <div className="flex-1 overflow-y-auto px-5" style={{ paddingRight: '2.2rem', paddingBottom: '140px' }}>
+        <div className="flex-1 overflow-y-auto px-5" style={{ paddingRight: '2.2rem', paddingBottom: '120px' }}>
           {letters.map(letter => (
             <div key={letter} ref={el => { sectionRefs.current[letter] = el; }}>
               <p className="text-[10px] uppercase tracking-widest pt-3 pb-1.5 px-1"
@@ -353,18 +300,17 @@ export default function ExercisePicker({ exercises, onSelect, onClose, mode = 'a
               </p>
               <div className="space-y-1">
                 {letterGroups[letter].map(ex => {
-                  const imgUrl  = imageMap[ex.name];
-                  const ghosts  = (previousWorkoutSets[ex.name] || []).filter(s => !s.is_warmup && s.weight > 0);
-                  const topSet  = [...ghosts].sort((a, b) => (b.weight * b.reps) - (a.weight * a.reps))[0];
+                  const imgUrl = getMuscleImageUrl(ex.muscle_group);
+                  const ghosts = (previousWorkoutSets[ex.name] || []).filter(s => !s.is_warmup && s.weight > 0);
+                  const topSet = [...ghosts].sort((a, b) => (b.weight * b.reps) - (a.weight * a.reps))[0];
                   return (
                     <button key={ex.id} onClick={() => setSelected(ex)}
                       className="w-full px-3 py-2.5 rounded-xl text-left flex items-center gap-3 transition-all active:scale-[0.98]"
                       style={{ background: cardBg, border: `0.5px solid ${borderColor}` }}>
-                      <PearlCircle size={48}>
-                        <AnatomicalImg
+                      <PearlCircle size={48} isDarkMode={isDarkMode}>
+                        <LazyAnatomical
                           src={imgUrl}
-                          alt={ex.name}
-                          filter={imgFilter}
+                          alt={ex.muscle_group}
                           fallback={<ExerciseIcon name={ex.name} muscle={ex.muscle_group} size={20} color={iconColor} />}
                         />
                       </PearlCircle>
@@ -424,49 +370,43 @@ export default function ExercisePicker({ exercises, onSelect, onClose, mode = 'a
 
             {/* Exercise header */}
             <div className="flex items-start gap-4 mb-4">
-              {/* Large pearl circle with anatomical image */}
+              {/* Large pearl circle */}
               <div style={{
                 width: 68, height: 68, borderRadius: '50%',
-                border: '0.5px solid #D4AF37',
+                border: `0.5px solid ${isDarkMode ? '#D4AF37' : '#9C7E46'}`,
                 background: 'rgba(255,255,255,0.05)',
                 backdropFilter: 'blur(15px)',
                 WebkitBackdropFilter: 'blur(15px)',
-                boxShadow: '0 0 20px rgba(212,175,55,0.2)',
+                boxShadow: isDarkMode ? '0 0 10px rgba(212,175,55,0.1)' : 'none',
                 overflow: 'hidden', flexShrink: 0,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
-                {imageMap[selected.name] ? (
-                  <img src={imageMap[selected.name]} alt={selected.name} loading="lazy"
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', filter: imgFilter }} />
-                ) : (
-                  <ExerciseIcon name={selected.name} muscle={selected.muscle_group} size={30} color={iconColor} />
-                )}
+                <img
+                  src={getMuscleImageUrl(selected.muscle_group)}
+                  alt={selected.muscle_group}
+                  loading="lazy"
+                  style={{ width: '88%', height: '88%', objectFit: 'contain' }}
+                  onError={e => { e.target.style.display = 'none'; }}
+                />
               </div>
 
               <div className="flex-1 min-w-0">
                 <h3 style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400, color: textPrimary, fontSize: 15, marginBottom: 2 }}>
                   {selected.name}
                 </h3>
-                {/* Muscle text labels — PRIMARY / SECONDARY */}
+                {/* PRIMARY / SECONDARY Montserrat labels */}
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 6 }}>
                   {selected.muscle_group && (
-                    <MuscleLabel
-                      label="PRIMARY" value={selected.muscle_group}
-                      color={iconColor} borderColor={chipBorder} bg={chipBg}
-                    />
+                    <MuscleLabel label="PRIMARY" value={selected.muscle_group}
+                      color={iconColor} borderColor={chipBorder} bg={chipBg} />
                   )}
-                  {selected.secondary_muscles?.length > 0 && (
-                    <MuscleLabel
-                      label="SECONDARY" value={selected.secondary_muscles.slice(0, 2).join(', ')}
-                      color={textMuted} borderColor={chipBorder} bg={chipBg}
-                    />
-                  )}
-                  {!selected.secondary_muscles?.length && selected.equipment && (
-                    <MuscleLabel
-                      label="EQUIPMENT" value={selected.equipment}
-                      color={textMuted} borderColor={chipBorder} bg={chipBg}
-                    />
-                  )}
+                  {selected.secondary_muscles?.length > 0 ? (
+                    <MuscleLabel label="SECONDARY" value={selected.secondary_muscles.slice(0, 2).join(', ')}
+                      color={textMuted} borderColor={chipBorder} bg={chipBg} />
+                  ) : selected.equipment ? (
+                    <MuscleLabel label="EQUIPMENT" value={selected.equipment}
+                      color={textMuted} borderColor={chipBorder} bg={chipBg} />
+                  ) : null}
                 </div>
               </div>
               <button onClick={() => setSelected(null)}>
@@ -479,8 +419,7 @@ export default function ExercisePicker({ exercises, onSelect, onClose, mode = 'a
               const sets = (previousWorkoutSets[selected.name] || []).filter(s => !s.is_warmup && s.weight > 0);
               if (!sets.length) return null;
               return (
-                <div className="mb-5 p-4 rounded-2xl"
-                  style={{ background: chipBg, border: `0.5px solid ${chipBorder}` }}>
+                <div className="mb-5 p-4 rounded-2xl" style={{ background: chipBg, border: `0.5px solid ${chipBorder}` }}>
                   <p className="text-[10px] uppercase tracking-[0.25em] mb-3"
                     style={{ color: isDarkMode ? 'rgba(212,175,55,0.6)' : '#9C7E46', fontFamily: 'Montserrat' }}>
                     Previous Session
