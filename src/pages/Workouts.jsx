@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Plus, Calculator, Dumbbell, Trash2, X, History } from 'lucide-react';
+import { Plus, Calculator, Dumbbell, Trash2, X, History, GripVertical } from 'lucide-react';
 import VoidCard from '@/components/ui/VoidCard';
 import VoidBackground from '@/components/dashboard/VoidBackground';
 import GoldButton from '@/components/ui/GoldButton';
@@ -17,6 +17,7 @@ import RoutineCard from '@/components/workouts/RoutineCard';
 import WorkoutHero from '@/components/workouts/WorkoutHero';
 import WeeklyMuscleVolume from '@/components/workouts/WeeklyMuscleVolume';
 import { Input } from '@/components/ui/input';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
 const STORAGE_KEY = 'aureum_active_workout';
 
@@ -135,21 +136,81 @@ export default function Workouts() {
   useEffect(() => {
     if (exercises.length === 0) {
       const defaults = [
+        // CHEST
         { name: 'Bench Press', muscle_group: 'chest', equipment: 'barbell' },
-        { name: 'Squat', muscle_group: 'legs', equipment: 'barbell' },
-        { name: 'Deadlift', muscle_group: 'back', equipment: 'barbell' },
-        { name: 'Shoulder Press', muscle_group: 'shoulders', equipment: 'barbell' },
-        { name: 'Barbell Row', muscle_group: 'back', equipment: 'barbell' },
-        { name: 'Pull-ups', muscle_group: 'back', equipment: 'bodyweight' },
-        { name: 'Dumbbell Curl', muscle_group: 'biceps', equipment: 'dumbbell' },
-        { name: 'Tricep Pushdown', muscle_group: 'triceps', equipment: 'cable' },
-        { name: 'Leg Press', muscle_group: 'legs', equipment: 'machine' },
-        { name: 'Lat Pulldown', muscle_group: 'back', equipment: 'cable' },
+        { name: 'Incline Bench Press', muscle_group: 'chest', equipment: 'barbell' },
+        { name: 'Decline Bench Press', muscle_group: 'chest', equipment: 'barbell' },
+        { name: 'Dumbbell Chest Press', muscle_group: 'chest', equipment: 'dumbbell' },
         { name: 'Incline Dumbbell Press', muscle_group: 'chest', equipment: 'dumbbell' },
-        { name: 'Romanian Deadlift', muscle_group: 'legs', equipment: 'barbell' },
-        { name: 'Plank', muscle_group: 'core', equipment: 'bodyweight' },
         { name: 'Cable Fly', muscle_group: 'chest', equipment: 'cable' },
+        { name: 'Pec Deck Machine', muscle_group: 'chest', equipment: 'machine' },
+        { name: 'Push-ups', muscle_group: 'chest', equipment: 'bodyweight' },
+        { name: 'Chest Dip', muscle_group: 'chest', equipment: 'bodyweight' },
+        // BACK
+        { name: 'Barbell Row', muscle_group: 'back', equipment: 'barbell' },
+        { name: 'Deadlift', muscle_group: 'back', equipment: 'barbell' },
+        { name: 'Pull-ups', muscle_group: 'back', equipment: 'bodyweight' },
+        { name: 'Chin-ups', muscle_group: 'back', equipment: 'bodyweight' },
+        { name: 'Lat Pulldown', muscle_group: 'back', equipment: 'cable' },
+        { name: 'Seated Cable Row', muscle_group: 'back', equipment: 'cable' },
+        { name: 'Single Arm Dumbbell Row', muscle_group: 'back', equipment: 'dumbbell' },
+        { name: 'T-Bar Row', muscle_group: 'back', equipment: 'barbell' },
+        { name: 'Machine Row', muscle_group: 'back', equipment: 'machine' },
+        // SHOULDERS
+        { name: 'Barbell Overhead Press', muscle_group: 'shoulders', equipment: 'barbell' },
+        { name: 'Dumbbell Shoulder Press', muscle_group: 'shoulders', equipment: 'dumbbell' },
+        { name: 'Lateral Raise', muscle_group: 'shoulders', equipment: 'dumbbell' },
+        { name: 'Front Raise', muscle_group: 'shoulders', equipment: 'dumbbell' },
+        { name: 'Cable Lateral Raise', muscle_group: 'shoulders', equipment: 'cable' },
+        { name: 'Arnold Press', muscle_group: 'shoulders', equipment: 'dumbbell' },
+        { name: 'Upright Row', muscle_group: 'shoulders', equipment: 'barbell' },
+        { name: 'Machine Shoulder Press', muscle_group: 'shoulders', equipment: 'machine' },
+        // BICEPS
+        { name: 'Barbell Curl', muscle_group: 'biceps', equipment: 'barbell' },
+        { name: 'Dumbbell Curl', muscle_group: 'biceps', equipment: 'dumbbell' },
+        { name: 'Hammer Curl', muscle_group: 'biceps', equipment: 'dumbbell' },
+        { name: 'Cable Curl', muscle_group: 'biceps', equipment: 'cable' },
+        { name: 'Preacher Curl', muscle_group: 'biceps', equipment: 'machine' },
+        { name: 'Concentration Curl', muscle_group: 'biceps', equipment: 'dumbbell' },
+        { name: 'Incline Dumbbell Curl', muscle_group: 'biceps', equipment: 'dumbbell' },
+        // TRICEPS
+        { name: 'Tricep Pushdown', muscle_group: 'triceps', equipment: 'cable' },
+        { name: 'Skull Crusher', muscle_group: 'triceps', equipment: 'barbell' },
+        { name: 'Overhead Tricep Extension', muscle_group: 'triceps', equipment: 'cable' },
+        { name: 'Close Grip Bench Press', muscle_group: 'triceps', equipment: 'barbell' },
+        { name: 'Tricep Dip', muscle_group: 'triceps', equipment: 'bodyweight' },
+        { name: 'Dumbbell Kickback', muscle_group: 'triceps', equipment: 'dumbbell' },
+        // LEGS
+        { name: 'Squat', muscle_group: 'legs', equipment: 'barbell' },
+        { name: 'Romanian Deadlift', muscle_group: 'legs', equipment: 'barbell' },
+        { name: 'Leg Press', muscle_group: 'legs', equipment: 'machine' },
+        { name: 'Leg Curl', muscle_group: 'legs', equipment: 'machine' },
+        { name: 'Leg Extension', muscle_group: 'legs', equipment: 'machine' },
+        { name: 'Front Squat', muscle_group: 'legs', equipment: 'barbell' },
+        { name: 'Bulgarian Split Squat', muscle_group: 'legs', equipment: 'dumbbell' },
+        { name: 'Hack Squat', muscle_group: 'legs', equipment: 'machine' },
+        { name: 'Walking Lunge', muscle_group: 'legs', equipment: 'dumbbell' },
+        { name: 'Goblet Squat', muscle_group: 'legs', equipment: 'kettlebell' },
+        // CORE
+        { name: 'Plank', muscle_group: 'core', equipment: 'bodyweight' },
+        { name: 'Cable Crunch', muscle_group: 'core', equipment: 'cable' },
+        { name: 'Hanging Leg Raise', muscle_group: 'core', equipment: 'bodyweight' },
+        { name: 'Russian Twist', muscle_group: 'core', equipment: 'bodyweight' },
+        { name: 'Ab Rollout', muscle_group: 'core', equipment: 'bodyweight' },
+        { name: 'Decline Crunch', muscle_group: 'core', equipment: 'bodyweight' },
+        // GLUTES
         { name: 'Hip Thrust', muscle_group: 'glutes', equipment: 'barbell' },
+        { name: 'Cable Kickback', muscle_group: 'glutes', equipment: 'cable' },
+        { name: 'Sumo Deadlift', muscle_group: 'glutes', equipment: 'barbell' },
+        { name: 'Glute Bridge', muscle_group: 'glutes', equipment: 'bodyweight' },
+        // CALVES
+        { name: 'Standing Calf Raise', muscle_group: 'calves', equipment: 'machine' },
+        { name: 'Seated Calf Raise', muscle_group: 'calves', equipment: 'machine' },
+        { name: 'Single Leg Calf Raise', muscle_group: 'calves', equipment: 'bodyweight' },
+        // FOREARMS
+        { name: 'Wrist Curl', muscle_group: 'forearms', equipment: 'barbell' },
+        { name: 'Reverse Curl', muscle_group: 'forearms', equipment: 'barbell' },
+        { name: 'Farmer Carry', muscle_group: 'forearms', equipment: 'dumbbell' },
       ];
       base44.entities.Exercise.bulkCreate(defaults).then(() =>
         queryClient.invalidateQueries(['exercises'])
@@ -284,6 +345,14 @@ export default function Workouts() {
     if (!window.confirm('Delete this routine?')) return;
     await base44.entities.Routine.delete(id);
     queryClient.invalidateQueries(['routines']);
+  };
+
+  const onDragEnd = (result) => {
+    if (!result.destination) return;
+    const items = Array.from(newRoutine.exercises);
+    const [removed] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, removed);
+    setNewRoutine(p => ({ ...p, exercises: items }));
   };
 
   return (
@@ -446,7 +515,7 @@ export default function Workouts() {
           )}
 
           {view === 'create' && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4 mb-24">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4 pb-[140px]">
               <div className="flex items-center gap-4">
                 <button onClick={() => setView('routines')} className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
                   <X className="w-5 h-5 text-white" />
@@ -461,48 +530,66 @@ export default function Workouts() {
                 className="py-5 bg-white/5 border-[#D4AF37]/20 text-white"
               />
 
-              {newRoutine.exercises.map((ex, i) => (
-                <VoidCard key={i}>
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1 min-w-0 mr-3">
-                      <p className="text-white text-sm truncate" style={{ fontFamily: 'Montserrat, sans-serif' }}>{ex.exercise_name}</p>
-                      <div className="flex items-center gap-3 mt-2">
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="number"
-                            value={ex.sets}
-                            onChange={e => {
-                              const updated = [...newRoutine.exercises];
-                              updated[i].sets = parseInt(e.target.value) || 1;
-                              setNewRoutine(p => ({ ...p, exercises: updated }));
-                            }}
-                            className="w-14 text-center text-white rounded-lg py-2 bg-white/5 border border-white/10 outline-none"
-                          />
-                          <span className="text-white/30 text-xs">sets</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <input
-                            value={ex.reps}
-                            onChange={e => {
-                              const updated = [...newRoutine.exercises];
-                              updated[i].reps = e.target.value;
-                              setNewRoutine(p => ({ ...p, exercises: updated }));
-                            }}
-                            className="w-16 text-center text-white rounded-lg py-2 bg-white/5 border border-white/10 outline-none"
-                          />
-                          <span className="text-white/30 text-xs">reps</span>
-                        </div>
-                      </div>
+              <DragDropContext onDragEnd={onDragEnd}>
+                <Droppable droppableId="new-routine">
+                  {(provided) => (
+                    <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-2">
+                      {newRoutine.exercises.map((ex, i) => (
+                        <Draggable key={`${ex.exercise_id || ex.exercise_name}-${i}`} draggableId={`ex-${i}`} index={i}>
+                          {(provided) => (
+                            <div ref={provided.innerRef} {...provided.draggableProps}>
+                              <VoidCard>
+                                <div className="flex items-center justify-between">
+                                  <div {...provided.dragHandleProps} className="mr-3 flex-shrink-0 cursor-grab active:cursor-grabbing">
+                                    <GripVertical className="w-4 h-4 text-white/20" />
+                                  </div>
+                                  <div className="flex-1 min-w-0 mr-3">
+                                    <p className="text-white text-sm truncate" style={{ fontFamily: 'Montserrat, sans-serif' }}>{ex.exercise_name}</p>
+                                    <div className="flex items-center gap-3 mt-2">
+                                      <div className="flex items-center gap-2">
+                                        <input
+                                          type="number"
+                                          value={ex.sets}
+                                          onChange={e => {
+                                            const updated = [...newRoutine.exercises];
+                                            updated[i].sets = parseInt(e.target.value) || 1;
+                                            setNewRoutine(p => ({ ...p, exercises: updated }));
+                                          }}
+                                          className="w-14 text-center text-white rounded-lg py-2 bg-white/5 border border-white/10 outline-none"
+                                        />
+                                        <span className="text-white/30 text-xs">sets</span>
+                                      </div>
+                                      <div className="flex items-center gap-2">
+                                        <input
+                                          value={ex.reps}
+                                          onChange={e => {
+                                            const updated = [...newRoutine.exercises];
+                                            updated[i].reps = e.target.value;
+                                            setNewRoutine(p => ({ ...p, exercises: updated }));
+                                          }}
+                                          className="w-16 text-center text-white rounded-lg py-2 bg-white/5 border border-white/10 outline-none"
+                                        />
+                                        <span className="text-white/30 text-xs">reps</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <button
+                                    onClick={() => setNewRoutine(p => ({ ...p, exercises: p.exercises.filter((_, idx) => idx !== i) }))}
+                                    className="w-8 h-8 rounded-full bg-red-500/10 flex items-center justify-center flex-shrink-0"
+                                  >
+                                    <Trash2 className="w-4 h-4 text-red-400" />
+                                  </button>
+                                </div>
+                              </VoidCard>
+                            </div>
+                          )}
+                        </Draggable>
+                      ))}
+                      {provided.placeholder}
                     </div>
-                    <button
-                      onClick={() => setNewRoutine(p => ({ ...p, exercises: p.exercises.filter((_, idx) => idx !== i) }))}
-                      className="w-8 h-8 rounded-full bg-red-500/10 flex items-center justify-center"
-                    >
-                      <Trash2 className="w-4 h-4 text-red-400" />
-                    </button>
-                  </div>
-                </VoidCard>
-              ))}
+                  )}
+                </Droppable>
+              </DragDropContext>
 
               <button
                 onClick={() => setShowExercisePicker(true)}
@@ -528,6 +615,7 @@ export default function Workouts() {
                     mode="add"
                     onSelect={addExerciseToRoutine}
                     onClose={() => setShowExercisePicker(false)}
+                    previousWorkoutSets={previousWorkoutSets}
                   />
                 )}
               </AnimatePresence>
