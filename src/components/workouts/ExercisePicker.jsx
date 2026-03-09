@@ -42,8 +42,11 @@ export default function ExercisePicker({ exercises, onSelect, onClose, mode = 'a
   const borderColor = isDarkMode ? 'rgba(212,175,55,0.15)' : 'rgba(225,193,110,0.38)';
 
   const filtered = useMemo(() => {
+    const seen = new Set();
     return exercises
       .filter(ex => {
+        if (seen.has(ex.name)) return false;
+        seen.add(ex.name);
         const s = !search || ex.name.toLowerCase().includes(search.toLowerCase()) ||
           (ex.muscle_group || '').toLowerCase().includes(search.toLowerCase()) ||
           (ex.equipment || '').toLowerCase().includes(search.toLowerCase());
