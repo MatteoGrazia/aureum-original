@@ -48,7 +48,7 @@ Deno.serve(async (req) => {
 
     // Step 2: Handle OAuth callback and exchange code for token
     if (action === 'callback' && code) {
-      const redirectUri = `${url.origin}/api/googleFitSync?action=callback`;
+      const redirectUri = Deno.env.get('GOOGLE_FIT_REDIRECT_URI') || `${url.origin}/api/googleFitSync?action=callback`;
       
       const tokenResponse = await fetch(GOOGLE_FIT_TOKEN_URL, {
         method: 'POST',
