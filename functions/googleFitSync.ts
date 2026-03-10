@@ -19,8 +19,19 @@ Deno.serve(async (req) => {
     }
 
     const url = new URL(req.url);
-    const action = url.searchParams.get('action');
-    const code = url.searchParams.get('code');
+    let action = url.searchParams.get('action');
+    let code = url.searchParams.get('code');
+    
+    // If action/code not in query params, try to parse from body
+    if (!action && req.method === 'POST') {
+      try {
+        const body = await req.json();
+        action = body.action;
+        code = body.code;
+      } catch (e) {
+        // Body is not JSON, continue with query params
+      }
+    }
 
     // Step 1: Initiate OAuth flow
     if (action === 'init') {
