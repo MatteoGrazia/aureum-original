@@ -481,6 +481,17 @@ export default function Dashboard() {
           </motion.div>
         )}
 
+        {/* Supplement Streak */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="mb-6">
+          <VoidCard>
+            <SupplementStreak />
+          </VoidCard>
+        </motion.div>
+
         {/* Energy Balance */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
