@@ -148,7 +148,7 @@ export default function BarcodeScanner({ isOpen, onClose, onScan }) {
       </div>
 
       {/* Instructions */}
-      <div className="p-6 pb-32">
+      <div className="p-6 pb-6">
         <GlassCard className="p-4">
           <div className="flex items-center gap-3">
             <Camera className="w-5 h-5 text-[#D4AF37]" />
