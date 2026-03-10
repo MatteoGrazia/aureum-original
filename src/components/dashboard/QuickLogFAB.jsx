@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Mic } from 'lucide-react';
+import { Plus, Mic, ScanLine, Utensils, Dumbbell, Scale } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
