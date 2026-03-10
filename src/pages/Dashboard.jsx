@@ -506,7 +506,7 @@ export default function Dashboard() {
             >
               Energy Balance
             </h3>
-            <div className="flex items-center justify-between text-center">
+            <div className="flex items-baseline justify-between text-center">
               <div>
                 <p 
                   className="text-xl text-white"
