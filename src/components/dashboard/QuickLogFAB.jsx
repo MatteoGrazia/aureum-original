@@ -9,6 +9,8 @@ const GOLD   = '#D4AF37';
 const BRONZE = '#9C7E46';
 const BLUE   = '#8ECAE6';
 const AMBER  = '#F4A261';
+const SUPPLEMENT_LOG_KEY = 'aureum_supplement_log';
+const getSupplementLog = () => { try { return JSON.parse(localStorage.getItem(SUPPLEMENT_LOG_KEY) || '{}'); } catch { return {}; } };
 
 const R          = 150;
 const SVG_OFFSET = 200;
