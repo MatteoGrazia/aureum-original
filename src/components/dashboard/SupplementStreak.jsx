@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { Flame, Check } from 'lucide-react';
 import { useTheme } from '@/components/shared/ThemeContext';
 import { format, subDays, startOfWeek, addDays, startOfMonth, endOfMonth, subMonths, eachDayOfInterval } from 'date-fns';
 
