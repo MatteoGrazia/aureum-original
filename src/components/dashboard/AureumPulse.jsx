@@ -64,7 +64,7 @@ export default function AureumPulse({ label, value, goal, unit, index = 0, icon,
             </div>
           )}
           <p
-            className="text-[10px] uppercase tracking-[0.3em] text-[#D4AF37]"
+            className="text-[10px] uppercase tracking-[0.3em] text-white"
             style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
           >
             {label}
