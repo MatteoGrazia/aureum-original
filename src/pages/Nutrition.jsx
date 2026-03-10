@@ -338,7 +338,7 @@ export default function Nutrition() {
                 maxHeight: '90vh',
                 overflowY: 'auto',
                 overflowX: 'hidden',
-                paddingBottom: 'calc(1.5rem + env(safe-area-inset-bottom, 0px))',
+                paddingBottom: 'calc(100px + env(safe-area-inset-bottom, 0px))',
               }}
               onClick={(e) => e.stopPropagation()}
             >
