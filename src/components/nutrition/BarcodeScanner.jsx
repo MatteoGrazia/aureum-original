@@ -56,7 +56,7 @@ export default function BarcodeScanner({ isOpen, onClose, onScan }) {
                 // Pass full food object including availableUnits directly
                 onScan({ ...response.data.food, barcode: decodedText, source: 'fatsecret' });
               } else {
-                setError('Product not found. Try searching by name instead.');
+                setError('Product not found in database. Try scanning again or search by name.');
                 setLookingUp(false);
                 isProcessingRef.current = false;
                 // Restart scanner for retry
