@@ -55,29 +55,7 @@ export default function Activity() {
   });
 
   const stepGoal = profile?.daily_step_goal || 10000;
-  // Prefer live tracker steps; fall back to persisted DB value
-  const currentSteps = trackerSteps > 0 ? trackerSteps : (dailyActivity?.steps || 0);
-
-  // Auto-start tracking if user previously granted permission
-  useEffect(() => {
-    if (permissionGranted) {
-      startTracking();
-    }
-  }, [permissionGranted]);
-
-
-
-  const handleEnableTracking = async () => {
-    const granted = await requestMotionPermission();
-    if (granted) {
-      localStorage.setItem('step_tracking_enabled', 'true');
-      setPermissionGranted(true);
-      setShowPermissionModal(false);
-      startTracking();
-    } else {
-      alert('Motion permission denied. Please enable it in your device settings.');
-    }
-  };
+  const currentSteps = dailyActivity?.steps || 0;
 
   // Calculate weekly stats
   const weeklySteps = weeklyActivity.reduce((sum, day) => sum + (day.steps || 0), 0);
