@@ -62,11 +62,30 @@ export default function Nutrition() {
   const totalCarbs = foodLogs.reduce((sum, log) => sum + (log.carbs || 0), 0);
   const totalFat = foodLogs.reduce((sum, log) => sum + (log.fat || 0), 0);
 
+  // Ensure every food always has a 1g option
+  const ensureOneGram = (units, base) => {
+    const oneGram = {
+      servingDescription: '1g',
+      unit: 'g',
+      amount: 1,
+      metricUnit: 'g',
+      calories: (base.calories || 0) / 100,
+      protein: (base.protein || 0) / 100,
+      carbs: (base.carbs || 0) / 100,
+      fat: (base.fat || 0) / 100,
+      fiber: (base.fiber || 0) / 100,
+      isDefault: false
+    };
+    const already = units.some(u => u.servingDescription === '1g' || (u.unit === 'g' && u.amount === 1));
+    return already ? units : [...units, oneGram];
+  };
+
   const handleSelectFood = async (food) => {
     // If food already has availableUnits (e.g. from USDA search), use directly
     if (food.availableUnits && food.availableUnits.length > 0) {
       const defaultUnit = food.availableUnits.find(u => u.isDefault) || food.availableUnits[0];
-      setSelectedFood(food);
+      const units = ensureOneGram(food.availableUnits, defaultUnit);
+      setSelectedFood({ ...food, availableUnits: units });
       setSelectedUnit(defaultUnit);
       setAmount(1);
       return;
@@ -84,7 +103,8 @@ export default function Nutrition() {
         const detailedFood = response.data.food;
         if (detailedFood?.availableUnits?.length > 0) {
           const defaultUnit = detailedFood.availableUnits.find(u => u.isDefault) || detailedFood.availableUnits[0];
-          setSelectedFood(detailedFood);
+          const units = ensureOneGram(detailedFood.availableUnits, defaultUnit);
+          setSelectedFood({ ...detailedFood, availableUnits: units });
           setSelectedUnit(defaultUnit);
           setAmount(1);
           setLoadingDetails(false);
@@ -108,7 +128,8 @@ export default function Nutrition() {
       fiber: food.fiber || 0,
       isDefault: true
     };
-    setSelectedFood({ ...food, availableUnits: [fallbackUnit] });
+    const units = ensureOneGram([fallbackUnit], food);
+    setSelectedFood({ ...food, availableUnits: units });
     setSelectedUnit(fallbackUnit);
     setAmount(1);
     setLoadingDetails(false);
@@ -406,7 +427,11 @@ export default function Nutrition() {
                         type="number"
                         step="0.1"
                         value={amount}
-                        onChange={(e) => setAmount(Math.max(0.1, parseFloat(e.target.value) || 1))}
+                        onChange={(e) => setAmount(e.target.value)}
+                        onBlur={(e) => {
+                          const v = parseFloat(e.target.value);
+                          setAmount(v > 0 ? v : 1);
+                        }}
                         className="w-full px-4 py-3 rounded-xl bg-white/5 border border-[#D4AF37]/20 text-white text-center"
                         style={{ fontFamily: 'Montserrat, sans-serif', minHeight: '48px' }}
                       />
