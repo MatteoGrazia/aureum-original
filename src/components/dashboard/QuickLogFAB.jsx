@@ -401,15 +401,19 @@ export default function QuickLogFAB({ onUpdate }) {
                  transition: 'border-color 0.3s, box-shadow 0.3s, background 0.3s',
                 }}
               >
-                <Icon style={{ width: 26, height: 26, color: btnColor, transition: 'color 0.3s' }} strokeWidth={1.5} />
-                <span style={{
-                  fontSize: 8, color: btnColor, marginTop: 3,
-                  letterSpacing: '0.08em', textTransform: 'uppercase',
-                  fontFamily: 'Montserrat, sans-serif', fontWeight: 500, opacity: 0.85,
-                  transition: 'color 0.3s',
-                }}>
-                  {isStreak && streakDone ? 'Done!' : btn.label}
-                </span>
+                <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Icon style={{ width: 26, height: 26, color: btnColor, transition: 'color 0.3s' }} strokeWidth={1.5} />
+                  {isStreak && streakDone && (
+                    <Check
+                      style={{
+                        position: 'absolute', top: -8, right: -10,
+                        width: 14, height: 14, color: btnColor,
+                        background: 'transparent',
+                      }}
+                      strokeWidth={3}
+                    />
+                  )}
+                </div>
               </motion.button>
             );
           })}
