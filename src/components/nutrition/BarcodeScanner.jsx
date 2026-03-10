@@ -98,7 +98,7 @@ export default function BarcodeScanner({ isOpen, onClose, onScan }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/95 z-50 flex flex-col"
+      className="fixed inset-0 bg-black/95 z-[100] flex flex-col"
     >
       {/* Header */}
       <div className="flex items-center justify-between p-4">
