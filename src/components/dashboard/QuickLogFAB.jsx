@@ -345,22 +345,6 @@ export default function QuickLogFAB({ onUpdate }) {
       {/* ── FAB + Orbital system ─────────────────────────── */}
       <div style={{ position: 'fixed', bottom: 100, right: 20, width: 56, height: 56, zIndex: 1000 }}>
 
-        {/* Orbit arc */}
-        <AnimatePresence>
-          {isOpen && (
-            <motion.svg
-              key="arc"
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              width={SVG_SIZE} height={SVG_SIZE}
-              viewBox={`0 0 ${SVG_SIZE} ${SVG_SIZE}`}
-              style={{ position: 'absolute', left: -SVG_OFFSET, top: -SVG_OFFSET, pointerEvents: 'none', overflow: 'visible' }}
-            >
-              <path d={ARC_PATH} stroke={BRONZE} strokeWidth="0.75" fill="none" strokeDasharray="2.5 5" opacity="0.5" />
-            </motion.svg>
-          )}
-        </AnimatePresence>
-
         {/* Orbital sub-buttons */}
         <AnimatePresence>
           {isOpen && BUTTONS.map((btn, i) => {
