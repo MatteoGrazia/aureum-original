@@ -273,9 +273,14 @@ export default function QuickLogFAB({ onUpdate }) {
                 Energy Level
               </p>
 
-              <p style={{ fontSize: 44, textAlign: 'center', marginBottom: 16, lineHeight: 1 }}>
-                {EMOJIS[energyLevel - 1]}
-              </p>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16, gap: 8 }}>
+                {(() => { const e = ENERGY_ICONS[energyLevel - 1]; return (
+                  <>
+                    <e.Icon style={{ width: 32, height: 32, color: e.color, filter: `drop-shadow(0 0 8px ${e.color}80)` }} strokeWidth={1.5} />
+                    <span style={{ color: e.color, fontFamily: 'Montserrat', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.15em' }}>{e.label}</span>
+                  </>
+                ); })()}
+              </div>
 
               <style>{`
                 .energy-slider {
