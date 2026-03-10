@@ -337,6 +337,7 @@ export default function Nutrition() {
               style={{ 
                 maxHeight: '90vh',
                 overflowY: 'auto',
+                overflowX: 'hidden',
                 paddingBottom: 'calc(1.5rem + env(safe-area-inset-bottom, 0px))',
               }}
               onClick={(e) => e.stopPropagation()}
@@ -371,21 +372,21 @@ export default function Nutrition() {
                 )}
 
                 {/* Meal Selection */}
-                <div className="flex gap-2 mb-4">
+                <div className="grid grid-cols-4 gap-1.5 mb-4">
                   {['breakfast', 'lunch', 'dinner', 'snack'].map((meal) => {
                     const Icon = mealIcons[meal];
                     return (
                       <button
                         key={meal}
                         onClick={() => setSelectedMeal(meal)}
-                        className="flex-1 py-2 px-3 rounded-xl flex items-center justify-center gap-2 transition-all"
+                        className="py-2 px-1 rounded-xl flex flex-col items-center justify-center gap-1 transition-all"
                         style={{
                           background: selectedMeal === meal ? 'rgba(255,191,0,0.20)' : 'rgba(255,255,255,0.05)',
                           border: selectedMeal === meal ? '1px solid rgba(255,191,0,0.45)' : '1px solid transparent'
                         }}
                       >
                         <Icon className={`w-4 h-4 ${selectedMeal === meal ? 'text-[#D4AF37]' : 'text-white/40'}`} />
-                        <span className={`text-xs capitalize ${selectedMeal === meal ? 'text-[#D4AF37]' : 'text-white/40'}`}>
+                        <span className={`text-[10px] capitalize truncate w-full text-center ${selectedMeal === meal ? 'text-[#D4AF37]' : 'text-white/40'}`}>
                           {meal}
                         </span>
                       </button>
