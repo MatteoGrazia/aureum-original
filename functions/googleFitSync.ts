@@ -43,7 +43,10 @@ Deno.serve(async (req) => {
       authUrl.searchParams.set('scope', SCOPES.join(' '));
       authUrl.searchParams.set('access_type', 'offline');
 
-      return Response.json({ authUrl: authUrl.toString() });
+      return Response.json({ 
+        authUrl: authUrl.toString(),
+        redirectUri: redirectUri
+      });
     }
 
     // Step 2: Handle OAuth callback and exchange code for token
