@@ -9,10 +9,10 @@ import { createPageUrl } from '@/utils';
 
 const GOLD = '#D4AF37';
 const BRONZE = '#9C7E46';
-const R = 100;              // orbit radius px
+const R = 150;              // orbit radius px
 const LONG_PRESS_MS = 500;
 const SWIPE_THRESHOLD = 35;
-const SVG_OFFSET = 140;     // how far the SVG canvas extends beyond FAB container
+const SVG_OFFSET = 200;     // how far the SVG canvas extends beyond FAB container
 const FAB_HALF = 28;        // half of 56px FAB
 const FAB_C = SVG_OFFSET + FAB_HALF; // FAB center in SVG space
 
