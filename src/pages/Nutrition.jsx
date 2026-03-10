@@ -35,7 +35,8 @@ export default function Nutrition() {
 
   const { data: foodLogs = [], refetch } = useQuery({
     queryKey: ['foodLogs', dateStr],
-    queryFn: () => base44.entities.FoodLog.filter({ date: dateStr })
+    queryFn: () => base44.entities.FoodLog.filter({ date: dateStr }),
+    staleTime: 30_000,
   });
 
   const { data: dailyActivity, refetch: refetchActivity } = useQuery({
@@ -43,7 +44,8 @@ export default function Nutrition() {
     queryFn: async () => {
       const activities = await base44.entities.DailyActivity.filter({ date: dateStr });
       return activities[0] || null;
-    }
+    },
+    staleTime: 30_000,
   });
 
   const { data: profile } = useQuery({
@@ -51,7 +53,8 @@ export default function Nutrition() {
     queryFn: async () => {
       const profiles = await base44.entities.UserProfile.filter({});
       return profiles[0] || null;
-    }
+    },
+    staleTime: 5 * 60_000,
   });
 
   const totalCalories = foodLogs.reduce((sum, log) => sum + (log.calories || 0), 0);

@@ -47,7 +47,7 @@ function LayoutInner({ children, currentPageName }) {
         }
 
         .glass-card {
-          backdrop-filter: blur(25px) saturate(160%);
+          backdrop-filter: blur(12px) saturate(140%);
           background: rgba(255, 255, 255, 0.05);
           border: 0.5px solid rgba(212, 175, 55, 0.2);
           transition: background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
