@@ -270,28 +270,27 @@ export default function QuickLogFAB({ onUpdate }) {
                 onClick={() => handleAction(btn.action)}
                 style={{
                   position: 'absolute',
-                  left: 7, top: 7,          // center at (28,28) = FAB center
-                  width: 42, height: 42,
+                  left: 0, top: 0,
+                  width: 56, height: 56,
                   borderRadius: '50%',
-                  background: 'rgba(255,191,0,0.07)',
-                  backdropFilter: 'blur(25px)',
-                  WebkitBackdropFilter: 'blur(25px)',
-                  border: '0.5px solid rgba(212,175,55,0.52)',
+                  background: 'transparent',
+                  border: `1.5px solid ${btn.color}`,
                   display: 'flex', flexDirection: 'column',
                   alignItems: 'center', justifyContent: 'center',
-                  boxShadow: '0 4px 22px rgba(0,0,0,0.45), inset 0 0 12px rgba(212,175,55,0.04)',
+                  boxShadow: `0 0 14px ${btn.color}40`,
                   touchAction: 'none', cursor: 'pointer',
                 }}
               >
-                <Icon />
+                <Icon style={{ width: 22, height: 22, color: btn.color }} strokeWidth={1.5} />
                 <span style={{
-                  fontSize: 6.5,
-                  color: 'rgba(212,175,55,0.72)',
-                  marginTop: 2,
-                  letterSpacing: '0.1em',
+                  fontSize: 7,
+                  color: btn.color,
+                  marginTop: 3,
+                  letterSpacing: '0.08em',
                   textTransform: 'uppercase',
                   fontFamily: 'Montserrat, sans-serif',
                   fontWeight: 500,
+                  opacity: 0.85,
                 }}>
                   {btn.label}
                 </span>
