@@ -429,25 +429,16 @@ export default function QuickLogFAB({ onUpdate }) {
               viewBox={`0 0 ${SVG_SIZE} ${SVG_SIZE}`}
               style={{ position: 'absolute', left: -SVG_OFFSET, top: -SVG_OFFSET, pointerEvents: 'none', overflow: 'visible', zIndex: 9999 }}
             >
-              <defs>
-                <filter id="arc-glow" x="-50%" y="-50%" width="200%" height="200%">
-                  <feGaussianBlur stdDeviation="3" result="blur" />
-                  <feMerge>
-                    <feMergeNode in="blur" />
-                    <feMergeNode in="SourceGraphic" />
-                  </feMerge>
-                </filter>
-              </defs>
-              {/* Primary arc */}
+                {/* Primary arc */}
               <motion.path
                 d={ARC_PATH}
                 stroke={isDarkMode ? GOLD : '#B8860B'}
                 strokeWidth="1.5"
                 fill="none"
-                filter="url(#arc-glow)"
+                style={{ willChange: 'opacity', filter: `drop-shadow(0 0 3px ${isDarkMode ? GOLD : '#B8860B'})` }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 0.9 }}
-                transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+                transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
               />
               {/* Echo arcs — wave outward */}
               {ECHO_ARCS.map((arc, i) => (
@@ -457,10 +448,10 @@ export default function QuickLogFAB({ onUpdate }) {
                   stroke={isDarkMode ? GOLD : '#B8860B'}
                   strokeWidth={arc.strokeWidth}
                   fill="none"
-                  filter="url(#arc-glow)"
+                  style={{ willChange: 'opacity' }}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: arc.opacity }}
-                  transition={{ duration: 0.55, delay: 0.08 + i * 0.09, ease: [0.25, 0.1, 0.25, 1] }}
+                  transition={{ duration: 0.45, delay: 0.06 + i * 0.07, ease: [0.22, 1, 0.36, 1] }}
                 />
               ))}
             </motion.svg>
