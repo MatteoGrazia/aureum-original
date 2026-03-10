@@ -123,31 +123,15 @@ export default function Activity() {
         <StepCounter steps={currentSteps} goal={stepGoal} />
       </motion.div>
 
-      {/* Permission Request Banner */}
-      {!permissionGranted && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-6"
-        >
-          <VoidCard className="text-center">
-            <div className="mb-4">
-              <div className="w-12 h-12 rounded-full bg-[#D4AF37]/10 flex items-center justify-center mx-auto mb-3">
-                <Target className="w-6 h-6 text-[#D4AF37]" />
-              </div>
-              <h3 className="text-white mb-2" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>
-                Enable Step Tracking
-              </h3>
-              <p className="text-white/60 text-sm mb-4">
-                Allow Aureum to track your steps continuously, even when the app is closed, to give you accurate activity insights.
-              </p>
-            </div>
-            <GoldButton onClick={() => setShowPermissionModal(true)} className="w-full">
-              Enable Always-On Tracking
-            </GoldButton>
-          </VoidCard>
-        </motion.div>
-      )}
+      {/* Google Fit Connect */}
+      <GoogleFitConnect 
+        isConnected={isGoogleFitConnected}
+        onSyncComplete={() => {
+          localStorage.setItem('google_fit_connected', 'true');
+          setIsGoogleFitConnected(true);
+          refetch();
+        }}
+      />
 
 
 
