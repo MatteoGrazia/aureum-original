@@ -68,7 +68,7 @@ export default function BarcodeScanner({ isOpen, onClose, onScan }) {
               }
             } catch (err) {
               console.error('Barcode lookup error:', err);
-              setError('Error looking up product. Please try again.');
+              setError('Barcode was read but the product lookup failed. Please try again.');
               setLookingUp(false);
               isProcessingRef.current = false;
             }
