@@ -162,8 +162,8 @@ export default function Profile() {
               <User className="w-8 h-8 text-[#D4AF37]" />
             </div>
             <div className="flex-1">
-              <h2 className="text-xl text-white">{user?.full_name || 'User'}</h2>
-              <p className="text-white/40 text-sm">{user?.email}</p>
+              <h2 className="text-xl text-white" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>{user?.full_name || 'User'}</h2>
+              <p className="text-white/40 text-sm" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>{user?.email}</p>
             </div>
             <button
               onClick={handleEditProfile}
@@ -177,8 +177,8 @@ export default function Profile() {
           <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-white/10">
             {stats.map((stat) => (
               <div key={stat.label} className="text-center">
-                <p className="text-xl text-white">{stat.value}</p>
-                <p className="text-white/30 text-xs uppercase tracking-wider">{stat.label}</p>
+                <p className="text-xl text-white" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>{stat.value}</p>
+                <p className="text-white/30 text-[10px] uppercase tracking-wider" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>{stat.label}</p>
               </div>
             ))}
           </div>
@@ -197,7 +197,7 @@ export default function Profile() {
             <div className="min-h-screen p-6">
               <GlassCard className="p-6 max-w-lg mx-auto">
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl text-white">Edit Profile</h2>
+                  <h2 className="text-xl text-white" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>Edit Profile</h2>
                   <button
                     onClick={() => setEditMode(false)}
                     className="text-white/40 hover:text-white"
@@ -324,7 +324,7 @@ export default function Profile() {
                   </div>
 
                   <div className="border-t border-white/10 pt-4 mt-4">
-                    <h3 className="text-white/60 text-xs uppercase tracking-wider mb-4">Settings</h3>
+                    <h3 className="text-[10px] uppercase tracking-[0.3em] text-[#D4AF37] mb-4" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}>Settings</h3>
                     
                     <div className="space-y-4">
                       <div>

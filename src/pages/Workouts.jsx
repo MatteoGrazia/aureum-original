@@ -551,7 +551,7 @@ export default function Workouts() {
                 <button onClick={() => setView('routines')} className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
                   <X className="w-5 h-5 text-white" />
                 </button>
-                <h2 className="text-white text-lg" style={{ fontFamily: 'Montserrat, sans-serif' }}>Create Routine</h2>
+                <h2 className="text-white text-lg" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>Create Routine</h2>
               </div>
 
               <Input
