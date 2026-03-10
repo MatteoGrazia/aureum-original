@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Scale, Droplets, Zap, Pill, Check, Moon, Sun, Flame, Activity } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import { useTheme } from '@/components/shared/ThemeContext';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 
