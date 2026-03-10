@@ -270,10 +270,11 @@ export default function QuickLogFAB({ onUpdate }) {
                 onClick={() => handleAction(btn.action)}
                 style={{
                   position: 'absolute',
-                  left: 0, top: 0,
-                  width: 56, height: 56,
+                  left: -24, top: -24,
+                  width: 72, height: 72,
                   borderRadius: '50%',
-                  background: 'transparent',
+                  background: 'rgba(0,0,0,0.45)',
+                  backdropFilter: 'blur(16px)',
                   border: `1.5px solid ${btn.color}`,
                   display: 'flex', flexDirection: 'column',
                   alignItems: 'center', justifyContent: 'center',
