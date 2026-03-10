@@ -367,7 +367,13 @@ export default function QuickLogFAB({ onUpdate }) {
             const { dx, dy } = angleToOffset(btn.angle);
             const Icon = btn.Icon;
             const isStreak = btn.action === 'streak';
-            const btnColor = isStreak ? (streakDone ? GOLD : BRONZE) : btn.color;
+
+            // Pick dark variants for light mode
+            const lightColorMap = { [GOLD]: GOLD_DARK, [BRONZE]: BRONZE_DARK, [BLUE]: BLUE_DARK, [AMBER]: AMBER_DARK };
+            const baseColor = isDarkMode ? btn.color : (lightColorMap[btn.color] || btn.color);
+            const btnColor = isStreak
+              ? (streakDone ? (isDarkMode ? GOLD : GOLD_DARK) : (isDarkMode ? BRONZE : BRONZE_DARK))
+              : baseColor;
 
             return (
               <motion.button
