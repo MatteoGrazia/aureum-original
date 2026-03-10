@@ -85,12 +85,6 @@ export default function Activity() {
   return (
     <div className="min-h-screen relative bg-[#080808] overflow-x-hidden">
       <VoidBackground />
-      {showPermissionModal && (
-        <MotionPermissionModal 
-          onGrant={handleEnableTracking}
-          onDismiss={() => setShowPermissionModal(false)}
-        />
-      )}
       <div className="relative z-10 p-6">
         {/* Header */}
         <motion.div
