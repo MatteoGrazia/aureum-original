@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
 import { base44 } from '@/api/base44Client';
@@ -6,11 +6,9 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Target, TrendingUp, Award } from 'lucide-react';
 import VoidCard from '@/components/ui/VoidCard';
 import VoidBackground from '@/components/dashboard/VoidBackground';
-import GoldButton from '@/components/ui/GoldButton';
 import StepCounter from '@/components/activity/StepCounter';
 import ActivityStats from '@/components/activity/ActivityStats';
-import MotionPermissionModal from '@/components/shared/MotionPermissionModal';
-import { useStepTracker, requestMotionPermission } from '@/components/shared/useStepTracker';
+import GoogleFitConnect from '@/components/activity/GoogleFitConnect';
 
 export default function Activity() {
   const [showPermissionModal, setShowPermissionModal] = useState(false);
