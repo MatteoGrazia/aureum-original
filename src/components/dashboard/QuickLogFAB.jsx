@@ -426,7 +426,7 @@ export default function QuickLogFAB({ onUpdate }) {
               </defs>
               <path
                 d={ARC_PATH}
-                stroke="white"
+                stroke={GOLD}
                 strokeWidth="1.5"
                 fill="none"
                 opacity="0.9"
