@@ -10,6 +10,7 @@ import AureumPulse from '@/components/dashboard/AureumPulse';
 import VoidBackground from '@/components/dashboard/VoidBackground';
 import QuickLogFAB from '@/components/dashboard/QuickLogFAB';
 import AIInsight from '@/components/dashboard/AIInsight';
+import SupplementStreak from '@/components/dashboard/SupplementStreak';
 import WelcomeModal from '@/components/shared/WelcomeModal';
 import WeightTrendMini from '@/components/dashboard/WeightTrendMini';
 import PowerliftingTotals from '@/components/dashboard/PowerliftingTotals';

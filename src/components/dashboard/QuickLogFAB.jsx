@@ -406,12 +406,36 @@ export default function QuickLogFAB({ onUpdate }) {
               : `linear-gradient(135deg, ${GOLD} 0%, #F4D03F 50%, ${GOLD} 100%)`,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             touchAction: 'none', userSelect: 'none', WebkitUserSelect: 'none',
-            transition: 'background 0.25s ease',
+            transition: 'background 0.25s ease', overflow: 'hidden',
           }}
         >
-          <motion.div animate={{ rotate: isOpen ? 135 : 0 }} transition={{ type: 'spring', damping: 14, stiffness: 200 }}>
-            <Plus style={{ width: 24, height: 24, color: '#080808' }} strokeWidth={2.5} />
-          </motion.div>
+          <AnimatePresence mode="wait">
+            {waterFlash ? (
+              <motion.div
+                key="water"
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.5 }}
+                transition={{ duration: 0.2 }}
+                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}
+              >
+                <Droplets style={{ width: 18, height: 18, color: '#080808' }} strokeWidth={2} />
+                <span style={{ fontSize: 7, color: '#080808', fontFamily: 'Montserrat', fontWeight: 600, letterSpacing: '0.04em' }}>+250ml</span>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="plus"
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.5 }}
+                transition={{ duration: 0.2 }}
+              >
+                <motion.div animate={{ rotate: isOpen ? 135 : 0 }} transition={{ type: 'spring', damping: 14, stiffness: 200 }}>
+                  <Plus style={{ width: 24, height: 24, color: '#080808' }} strokeWidth={2.5} />
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.button>
       </div>
     </>
