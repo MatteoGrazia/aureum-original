@@ -30,9 +30,10 @@ const angleToOffset = (deg) => {
   return { dx: R * Math.sin(rad), dy: -R * Math.cos(rad) };
 };
 
-const ARC_START = { x: FAB_C + R * Math.sin((-90 * Math.PI) / 180), y: FAB_C - R * Math.cos((-90 * Math.PI) / 180) };
-const ARC_END   = { x: FAB_C, y: FAB_C - R };
-const ARC_PATH  = `M ${ARC_START.x} ${ARC_START.y} A ${R} ${R} 0 0 1 ${ARC_END.x} ${ARC_END.y}`;
+const ARC_R     = R + 44; // outside the 72px-wide orbital buttons
+const ARC_START = { x: FAB_C + ARC_R * Math.sin((-90 * Math.PI) / 180), y: FAB_C - ARC_R * Math.cos((-90 * Math.PI) / 180) };
+const ARC_END   = { x: FAB_C, y: FAB_C - ARC_R };
+const ARC_PATH  = `M ${ARC_START.x} ${ARC_START.y} A ${ARC_R} ${ARC_R} 0 0 1 ${ARC_END.x} ${ARC_END.y}`;
 
 const BUTTONS = [
   { angle: -90, label: 'Streak',    action: 'streak',    Icon: Pill,     color: BRONZE },
