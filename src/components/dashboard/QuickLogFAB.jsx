@@ -403,6 +403,38 @@ export default function QuickLogFAB({ onUpdate }) {
           })}
         </AnimatePresence>
 
+        {/* Orbit arc — rendered above orbital buttons */}
+        <AnimatePresence>
+          {isOpen && (
+            <motion.svg
+              key="arc"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              width={SVG_SIZE} height={SVG_SIZE}
+              viewBox={`0 0 ${SVG_SIZE} ${SVG_SIZE}`}
+              style={{ position: 'absolute', left: -SVG_OFFSET, top: -SVG_OFFSET, pointerEvents: 'none', overflow: 'visible', zIndex: 10 }}
+            >
+              <defs>
+                <filter id="arc-glow" x="-50%" y="-50%" width="200%" height="200%">
+                  <feGaussianBlur stdDeviation="3" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+              </defs>
+              <path
+                d={ARC_PATH}
+                stroke={GOLD}
+                strokeWidth="1.5"
+                fill="none"
+                opacity="0.85"
+                filter="url(#arc-glow)"
+              />
+            </motion.svg>
+          )}
+        </AnimatePresence>
+
         {/* Central FAB */}
         <motion.button
           onPointerDown={onPointerDown}
