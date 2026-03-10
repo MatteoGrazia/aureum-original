@@ -65,7 +65,7 @@ Deno.serve(async (req) => {
       const tokenData = await tokenResponse.json();
       
       if (!tokenData.access_token) {
-        return Response.json({ error: 'Failed to get access token' }, { status: 400 });
+        return new Response('Failed to get access token from Google. Please try again.', { status: 400 });
       }
 
       // Store the refresh token in user profile for future syncs
@@ -73,7 +73,11 @@ Deno.serve(async (req) => {
         google_fit_refresh_token: tokenData.refresh_token,
       });
 
-      return Response.json({ success: true, message: 'Google Fit connected successfully' });
+      // Redirect back to the Activity page after successful connection
+      return new Response(null, {
+        status: 302,
+        headers: { 'Location': '/Activity' },
+      });
     }
 
     // Step 3: Sync step data from Google Fit to DailyActivity
