@@ -136,7 +136,7 @@ export default function Profile() {
         className="mb-6"
       >
         <h1
-          className="text-3xl tracking-[0.4em] text-center"
+          className="text-3xl tracking-[0.4em] text-center mb-3"
           style={{
             fontFamily: 'Montserrat, sans-serif',
             fontWeight: 400,
@@ -148,6 +148,12 @@ export default function Profile() {
         >
           {user?.full_name?.toUpperCase() || 'PROFILE'}
         </h1>
+        <p
+          className="text-[#C9A961] text-[11px] uppercase tracking-[0.25em] text-center"
+          style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
+        >
+          {format(new Date(), 'EEEE, MMMM d')}
+        </p>
       </motion.div>
 
       {/* User Card */}
