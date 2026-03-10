@@ -359,19 +359,19 @@ export default function QuickLogFAB({ onUpdate }) {
                 transition={{ type: 'spring', damping: 15, stiffness: 120, delay: i * 0.055 }}
                 onClick={() => handleAction(btn.action)}
                 style={{
-                  position: 'absolute',
-                  left: -24, top: -24,
-                  width: 72, height: 72,
-                  borderRadius: '50%',
-                  background: isStreak && streakDone ? 'rgba(212,175,55,0.14)' : 'rgba(0,0,0,0.5)',
-                  backdropFilter: 'blur(20px)',
-                  WebkitBackdropFilter: 'blur(20px)',
-                  border: `1.5px solid ${btnColor}`,
-                  display: 'flex', flexDirection: 'column',
-                  alignItems: 'center', justifyContent: 'center',
-                  boxShadow: `0 0 16px ${btnColor}50`,
-                  touchAction: 'none', cursor: 'pointer',
-                  transition: 'border-color 0.3s, box-shadow 0.3s, background 0.3s',
+                 position: 'absolute',
+                 left: -24, top: -24,
+                 width: 72, height: 72,
+                 borderRadius: '50%',
+                 background: isStreak && streakDone ? `${btnColor}18` : 'rgba(255,255,255,0.04)',
+                 backdropFilter: 'blur(8px)',
+                 WebkitBackdropFilter: 'blur(8px)',
+                 border: `2px solid ${btnColor}`,
+                 display: 'flex', flexDirection: 'column',
+                 alignItems: 'center', justifyContent: 'center',
+                 boxShadow: `0 0 22px ${btnColor}80, 0 0 6px ${btnColor}40, inset 0 0 10px ${btnColor}18`,
+                 touchAction: 'none', cursor: 'pointer',
+                 transition: 'border-color 0.3s, box-shadow 0.3s, background 0.3s',
                 }}
               >
                 <Icon style={{ width: 26, height: 26, color: btnColor, transition: 'color 0.3s' }} strokeWidth={1.5} />
