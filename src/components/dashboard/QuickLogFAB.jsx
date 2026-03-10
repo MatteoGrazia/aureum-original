@@ -24,65 +24,12 @@ const angleToOffset = (deg) => {
   return { dx: R * Math.sin(rad), dy: -R * Math.cos(rad) };
 };
 
-// Fine-line gold SVG icons — 1px stroke, medical-illustrator style
-const BarcodeIcon = () => (
-  <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
-    {[3, 6, 9, 12, 15, 18, 21].map((x, i) => (
-      <rect key={x} x={x} y="4" width={i % 2 === 0 ? 2 : 1} height="15" fill={GOLD} opacity={i % 3 === 0 ? 1 : 0.75} />
-    ))}
-    {/* Laser scan line */}
-    <line x1="1" y1="11.5" x2="25" y2="11.5" stroke="#FF5555" strokeWidth="0.8" opacity="0.9" strokeLinecap="round" />
-    {/* Bottom text line (decorative) */}
-    <line x1="3" y1="21" x2="23" y2="21" stroke={GOLD} strokeWidth="0.5" opacity="0.4" />
-  </svg>
-);
-
-const ForkKnifeIcon = () => (
-  <svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke={GOLD} strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
-    {/* Fork */}
-    <line x1="8" y1="3" x2="8" y2="23" />
-    <line x1="6" y1="3" x2="6" y2="9" />
-    <line x1="10" y1="3" x2="10" y2="9" />
-    <path d="M6 9 Q8 12 10 9" />
-    {/* Knife */}
-    <line x1="18" y1="3" x2="18" y2="23" />
-    <path d="M18 3 Q22 7 22 12 L18 14" />
-  </svg>
-);
-
-const BarbellIcon = () => (
-  <svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke={GOLD} strokeWidth="1" strokeLinecap="round">
-    <line x1="7" y1="13" x2="19" y2="13" />
-    {/* Left sleeve + plates */}
-    <rect x="3.5" y="9.5" width="2.5" height="7" rx="0.4" />
-    <rect x="1" y="10.5" width="2.5" height="5" rx="0.4" />
-    {/* Right sleeve + plates */}
-    <rect x="20" y="9.5" width="2.5" height="7" rx="0.4" />
-    <rect x="22.5" y="10.5" width="2.5" height="5" rx="0.4" />
-    {/* Collar marks */}
-    <line x1="7" y1="10.5" x2="7" y2="15.5" />
-    <line x1="19" y1="10.5" x2="19" y2="15.5" />
-  </svg>
-);
-
-const ScaleIcon = () => (
-  <svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke={GOLD} strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
-    <line x1="13" y1="4" x2="13" y2="22" />
-    <line x1="7" y1="22" x2="19" y2="22" />
-    <line x1="4" y1="8" x2="22" y2="8" />
-    <line x1="4" y1="8" x2="3" y2="15" />
-    <line x1="22" y1="8" x2="23" y2="15" />
-    <path d="M1 15 Q3.5 17.5 6 15" />
-    <path d="M20 15 Q22.5 17.5 25 15" />
-  </svg>
-);
-
 // Quarter-arc: -90° (far left) → -60° → -30° → 0° (straight up)
 const BUTTONS = [
-  { angle: -90, label: 'Scan',    action: 'scan',    Icon: BarcodeIcon   },
-  { angle: -60, label: 'Food',    action: 'food',    Icon: ForkKnifeIcon },
-  { angle: -30, label: 'Workout', action: 'workout', Icon: BarbellIcon   },
-  { angle:   0, label: 'Weight',  action: 'weight',  Icon: ScaleIcon     },
+  { angle: -90, label: 'Scan',    action: 'scan',    Icon: ScanLine,  color: '#D4AF37' },
+  { angle: -60, label: 'Food',    action: 'food',    Icon: Utensils,  color: '#F4A261' },
+  { angle: -30, label: 'Workout', action: 'workout', Icon: Dumbbell,  color: '#C9ADA7' },
+  { angle:   0, label: 'Weight',  action: 'weight',  Icon: Scale,     color: '#8ECAE6' },
 ];
 
 // Arc endpoints in SVG canvas space
