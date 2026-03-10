@@ -11,13 +11,11 @@ import ActivityStats from '@/components/activity/ActivityStats';
 import GoogleFitConnect from '@/components/activity/GoogleFitConnect';
 
 export default function Activity() {
-  const [showPermissionModal, setShowPermissionModal] = useState(false);
-  const [permissionGranted, setPermissionGranted] = useState(
-    () => localStorage.getItem('step_tracking_enabled') === 'true'
-  );
   const queryClient = useQueryClient();
   const today = format(new Date(), 'yyyy-MM-dd');
-  const { steps: trackerSteps, isTracking, sensorStatus, startTracking, stopTracking } = useStepTracker();
+  const [isGoogleFitConnected, setIsGoogleFitConnected] = useState(
+    () => localStorage.getItem('google_fit_connected') === 'true'
+  );
 
   const { data: dailyActivity, refetch } = useQuery({
     queryKey: ['dailyActivity', today],
