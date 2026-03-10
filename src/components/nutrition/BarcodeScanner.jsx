@@ -104,7 +104,7 @@ export default function BarcodeScanner({ isOpen, onClose, onScan }) {
       <div className="flex items-center justify-between p-4">
         <h2 className="text-lg text-white">Scan Barcode</h2>
         <button
-          onClick={onClose}
+          onClick={handleClose}
           className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center"
         >
           <X className="w-5 h-5 text-white" />
@@ -148,7 +148,7 @@ export default function BarcodeScanner({ isOpen, onClose, onScan }) {
       </div>
 
       {/* Instructions */}
-      <div className="p-6">
+      <div className="p-6 pb-32">
         <GlassCard className="p-4">
           <div className="flex items-center gap-3">
             <Camera className="w-5 h-5 text-[#D4AF37]" />
