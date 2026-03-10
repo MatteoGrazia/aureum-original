@@ -35,6 +35,20 @@ const ARC_START = { x: FAB_C + ARC_R * Math.sin((-90 * Math.PI) / 180), y: FAB_C
 const ARC_END   = { x: FAB_C, y: FAB_C - ARC_R };
 const ARC_PATH  = `M ${ARC_START.x} ${ARC_START.y} A ${ARC_R} ${ARC_R} 0 0 1 ${ARC_END.x} ${ARC_END.y}`;
 
+// Echo arcs — progressively larger radius, thinner & more transparent
+const ECHO_ARCS = [22, 46, 72, 100, 132].map((offset, i) => {
+  const er = ARC_R + offset;
+  const totalEchoes = 5;
+  const progress = i / (totalEchoes - 1); // 0 → 1
+  return {
+    r: er,
+    strokeWidth: 1.2 - progress * 0.9,
+    opacity: 0.55 - progress * 0.48,
+    blur: 2 + progress * 2,
+    path: `M ${FAB_C + er * Math.sin((-90 * Math.PI) / 180)} ${FAB_C - er * Math.cos((-90 * Math.PI) / 180)} A ${er} ${er} 0 0 1 ${FAB_C} ${FAB_C - er}`,
+  };
+});
+
 const BUTTONS = [
   { angle: -90, label: 'Streak',    action: 'streak',    Icon: Pill,     color: BRONZE },
   { angle: -60, label: 'Readiness', action: 'readiness', Icon: Zap,      color: AMBER  },
