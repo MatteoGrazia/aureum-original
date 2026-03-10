@@ -35,7 +35,7 @@ Deno.serve(async (req) => {
 
     // Step 1: Initiate OAuth flow
     if (action === 'init') {
-      const redirectUri = `${url.origin}/api/googleFitSync?action=callback`;
+      const redirectUri = Deno.env.get('GOOGLE_FIT_REDIRECT_URI') || `${url.origin}/api/googleFitSync?action=callback`;
       const authUrl = new URL(GOOGLE_FIT_AUTH_URL);
       authUrl.searchParams.set('client_id', Deno.env.get('GOOGLE_FIT_CLIENT_ID'));
       authUrl.searchParams.set('redirect_uri', redirectUri);
