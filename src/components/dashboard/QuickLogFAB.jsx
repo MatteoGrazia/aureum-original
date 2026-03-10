@@ -165,7 +165,13 @@ export default function QuickLogFAB({ onUpdate }) {
 
   const close = () => { setIsOpen(false); setActiveAction(null); };
 
-  const EMOJIS = ['😴', '😑', '😊', '⚡', '🔥'];
+  const ENERGY_ICONS = [
+    { Icon: Moon,     color: '#8ECAE6', label: 'Low'      },
+    { Icon: Activity, color: '#9BB7D4', label: 'Moderate' },
+    { Icon: Zap,      color: '#F4A261', label: 'Good'     },
+    { Icon: Zap,      color: '#E8C44A', label: 'High'     },
+    { Icon: Flame,    color: '#E8734A', label: 'Peak'     },
+  ];
 
   return (
     <>
