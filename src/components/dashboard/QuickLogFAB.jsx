@@ -447,7 +447,7 @@ export default function QuickLogFAB({ onUpdate }) {
                 filter="url(#arc-glow)"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 0.9 }}
-                transition={{ duration: 0.25, delay: 0 }}
+                transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
               />
               {/* Echo arcs — wave outward */}
               {ECHO_ARCS.map((arc, i) => (
@@ -459,8 +459,8 @@ export default function QuickLogFAB({ onUpdate }) {
                   fill="none"
                   filter="url(#arc-glow)"
                   initial={{ opacity: 0 }}
-                  animate={{ opacity: [0, arc.opacity * 1.6, arc.opacity] }}
-                  transition={{ duration: 0.4, delay: 0.12 + i * 0.1, ease: 'easeOut' }}
+                  animate={{ opacity: arc.opacity }}
+                  transition={{ duration: 0.55, delay: 0.08 + i * 0.09, ease: [0.25, 0.1, 0.25, 1] }}
                 />
               ))}
             </motion.svg>
