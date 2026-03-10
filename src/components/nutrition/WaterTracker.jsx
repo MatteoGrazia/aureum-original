@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Droplets, Plus, Minus } from 'lucide-react';
 import GlassCard from '@/components/ui/GlassCard';
@@ -8,11 +8,16 @@ const BLUE_BG = 'rgba(142, 202, 230, 0.18)';
 const BLUE_WAVE = 'rgba(142, 202, 230, 0.22)';
 
 export default function WaterTracker({ glasses, goal, onAdd, onRemove }) {
-  // Optimistic local state for instant UI response
   const [localGlasses, setLocalGlasses] = useState(glasses);
+  const lastInteractionRef = useRef(0);
 
-  // Sync when server data comes back
-  useEffect(() => { setLocalGlasses(glasses); }, [glasses]);
+  // Only sync from server if no recent user interaction (within 2.5s)
+  // This prevents the animation from re-triggering on every refetch
+  useEffect(() => {
+    if (Date.now() - lastInteractionRef.current > 2500) {
+      setLocalGlasses(glasses);
+    }
+  }, [glasses]);
 
   const safeGoal = Math.max(goal, 1);
   const pct = Math.min(localGlasses / safeGoal, 1);
@@ -21,12 +26,14 @@ export default function WaterTracker({ glasses, goal, onAdd, onRemove }) {
 
   const handleAdd = () => {
     if (localGlasses >= safeGoal) return;
+    lastInteractionRef.current = Date.now();
     setLocalGlasses(g => g + 1);
     onAdd();
   };
 
   const handleRemove = () => {
     if (localGlasses <= 0) return;
+    lastInteractionRef.current = Date.now();
     setLocalGlasses(g => g - 1);
     onRemove();
   };
