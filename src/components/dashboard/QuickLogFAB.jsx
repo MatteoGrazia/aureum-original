@@ -9,7 +9,7 @@ import { createPageUrl } from '@/utils';
 
 const GOLD = '#D4AF37';
 const BRONZE = '#9C7E46';
-const R = 85;               // orbit radius px
+const R = 100;              // orbit radius px
 const LONG_PRESS_MS = 500;
 const SWIPE_THRESHOLD = 35;
 const SVG_OFFSET = 110;     // how far the SVG canvas extends beyond FAB container
