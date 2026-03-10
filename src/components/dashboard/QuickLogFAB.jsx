@@ -441,7 +441,7 @@ export default function QuickLogFAB({ onUpdate }) {
               {/* Primary arc */}
               <motion.path
                 d={ARC_PATH}
-                stroke={GOLD}
+                stroke={isDarkMode ? GOLD : '#E8C97A'}
                 strokeWidth="1.5"
                 fill="none"
                 filter="url(#arc-glow)"
@@ -454,7 +454,7 @@ export default function QuickLogFAB({ onUpdate }) {
                 <motion.path
                   key={i}
                   d={arc.path}
-                  stroke={GOLD}
+                  stroke={isDarkMode ? GOLD : '#E8C97A'}
                   strokeWidth={arc.strokeWidth}
                   fill="none"
                   filter="url(#arc-glow)"
