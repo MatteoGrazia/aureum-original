@@ -424,14 +424,19 @@ export default function QuickLogFAB({ onUpdate }) {
           onPointerDown={onPointerDown}
           onPointerUp={onPointerUp}
           onPointerCancel={() => clearTimeout(longTimer.current)}
-          animate={waterPulse
-            ? { boxShadow: ['0 0 20px rgba(142,202,230,0.4)', '0 0 55px rgba(142,202,230,0.9)', '0 0 20px rgba(142,202,230,0.2)'] }
-            : { boxShadow: '0 0 20px rgba(225,193,110,0.28)' }
+          animate={{
+            borderRadius: isOpen ? '16px' : '50%',
+            boxShadow: waterPulse
+              ? ['0 0 20px rgba(142,202,230,0.4)', '0 0 55px rgba(142,202,230,0.9)', '0 0 20px rgba(142,202,230,0.2)']
+              : '0 0 20px rgba(225,193,110,0.28)',
+          }}
+          transition={waterPulse
+            ? { duration: 0.7, ease: 'easeOut' }
+            : { borderRadius: { type: 'spring', damping: 18, stiffness: 220 } }
           }
-          transition={waterPulse ? { duration: 0.7, ease: 'easeOut' } : {}}
           whileTap={{ scale: 0.88 }}
           style={{
-            position: 'absolute', inset: 0, borderRadius: '50%', border: 'none', cursor: 'pointer',
+            position: 'absolute', inset: 0, border: 'none', cursor: 'pointer',
             background: waterPulse
               ? `linear-gradient(135deg, ${BLUE} 0%, #A8D8EA 50%, ${BLUE} 100%)`
               : `linear-gradient(135deg, ${GOLD} 0%, #F4D03F 50%, ${GOLD} 100%)`,
