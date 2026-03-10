@@ -5,11 +5,11 @@ import GlassCard from '@/components/ui/GlassCard';
 import { Html5Qrcode } from 'html5-qrcode';
 
 export default function BarcodeScanner({ isOpen, onClose, onScan }) {
-  const videoRef = useRef(null);
-  const canvasRef = useRef(null);
   const [scanning, setScanning] = useState(false);
+  const [lookingUp, setLookingUp] = useState(false);
   const [error, setError] = useState(null);
   const scannerRef = useRef(null);
+  const isProcessingRef = useRef(false);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -20,54 +20,52 @@ export default function BarcodeScanner({ isOpen, onClose, onScan }) {
       try {
         setScanning(true);
         setError(null);
+        isProcessingRef.current = false;
 
         html5QrCode = new Html5Qrcode("barcode-reader");
         scannerRef.current = html5QrCode;
 
         await html5QrCode.start(
           { facingMode: "environment" },
-          {
-            fps: 10,
-            qrbox: { width: 250, height: 100 },
-            aspectRatio: 1.0,
-          },
+          { fps: 10, qrbox: { width: 250, height: 100 }, aspectRatio: 1.0 },
           async (decodedText) => {
-            // Barcode scanned - use FatSecret Premier barcode database
+            // Lock to prevent duplicate calls for same scan
+            if (isProcessingRef.current) return;
+            isProcessingRef.current = true;
+
+            setLookingUp(true);
+            setError(null);
+
             try {
+              await html5QrCode.stop();
               const { base44 } = await import('@/api/base44Client');
               const response = await base44.functions.invoke('fatsecretSearch', {
                 action: 'barcode',
                 barcode: decodedText
               });
 
-              if (response.data.food) {
-                const product = response.data.food;
-                const food = {
-                  id: product.id,
-                  name: product.name,
-                  brand: product.brand || '',
-                  calories: Math.round(product.calories),
-                  protein: Math.round(product.protein),
-                  carbs: Math.round(product.carbs),
-                  fat: Math.round(product.fat),
-                  fiber: Math.round(product.fiber),
-                  serving_size: product.servingSize || '100g',
-                  barcode: decodedText,
-                  source: 'fatsecret'
-                };
-                await html5QrCode.stop();
-                onScan(food);
+              if (response.data?.food) {
+                // Pass full food object including availableUnits directly
+                onScan({ ...response.data.food, barcode: decodedText, source: 'fatsecret' });
               } else {
-                setError('Product not found in Premier database');
+                setError('Product not found. Try searching by name instead.');
+                setLookingUp(false);
+                isProcessingRef.current = false;
+                // Restart scanner for retry
+                await html5QrCode.start(
+                  { facingMode: "environment" },
+                  { fps: 10, qrbox: { width: 250, height: 100 }, aspectRatio: 1.0 },
+                  async () => {}, () => {}
+                );
               }
             } catch (err) {
               console.error('Barcode lookup error:', err);
               setError('Error looking up product. Please try again.');
+              setLookingUp(false);
+              isProcessingRef.current = false;
             }
           },
-          (errorMessage) => {
-            // Scan error - ignore, keep scanning
-          }
+          () => {} // scan errors - ignore
         );
       } catch (err) {
         console.error('Scanner error:', err);
