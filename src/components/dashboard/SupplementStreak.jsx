@@ -94,7 +94,7 @@ export default function SupplementStreak() {
           </p>
         </div>
         <div className="flex items-center gap-1.5">
-          <span className="text-2xl" style={{ lineHeight: 1 }}>🔥</span>
+          <Flame style={{ width: 18, height: 18, color: '#D4AF37', filter: 'drop-shadow(0 0 6px rgba(212,175,55,0.5))' }} strokeWidth={1.5} />
           <span className="text-xl" style={{ color: '#D4AF37', fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}>{streak}</span>
         </div>
       </div>
