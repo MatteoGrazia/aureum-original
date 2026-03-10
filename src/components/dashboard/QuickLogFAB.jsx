@@ -14,7 +14,7 @@ const LONG_PRESS_MS = 500;
 const SWIPE_THRESHOLD = 35;
 const SVG_OFFSET = 140;     // how far the SVG canvas extends beyond FAB container
 const FAB_HALF = 28;        // half of 56px FAB
-const FAB_C = SVG_OFFSET + FAB_HALF; // FAB center in SVG space = 138
+const FAB_C = SVG_OFFSET + FAB_HALF; // FAB center in SVG space
 
 // Angles measured from "up" (0° = straight up), positive = clockwise.
 // Quarter arc: -90° (straight left) → 0° (straight up) — all fit safely on a right-edge FAB.
