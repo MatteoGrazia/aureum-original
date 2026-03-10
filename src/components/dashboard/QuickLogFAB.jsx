@@ -438,6 +438,19 @@ export default function QuickLogFAB({ onUpdate }) {
                   </feMerge>
                 </filter>
               </defs>
+              {/* Echo arcs */}
+              {ECHO_ARCS.map((arc, i) => (
+                <path
+                  key={i}
+                  d={arc.path}
+                  stroke={GOLD}
+                  strokeWidth={arc.strokeWidth}
+                  fill="none"
+                  opacity={arc.opacity}
+                  filter="url(#arc-glow)"
+                />
+              ))}
+              {/* Primary arc */}
               <path
                 d={ARC_PATH}
                 stroke={GOLD}
