@@ -306,13 +306,13 @@ export default function Nutrition() {
         transition={{ delay: 0.2 }}
         className="mb-6 space-y-3"
       >
-        <div className="flex gap-3 items-start">
+        <div className="flex gap-3 items-stretch">
           <div className="flex-1 min-w-0">
             <FoodSearch onSelectFood={handleSelectFood} />
           </div>
           <button
             onClick={() => setShowScanner(true)}
-            className="w-14 h-14 flex-shrink-0 rounded-xl bg-[#D4AF37]/20 border border-[#D4AF37]/30 flex items-center justify-center hover:bg-[#D4AF37]/30 transition-colors"
+            className="w-14 flex-shrink-0 rounded-xl bg-[#D4AF37]/20 border border-[#D4AF37]/30 flex items-center justify-center hover:bg-[#D4AF37]/30 transition-colors"
           >
             <Scan className="w-6 h-6 text-[#D4AF37]" />
           </button>
