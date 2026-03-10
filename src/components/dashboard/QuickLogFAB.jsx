@@ -412,7 +412,7 @@ export default function QuickLogFAB({ onUpdate }) {
               transition={{ duration: 0.3 }}
               width={SVG_SIZE} height={SVG_SIZE}
               viewBox={`0 0 ${SVG_SIZE} ${SVG_SIZE}`}
-              style={{ position: 'absolute', left: -SVG_OFFSET, top: -SVG_OFFSET, pointerEvents: 'none', overflow: 'visible', zIndex: 10 }}
+              style={{ position: 'absolute', left: -SVG_OFFSET, top: -SVG_OFFSET, pointerEvents: 'none', overflow: 'visible', zIndex: 9999 }}
             >
               <defs>
                 <filter id="arc-glow" x="-50%" y="-50%" width="200%" height="200%">
@@ -425,10 +425,10 @@ export default function QuickLogFAB({ onUpdate }) {
               </defs>
               <path
                 d={ARC_PATH}
-                stroke={GOLD}
+                stroke="white"
                 strokeWidth="1.5"
                 fill="none"
-                opacity="0.85"
+                opacity="0.9"
                 filter="url(#arc-glow)"
               />
             </motion.svg>
