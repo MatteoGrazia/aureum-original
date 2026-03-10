@@ -12,9 +12,14 @@ export default function GoogleFitConnect({ isConnected, onSyncComplete }) {
   const handleConnect = async () => {
     try {
       setIsLoading(true);
-      const response = await base44.functions.invoke('googleFitSync', { action: 'init' });
-      if (response.data.authUrl) {
-        window.location.href = response.data.authUrl;
+      // Call the function with action=init as query param
+      const response = await fetch(`/api/googleFitSync?action=init`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const data = await response.json();
+      if (data.authUrl) {
+        window.location.href = data.authUrl;
       }
     } catch (error) {
       console.error('Failed to initiate Google Fit connection:', error);
@@ -26,8 +31,12 @@ export default function GoogleFitConnect({ isConnected, onSyncComplete }) {
   const handleSync = async () => {
     try {
       setIsLoading(true);
-      const response = await base44.functions.invoke('googleFitSync', { action: 'sync' });
-      if (response.data.success) {
+      const response = await fetch(`/api/googleFitSync?action=sync`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const data = await response.json();
+      if (data.success) {
         setLastSyncTime(new Date());
         onSyncComplete?.();
       }
