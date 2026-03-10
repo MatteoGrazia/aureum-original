@@ -1,45 +1,36 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Mic, ScanLine, Utensils, Dumbbell, Scale } from 'lucide-react';
+import { Plus, Scale, Droplets, Zap, Pill, Check } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { useNavigate } from 'react-router-dom';
-import { createPageUrl } from '@/utils';
 
-const GOLD = '#D4AF37';
+const GOLD   = '#D4AF37';
 const BRONZE = '#9C7E46';
-const R = 150;              // orbit radius px
-const LONG_PRESS_MS = 500;
-const SWIPE_THRESHOLD = 35;
-const SVG_OFFSET = 200;     // how far the SVG canvas extends beyond FAB container
-const FAB_HALF = 28;        // half of 56px FAB
-const FAB_C = SVG_OFFSET + FAB_HALF; // FAB center in SVG space
+const BLUE   = '#8ECAE6';
+const AMBER  = '#F4A261';
 
-// Angles measured from "up" (0° = straight up), positive = clockwise.
-// Quarter arc: -90° (straight left) → 0° (straight up) — all fit safely on a right-edge FAB.
-// angleToOffset converts to screen-space (dx, dy) relative to FAB center.
+const R          = 150;
+const SVG_OFFSET = 200;
+const FAB_HALF   = 28;
+const FAB_C      = SVG_OFFSET + FAB_HALF;
+const SVG_SIZE   = SVG_OFFSET * 2 + 56;
+
 const angleToOffset = (deg) => {
   const rad = (deg * Math.PI) / 180;
   return { dx: R * Math.sin(rad), dy: -R * Math.cos(rad) };
 };
 
-// Quarter-arc: -90° (far left) → -60° → -30° → 0° (straight up)
-const BUTTONS = [
-  { angle: -90, label: 'Scan',    action: 'scan',    Icon: ScanLine,  color: '#D4AF37' },
-  { angle: -60, label: 'Food',    action: 'food',    Icon: Utensils,  color: '#F4A261' },
-  { angle: -30, label: 'Workout', action: 'workout', Icon: Dumbbell,  color: '#C9ADA7' },
-  { angle:   0, label: 'Weight',  action: 'weight',  Icon: Scale,     color: '#8ECAE6' },
-];
-
-// Arc endpoints in SVG canvas space
-// -90° → straight left of FAB center
-const ARC_START = { x: FAB_C + R * Math.sin((-90 * Math.PI) / 180), y: FAB_C - R * Math.cos((-90 * Math.PI) / 180) }; // (53, 138)
-// 0° → straight above FAB center
-const ARC_END   = { x: FAB_C + R * Math.sin(0), y: FAB_C - R * Math.cos(0) };                                          // (138, 53)
-// Clockwise arc (sweep=1), small arc (large-arc=0) through upper-left
+const ARC_START = { x: FAB_C + R * Math.sin((-90 * Math.PI) / 180), y: FAB_C - R * Math.cos((-90 * Math.PI) / 180) };
+const ARC_END   = { x: FAB_C, y: FAB_C - R };
 const ARC_PATH  = `M ${ARC_START.x} ${ARC_START.y} A ${R} ${R} 0 0 1 ${ARC_END.x} ${ARC_END.y}`;
-const SVG_SIZE  = SVG_OFFSET * 2 + 56; // 276
+
+const BUTTONS = [
+  { angle: -90, label: 'Streak',    action: 'streak',    Icon: Pill,     color: BRONZE },
+  { angle: -60, label: 'Readiness', action: 'readiness', Icon: Zap,      color: AMBER  },
+  { angle: -30, label: 'Water',     action: 'water',     Icon: Droplets, color: BLUE   },
+  { angle:   0, label: 'Weight',    action: 'weight',    Icon: Scale,    color: GOLD   },
+];
 
 const haptic = (type) => {
   if (!navigator.vibrate) return;
@@ -48,82 +39,126 @@ const haptic = (type) => {
   else if (type === 'select') navigator.vibrate([8, 40, 8]);
 };
 
+const getTodayKey = () => `streak_${format(new Date(), 'yyyy-MM-dd')}`;
+
 export default function QuickLogFAB({ onUpdate }) {
-  const [isOpen, setIsOpen]         = useState(false);
+  const [isOpen, setIsOpen]           = useState(false);
   const [activeAction, setActiveAction] = useState(null);
-  const [weight, setWeight]         = useState('');
-  const [loading, setLoading]       = useState(false);
+  const [weight, setWeight]           = useState('');
+  const [loading, setLoading]         = useState(false);
+  const [waterPulse, setWaterPulse]   = useState(false);
+  const [energyLevel, setEnergyLevel] = useState(3);
+  const [streakDone, setStreakDone]   = useState(() => localStorage.getItem(getTodayKey()) === 'true');
 
-  const navigate     = useNavigate();
-  const today        = format(new Date(), 'yyyy-MM-dd');
-  const pointerStart = useRef(null);
-  const longTimer    = useRef(null);
-  const handled      = useRef(false);
+  const weightInputRef = useRef(null);
+  const queryClient    = useQueryClient();
+  const today          = format(new Date(), 'yyyy-MM-dd');
+  const pointerStart   = useRef(null);
+  const longTimer      = useRef(null);
+  const handled        = useRef(false);
 
-  const { data: todayLogs = [] } = useQuery({
-    queryKey: ['todayFoodLogs', today],
-    queryFn: () => base44.entities.FoodLog.filter({ date: today }),
-    staleTime: 60_000,
-  });
   const { data: todayActivity } = useQuery({
     queryKey: ['todayActivity', today],
-    queryFn: async () => { const a = await base44.entities.DailyActivity.filter({ date: today }); return a[0] || null; },
+    queryFn: async () => {
+      const a = await base44.entities.DailyActivity.filter({ date: today });
+      return a[0] || null;
+    },
     staleTime: 60_000,
   });
 
-  const shouldPulse = todayLogs.length === 0 && (!todayActivity || !todayActivity.water_liters);
+  useEffect(() => {
+    if (activeAction === 'weight') {
+      setTimeout(() => weightInputRef.current?.focus(), 150);
+    }
+  }, [activeAction]);
+
+  /* ── Actions ─────────────────────────────────────────── */
 
   const logWeight = async () => {
-    if (!weight) return;
+    if (!weight || loading) return;
     setLoading(true);
-    try {
-      await base44.entities.WeightHistory.create({ date: today, weight: parseFloat(weight) });
-      onUpdate?.();
-      setWeight('');
-      setActiveAction(null);
-    } catch (e) { console.error(e); }
+    await base44.entities.WeightHistory.create({ date: today, weight: parseFloat(weight) });
+    onUpdate?.();
+    queryClient.invalidateQueries({ queryKey: ['weightHistory'] });
+    setWeight('');
+    setActiveAction(null);
+    setIsOpen(false);
     setLoading(false);
+  };
+
+  const addWater = async () => {
+    haptic('light');
+    setIsOpen(false);
+    // Pulse FAB blue
+    setWaterPulse(true);
+    setTimeout(() => setWaterPulse(false), 900);
+
+    if (todayActivity) {
+      await base44.entities.DailyActivity.update(todayActivity.id, {
+        water_liters: (todayActivity.water_liters || 0) + 0.25,
+      });
+    } else {
+      await base44.entities.DailyActivity.create({
+        date: today, water_liters: 0.25,
+        steps: 0, active_minutes: 0, sedentary_minutes: 0, calories_burned: 0,
+      });
+    }
+    queryClient.invalidateQueries({ queryKey: ['todayActivity', today] });
+    onUpdate?.();
+  };
+
+  const logEnergy = async (level) => {
+    if (todayActivity) {
+      await base44.entities.DailyActivity.update(todayActivity.id, { energy_level: level });
+    } else {
+      await base44.entities.DailyActivity.create({
+        date: today, energy_level: level,
+        steps: 0, water_liters: 0, active_minutes: 0, sedentary_minutes: 0, calories_burned: 0,
+      });
+    }
+    queryClient.invalidateQueries({ queryKey: ['todayActivity', today] });
+    onUpdate?.();
+    setActiveAction(null);
+    setIsOpen(false);
+  };
+
+  const toggleStreak = () => {
+    const next = !streakDone;
+    setStreakDone(next);
+    localStorage.setItem(getTodayKey(), String(next));
+    haptic(next ? 'select' : 'light');
+    setIsOpen(false);
   };
 
   const handleAction = (action) => {
     haptic('select');
-    setIsOpen(false);
-    if (action === 'scan')    navigate(createPageUrl('Nutrition') + '?openScanner=true');
-    else if (action === 'food')    navigate(createPageUrl('Nutrition'));
-    else if (action === 'workout') navigate(createPageUrl('Workouts'));
-    else if (action === 'weight')  setActiveAction('weight');
+    if (action === 'water')  { addWater(); }
+    else if (action === 'streak')   { toggleStreak(); }
+    else { setIsOpen(false); setActiveAction(action); }
   };
+
+  /* ── FAB gesture ─────────────────────────────────────── */
 
   const onPointerDown = (e) => {
     handled.current = false;
     pointerStart.current = { x: e.clientX, y: e.clientY };
     longTimer.current = setTimeout(() => {
-      if (!handled.current) {
-        handled.current = true;
-        haptic('medium');
-        setIsOpen(false);
-        setActiveAction('voice');
-      }
-    }, LONG_PRESS_MS);
+      if (!handled.current) { handled.current = true; haptic('medium'); }
+    }, 500);
   };
 
-  const onPointerUp = (e) => {
+  const onPointerUp = () => {
     clearTimeout(longTimer.current);
     if (handled.current) return;
     handled.current = true;
-    const dx = e.clientX - (pointerStart.current?.x || e.clientX);
-    const dy = e.clientY - (pointerStart.current?.y || e.clientY);
-    if (Math.abs(dx) > SWIPE_THRESHOLD && dx > 0 && Math.abs(dx) > Math.abs(dy)) {
-      haptic('medium');
-      navigate(createPageUrl('Nutrition') + '?openScanner=true');
-    } else {
-      const opening = !isOpen;
-      setIsOpen(opening);
-      if (opening) setTimeout(() => haptic('medium'), 280);
-    }
+    const opening = !isOpen;
+    setIsOpen(opening);
+    if (opening) setTimeout(() => haptic('medium'), 280);
   };
 
   const close = () => { setIsOpen(false); setActiveAction(null); };
+
+  const EMOJIS = ['😴', '😑', '😊', '⚡', '🔥'];
 
   return (
     <>
@@ -135,103 +170,156 @@ export default function QuickLogFAB({ onUpdate }) {
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             onClick={close}
             className="fixed inset-0"
-            style={{ background: 'rgba(0,0,0,0.18)', backdropFilter: 'blur(4px)', zIndex: 999 }}
+            style={{ background: 'rgba(0,0,0,0.22)', backdropFilter: 'blur(5px)', zIndex: 999 }}
           />
         )}
       </AnimatePresence>
 
-      {/* Weight mini-form */}
+      {/* ── Weight Modal ─────────────────────────────────── */}
       <AnimatePresence>
         {activeAction === 'weight' && (
           <motion.div
             key="wf"
-            initial={{ opacity: 0, scale: 0.88, y: 8 }}
+            initial={{ opacity: 0, scale: 0.88, y: 12 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.88, y: 8 }}
+            exit={{ opacity: 0, scale: 0.88, y: 12 }}
             transition={{ type: 'spring', damping: 22, stiffness: 320 }}
-            style={{ position: 'fixed', bottom: 175, right: 20, zIndex: 1002, width: 186 }}
+            style={{ position: 'fixed', bottom: 185, right: 20, zIndex: 1002, width: 224 }}
           >
             <div style={{
-              background: 'rgba(8,8,8,0.94)',
-              border: '0.5px solid rgba(212,175,55,0.4)',
-              backdropFilter: 'blur(32px)',
-              borderRadius: 18, padding: 16,
+              background: 'rgba(255,255,255,0.07)',
+              border: `0.5px solid rgba(212,175,55,0.55)`,
+              backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)',
+              borderRadius: 26, padding: '22px 20px',
             }}>
-              <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: 9, textTransform: 'uppercase', letterSpacing: '0.22em', marginBottom: 12, fontFamily: 'Montserrat' }}>
-                Log Weight
+              <p style={{
+                color: 'rgba(212,175,55,0.65)', fontSize: 8.5, textTransform: 'uppercase',
+                letterSpacing: '0.26em', marginBottom: 16, fontFamily: 'Montserrat', textAlign: 'center',
+              }}>
+                Body Weight
               </p>
+
               <input
-                autoFocus type="number" step="0.1" placeholder="kg"
-                value={weight} onChange={e => setWeight(e.target.value)}
+                ref={weightInputRef}
+                type="number" step="0.1" placeholder="0.0"
+                value={weight}
+                onChange={e => setWeight(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && logWeight()}
                 style={{
-                  width: '100%', padding: '10px 12px', borderRadius: 12, outline: 'none',
+                  width: '100%', padding: '12px 8px', borderRadius: 16, outline: 'none',
                   border: '0.5px solid rgba(212,175,55,0.3)',
                   background: 'rgba(255,255,255,0.04)', color: 'white',
-                  textAlign: 'center', fontSize: 14, fontFamily: 'Montserrat', marginBottom: 12,
+                  textAlign: 'center', fontSize: 38, fontFamily: 'Montserrat',
+                  marginBottom: 6, letterSpacing: '0.04em', boxSizing: 'border-box',
                 }}
               />
+              <p style={{ color: 'rgba(255,255,255,0.2)', fontSize: 9, textAlign: 'center', marginBottom: 18, fontFamily: 'Montserrat', letterSpacing: '0.1em' }}>
+                KG
+              </p>
+
               <button
                 onClick={logWeight} disabled={!weight || loading}
                 style={{
-                  width: '100%', padding: '10px', borderRadius: 12, border: 'none', cursor: 'pointer',
+                  width: '100%', padding: '14px', borderRadius: 16, border: 'none', cursor: 'pointer',
                   background: `linear-gradient(135deg, ${GOLD}, #F4D03F, ${GOLD})`,
-                  color: '#080808', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.12em',
-                  fontFamily: 'Montserrat', minHeight: 40, opacity: (!weight || loading) ? 0.4 : 1,
-                }}
-              >{loading ? '…' : 'Save'}</button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Voice / AI macro overlay */}
-      <AnimatePresence>
-        {activeAction === 'voice' && (
-          <motion.div
-            key="vo"
-            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 16 }}
-            transition={{ type: 'spring', damping: 22, stiffness: 300 }}
-            style={{ position: 'fixed', bottom: 175, left: 16, right: 16, zIndex: 1002 }}
-          >
-            <div style={{
-              background: 'rgba(212,175,55,0.06)',
-              border: '0.5px solid rgba(212,175,55,0.38)',
-              backdropFilter: 'blur(40px)',
-              WebkitBackdropFilter: 'blur(40px)',
-              borderRadius: 22, padding: '22px 20px', textAlign: 'center',
-            }}>
-              <motion.div
-                animate={{ scale: [1, 1.14, 1], opacity: [0.65, 1, 0.65] }}
-                transition={{ duration: 1.3, repeat: Infinity }}
-                style={{
-                  width: 60, height: 60, borderRadius: '50%',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  margin: '0 auto 14px',
-                  background: 'rgba(212,175,55,0.1)',
-                  border: '0.5px solid rgba(212,175,55,0.3)',
+                  color: '#080808', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.14em',
+                  fontFamily: 'Montserrat', minHeight: 50,
+                  opacity: (!weight || loading) ? 0.35 : 1,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                 }}
               >
-                <Mic style={{ width: 26, height: 26, color: GOLD }} strokeWidth={1} />
-              </motion.div>
-              <p style={{ color: GOLD, fontSize: 9, textTransform: 'uppercase', letterSpacing: '0.32em', marginBottom: 6, fontFamily: 'Montserrat' }}>
-                Voice Log
-              </p>
-              <p style={{ color: 'rgba(255,255,255,0.38)', fontSize: 11, fontFamily: 'Montserrat' }}>
-                Say something like "100g Greek yogurt"
-              </p>
-              <button onClick={close} style={{ marginTop: 18, padding: '8px 20px', background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.25)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                Dismiss
+                <Check style={{ width: 15, height: 15 }} strokeWidth={2.5} />
+                {loading ? 'Saving…' : 'Confirm'}
               </button>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* ── FAB + Orbital system ── */}
+      {/* ── Readiness / Energy Slider ─────────────────────── */}
+      <AnimatePresence>
+        {activeAction === 'readiness' && (
+          <motion.div
+            key="rs"
+            initial={{ opacity: 0, scale: 0.9, y: 12 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 12 }}
+            transition={{ type: 'spring', damping: 22, stiffness: 320 }}
+            style={{ position: 'fixed', bottom: 185, right: 20, zIndex: 1002, width: 240 }}
+          >
+            <div style={{
+              background: 'rgba(244,162,97,0.07)',
+              border: '0.5px solid rgba(244,162,97,0.45)',
+              backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)',
+              borderRadius: 26, padding: '22px 20px',
+            }}>
+              <p style={{
+                color: 'rgba(244,162,97,0.7)', fontSize: 8.5, textTransform: 'uppercase',
+                letterSpacing: '0.26em', marginBottom: 10, fontFamily: 'Montserrat', textAlign: 'center',
+              }}>
+                Energy Level
+              </p>
+
+              <p style={{ fontSize: 44, textAlign: 'center', marginBottom: 16, lineHeight: 1 }}>
+                {EMOJIS[energyLevel - 1]}
+              </p>
+
+              <style>{`
+                .energy-slider {
+                  -webkit-appearance: none;
+                  appearance: none;
+                  width: 100%;
+                  height: 6px;
+                  border-radius: 4px;
+                  background: linear-gradient(90deg, #F4A261 ${(energyLevel - 1) * 25}%, rgba(255,255,255,0.12) ${(energyLevel - 1) * 25}%);
+                  outline: none;
+                  cursor: pointer;
+                  margin-bottom: 12px;
+                }
+                .energy-slider::-webkit-slider-thumb {
+                  -webkit-appearance: none;
+                  width: 22px; height: 22px;
+                  border-radius: 50%;
+                  background: #F4A261;
+                  box-shadow: 0 0 12px rgba(244,162,97,0.6);
+                  cursor: pointer;
+                }
+                .energy-slider::-moz-range-thumb {
+                  width: 22px; height: 22px;
+                  border-radius: 50%;
+                  background: #F4A261;
+                  border: none;
+                  cursor: pointer;
+                }
+              `}</style>
+
+              <input
+                className="energy-slider"
+                type="range" min="1" max="5" step="1"
+                value={energyLevel}
+                onChange={e => setEnergyLevel(Number(e.target.value))}
+                onMouseUp={() => logEnergy(energyLevel)}
+                onTouchEnd={() => logEnergy(energyLevel)}
+              />
+
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                {['1','2','3','4','5'].map(n => (
+                  <span key={n} style={{
+                    color: Number(n) <= energyLevel ? 'rgba(244,162,97,0.7)' : 'rgba(255,255,255,0.2)',
+                    fontSize: 10, fontFamily: 'Montserrat',
+                    transition: 'color 0.2s',
+                  }}>{n}</span>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── FAB + Orbital system ─────────────────────────── */}
       <div style={{ position: 'fixed', bottom: 100, right: 20, width: 56, height: 56, zIndex: 1000 }}>
 
-        {/* Thin bronze orbit arc */}
+        {/* Orbit arc */}
         <AnimatePresence>
           {isOpen && (
             <motion.svg
@@ -242,14 +330,7 @@ export default function QuickLogFAB({ onUpdate }) {
               viewBox={`0 0 ${SVG_SIZE} ${SVG_SIZE}`}
               style={{ position: 'absolute', left: -SVG_OFFSET, top: -SVG_OFFSET, pointerEvents: 'none', overflow: 'visible' }}
             >
-              <path
-                d={ARC_PATH}
-                stroke={BRONZE}
-                strokeWidth="0.75"
-                fill="none"
-                strokeDasharray="2.5 5"
-                opacity="0.55"
-              />
+              <path d={ARC_PATH} stroke={BRONZE} strokeWidth="0.75" fill="none" strokeDasharray="2.5 5" opacity="0.5" />
             </motion.svg>
           )}
         </AnimatePresence>
@@ -259,6 +340,9 @@ export default function QuickLogFAB({ onUpdate }) {
           {isOpen && BUTTONS.map((btn, i) => {
             const { dx, dy } = angleToOffset(btn.angle);
             const Icon = btn.Icon;
+            const isStreak = btn.action === 'streak';
+            const btnColor = isStreak ? (streakDone ? GOLD : BRONZE) : btn.color;
+
             return (
               <motion.button
                 key={btn.action}
@@ -266,34 +350,31 @@ export default function QuickLogFAB({ onUpdate }) {
                 animate={{ x: dx, y: dy, opacity: 1, scale: 1 }}
                 exit={{ x: 0, y: 0, opacity: 0, scale: 0.15, transition: { duration: 0.18, delay: (BUTTONS.length - 1 - i) * 0.03 } }}
                 transition={{ type: 'spring', damping: 15, stiffness: 120, delay: i * 0.055 }}
-                onHoverStart={() => haptic('light')}
                 onClick={() => handleAction(btn.action)}
                 style={{
                   position: 'absolute',
                   left: -24, top: -24,
                   width: 72, height: 72,
                   borderRadius: '50%',
-                  background: 'rgba(0,0,0,0.45)',
-                  backdropFilter: 'blur(16px)',
-                  border: `1.5px solid ${btn.color}`,
+                  background: isStreak && streakDone ? 'rgba(212,175,55,0.14)' : 'rgba(0,0,0,0.5)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                  border: `1.5px solid ${btnColor}`,
                   display: 'flex', flexDirection: 'column',
                   alignItems: 'center', justifyContent: 'center',
-                  boxShadow: `0 0 14px ${btn.color}40`,
+                  boxShadow: `0 0 16px ${btnColor}50`,
                   touchAction: 'none', cursor: 'pointer',
+                  transition: 'border-color 0.3s, box-shadow 0.3s, background 0.3s',
                 }}
               >
-                <Icon style={{ width: 26, height: 26, color: btn.color }} strokeWidth={1.5} />
+                <Icon style={{ width: 26, height: 26, color: btnColor, transition: 'color 0.3s' }} strokeWidth={1.5} />
                 <span style={{
-                  fontSize: 8,
-                  color: btn.color,
-                  marginTop: 3,
-                  letterSpacing: '0.08em',
-                  textTransform: 'uppercase',
-                  fontFamily: 'Montserrat, sans-serif',
-                  fontWeight: 500,
-                  opacity: 0.85,
+                  fontSize: 8, color: btnColor, marginTop: 3,
+                  letterSpacing: '0.08em', textTransform: 'uppercase',
+                  fontFamily: 'Montserrat, sans-serif', fontWeight: 500, opacity: 0.85,
+                  transition: 'color 0.3s',
                 }}>
-                  {btn.label}
+                  {isStreak && streakDone ? 'Done!' : btn.label}
                 </span>
               </motion.button>
             );
@@ -305,23 +386,23 @@ export default function QuickLogFAB({ onUpdate }) {
           onPointerDown={onPointerDown}
           onPointerUp={onPointerUp}
           onPointerCancel={() => clearTimeout(longTimer.current)}
-          animate={shouldPulse && !isOpen
-            ? { boxShadow: ['0 0 20px rgba(225,193,110,0.3)', '0 0 42px rgba(225,193,110,0.72)', '0 0 20px rgba(225,193,110,0.3)'] }
+          animate={waterPulse
+            ? { boxShadow: ['0 0 20px rgba(142,202,230,0.4)', '0 0 55px rgba(142,202,230,0.9)', '0 0 20px rgba(142,202,230,0.2)'] }
             : { boxShadow: '0 0 20px rgba(225,193,110,0.28)' }
           }
-          transition={shouldPulse && !isOpen ? { duration: 1, repeat: Infinity, ease: 'easeInOut' } : {}}
+          transition={waterPulse ? { duration: 0.7, ease: 'easeOut' } : {}}
           whileTap={{ scale: 0.88 }}
           style={{
             position: 'absolute', inset: 0, borderRadius: '50%', border: 'none', cursor: 'pointer',
-            background: `linear-gradient(135deg, ${GOLD} 0%, #F4D03F 50%, ${GOLD} 100%)`,
+            background: waterPulse
+              ? `linear-gradient(135deg, ${BLUE} 0%, #A8D8EA 50%, ${BLUE} 100%)`
+              : `linear-gradient(135deg, ${GOLD} 0%, #F4D03F 50%, ${GOLD} 100%)`,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             touchAction: 'none', userSelect: 'none', WebkitUserSelect: 'none',
+            transition: 'background 0.25s ease',
           }}
         >
-          <motion.div
-            animate={{ rotate: isOpen ? 135 : 0 }}
-            transition={{ type: 'spring', damping: 14, stiffness: 200 }}
-          >
+          <motion.div animate={{ rotate: isOpen ? 135 : 0 }} transition={{ type: 'spring', damping: 14, stiffness: 200 }}>
             <Plus style={{ width: 24, height: 24, color: '#080808' }} strokeWidth={2.5} />
           </motion.div>
         </motion.button>
