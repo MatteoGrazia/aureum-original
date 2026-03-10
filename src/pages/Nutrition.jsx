@@ -23,7 +23,10 @@ const mealIcons = {
 
 export default function Nutrition() {
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [showScanner, setShowScanner] = useState(false);
+  const [showScanner, setShowScanner] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('openScanner') === 'true';
+  });
   const [selectedFood, setSelectedFood] = useState(null);
   const [selectedMeal, setSelectedMeal] = useState('lunch');
   const [amount, setAmount] = useState(100);
