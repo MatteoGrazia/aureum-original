@@ -389,8 +389,8 @@ export default function QuickLogFAB({ onUpdate }) {
                  width: 72, height: 72,
                  borderRadius: '50%',
                  background: isStreak && streakDone
-                  ? (isDarkMode ? `${btnColor}30` : 'rgba(255,255,255,0.92)')
-                  : isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.92)',
+                  ? `${btnColor}22`
+                  : isDarkMode ? 'rgba(255,255,255,0.04)' : 'transparent',
                  backdropFilter: 'blur(8px)',
                  WebkitBackdropFilter: 'blur(8px)',
                  border: `2px solid ${btnColor}`,
