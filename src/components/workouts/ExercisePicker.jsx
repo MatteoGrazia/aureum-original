@@ -20,10 +20,17 @@ const MUSCLE_API = {
   calves:    'Calves',
 };
 
-function getMuscleImageUrl(muscleGroup) {
-  const m = MUSCLE_API[muscleGroup] || (muscleGroup ? muscleGroup.charAt(0).toUpperCase() + muscleGroup.slice(1) : 'Chest');
-  return `https://musclegroup-image-generator.vercel.app/getImage?muscleGroups=${encodeURIComponent(m)}&color=D4AF37&transparentBackground=1`;
+function getWgerAnatomyUrl(muscleGroup) {
+  const wgerMap = {
+    chest: '15', back: '2', shoulders: '13', biceps: '4', triceps: '6',
+    legs: '10', core: '12', glutes: '32', forearms: '26', calves: '5'
+  };
+  const muscleId = wgerMap[muscleGroup] || '15';
+  return `https://wger.de/static/images/muscles/main/${muscleId}.svg`;
 }
+
+// Fallback universal anatomy silhouette
+const FALLBACK_ANATOMY = 'https://wger.de/static/images/exercises/main/1.svg';
 
 // ─── Muscle-group icons (filter pills only) ───────────────────────────────────
 function MuscleIcon({ muscle, size = 11, color }) {
@@ -121,7 +128,7 @@ function PearlCircle({ size = 48, isDarkMode, children }) {
 }
 
 // ─── Lazy image — IntersectionObserver + error fallback ───────────────────────
-function LazyAnatomical({ src, alt, fallback }) {
+function LazyAnatomical({ src, alt, fallback, customSrc }) {
   const [shouldLoad, setShouldLoad] = useState(false);
   const [err, setErr] = useState(false);
   const ref = useRef(null);
@@ -137,11 +144,13 @@ function LazyAnatomical({ src, alt, fallback }) {
     return () => obs.disconnect();
   }, []);
 
+  const imageUrl = customSrc || src;
+
   return (
     <div ref={ref} style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       {shouldLoad && !err
-        ? <img src={src} alt={alt} loading="lazy" onError={() => setErr(true)}
-            style={{ width: '90%', height: '90%', objectFit: 'contain' }} />
+        ? <img src={imageUrl} alt={alt} loading="lazy" onError={() => setErr(true)}
+            style={{ width: '90%', height: '90%', objectFit: 'contain', filter: 'none' }} />
         : err ? fallback : null}
     </div>
   );
@@ -291,7 +300,7 @@ export default function ExercisePicker({ exercises, onSelect, onClose, mode = 'a
 
       {/* ── Exercise list + A-Z jumper ── */}
       <div className="flex-1 flex overflow-hidden relative">
-        <div className="flex-1 overflow-y-auto px-5" style={{ paddingRight: '2.2rem', paddingBottom: '120px' }}>
+        <div className="flex-1 overflow-y-auto px-5" style={{ paddingRight: '2.2rem', paddingBottom: '140px' }}>
           {letters.map(letter => (
             <div key={letter} ref={el => { sectionRefs.current[letter] = el; }}>
               <p className="text-[10px] uppercase tracking-widest pt-3 pb-1.5 px-1"
@@ -300,20 +309,22 @@ export default function ExercisePicker({ exercises, onSelect, onClose, mode = 'a
               </p>
               <div className="space-y-1">
                 {letterGroups[letter].map(ex => {
-                  const imgUrl = getMuscleImageUrl(ex.muscle_group);
-                  const ghosts = (previousWorkoutSets[ex.name] || []).filter(s => !s.is_warmup && s.weight > 0);
-                  const topSet = [...ghosts].sort((a, b) => (b.weight * b.reps) - (a.weight * a.reps))[0];
-                  return (
-                    <button key={ex.id} onClick={() => setSelected(ex)}
-                      className="w-full px-3 py-2.5 rounded-xl text-left flex items-center gap-3 transition-all active:scale-[0.98]"
-                      style={{ background: cardBg, border: `0.5px solid ${borderColor}` }}>
-                      <PearlCircle size={48} isDarkMode={isDarkMode}>
-                        <LazyAnatomical
-                          src={imgUrl}
-                          alt={ex.muscle_group}
-                          fallback={<ExerciseIcon name={ex.name} muscle={ex.muscle_group} size={20} color={iconColor} />}
-                        />
-                      </PearlCircle>
+                   const customUrl = ex.image_url;
+                   const fallbackUrl = getWgerAnatomyUrl(ex.muscle_group);
+                   const ghosts = (previousWorkoutSets[ex.name] || []).filter(s => !s.is_warmup && s.weight > 0);
+                   const topSet = [...ghosts].sort((a, b) => (b.weight * b.reps) - (a.weight * a.reps))[0];
+                   return (
+                     <button key={ex.id} onClick={() => setSelected(ex)}
+                       className="w-full px-3 py-2.5 rounded-xl text-left flex items-center gap-3 transition-all active:scale-[0.98]"
+                       style={{ background: cardBg, border: `0.5px solid ${borderColor}` }}>
+                       <PearlCircle size={48} isDarkMode={isDarkMode}>
+                         <LazyAnatomical
+                           src={fallbackUrl}
+                           alt={ex.name}
+                           customSrc={customUrl}
+                           fallback={<ExerciseIcon name={ex.name} muscle={ex.muscle_group} size={20} color={iconColor} />}
+                         />
+                       </PearlCircle>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm truncate" style={{ fontFamily: 'Montserrat, sans-serif', color: textPrimary }}>{ex.name}</p>
                         <p className="text-[11px] capitalize mt-0.5" style={{ color: textMuted }}>{ex.muscle_group} · {ex.equipment}</p>
@@ -375,18 +386,18 @@ export default function ExercisePicker({ exercises, onSelect, onClose, mode = 'a
                 width: 68, height: 68, borderRadius: '50%',
                 border: `0.5px solid ${isDarkMode ? '#D4AF37' : '#9C7E46'}`,
                 background: 'rgba(255,255,255,0.05)',
-                backdropFilter: 'blur(15px)',
-                WebkitBackdropFilter: 'blur(15px)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
                 boxShadow: isDarkMode ? '0 0 10px rgba(212,175,55,0.1)' : 'none',
                 overflow: 'hidden', flexShrink: 0,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
                 <img
-                  src={getMuscleImageUrl(selected.muscle_group)}
-                  alt={selected.muscle_group}
+                  src={selected.image_url || getWgerAnatomyUrl(selected.muscle_group)}
+                  alt={selected.name}
                   loading="lazy"
-                  style={{ width: '88%', height: '88%', objectFit: 'contain' }}
-                  onError={e => { e.target.style.display = 'none'; }}
+                  style={{ width: '88%', height: '88%', objectFit: 'contain', filter: 'none' }}
+                  onError={e => { e.target.src = FALLBACK_ANATOMY; }}
                 />
               </div>
 
