@@ -1,26 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Plus, Loader2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { Input } from '@/components/ui/input';
-import { simpleIngredients } from './simpleIngredientsData';
 
 export default function FoodSearch({ onSelectFood }) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showEmptyState, setShowEmptyState] = useState(false);
+  const debounceRef = useRef(null);
 
   const searchOpenFoodFactsFallback = async (searchQuery) => {
     try {
       const response = await fetch(
         `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(searchQuery)}&search_simple=1&action=process&json=1&page_size=20`
       );
-      
       const data = await response.json();
-      const products = data.products || [];
-      
-      return products
+      return (data.products || [])
         .filter(p => p.product_name && p.nutriments?.['energy-kcal_100g'] > 0)
         .slice(0, 12)
         .map(p => ({
@@ -49,35 +46,18 @@ export default function FoodSearch({ onSelectFood }) {
     setLoading(true);
     setShowEmptyState(false);
 
-    const timeoutId = setTimeout(() => {
-      if (results.length === 0) {
-        setShowEmptyState(true);
-      }
-    }, 4000);
-
     try {
-      // Priority 1: USDA for raw ingredients (SR Legacy)
-      const usdaResponse = await base44.functions.invoke('usdaFoodSearch', {
-        query: searchQuery
-      });
-
-      // USDA foods already include availableUnits with serving sizes
+      const usdaResponse = await base44.functions.invoke('usdaFoodSearch', { query: searchQuery });
       let foods = usdaResponse.data.foods || [];
 
       if (foods.length > 0) {
-        clearTimeout(timeoutId);
         setResults(foods);
         setShowEmptyState(false);
         setLoading(false);
         return;
       }
 
-      // Priority 3: FatSecret for branded/restaurant items
-      const fsResponse = await base44.functions.invoke('fatsecretSearch', {
-        action: 'search',
-        query: searchQuery
-      });
-
+      const fsResponse = await base44.functions.invoke('fatsecretSearch', { action: 'search', query: searchQuery });
       foods = (fsResponse.data.foods || []).map(food => ({
         id: food.id,
         name: food.name,
@@ -92,7 +72,6 @@ export default function FoodSearch({ onSelectFood }) {
         needsDetails: food.needsDetails
       }));
 
-      clearTimeout(timeoutId);
       setResults(foods);
       setShowEmptyState(foods.length === 0);
     } catch (error) {
@@ -101,18 +80,30 @@ export default function FoodSearch({ onSelectFood }) {
       setResults(foods);
       setShowEmptyState(foods.length === 0);
     }
+
     setLoading(false);
   };
 
   const handleSearch = (e) => {
     const value = e.target.value;
     setQuery(value);
-    
-    const timeoutId = setTimeout(() => {
-      searchFood(value);
-    }, 500);
 
-    return () => clearTimeout(timeoutId);
+    const trimmed = value.trim();
+
+    // Immediately clear if too short
+    if (!trimmed || trimmed.length < 2) {
+      clearTimeout(debounceRef.current);
+      setResults([]);
+      setShowEmptyState(false);
+      setLoading(false);
+      return;
+    }
+
+    // Debounced search — trim spaces so "apple" and "apple " are identical
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      searchFood(trimmed);
+    }, 450);
   };
 
   return (
@@ -134,13 +125,14 @@ export default function FoodSearch({ onSelectFood }) {
       </div>
 
       <AnimatePresence>
-        {showEmptyState && query.length >= 2 && !loading && (
+        {/* Only show empty state when loading is fully done */}
+        {showEmptyState && query.trim().length >= 2 && !loading && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
           >
-            <div 
+            <div
               className="p-6 rounded-xl text-center"
               style={{
                 background: 'rgba(255, 255, 255, 0.03)',
@@ -148,16 +140,10 @@ export default function FoodSearch({ onSelectFood }) {
                 border: '0.5px solid rgba(212, 175, 55, 0.1)'
               }}
             >
-              <p 
-                className="text-white/60 text-sm mb-4"
-                style={{ fontFamily: 'Inter, sans-serif', fontWeight: 300 }}
-              >
+              <p className="text-white/60 text-sm mb-4" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 300 }}>
                 No perfect match found
               </p>
-              <p 
-                className="text-white/40 text-xs"
-                style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}
-              >
+              <p className="text-white/40 text-xs" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>
                 Try scanning a barcode or adding a custom food
               </p>
             </div>
@@ -191,16 +177,8 @@ export default function FoodSearch({ onSelectFood }) {
                   <div className="flex items-start gap-1.5 w-full">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-baseline gap-2 mb-0.5">
-                        <p 
-                          className="text-xs text-white flex-1"
-                          style={{ 
-                            fontFamily: 'Montserrat, sans-serif', 
-                            fontWeight: 400,
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap'
-                          }}
-                        >
+                        <p className="text-xs text-white flex-1"
+                          style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {food.name}
                         </p>
                         <span className="text-[11px] text-[#D4AF37] font-semibold flex-shrink-0 whitespace-nowrap">
@@ -208,35 +186,15 @@ export default function FoodSearch({ onSelectFood }) {
                         </span>
                       </div>
                       {food.brand && (
-                        <p 
-                          className="text-[9px] text-white/40 mb-1"
-                          style={{ 
-                            fontFamily: 'Montserrat, sans-serif', 
-                            fontWeight: 300,
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap'
-                          }}
-                        >
+                        <p className="text-[9px] text-white/40 mb-1"
+                          style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 300, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {food.brand}
                         </p>
                       )}
-                      <div 
-                        className="flex flex-wrap gap-x-3 gap-y-1 text-[9px]"
-                        style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}
-                      >
-                        <div className="flex items-center gap-0.5 whitespace-nowrap">
-                          <span style={{ color: '#9C7E46' }}>P:</span>
-                          <span style={{ color: '#9C7E46' }}>{food.protein}g</span>
-                        </div>
-                        <div className="flex items-center gap-0.5 whitespace-nowrap">
-                          <span style={{ color: '#9C7E46' }}>C:</span>
-                          <span style={{ color: '#9C7E46' }}>{food.carbs}g</span>
-                        </div>
-                        <div className="flex items-center gap-0.5 whitespace-nowrap">
-                          <span style={{ color: '#9C7E46' }}>F:</span>
-                          <span style={{ color: '#9C7E46' }}>{food.fat}g</span>
-                        </div>
+                      <div className="flex flex-wrap gap-x-3 gap-y-1 text-[9px]" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>
+                        <span style={{ color: '#9C7E46' }}>P: {food.protein}g</span>
+                        <span style={{ color: '#9C7E46' }}>C: {food.carbs}g</span>
+                        <span style={{ color: '#9C7E46' }}>F: {food.fat}g</span>
                       </div>
                     </div>
                     <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[#D4AF37]/20 flex items-center justify-center hover:bg-[#D4AF37]/30 transition-colors mt-0.5">
