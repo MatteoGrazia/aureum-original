@@ -224,7 +224,7 @@ export default function Nutrition() {
   }));
 
   return (
-    <div className="min-h-screen relative bg-[#080808]">
+    <div className="min-h-screen relative bg-[#080808] overflow-x-hidden">
       <VoidBackground />
       <BarcodeScanner
         isOpen={showScanner}
@@ -306,13 +306,13 @@ export default function Nutrition() {
         transition={{ delay: 0.2 }}
         className="mb-6 space-y-3"
       >
-        <div className="flex gap-3">
-          <div className="flex-1">
+        <div className="flex gap-3 items-start">
+          <div className="flex-1 min-w-0">
             <FoodSearch onSelectFood={handleSelectFood} />
           </div>
           <button
             onClick={() => setShowScanner(true)}
-            className="w-14 h-14 rounded-xl bg-[#D4AF37]/20 border border-[#D4AF37]/30 flex items-center justify-center hover:bg-[#D4AF37]/30 transition-colors"
+            className="w-14 h-14 flex-shrink-0 rounded-xl bg-[#D4AF37]/20 border border-[#D4AF37]/30 flex items-center justify-center hover:bg-[#D4AF37]/30 transition-colors"
           >
             <Scan className="w-6 h-6 text-[#D4AF37]" />
           </button>
@@ -561,17 +561,17 @@ export default function Nutrition() {
                   {logs.map((log) => (
                     <div
                       key={log.id}
-                      className="flex items-center justify-between p-3 rounded-xl bg-white/5"
+                      className="flex items-center justify-between gap-2 p-3 rounded-xl bg-white/5"
                     >
-                      <div>
-                        <p className="text-white text-sm">{log.food_name}</p>
-                        <p className="text-white/40 text-xs">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-white text-sm truncate">{log.food_name}</p>
+                        <p className="text-white/40 text-xs truncate">
                           {log.serving_size}{log.serving_unit} • {log.calories} kcal
                         </p>
                       </div>
                       <button
                         onClick={() => handleDeleteLog(log.id)}
-                        className="w-8 h-8 rounded-full bg-red-500/10 flex items-center justify-center hover:bg-red-500/20 transition-colors"
+                        className="w-8 h-8 flex-shrink-0 rounded-full bg-red-500/10 flex items-center justify-center hover:bg-red-500/20 transition-colors"
                       >
                         <Trash2 className="w-4 h-4 text-red-400" />
                       </button>
