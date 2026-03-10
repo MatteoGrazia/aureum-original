@@ -261,7 +261,7 @@ export default function Dashboard() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
-      className="min-h-screen relative overflow-hidden bg-[#080808]">
+      className="min-h-screen relative overflow-x-hidden bg-[#080808]">
       <VoidBackground />
       {showWelcome && <WelcomeModal onComplete={handleWelcomeComplete} />}
       {showMotionPermission && (
