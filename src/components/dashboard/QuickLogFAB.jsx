@@ -282,9 +282,9 @@ export default function QuickLogFAB({ onUpdate }) {
                   touchAction: 'none', cursor: 'pointer',
                 }}
               >
-                <Icon style={{ width: 22, height: 22, color: btn.color }} strokeWidth={1.5} />
+                <Icon style={{ width: 26, height: 26, color: btn.color }} strokeWidth={1.5} />
                 <span style={{
-                  fontSize: 7,
+                  fontSize: 8,
                   color: btn.color,
                   marginTop: 3,
                   letterSpacing: '0.08em',
