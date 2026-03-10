@@ -50,7 +50,8 @@ export default function QuickLogFAB({ onUpdate }) {
   const [loading, setLoading]         = useState(false);
   const [waterPulse, setWaterPulse]   = useState(false);
   const [energyLevel, setEnergyLevel] = useState(3);
-  const [streakDone, setStreakDone]   = useState(() => localStorage.getItem(getTodayKey()) === 'true');
+  const [streakDone, setStreakDone]   = useState(() => !!getSupplementLog()[format(new Date(), 'yyyy-MM-dd')]);
+  const [waterFlash, setWaterFlash]   = useState(false);
 
   const weightInputRef = useRef(null);
   const queryClient    = useQueryClient();
@@ -91,9 +92,10 @@ export default function QuickLogFAB({ onUpdate }) {
   const addWater = async () => {
     haptic('light');
     setIsOpen(false);
-    // Pulse FAB blue
     setWaterPulse(true);
+    setWaterFlash(true);
     setTimeout(() => setWaterPulse(false), 900);
+    setTimeout(() => setWaterFlash(false), 1200);
 
     if (todayActivity) {
       await base44.entities.DailyActivity.update(todayActivity.id, {
@@ -125,9 +127,12 @@ export default function QuickLogFAB({ onUpdate }) {
   };
 
   const toggleStreak = () => {
+    const log = getSupplementLog();
+    const todayStr = format(new Date(), 'yyyy-MM-dd');
     const next = !streakDone;
+    if (next) { log[todayStr] = true; } else { delete log[todayStr]; }
+    localStorage.setItem(SUPPLEMENT_LOG_KEY, JSON.stringify(log));
     setStreakDone(next);
-    localStorage.setItem(getTodayKey(), String(next));
     haptic(next ? 'select' : 'light');
     setIsOpen(false);
   };
