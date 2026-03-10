@@ -30,7 +30,7 @@ const angleToOffset = (deg) => {
   return { dx: R * Math.sin(rad), dy: -R * Math.cos(rad) };
 };
 
-const ARC_R     = R + 62; // outside the 72px-wide orbital buttons
+const ARC_R     = R + 82; // outside the 72px-wide orbital buttons
 const ARC_START = { x: FAB_C + ARC_R * Math.sin((-90 * Math.PI) / 180), y: FAB_C - ARC_R * Math.cos((-90 * Math.PI) / 180) };
 const ARC_END   = { x: FAB_C, y: FAB_C - ARC_R };
 const ARC_PATH  = `M ${ARC_START.x} ${ARC_START.y} A ${ARC_R} ${ARC_R} 0 0 1 ${ARC_END.x} ${ARC_END.y}`;
