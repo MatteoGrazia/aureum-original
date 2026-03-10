@@ -105,8 +105,7 @@ const searchBarcode = async (barcode, token) => {
     body: new URLSearchParams({
       method: 'food.find_id_for_barcode',
       barcode: barcode,
-      format: 'json',
-      region: 'US'
+      format: 'json'
     }).toString()
   });
 
