@@ -119,7 +119,13 @@ export default function BarcodeScanner({ isOpen, onClose, onScan }) {
           </div>
         </div>
 
-        {scanning && !error && (
+        {lookingUp && (
+          <div className="mt-6 flex items-center gap-3">
+            <Loader2 className="w-4 h-4 text-[#D4AF37] animate-spin" />
+            <p className="text-white/50 text-sm">Looking up product...</p>
+          </div>
+        )}
+        {scanning && !lookingUp && !error && (
           <div className="mt-6 flex items-center gap-3">
             <Loader2 className="w-4 h-4 text-[#D4AF37] animate-spin" />
             <p className="text-white/50 text-sm">Position barcode within frame</p>
