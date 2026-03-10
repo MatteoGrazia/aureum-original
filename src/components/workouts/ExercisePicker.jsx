@@ -26,11 +26,11 @@ function getWgerAnatomyUrl(muscleGroup) {
     legs: '10', core: '12', glutes: '32', forearms: '26', calves: '5'
   };
   const muscleId = wgerMap[muscleGroup] || '15';
-  return `https://wger.de/static/images/muscles/main/${muscleId}.svg`;
+  return `https://wger.de/static/images/muscles/main/${muscleId}.png`;
 }
 
 // Fallback universal anatomy silhouette
-const FALLBACK_ANATOMY = 'https://wger.de/static/images/exercises/main/1.svg';
+const FALLBACK_ANATOMY = 'https://wger.de/static/images/exercises/main/1.png';
 
 // ─── Muscle-group icons (filter pills only) ───────────────────────────────────
 function MuscleIcon({ muscle, size = 11, color }) {
