@@ -128,7 +128,7 @@ export default function SupplementStreak() {
                   border: d.isToday ? '1px solid rgba(212,175,55,0.7)' : d.done ? '0.5px solid rgba(212,175,55,0.4)' : '0.5px solid rgba(255,255,255,0.08)',
                   boxShadow: d.done ? '0 2px 8px rgba(212,175,55,0.3)' : 'none',
                 }}>
-                {d.done && <span style={{ fontSize: 11 }}>✓</span>}
+                {d.done && <Check style={{ width: 11, height: 11, color: '#080808' }} strokeWidth={2.5} />}
               </div>
               <p className="text-[8px] uppercase" style={{ color: d.isToday ? '#D4AF37' : subColor, fontFamily: 'Montserrat, sans-serif' }}>
                 {d.dayLabel}
