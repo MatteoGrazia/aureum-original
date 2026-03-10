@@ -75,6 +75,10 @@ export default function BarcodeScanner({ isOpen, onClose, onScan }) {
 
     const initScanner = async () => {
       try {
+        // Clear any leftover DOM/stream state from previous session
+        const el = document.getElementById("barcode-reader");
+        if (el) el.innerHTML = '';
+
         html5QrCode = new Html5Qrcode("barcode-reader");
         scannerRef.current = html5QrCode;
 
@@ -146,6 +150,7 @@ export default function BarcodeScanner({ isOpen, onClose, onScan }) {
   if (!isOpen) return null;
 
   const isCameraView = status === 'scanning' || status === 'looking_up' || status === 'found';
+  const isManualView = status === 'not_found' || status === 'editing';
 
   return (
     <motion.div
@@ -160,7 +165,7 @@ export default function BarcodeScanner({ isOpen, onClose, onScan }) {
           className="text-lg tracking-[0.2em] uppercase text-white"
           style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}
         >
-          {status === 'not_found' ? 'Manual Entry' : 'Scan Barcode'}
+          {(status === 'not_found' || status === 'editing') ? 'Manual Entry' : 'Scan Barcode'}
         </h2>
         <button
           onClick={handleClose}
@@ -222,7 +227,7 @@ export default function BarcodeScanner({ isOpen, onClose, onScan }) {
       )}
 
       {/* Manual Entry Form */}
-      {status === 'not_found' && (
+      {isManualView && (
         <div className="flex-1 p-5 overflow-y-auto">
           <div
             className="rounded-2xl p-5 space-y-4"
@@ -232,10 +237,12 @@ export default function BarcodeScanner({ isOpen, onClose, onScan }) {
               backdropFilter: 'blur(20px)'
             }}
           >
-            <div className="flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 text-[#D4AF37] flex-shrink-0" />
-              <p className="text-white/50 text-sm">Product not found. Enter nutrition info manually.</p>
-            </div>
+            {status === 'not_found' && (
+              <div className="flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 text-[#D4AF37] flex-shrink-0" />
+                <p className="text-white/50 text-sm">Product not found. Enter nutrition info manually.</p>
+              </div>
+            )}
 
             {[
               { key: 'name', label: 'Product Name', type: 'text', placeholder: 'e.g. Protein Bar' },
@@ -370,7 +377,7 @@ export default function BarcodeScanner({ isOpen, onClose, onScan }) {
                       carbs: String(foundProduct.carbs_100g),
                       fat: String(foundProduct.fat_100g)
                     });
-                    setStatus('not_found');
+                    setStatus('editing');
                   }}
                   className="flex items-center gap-2 px-4 py-3 rounded-xl text-white/60 text-sm uppercase tracking-wider"
                   style={{ border: '0.5px solid rgba(255,255,255,0.15)', minHeight: '48px' }}
