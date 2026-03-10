@@ -53,6 +53,7 @@ export default function QuickLogFAB({ onUpdate }) {
   const [energyLevel, setEnergyLevel] = useState(3);
   const [streakDone, setStreakDone]   = useState(() => !!getSupplementLog()[format(new Date(), 'yyyy-MM-dd')]);
   const [waterFlash, setWaterFlash]   = useState(false);
+  const { isDarkMode } = useTheme();
 
   const weightInputRef = useRef(null);
   const queryClient    = useQueryClient();
