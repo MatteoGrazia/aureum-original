@@ -18,7 +18,7 @@ function LayoutInner({ children, currentPageName }) {
 
   return (
     <div
-      className="min-h-screen text-white"
+      className="min-h-screen text-white overflow-x-hidden"
       style={{
         background: isDarkMode ? '#080808' : '#F5F5F7',
         backgroundImage: isDarkMode

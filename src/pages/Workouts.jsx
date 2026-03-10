@@ -375,7 +375,7 @@ export default function Workouts() {
   };
 
   return (
-    <div className="min-h-screen relative bg-[#080808]">
+    <div className="min-h-screen relative bg-[#080808] overflow-x-hidden">
       <VoidBackground />
       <PlateCalculator isOpen={showCalculator} onClose={() => setShowCalculator(false)} />
 

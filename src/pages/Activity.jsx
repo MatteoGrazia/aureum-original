@@ -109,7 +109,7 @@ export default function Activity() {
   const yearlyAverage = Math.round(yearlySteps / Math.max(yearlyActivity.length, 1));
 
   return (
-    <div className="min-h-screen relative bg-[#080808]">
+    <div className="min-h-screen relative bg-[#080808] overflow-x-hidden">
       <VoidBackground />
       {showPermissionModal && (
         <MotionPermissionModal 
