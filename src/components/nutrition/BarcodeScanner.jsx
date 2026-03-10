@@ -11,6 +11,14 @@ export default function BarcodeScanner({ isOpen, onClose, onScan }) {
   const scannerRef = useRef(null);
   const isProcessingRef = useRef(false);
 
+  const handleClose = async () => {
+    if (scannerRef.current) {
+      try { await scannerRef.current.stop(); } catch {}
+      scannerRef.current = null;
+    }
+    onClose();
+  };
+
   useEffect(() => {
     if (!isOpen) return;
 
