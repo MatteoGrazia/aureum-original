@@ -10,6 +10,12 @@ const GOLD   = '#D4AF37';
 const BRONZE = '#9C7E46';
 const BLUE   = '#8ECAE6';
 const AMBER  = '#F4A261';
+
+// Darker versions for light mode
+const GOLD_DARK   = '#7A5C10';
+const BRONZE_DARK = '#5C3A0A';
+const BLUE_DARK   = '#1E6A8C';
+const AMBER_DARK  = '#A04D10';
 const SUPPLEMENT_LOG_KEY = 'aureum_supplement_log';
 const getSupplementLog = () => { try { return JSON.parse(localStorage.getItem(SUPPLEMENT_LOG_KEY) || '{}'); } catch { return {}; } };
 
