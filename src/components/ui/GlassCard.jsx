@@ -7,7 +7,7 @@ export default function GlassCard({ children, className, glow = false, style, ..
   return (
     <div
       className={cn(
-        "backdrop-blur-[25px] saturate-[160%] border-[0.5px] border-[#D4AF37]/20 rounded-2xl",
+        "backdrop-blur-[25px] backdrop-saturate-[160%] border-[0.5px] border-[#D4AF37]/20 rounded-2xl",
         className
       )}
       style={{
