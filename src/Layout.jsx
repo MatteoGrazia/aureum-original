@@ -37,19 +37,20 @@ function LayoutInner({ children, currentPageName }) {
       <style>{`
         :root {
           --gold: #D4AF37;
-          --bronze: #BFA68F;
-          --muted-bronze: #9C7E46;
-          --gold-light: rgba(212, 175, 55, 0.2);
-          --gold-glow: rgba(212, 175, 55, 0.4);
+          --champagne: #F5F0E8;
+          --pearl: #FAF8F5;
+          --warm-white: #FEFDFB;
+          --muted-slate: #8B8B8D;
+          --soft-gray: #E8E6E3;
           --glass-bg: rgba(255, 255, 255, 0.03);
-          --glass-border: rgba(212, 175, 55, 0.2);
+          --glass-border: rgba(200, 200, 200, 0.15);
           --void-black: #080808;
         }
 
         .glass-card {
           backdrop-filter: blur(12px) saturate(140%);
           background: rgba(255, 255, 255, 0.05);
-          border: 0.5px solid rgba(212, 175, 55, 0.2);
+          border: 0.5px solid rgba(200, 200, 200, 0.15);
           transition: background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
         }
 
@@ -73,7 +74,7 @@ function LayoutInner({ children, currentPageName }) {
 
         input, textarea, select {
           background: rgba(255, 255, 255, 0.05) !important;
-          border-color: rgba(212, 175, 55, 0.2) !important;
+          border-color: rgba(200, 200, 200, 0.2) !important;
         }
         input:focus, textarea:focus, select:focus {
           border-color: var(--gold) !important;
@@ -82,7 +83,7 @@ function LayoutInner({ children, currentPageName }) {
 
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(212, 175, 55, 0.3); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: rgba(180, 180, 180, 0.3); border-radius: 4px; }
 
         @supports (padding: max(0px)) {
           body { padding-bottom: env(safe-area-inset-bottom); }
@@ -93,9 +94,9 @@ function LayoutInner({ children, currentPageName }) {
         ============================================ */
 
         html[data-theme="light"] .glass-card {
-          background: rgba(255, 255, 255, 0.88) !important;
-          border: 0.5px solid rgba(225, 193, 110, 0.45) !important;
-          box-shadow: 0 4px 24px rgba(0, 0, 0, 0.07) !important;
+          background: rgba(255, 255, 255, 0.92) !important;
+          border: 0.5px solid rgba(220, 220, 220, 0.5) !important;
+          box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05) !important;
         }
 
         /* Page backgrounds — override all dark bg references */
@@ -144,8 +145,8 @@ function LayoutInner({ children, currentPageName }) {
         html[data-theme="light"] textarea,
         html[data-theme="light"] select {
           color: #1D1D1F !important;
-          background: rgba(255, 255, 255, 0.82) !important;
-          border-color: rgba(225, 193, 110, 0.4) !important;
+          background: rgba(255, 255, 255, 0.85) !important;
+          border-color: rgba(220, 220, 220, 0.6) !important;
         }
 
         /* Gold elements: add shadow so they pop on alabaster */
@@ -155,12 +156,12 @@ function LayoutInner({ children, currentPageName }) {
 
         /* Scrollbar */
         html[data-theme="light"] ::-webkit-scrollbar-thumb {
-          background: rgba(212, 175, 55, 0.5) !important;
+          background: rgba(180, 180, 180, 0.4) !important;
         }
 
         /* Border overrides */
         html[data-theme="light"] [class*="border-white/"] {
-          border-color: rgba(225, 193, 110, 0.3) !important;
+          border-color: rgba(220, 220, 220, 0.4) !important;
         }
 
         /* FAB sidebar */
@@ -182,12 +183,12 @@ function LayoutInner({ children, currentPageName }) {
         style={{
           width: 48,
           height: 48,
-          background: isDarkMode ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0.78)',
-          border: `0.5px solid ${isDarkMode ? 'rgba(212,175,55,0.3)' : 'rgba(225,193,110,0.55)'}`,
+          background: isDarkMode ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0.85)',
+          border: `0.5px solid ${isDarkMode ? 'rgba(212,175,55,0.3)' : 'rgba(220,220,220,0.6)'}`,
           backdropFilter: 'blur(16px)',
           boxShadow: isDarkMode
             ? '0 4px 20px rgba(0,0,0,0.5)'
-            : '0 4px 20px rgba(0,0,0,0.1), 0 0 0 1px rgba(225,193,110,0.15)',
+            : '0 4px 20px rgba(0,0,0,0.08), 0 0 0 1px rgba(220,220,220,0.2)',
           transition: 'background 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease',
         }}
         whileTap={{ scale: 0.88 }}
