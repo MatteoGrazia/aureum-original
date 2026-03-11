@@ -204,9 +204,10 @@ export default function QuickLogFAB({ onUpdate }) {
           <motion.div
             key="bd"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            transition={{ duration: 0.15, ease: 'easeOut' }}
             onClick={close}
             className="fixed inset-0"
-            style={{ background: 'rgba(0,0,0,0.22)', backdropFilter: 'blur(5px)', zIndex: 999 }}
+            style={{ background: 'rgba(0,0,0,0.22)', backdropFilter: 'blur(5px)', zIndex: 999, willChange: 'opacity' }}
           />
         )}
       </AnimatePresence>
@@ -377,10 +378,10 @@ export default function QuickLogFAB({ onUpdate }) {
             return (
               <motion.button
                 key={btn.action}
-                initial={{ x: 0, y: 0, opacity: 0, scale: 0.2 }}
+                initial={{ x: 0, y: 0, opacity: 0, scale: 0.3 }}
                 animate={{ x: dx, y: dy, opacity: 1, scale: 1 }}
-                exit={{ x: 0, y: 0, opacity: 0, scale: 0.2, transition: { duration: 0.14, ease: [0.4, 0, 1, 1] } }}
-                transition={{ type: 'spring', damping: 20, stiffness: 280, delay: i * 0.035 }}
+                exit={{ x: 0, y: 0, opacity: 0, scale: 0.3, transition: { duration: 0.12, ease: [0.4, 0, 0.6, 1] } }}
+                transition={{ type: 'spring', damping: 24, stiffness: 400, mass: 0.5, delay: i * 0.025 }}
                 onClick={() => handleAction(btn.action)}
                 style={{
                 position: 'absolute',
@@ -397,8 +398,10 @@ export default function QuickLogFAB({ onUpdate }) {
                 alignItems: 'center', justifyContent: 'center',
                 boxShadow: `0 0 22px ${btnColor}80, 0 0 6px ${btnColor}40, inset 0 0 10px ${btnColor}18`,
                 touchAction: 'none', cursor: 'pointer',
-                willChange: 'transform',
-                transition: 'border-color 0.2s, box-shadow 0.2s, background 0.2s',
+                willChange: 'transform, opacity',
+                transform: 'translateZ(0)',
+                backfaceVisibility: 'hidden',
+                WebkitFontSmoothing: 'antialiased',
                 }}
               >
                 <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -439,7 +442,7 @@ export default function QuickLogFAB({ onUpdate }) {
                 style={{ willChange: 'opacity', filter: `drop-shadow(0 0 3px ${isDarkMode ? GOLD : '#B8860B'})` }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 0.9 }}
-                transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
               />
               {/* Echo arcs — wave outward */}
               {ECHO_ARCS.map((arc, i) => (
@@ -452,7 +455,7 @@ export default function QuickLogFAB({ onUpdate }) {
                   style={{ willChange: 'opacity' }}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: arc.opacity }}
-                  transition={{ duration: 0.45, delay: 0.06 + i * 0.07, ease: [0.22, 1, 0.36, 1] }}
+                  transition={{ duration: 0.35, delay: 0.04 + i * 0.05, ease: [0.16, 1, 0.3, 1] }}
                 />
               ))}
             </motion.svg>
@@ -471,10 +474,10 @@ export default function QuickLogFAB({ onUpdate }) {
               : '0 0 20px rgba(225,193,110,0.28)',
           }}
           transition={waterPulse
-            ? { duration: 0.6, ease: [0.33, 1, 0.68, 1] }
-            : { borderRadius: { type: 'spring', damping: 22, stiffness: 300 } }
+            ? { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }
+            : { borderRadius: { type: 'spring', damping: 26, stiffness: 400, mass: 0.5 } }
           }
-          whileTap={{ scale: 0.9, transition: { duration: 0.08 } }}
+          whileTap={{ scale: 0.92, transition: { duration: 0.05, ease: 'easeOut' } }}
           style={{
             position: 'absolute', inset: 0, border: 'none', cursor: 'pointer',
             background: waterPulse
@@ -483,7 +486,10 @@ export default function QuickLogFAB({ onUpdate }) {
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             touchAction: 'none', userSelect: 'none', WebkitUserSelect: 'none',
             willChange: 'transform, border-radius',
-            transition: 'background 0.2s ease', overflow: 'hidden',
+            transform: 'translateZ(0)',
+            backfaceVisibility: 'hidden',
+            WebkitFontSmoothing: 'antialiased',
+            transition: 'background 0.18s ease', overflow: 'hidden',
           }}
         >
           <AnimatePresence mode="wait">
@@ -507,7 +513,7 @@ export default function QuickLogFAB({ onUpdate }) {
                 exit={{ opacity: 0, scale: 0.5 }}
                 transition={{ duration: 0.2 }}
               >
-                <motion.div animate={{ rotate: isOpen ? 135 : 0 }} transition={{ type: 'spring', damping: 18, stiffness: 300 }}>
+                <motion.div animate={{ rotate: isOpen ? 135 : 0 }} transition={{ type: 'spring', damping: 22, stiffness: 400, mass: 0.5 }}>
                   <Plus style={{ width: 24, height: 24, color: '#080808' }} strokeWidth={2.5} />
                 </motion.div>
               </motion.div>
