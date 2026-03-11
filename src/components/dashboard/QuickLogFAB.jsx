@@ -384,24 +384,22 @@ export default function QuickLogFAB({ onUpdate }) {
                 transition={{ type: 'spring', damping: 28, stiffness: 300, mass: 0.8, delay: i * 0.04 }}
                 onClick={() => handleAction(btn.action)}
                 style={{
-                position: 'absolute',
-                left: -24, top: -24,
-                width: 72, height: 72,
-                borderRadius: '50%',
-                background: isStreak && streakDone
-                 ? `${btnColor}22`
-                 : isDarkMode ? 'rgba(255,255,255,0.04)' : 'transparent',
-                backdropFilter: 'blur(8px)',
-                WebkitBackdropFilter: 'blur(8px)',
-                border: `2px solid ${btnColor}`,
-                display: 'flex', flexDirection: 'column',
-                alignItems: 'center', justifyContent: 'center',
-                boxShadow: `0 0 22px ${btnColor}80, 0 0 6px ${btnColor}40, inset 0 0 10px ${btnColor}18`,
-                touchAction: 'none', cursor: 'pointer',
-                willChange: 'transform, opacity',
-                transform: 'translateZ(0)',
-                backfaceVisibility: 'hidden',
-                WebkitFontSmoothing: 'antialiased',
+                 position: 'absolute',
+                 left: -24, top: -24,
+                 width: 72, height: 72,
+                 borderRadius: '50%',
+                 background: isStreak && streakDone
+                  ? `${btnColor}22`
+                  : isDarkMode ? 'rgba(0,0,0,0.25)' : 'rgba(255,255,255,0.15)',
+                 border: `2px solid ${btnColor}`,
+                 display: 'flex', flexDirection: 'column',
+                 alignItems: 'center', justifyContent: 'center',
+                 boxShadow: `0 0 22px ${btnColor}80, 0 0 6px ${btnColor}40, inset 0 0 10px ${btnColor}18`,
+                 touchAction: 'none', cursor: 'pointer',
+                 willChange: 'transform, opacity',
+                 transform: 'translateZ(0)',
+                 backfaceVisibility: 'hidden',
+                 WebkitFontSmoothing: 'antialiased',
                 }}
               >
                 <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
