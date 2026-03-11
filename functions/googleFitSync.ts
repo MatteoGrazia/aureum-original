@@ -35,7 +35,7 @@ Deno.serve(async (req) => {
 
     // Step 1: Initiate OAuth flow
     if (action === 'init') {
-      const redirectUri = Deno.env.get('GOOGLE_FIT_REDIRECT_URI') || `${url.origin}/api/googleFitSync?action=callback`;
+      const redirectUri = `${url.origin}/Activity`;
       const authUrl = new URL(GOOGLE_FIT_AUTH_URL);
       authUrl.searchParams.set('client_id', Deno.env.get('GOOGLE_FIT_CLIENT_ID'));
       authUrl.searchParams.set('redirect_uri', redirectUri);
@@ -49,9 +49,9 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Step 2: Handle OAuth callback and exchange code for token
-    if (action === 'callback' && code) {
-      const redirectUri = Deno.env.get('GOOGLE_FIT_REDIRECT_URI') || `${url.origin}/api/googleFitSync?action=callback`;
+    // Step 2: Handle OAuth callback - exchange code for token
+    if (action === 'exchange' && code) {
+      const redirectUri = `${url.origin}/Activity`;
       
       const tokenResponse = await fetch(GOOGLE_FIT_TOKEN_URL, {
         method: 'POST',
@@ -68,7 +68,7 @@ Deno.serve(async (req) => {
       const tokenData = await tokenResponse.json();
       
       if (!tokenData.access_token) {
-        return new Response('Failed to get access token from Google. Please try again.', { status: 400 });
+        return Response.json({ error: 'Failed to get access token from Google' }, { status: 400 });
       }
 
       // Store the refresh token in user profile for future syncs
@@ -76,10 +76,9 @@ Deno.serve(async (req) => {
         google_fit_refresh_token: tokenData.refresh_token,
       });
 
-      // Redirect back to the Activity page after successful connection
-      return new Response(null, {
-        status: 302,
-        headers: { 'Location': `${url.origin}/Activity` },
+      return Response.json({
+        success: true,
+        message: 'Google Fit connected successfully'
       });
     }
 

@@ -17,6 +17,28 @@ export default function Activity() {
     () => localStorage.getItem('google_fit_connected') === 'true'
   );
 
+  // Handle OAuth callback
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+    
+    if (code && !isGoogleFitConnected) {
+      // Exchange the code for tokens
+      base44.functions.invoke('googleFitSync', { action: 'exchange', code })
+        .then(response => {
+          if (response.data.success) {
+            localStorage.setItem('google_fit_connected', 'true');
+            setIsGoogleFitConnected(true);
+            // Clean up URL
+            window.history.replaceState({}, document.title, '/Activity');
+          }
+        })
+        .catch(error => {
+          console.error('Failed to exchange code:', error);
+        });
+    }
+  }, [isGoogleFitConnected]);
+
   const { data: dailyActivity, refetch } = useQuery({
     queryKey: ['dailyActivity', today],
     queryFn: async () => {
