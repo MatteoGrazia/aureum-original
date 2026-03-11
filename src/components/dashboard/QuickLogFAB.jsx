@@ -216,10 +216,10 @@ export default function QuickLogFAB({ onUpdate }) {
         {activeAction === 'weight' && (
           <motion.div
             key="wf"
-            initial={{ opacity: 0, scale: 0.88, y: 12 }}
+            initial={{ opacity: 0, scale: 0.92, y: 8 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.88, y: 12 }}
-            transition={{ type: 'spring', damping: 22, stiffness: 320 }}
+            exit={{ opacity: 0, scale: 0.92, y: 8 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 380 }}
             style={{ position: 'fixed', bottom: 185, right: 20, zIndex: 1002, width: 224 }}
           >
             <div style={{
@@ -277,10 +277,10 @@ export default function QuickLogFAB({ onUpdate }) {
         {activeAction === 'readiness' && (
           <motion.div
             key="rs"
-            initial={{ opacity: 0, scale: 0.9, y: 12 }}
+            initial={{ opacity: 0, scale: 0.92, y: 8 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 12 }}
-            transition={{ type: 'spring', damping: 22, stiffness: 320 }}
+            exit={{ opacity: 0, scale: 0.92, y: 8 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 380 }}
             style={{ position: 'fixed', bottom: 185, right: 20, zIndex: 1002, width: 240 }}
           >
             <div style={{
@@ -377,27 +377,28 @@ export default function QuickLogFAB({ onUpdate }) {
             return (
               <motion.button
                 key={btn.action}
-                initial={{ x: 0, y: 0, opacity: 0, scale: 0.15 }}
+                initial={{ x: 0, y: 0, opacity: 0, scale: 0.2 }}
                 animate={{ x: dx, y: dy, opacity: 1, scale: 1 }}
-                exit={{ x: 0, y: 0, opacity: 0, scale: 0.15, transition: { duration: 0.18, delay: (BUTTONS.length - 1 - i) * 0.03 } }}
-                transition={{ type: 'spring', damping: 15, stiffness: 120, delay: i * 0.055 }}
+                exit={{ x: 0, y: 0, opacity: 0, scale: 0.2, transition: { duration: 0.14, ease: [0.4, 0, 1, 1] } }}
+                transition={{ type: 'spring', damping: 20, stiffness: 280, delay: i * 0.035 }}
                 onClick={() => handleAction(btn.action)}
                 style={{
-                 position: 'absolute',
-                 left: -24, top: -24,
-                 width: 72, height: 72,
-                 borderRadius: '50%',
-                 background: isStreak && streakDone
-                  ? `${btnColor}22`
-                  : isDarkMode ? 'rgba(255,255,255,0.04)' : 'transparent',
-                 backdropFilter: 'blur(8px)',
-                 WebkitBackdropFilter: 'blur(8px)',
-                 border: `2px solid ${btnColor}`,
-                 display: 'flex', flexDirection: 'column',
-                 alignItems: 'center', justifyContent: 'center',
-                 boxShadow: `0 0 22px ${btnColor}80, 0 0 6px ${btnColor}40, inset 0 0 10px ${btnColor}18`,
-                 touchAction: 'none', cursor: 'pointer',
-                 transition: 'border-color 0.3s, box-shadow 0.3s, background 0.3s',
+                position: 'absolute',
+                left: -24, top: -24,
+                width: 72, height: 72,
+                borderRadius: '50%',
+                background: isStreak && streakDone
+                 ? `${btnColor}22`
+                 : isDarkMode ? 'rgba(255,255,255,0.04)' : 'transparent',
+                backdropFilter: 'blur(8px)',
+                WebkitBackdropFilter: 'blur(8px)',
+                border: `2px solid ${btnColor}`,
+                display: 'flex', flexDirection: 'column',
+                alignItems: 'center', justifyContent: 'center',
+                boxShadow: `0 0 22px ${btnColor}80, 0 0 6px ${btnColor}40, inset 0 0 10px ${btnColor}18`,
+                touchAction: 'none', cursor: 'pointer',
+                willChange: 'transform',
+                transition: 'border-color 0.2s, box-shadow 0.2s, background 0.2s',
                 }}
               >
                 <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -470,10 +471,10 @@ export default function QuickLogFAB({ onUpdate }) {
               : '0 0 20px rgba(225,193,110,0.28)',
           }}
           transition={waterPulse
-            ? { duration: 0.7, ease: 'easeOut' }
-            : { borderRadius: { type: 'spring', damping: 18, stiffness: 220 } }
+            ? { duration: 0.6, ease: [0.33, 1, 0.68, 1] }
+            : { borderRadius: { type: 'spring', damping: 22, stiffness: 300 } }
           }
-          whileTap={{ scale: 0.88 }}
+          whileTap={{ scale: 0.9, transition: { duration: 0.08 } }}
           style={{
             position: 'absolute', inset: 0, border: 'none', cursor: 'pointer',
             background: waterPulse
@@ -481,7 +482,8 @@ export default function QuickLogFAB({ onUpdate }) {
               : `linear-gradient(135deg, ${GOLD} 0%, #F4D03F 50%, ${GOLD} 100%)`,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             touchAction: 'none', userSelect: 'none', WebkitUserSelect: 'none',
-            transition: 'background 0.25s ease', overflow: 'hidden',
+            willChange: 'transform, border-radius',
+            transition: 'background 0.2s ease', overflow: 'hidden',
           }}
         >
           <AnimatePresence mode="wait">
@@ -505,7 +507,7 @@ export default function QuickLogFAB({ onUpdate }) {
                 exit={{ opacity: 0, scale: 0.5 }}
                 transition={{ duration: 0.2 }}
               >
-                <motion.div animate={{ rotate: isOpen ? 135 : 0 }} transition={{ type: 'spring', damping: 14, stiffness: 200 }}>
+                <motion.div animate={{ rotate: isOpen ? 135 : 0 }} transition={{ type: 'spring', damping: 18, stiffness: 300 }}>
                   <Plus style={{ width: 24, height: 24, color: '#080808' }} strokeWidth={2.5} />
                 </motion.div>
               </motion.div>
