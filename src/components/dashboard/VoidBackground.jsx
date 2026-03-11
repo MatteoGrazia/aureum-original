@@ -88,7 +88,7 @@ export default function VoidBackground() {
         className="absolute inset-0"
         style={{ background: 'radial-gradient(circle at 50% 40%, rgba(25,25,25,1) 0%, #080808 100%)' }}
       />
-      {/* Ambient depth blobs — 3 instead of many */}
+      {/* Ambient depth blobs — reduced blur for performance */}
       {[
         { x: 30, y: 20, size: 500, delay: 0, duration: 12 },
         { x: 70, y: 60, size: 600, delay: 4, duration: 15 },
@@ -103,14 +103,14 @@ export default function VoidBackground() {
             width: blob.size,
             height: blob.size,
             background: 'radial-gradient(circle, rgba(40,40,40,0.35) 0%, transparent 70%)',
-            filter: 'blur(70px)',
+            filter: 'blur(50px)',
             animation: `voidPulse ${blob.duration}s ease-in-out ${blob.delay}s infinite`,
             willChange: 'transform, opacity',
           }}
         />
       ))}
-      {/* Star particles — 14 with CSS animation instead of 50+ with framer-motion */}
-      {DARK_PARTICLES.map((p) => (
+      {/* Star particles — reduced count and simpler shadows */}
+      {DARK_PARTICLES.slice(0, 10).map((p) => (
         <div
           key={p.id}
           className="absolute rounded-full"
@@ -119,8 +119,8 @@ export default function VoidBackground() {
             top: `${p.y}%`,
             width: p.size,
             height: p.size,
-            background: 'rgba(255,255,255,0.85)',
-            boxShadow: `0 0 ${p.size * 4}px rgba(255,255,255,0.4)`,
+            background: 'rgba(255,255,255,0.75)',
+            boxShadow: `0 0 ${p.size * 3}px rgba(255,255,255,0.3)`,
             animation: `voidFloat ${p.duration}s ease-in-out ${p.delay}s infinite`,
             willChange: 'transform, opacity',
           }}
