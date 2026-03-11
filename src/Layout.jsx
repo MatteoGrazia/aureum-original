@@ -231,9 +231,8 @@ function LayoutInner({ children, currentPageName }) {
                   className="flex items-center justify-center p-3 relative transition-all duration-300"
                 >
                   <Icon
-                    className={`w-6 h-6 transition-all duration-300 ${
-                      isActive ? 'text-[#D4AF37]' : 'text-[#9C7E46]'
-                    }`}
+                    className={`w-6 h-6 transition-all duration-300`}
+                    style={{ color: isActive ? '#D4AF37' : (isDarkMode ? '#B0B0B0' : '#8B8B8D') }}
                     strokeWidth={1}
                   />
                   {isActive && (
