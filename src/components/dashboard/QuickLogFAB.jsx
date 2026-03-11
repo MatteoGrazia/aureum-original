@@ -7,15 +7,15 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 
 const GOLD   = '#D4AF37';
-const BRONZE = '#9C7E46';
+const PEARL  = '#B0B0B0';
 const BLUE   = '#8ECAE6';
 const AMBER  = '#F4A261';
 
-// Darker versions for light mode
-const GOLD_DARK   = '#7A5C10';
-const BRONZE_DARK = '#5C3A0A';
-const BLUE_DARK   = '#1E6A8C';
-const AMBER_DARK  = '#A04D10';
+// Light mode versions
+const GOLD_LIGHT   = '#D4AF37';
+const PEARL_LIGHT  = '#8B8B8D';
+const BLUE_LIGHT   = '#6BA5C0';
+const AMBER_LIGHT  = '#E88A4A';
 const SUPPLEMENT_LOG_KEY = 'aureum_supplement_log';
 const getSupplementLog = () => { try { return JSON.parse(localStorage.getItem(SUPPLEMENT_LOG_KEY) || '{}'); } catch { return {}; } };
 
@@ -50,7 +50,7 @@ const ECHO_ARCS = [22, 46, 72, 100, 132].map((offset, i) => {
 });
 
 const BUTTONS = [
-  { angle: -90, label: 'Streak',    action: 'streak',    Icon: Pill,     color: BRONZE },
+  { angle: -90, label: 'Streak',    action: 'streak',    Icon: Pill,     color: PEARL },
   { angle: -60, label: 'Readiness', action: 'readiness', Icon: Zap,      color: AMBER  },
   { angle: -30, label: 'Water',     action: 'water',     Icon: Droplets, color: BLUE   },
   { angle:   0, label: 'Weight',    action: 'weight',    Icon: Scale,    color: GOLD   },
@@ -367,11 +367,11 @@ export default function QuickLogFAB({ onUpdate }) {
             const Icon = btn.Icon;
             const isStreak = btn.action === 'streak';
 
-            // Pick dark variants for light mode
-            const lightColorMap = { [GOLD]: GOLD_DARK, [BRONZE]: BRONZE_DARK, [BLUE]: BLUE_DARK, [AMBER]: AMBER_DARK };
+            // Light mode color mapping
+            const lightColorMap = { [GOLD]: GOLD_LIGHT, [PEARL]: PEARL_LIGHT, [BLUE]: BLUE_LIGHT, [AMBER]: AMBER_LIGHT };
             const baseColor = isDarkMode ? btn.color : (lightColorMap[btn.color] || btn.color);
             const btnColor = isStreak
-              ? (streakDone ? (isDarkMode ? GOLD : GOLD_DARK) : (isDarkMode ? BRONZE : BRONZE_DARK))
+              ? (streakDone ? (isDarkMode ? GOLD : GOLD_LIGHT) : (isDarkMode ? PEARL : PEARL_LIGHT))
               : baseColor;
 
             return (
