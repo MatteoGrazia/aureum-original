@@ -36,6 +36,14 @@ function LayoutInner({ children, currentPageName }) {
         rel="stylesheet"
       />
       <style>{`
+        @supports (view-transition-name: none) {
+          ::view-transition-old(root),
+          ::view-transition-new(root) {
+            animation-duration: 0.25s;
+            animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+          }
+        }
+        
         :root {
           --gold: #D4AF37;
           --bronze: #BFA68F;

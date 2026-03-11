@@ -13,6 +13,7 @@ export function ThemeProvider({ children }) {
   });
 
   useEffect(() => {
+    document.documentElement.style.setProperty('color-scheme', isDarkMode ? 'dark' : 'light');
     document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
   }, [isDarkMode]);
 
