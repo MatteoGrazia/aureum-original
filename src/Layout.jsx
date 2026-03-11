@@ -118,22 +118,7 @@ function LayoutInner({ children, currentPageName }) {
           display: none !important;
         }
 
-        /* === WHITE TEXT → DEEP CHARCOAL === */
-        html[data-theme="light"] [class*="text-white"] {
-          color: #1D1D1F !important;
-        }
-        /* Opacity variants — declared AFTER general rule so they override */
-        html[data-theme="light"] [class*="text-white/10"] { color: rgba(29,29,31,0.10) !important; }
-        html[data-theme="light"] [class*="text-white/15"] { color: rgba(29,29,31,0.15) !important; }
-        html[data-theme="light"] [class*="text-white/20"] { color: rgba(29,29,31,0.20) !important; }
-        html[data-theme="light"] [class*="text-white/25"] { color: rgba(29,29,31,0.25) !important; }
-        html[data-theme="light"] [class*="text-white/30"] { color: rgba(29,29,31,0.30) !important; }
-        html[data-theme="light"] [class*="text-white/35"] { color: rgba(29,29,31,0.35) !important; }
-        html[data-theme="light"] [class*="text-white/40"] { color: rgba(29,29,31,0.40) !important; }
-        html[data-theme="light"] [class*="text-white/50"] { color: rgba(29,29,31,0.50) !important; }
-        html[data-theme="light"] [class*="text-white/60"] { color: rgba(29,29,31,0.60) !important; }
-        html[data-theme="light"] [class*="text-white/70"] { color: rgba(29,29,31,0.70) !important; }
-        html[data-theme="light"] [class*="text-white/80"] { color: rgba(29,29,31,0.80) !important; }
+        /* Keep text white in light mode - no override */
 
         /* White bg overlays → subtle dark equivalents */
         html[data-theme="light"] [class*="bg-white/5"]  { background-color: rgba(0,0,0,0.03) !important; }
@@ -144,7 +129,7 @@ function LayoutInner({ children, currentPageName }) {
         html[data-theme="light"] input,
         html[data-theme="light"] textarea,
         html[data-theme="light"] select {
-          color: #1D1D1F !important;
+          color: #FFFFFF !important;
           background: rgba(255, 255, 255, 0.85) !important;
           border-color: rgba(220, 220, 220, 0.6) !important;
         }
@@ -169,11 +154,7 @@ function LayoutInner({ children, currentPageName }) {
           --fab-sidebar-bg: linear-gradient(135deg, rgba(248,248,246,0.95) 0%, rgba(255,255,255,0.9) 100%);
         }
 
-        /* AureumPulse & VoidCard light body text */
-        html[data-theme="light"] .text-white\\/60,
-        html[data-theme="light"] .text-white\\/40 {
-          color: rgba(29,29,31,0.55) !important;
-        }
+        /* Keep white text opacity variants in light mode */
       `}</style>
 
       {/* ── Theme Toggle: fixed top-right, 48×48 tap target ── */}

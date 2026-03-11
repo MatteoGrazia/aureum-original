@@ -17,8 +17,8 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
   );
 
   const trackOpacity = isDarkMode ? 0.08 : 1;
-  const centerPctColor = isDarkMode ? '#D4AF37' : '#1D1D1F';
-  const centerSubColor = isDarkMode ? 'rgba(255,255,255,0.4)' : '#8B8B8D';
+  const centerPctColor = '#FFFFFF';
+  const centerSubColor = 'rgba(255,255,255,0.4)';
 
   return (
     <div className="relative flex items-center justify-center h-72">
@@ -121,7 +121,7 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
               style={{
                 fontFamily: 'Montserrat, sans-serif',
                 fontWeight: 400,
-                color: isDarkMode ? 'rgba(255,255,255,0.3)' : '#1D1D1F'
+                color: 'rgba(255,255,255,0.3)'
               }}
             >
               {i === 0 ? 'Calories' : i === 1 ? 'Steps' : 'Volume'}

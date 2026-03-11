@@ -34,10 +34,10 @@ export default function AureumPulse({ label, value, goal, unit, index = 0, icon,
         border: '0.5px solid rgba(220, 220, 220, 0.5)',
       };
 
-  const valueColor = isDarkMode ? 'rgba(255,255,255,0.6)' : 'rgba(29,29,31,0.7)';
-  const goalColor = isDarkMode ? 'rgba(255,255,255,0.3)' : 'rgba(29,29,31,0.35)';
+  const valueColor = 'rgba(255,255,255,0.6)';
+  const goalColor = 'rgba(255,255,255,0.3)';
   const trackColor = isDarkMode ? 'rgba(180,180,180,0.15)' : 'rgba(180,180,180,0.12)';
-  const pctColor = progress >= 100 ? '#D4AF37' : (isDarkMode ? '#B0B0B0' : '#8B8B8D');
+  const pctColor = progress >= 100 ? '#D4AF37' : 'rgba(255,255,255,0.6)';
 
   return (
     <motion.div

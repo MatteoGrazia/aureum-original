@@ -133,7 +133,7 @@ export default function StepCounter({ steps, goal }) {
             style={{ 
               fontFamily: 'Montserrat, sans-serif', 
               fontWeight: 500,
-              color: progress >= 1 ? '#D4AF37' : (isDarkMode ? '#B0B0B0' : '#8B8B8D')
+              color: progress >= 1 ? '#D4AF37' : 'rgba(255,255,255,0.6)'
             }}
           >
             {Math.round(progress * 100)}%
