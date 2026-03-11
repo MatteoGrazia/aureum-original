@@ -204,7 +204,7 @@ export default function QuickLogFAB({ onUpdate }) {
           <motion.div
             key="bd"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            transition={{ duration: 0.15, ease: 'easeOut' }}
+            transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
             onClick={close}
             className="fixed inset-0"
             style={{ background: 'rgba(0,0,0,0.22)', backdropFilter: 'blur(5px)', zIndex: 999, willChange: 'opacity' }}
@@ -217,10 +217,10 @@ export default function QuickLogFAB({ onUpdate }) {
         {activeAction === 'weight' && (
           <motion.div
             key="wf"
-            initial={{ opacity: 0, scale: 0.94, y: 6 }}
+            initial={{ opacity: 0, scale: 0.92, y: 8 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.94, y: 6 }}
-            transition={{ type: 'spring', damping: 28, stiffness: 450, mass: 0.4 }}
+            exit={{ opacity: 0, scale: 0.92, y: 8 }}
+            transition={{ type: 'spring', damping: 30, stiffness: 300, mass: 0.8 }}
             style={{ position: 'fixed', bottom: 185, right: 20, zIndex: 1002, width: 224 }}
           >
             <div style={{
@@ -278,10 +278,10 @@ export default function QuickLogFAB({ onUpdate }) {
         {activeAction === 'readiness' && (
           <motion.div
             key="rs"
-            initial={{ opacity: 0, scale: 0.94, y: 6 }}
+            initial={{ opacity: 0, scale: 0.92, y: 8 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.94, y: 6 }}
-            transition={{ type: 'spring', damping: 28, stiffness: 450, mass: 0.4 }}
+            exit={{ opacity: 0, scale: 0.92, y: 8 }}
+            transition={{ type: 'spring', damping: 30, stiffness: 300, mass: 0.8 }}
             style={{ position: 'fixed', bottom: 185, right: 20, zIndex: 1002, width: 240 }}
           >
             <div style={{
@@ -378,10 +378,10 @@ export default function QuickLogFAB({ onUpdate }) {
             return (
               <motion.button
                 key={btn.action}
-                initial={{ x: 0, y: 0, opacity: 0, scale: 0.3 }}
+                initial={{ x: 0, y: 0, opacity: 0, scale: 0.2 }}
                 animate={{ x: dx, y: dy, opacity: 1, scale: 1 }}
-                exit={{ x: 0, y: 0, opacity: 0, scale: 0.3, transition: { duration: 0.12, ease: [0.4, 0, 0.6, 1] } }}
-                transition={{ type: 'spring', damping: 24, stiffness: 400, mass: 0.5, delay: i * 0.025 }}
+                exit={{ x: 0, y: 0, opacity: 0, scale: 0.2, transition: { duration: 0.18, ease: [0.32, 0, 0.67, 0] } }}
+                transition={{ type: 'spring', damping: 28, stiffness: 300, mass: 0.8, delay: i * 0.04 }}
                 onClick={() => handleAction(btn.action)}
                 style={{
                 position: 'absolute',
@@ -442,7 +442,7 @@ export default function QuickLogFAB({ onUpdate }) {
                 style={{ willChange: 'opacity', filter: `drop-shadow(0 0 3px ${isDarkMode ? GOLD : '#B8860B'})` }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 0.9 }}
-                transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
               />
               {/* Echo arcs — wave outward */}
               {ECHO_ARCS.map((arc, i) => (
@@ -455,7 +455,7 @@ export default function QuickLogFAB({ onUpdate }) {
                   style={{ willChange: 'opacity' }}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: arc.opacity }}
-                  transition={{ duration: 0.35, delay: 0.04 + i * 0.05, ease: [0.16, 1, 0.3, 1] }}
+                  transition={{ duration: 0.5, delay: 0.06 + i * 0.06, ease: [0.25, 0.1, 0.25, 1] }}
                 />
               ))}
             </motion.svg>
@@ -474,10 +474,10 @@ export default function QuickLogFAB({ onUpdate }) {
               : '0 0 20px rgba(225,193,110,0.28)',
           }}
           transition={waterPulse
-            ? { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }
-            : { borderRadius: { type: 'spring', damping: 26, stiffness: 400, mass: 0.5 } }
+            ? { duration: 0.65, ease: [0.25, 0.1, 0.25, 1] }
+            : { borderRadius: { type: 'spring', damping: 30, stiffness: 250, mass: 0.8 } }
           }
-          whileTap={{ scale: 0.92, transition: { duration: 0.05, ease: 'easeOut' } }}
+          whileTap={{ scale: 0.92, transition: { duration: 0.1, ease: [0.25, 0.1, 0.25, 1] } }}
           style={{
             position: 'absolute', inset: 0, border: 'none', cursor: 'pointer',
             background: waterPulse
@@ -513,7 +513,7 @@ export default function QuickLogFAB({ onUpdate }) {
                 exit={{ opacity: 0, scale: 0.5 }}
                 transition={{ duration: 0.2 }}
               >
-                <motion.div animate={{ rotate: isOpen ? 135 : 0 }} transition={{ type: 'spring', damping: 22, stiffness: 400, mass: 0.5 }}>
+                <motion.div animate={{ rotate: isOpen ? 135 : 0 }} transition={{ type: 'spring', damping: 26, stiffness: 280, mass: 0.8 }}>
                   <Plus style={{ width: 24, height: 24, color: '#080808' }} strokeWidth={2.5} />
                 </motion.div>
               </motion.div>
