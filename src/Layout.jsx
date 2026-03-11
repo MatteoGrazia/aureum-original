@@ -34,18 +34,6 @@ function LayoutInner({ children, currentPageName }) {
         rel="stylesheet"
       />
       <style>{`
-        @supports (view-transition-name: none) {
-          ::view-transition-old(root),
-          ::view-transition-new(root) {
-            animation: none;
-            mix-blend-mode: normal;
-          }
-          ::view-transition-group(root) {
-            animation-duration: 0.4s;
-            animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
-          }
-        }
-        
         :root {
           --gold: #D4AF37;
           --bronze: #BFA68F;
@@ -61,6 +49,7 @@ function LayoutInner({ children, currentPageName }) {
           backdrop-filter: blur(12px) saturate(140%);
           background: rgba(255, 255, 255, 0.05);
           border: 0.5px solid rgba(212, 175, 55, 0.2);
+          transition: background 0.18s ease, border-color 0.18s ease;
           will-change: auto;
           transform: translateZ(0);
         }
@@ -108,6 +97,7 @@ function LayoutInner({ children, currentPageName }) {
           background: rgba(255, 255, 255, 0.88) !important;
           border: 0.5px solid rgba(225, 193, 110, 0.45) !important;
           box-shadow: 0 4px 24px rgba(0, 0, 0, 0.07) !important;
+          transition: background 0.18s ease, border-color 0.18s ease !important;
         }
 
         /* Page backgrounds — override all dark bg references */
@@ -132,6 +122,7 @@ function LayoutInner({ children, currentPageName }) {
         /* === WHITE TEXT → DEEP CHARCOAL === */
         html[data-theme="light"] [class*="text-white"] {
           color: #1D1D1F !important;
+          transition: color 0.18s ease !important;
         }
         /* Opacity variants — declared AFTER general rule so they override */
         html[data-theme="light"] [class*="text-white/10"] { color: rgba(29,29,31,0.10) !important; }
