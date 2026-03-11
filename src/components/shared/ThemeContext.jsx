@@ -17,7 +17,13 @@ export function ThemeProvider({ children }) {
   }, [isDarkMode]);
 
   const toggleTheme = () => {
-    setIsDarkMode(prev => {
+    document.startViewTransition?.(() => {
+      setIsDarkMode(prev => {
+        const next = !prev;
+        localStorage.setItem('aureum_theme', next ? 'dark' : 'light');
+        return next;
+      });
+    }) ?? setIsDarkMode(prev => {
       const next = !prev;
       localStorage.setItem('aureum_theme', next ? 'dark' : 'light');
       return next;

@@ -27,7 +27,8 @@ function LayoutInner({ children, currentPageName }) {
              radial-gradient(ellipse 800px 500px at 50% 90%, rgba(160,160,160,0.1) 0%, transparent 60%)`
           : `radial-gradient(ellipse 1200px 800px at 30% 20%, rgba(212,175,55,0.07) 0%, transparent 60%),
              radial-gradient(ellipse 1000px 600px at 70% 60%, rgba(225,193,110,0.05) 0%, transparent 60%)`,
-        transition: 'background 0.5s ease',
+        transition: 'background-color 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+        willChange: 'background-color',
       }}
     >
       <link
@@ -99,6 +100,7 @@ function LayoutInner({ children, currentPageName }) {
           background: rgba(255, 255, 255, 0.88) !important;
           border: 0.5px solid rgba(225, 193, 110, 0.45) !important;
           box-shadow: 0 4px 24px rgba(0, 0, 0, 0.07) !important;
+          transition: background 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }
 
         /* Page backgrounds — override all dark bg references */
@@ -123,6 +125,7 @@ function LayoutInner({ children, currentPageName }) {
         /* === WHITE TEXT → DEEP CHARCOAL === */
         html[data-theme="light"] [class*="text-white"] {
           color: #1D1D1F !important;
+          transition: color 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }
         /* Opacity variants — declared AFTER general rule so they override */
         html[data-theme="light"] [class*="text-white/10"] { color: rgba(29,29,31,0.10) !important; }
