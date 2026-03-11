@@ -378,10 +378,10 @@ export default function QuickLogFAB({ onUpdate }) {
             return (
               <motion.button
                 key={btn.action}
-                initial={{ x: 0, y: 0, opacity: 0, scale: 0.2 }}
+                initial={{ x: 0, y: 0, opacity: 0, scale: 0.3 }}
                 animate={{ x: dx, y: dy, opacity: 1, scale: 1 }}
-                exit={{ x: 0, y: 0, opacity: 0, scale: 0.2, transition: { duration: 0.18, ease: [0.32, 0, 0.67, 0] } }}
-                transition={{ type: 'spring', damping: 28, stiffness: 300, mass: 0.8, delay: i * 0.04 }}
+                exit={{ x: 0, y: 0, opacity: 0, scale: 0.3, transition: { duration: 0.15, ease: 'easeOut' } }}
+                transition={{ duration: 0.3, ease: [0.34, 1.56, 0.64, 1], delay: i * 0.03 }}
                 onClick={() => handleAction(btn.action)}
                 style={{
                  position: 'absolute',
@@ -394,12 +394,10 @@ export default function QuickLogFAB({ onUpdate }) {
                  border: `2px solid ${btnColor}`,
                  display: 'flex', flexDirection: 'column',
                  alignItems: 'center', justifyContent: 'center',
-                 boxShadow: `0 0 22px ${btnColor}80, 0 0 6px ${btnColor}40, inset 0 0 10px ${btnColor}18`,
+                 boxShadow: `0 0 14px ${btnColor}70, inset 0 0 8px ${btnColor}15`,
                  touchAction: 'none', cursor: 'pointer',
-                 willChange: 'transform, opacity',
+                 willChange: 'transform',
                  transform: 'translateZ(0)',
-                 backfaceVisibility: 'hidden',
-                 WebkitFontSmoothing: 'antialiased',
                 }}
               >
                 <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -462,33 +460,31 @@ export default function QuickLogFAB({ onUpdate }) {
 
         {/* Central FAB */}
         <motion.button
-          onPointerDown={onPointerDown}
-          onPointerUp={onPointerUp}
-          onPointerCancel={() => clearTimeout(longTimer.current)}
-          animate={{
-            borderRadius: isOpen ? '16px' : '50%',
-            boxShadow: waterPulse
-              ? ['0 0 20px rgba(142,202,230,0.4)', '0 0 55px rgba(142,202,230,0.9)', '0 0 20px rgba(142,202,230,0.2)']
-              : '0 0 20px rgba(225,193,110,0.28)',
-          }}
-          transition={waterPulse
-            ? { duration: 0.65, ease: [0.25, 0.1, 0.25, 1] }
-            : { borderRadius: { type: 'spring', damping: 30, stiffness: 250, mass: 0.8 } }
-          }
-          whileTap={{ scale: 0.92, transition: { duration: 0.1, ease: [0.25, 0.1, 0.25, 1] } }}
-          style={{
-            position: 'absolute', inset: 0, border: 'none', cursor: 'pointer',
-            background: waterPulse
-              ? `linear-gradient(135deg, ${BLUE} 0%, #A8D8EA 50%, ${BLUE} 100%)`
-              : `linear-gradient(135deg, ${GOLD} 0%, #F4D03F 50%, ${GOLD} 100%)`,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            touchAction: 'none', userSelect: 'none', WebkitUserSelect: 'none',
-            willChange: 'transform, border-radius',
-            transform: 'translateZ(0)',
-            backfaceVisibility: 'hidden',
-            WebkitFontSmoothing: 'antialiased',
-            transition: 'background 0.18s ease', overflow: 'hidden',
-          }}
+        onPointerDown={onPointerDown}
+        onPointerUp={onPointerUp}
+        onPointerCancel={() => clearTimeout(longTimer.current)}
+        animate={{
+          borderRadius: isOpen ? '16px' : '50%',
+          boxShadow: waterPulse
+            ? ['0 0 18px rgba(142,202,230,0.35)', '0 0 40px rgba(142,202,230,0.7)', '0 0 18px rgba(142,202,230,0.2)']
+            : '0 0 18px rgba(225,193,110,0.28)',
+        }}
+        transition={waterPulse
+          ? { duration: 0.55, ease: 'easeOut' }
+          : { borderRadius: { duration: 0.3, ease: [0.34, 1.56, 0.64, 1] } }
+        }
+        whileTap={{ scale: 0.92, transition: { duration: 0.08, ease: 'easeOut' } }}
+        style={{
+          position: 'absolute', inset: 0, border: 'none', cursor: 'pointer',
+          background: waterPulse
+            ? `linear-gradient(135deg, ${BLUE} 0%, #A8D8EA 50%, ${BLUE} 100%)`
+            : `linear-gradient(135deg, ${GOLD} 0%, #F4D03F 50%, ${GOLD} 100%)`,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          touchAction: 'none', userSelect: 'none', WebkitUserSelect: 'none',
+          willChange: 'transform',
+          transform: 'translateZ(0)',
+          transition: 'background 0.18s ease', overflow: 'hidden',
+        }}
         >
           <AnimatePresence mode="wait">
             {waterFlash ? (
@@ -511,7 +507,7 @@ export default function QuickLogFAB({ onUpdate }) {
                 exit={{ opacity: 0, scale: 0.5 }}
                 transition={{ duration: 0.2 }}
               >
-                <motion.div animate={{ rotate: isOpen ? 135 : 0 }} transition={{ type: 'spring', damping: 26, stiffness: 280, mass: 0.8 }}>
+                <motion.div animate={{ rotate: isOpen ? 135 : 0 }} transition={{ duration: 0.3, ease: [0.34, 1.56, 0.64, 1] }}>
                   <Plus style={{ width: 24, height: 24, color: '#080808' }} strokeWidth={2.5} />
                 </motion.div>
               </motion.div>
