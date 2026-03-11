@@ -18,17 +18,21 @@ export function ThemeProvider({ children }) {
   }, [isDarkMode]);
 
   const toggleTheme = () => {
-    document.startViewTransition?.(() => {
+    if (document.startViewTransition) {
+      document.startViewTransition(() => {
+        setIsDarkMode(prev => {
+          const next = !prev;
+          localStorage.setItem('aureum_theme', next ? 'dark' : 'light');
+          return next;
+        });
+      });
+    } else {
       setIsDarkMode(prev => {
         const next = !prev;
         localStorage.setItem('aureum_theme', next ? 'dark' : 'light');
         return next;
       });
-    }) ?? setIsDarkMode(prev => {
-      const next = !prev;
-      localStorage.setItem('aureum_theme', next ? 'dark' : 'light');
-      return next;
-    });
+    }
   };
 
   return (
