@@ -57,11 +57,11 @@ export default function StepCounter({ steps, goal }) {
             strokeDasharray={circumference}
             initial={{ strokeDashoffset: circumference }}
             animate={{ strokeDashoffset }}
-            transition={{ duration: 1.5, ease: "easeOut" }}
+            transition={{ duration: 1.2, ease: [0.34, 1.56, 0.64, 1] }}
             style={{
               filter: progress > 0.8 
-                ? 'drop-shadow(0 0 8px rgba(212, 175, 55, 0.6))' 
-                : 'drop-shadow(0 0 4px rgba(212, 175, 55, 0.4))'
+                ? 'drop-shadow(0 0 5px rgba(212, 175, 55, 0.5))' 
+                : 'drop-shadow(0 0 3px rgba(212, 175, 55, 0.3))'
             }}
           />
 
@@ -74,52 +74,22 @@ export default function StepCounter({ steps, goal }) {
             </linearGradient>
           </defs>
 
-          {/* Shimmer effect */}
-          {progress > 0 && (
-            <motion.circle
-              cx="100"
-              cy="10"
-              r="4"
-              fill="#F4D03F"
-              animate={{
-                opacity: [0.5, 1, 0.5]
-              }}
-              transition={{
-                duration: 1.2,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-              style={{ 
-                transformOrigin: '100px 100px',
-                filter: 'blur(2px)',
-                transform: `rotate(${progress * 360}deg)`
-              }}
-            />
-          )}
+          {/* Shimmer effect - removed for performance */}
         </svg>
 
         {/* Center Content */}
         <div className="absolute text-center">
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.3, type: "spring" }}
-          >
-            <Footprints 
-              className="w-8 h-8 mx-auto mb-2 text-[#D4AF37]" 
-              strokeWidth={1.5}
-            />
-          </motion.div>
+          <Footprints 
+            className="w-8 h-8 mx-auto mb-2 text-[#D4AF37]" 
+            strokeWidth={1.5}
+          />
           
-          <motion.p
-            key={steps}
-            initial={{ scale: 1.2, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
+          <p
             className="text-4xl text-white"
             style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}
           >
             {steps.toLocaleString()}
-          </motion.p>
+          </p>
           
           <p 
             className="text-white/40 text-xs uppercase tracking-widest mt-1"

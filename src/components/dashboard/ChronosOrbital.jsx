@@ -46,9 +46,7 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
                 <linearGradient id={`pulse-${index}`} x1="0%" y1="0%" x2="100%" y2="0%">
                   <stop offset="0%" stopColor={orbital.color} stopOpacity={isDarkMode ? "0.1" : "0.45"} />
                   <stop offset="50%" stopColor={orbital.color} stopOpacity={isDarkMode ? "0.3" : "0.75"} />
-                  <stop offset="100%" stopColor={orbital.color} stopOpacity="1">
-                    <animate attributeName="stop-opacity" values="1;0.5;1" dur="2s" repeatCount="indefinite" />
-                  </stop>
+                  <stop offset="100%" stopColor={orbital.color} stopOpacity="0.9" />
                 </linearGradient>
               </defs>
 
@@ -75,11 +73,11 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
                 strokeDasharray={circumference}
                 initial={{ strokeDashoffset: circumference }}
                 animate={{ strokeDashoffset }}
-                transition={{ duration: 2, ease: "easeOut", delay: index * 0.15 }}
+                transition={{ duration: 1.8, ease: [0.34, 1.56, 0.64, 1], delay: index * 0.12 }}
                 style={{
                   filter: isDarkMode
-                    ? `drop-shadow(0 0 2px ${orbital.color}80) drop-shadow(0 0 4px ${orbital.color}40)`
-                    : `drop-shadow(0 0 3px rgba(212,175,55,0.5))`
+                    ? `drop-shadow(0 0 2px ${orbital.color}70)`
+                    : `drop-shadow(0 0 2px rgba(212,175,55,0.4))`
                 }}
               />
             </svg>

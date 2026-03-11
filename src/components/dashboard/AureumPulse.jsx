@@ -50,6 +50,8 @@ export default function AureumPulse({ label, value, goal, unit, index = 0, icon,
         padding: '20px 18px',
         borderRadius: '14px',
         overflow: 'hidden',
+        willChange: 'transform',
+        transform: 'translateZ(0)',
       }}
     >
       {/* Label with Icon */}
@@ -84,22 +86,16 @@ export default function AureumPulse({ label, value, goal, unit, index = 0, icon,
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${progress}%` }}
-          transition={{ duration: 1.5, ease: 'easeOut', delay: index * 0.1 }}
+          transition={{ duration: 1.2, ease: [0.34, 1.56, 0.64, 1], delay: index * 0.08 }}
           className="absolute left-0 top-0 h-[1px]"
           style={{
             background: `linear-gradient(90deg, ${progressColor}80, ${progressColor}cc, ${progressColor})`,
             boxShadow: isNearGoal
-              ? `0 0 8px ${progressColor}90, 0 0 16px ${progressColor}50`
-              : `0 0 4px ${progressColor}60`,
+              ? `0 0 6px ${progressColor}80`
+              : `0 0 3px ${progressColor}50`,
+            willChange: 'width',
           }}
-        >
-          <motion.div
-            className="absolute right-0 top-0 w-16 h-[1px]"
-            style={{ background: `linear-gradient(90deg, transparent, ${progressColor}, transparent)` }}
-            animate={{ x: [-16, 16, -16], opacity: [0.5, 1, 0.5] }}
-            transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
-          />
-        </motion.div>
+        />
         <div
           className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-1 rounded-full"
           style={{ background: `${progressColor}50`, boxShadow: `0 0 4px ${progressColor}40` }}

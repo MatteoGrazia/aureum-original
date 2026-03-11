@@ -50,7 +50,9 @@ function LayoutInner({ children, currentPageName }) {
           backdrop-filter: blur(12px) saturate(140%);
           background: rgba(255, 255, 255, 0.05);
           border: 0.5px solid rgba(212, 175, 55, 0.2);
-          transition: background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+          transition: background 0.3s ease, border-color 0.3s ease;
+          will-change: auto;
+          transform: translateZ(0);
         }
 
         .gold-text { color: var(--gold); }
@@ -74,6 +76,7 @@ function LayoutInner({ children, currentPageName }) {
         input, textarea, select {
           background: rgba(255, 255, 255, 0.05) !important;
           border-color: rgba(212, 175, 55, 0.2) !important;
+          transition: border-color 0.2s ease;
         }
         input:focus, textarea:focus, select:focus {
           border-color: var(--gold) !important;
