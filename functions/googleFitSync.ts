@@ -79,7 +79,7 @@ Deno.serve(async (req) => {
       // Redirect back to the Activity page after successful connection
       return new Response(null, {
         status: 302,
-        headers: { 'Location': '/Activity' },
+        headers: { 'Location': `${url.origin}/Activity` },
       });
     }
 
