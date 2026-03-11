@@ -16,10 +16,10 @@ export default function StepCounter({ steps, goal }) {
     <div 
       className="relative overflow-hidden"
       style={{
-        background: isDarkMode ? 'rgba(255, 255, 255, 0.03)' : 'rgba(255, 255, 255, 0.75)',
+        background: isDarkMode ? 'rgba(255, 255, 255, 0.03)' : 'rgba(255, 255, 255, 0.6)',
         backdropFilter: 'blur(20px) saturate(180%)',
-        boxShadow: isDarkMode ? '0 20px 50px rgba(0, 0, 0, 0.6)' : '0 10px 30px rgba(0, 0, 0, 0.05)',
-        border: '0.5px solid rgba(220, 220, 220, 0.5)',
+        boxShadow: isDarkMode ? '0 20px 50px rgba(0, 0, 0, 0.6)' : '0 10px 30px rgba(225, 193, 110, 0.15)',
+        border: '0.5px solid rgba(212, 175, 55, 0.18)',
         padding: '20px 18px',
         borderRadius: '14px'
       }}
@@ -41,7 +41,7 @@ export default function StepCounter({ steps, goal }) {
             cy="100"
             r="90"
             fill="none"
-            stroke={isDarkMode ? "rgba(180, 180, 180, 0.15)" : "rgba(200, 200, 200, 0.3)"}
+            stroke="rgba(156, 126, 70, 0.2)"
             strokeWidth="2"
           />
           
@@ -129,12 +129,8 @@ export default function StepCounter({ steps, goal }) {
           </p>
           
           <p 
-            className="text-sm mt-2 tracking-wider"
-            style={{ 
-              fontFamily: 'Montserrat, sans-serif', 
-              fontWeight: 500,
-              color: progress >= 1 ? '#D4AF37' : 'rgba(255,255,255,0.6)'
-            }}
+            className="text-[#C9A961] text-sm mt-2 tracking-wider"
+            style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
           >
             {Math.round(progress * 100)}%
           </p>

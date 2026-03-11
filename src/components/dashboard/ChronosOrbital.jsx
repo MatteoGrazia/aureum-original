@@ -7,8 +7,8 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
 
   const orbitals = [
     { value: calories,  goal: caloriesGoal, color: '#D4AF37', size: 240, offset: { x: -8, y: -8 }, rotation: 0 },
-    { value: steps,     goal: stepsGoal,    color: isDarkMode ? '#B0B0B0' : '#8B8B8D', size: 180, offset: { x: 5, y: -5 }, rotation: 45 },
-    { value: volume,    goal: volumeGoal,   color: isDarkMode ? '#C0C0C0' : '#A8A8A8', size: 120, offset: { x: -3, y: 3 }, rotation: -30 }
+    { value: steps,     goal: stepsGoal,    color: isDarkMode ? '#C0C0C0' : '#9C7E46', size: 180, offset: { x: 5, y: -5 }, rotation: 45 },
+    { value: volume,    goal: volumeGoal,   color: '#CD7F32', size: 120, offset: { x: -3, y: 3 }, rotation: -30 }
   ];
 
   const totalProgress = Math.min(
@@ -16,9 +16,9 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
     100
   );
 
-  const trackOpacity = isDarkMode ? 0.08 : 1;
-  const centerPctColor = '#FFFFFF';
-  const centerSubColor = 'rgba(255,255,255,0.4)';
+  const trackOpacity = isDarkMode ? 0.08 : 1; // light mode uses explicit rgba color below
+  const centerPctColor = isDarkMode ? '#F4D03F' : '#1D1D1F';
+  const centerSubColor = isDarkMode ? 'rgba(255,255,255,0.4)' : '#1D1D1F';
 
   return (
     <div className="relative flex items-center justify-center h-72">
@@ -58,7 +58,7 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
                 cy={orbital.size / 2}
                 r={(orbital.size - 4) / 2}
                 fill="none"
-                stroke={isDarkMode ? orbital.color : 'rgba(200,200,200,0.25)'}
+                stroke={isDarkMode ? orbital.color : 'rgba(156,126,70,0.10)'}
                 strokeWidth={isDarkMode ? "1" : "1.5"}
                 opacity={isDarkMode ? trackOpacity : 1}
               />
@@ -121,7 +121,7 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
               style={{
                 fontFamily: 'Montserrat, sans-serif',
                 fontWeight: 400,
-                color: 'rgba(255,255,255,0.3)'
+                color: isDarkMode ? 'rgba(255,255,255,0.3)' : '#1D1D1F'
               }}
             >
               {i === 0 ? 'Calories' : i === 1 ? 'Steps' : 'Volume'}

@@ -25,19 +25,19 @@ export default function AureumPulse({ label, value, goal, unit, index = 0, icon,
         background: 'rgba(255, 255, 255, 0.03)',
         backdropFilter: 'blur(30px) saturate(180%)',
         boxShadow: '0 20px 50px rgba(0, 0, 0, 0.6)',
-        border: '0.5px solid rgba(200, 200, 200, 0.1)',
+        border: '0.5px solid rgba(212, 175, 55, 0.1)',
       }
     : {
-        background: 'rgba(255, 255, 255, 0.75)',
+        background: 'rgba(255, 255, 255, 0.6)',
         backdropFilter: 'blur(20px) saturate(180%)',
-        boxShadow: '0 10px 30px rgba(0, 0, 0, 0.05)',
-        border: '0.5px solid rgba(220, 220, 220, 0.5)',
+        boxShadow: '0 10px 30px rgba(225, 193, 110, 0.15)',
+        border: '0.5px solid rgba(225, 193, 110, 0.35)',
       };
 
-  const valueColor = 'rgba(255,255,255,0.6)';
-  const goalColor = 'rgba(255,255,255,0.3)';
-  const trackColor = isDarkMode ? 'rgba(180,180,180,0.15)' : 'rgba(180,180,180,0.12)';
-  const pctColor = progress >= 100 ? '#D4AF37' : 'rgba(255,255,255,0.6)';
+  const valueColor = isDarkMode ? 'rgba(255,255,255,0.6)' : 'rgba(29,29,31,0.7)';
+  const goalColor = isDarkMode ? 'rgba(255,255,255,0.3)' : 'rgba(29,29,31,0.35)';
+  const trackColor = isDarkMode ? 'rgba(156,126,70,0.2)' : 'rgba(156,126,70,0.15)';
+  const pctColor = progress >= 100 ? '#F4D03F' : (isDarkMode ? '#C9A961' : '#9C7E46');
 
   return (
     <motion.div
