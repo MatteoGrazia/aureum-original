@@ -48,6 +48,16 @@ export default function Dashboard() {
     return unsubscribe;
   }, []);
 
+  // Listen for Google Fit sync events
+  useEffect(() => {
+    const handleSync = () => {
+      refetchActivity();
+      queryClient.invalidateQueries(['dailyActivity']);
+    };
+    window.addEventListener('googleFitSynced', handleSync);
+    return () => window.removeEventListener('googleFitSynced', handleSync);
+  }, [refetchActivity, queryClient]);
+
   useEffect(() => {
     return scrollY.onChange((latest) => {
       const previous = scrollY.getPrevious();
