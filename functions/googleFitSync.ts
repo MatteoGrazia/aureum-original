@@ -84,10 +84,7 @@ Deno.serve(async (req) => {
 
     // Step 3: Sync step data from Google Fit to DailyActivity
     if (action === 'sync') {
-      // Get the user's refresh token
-      const userProfile = await base44.auth.me();
-      
-      if (!userProfile.google_fit_refresh_token) {
+      if (!user.google_fit_refresh_token) {
         return Response.json({ error: 'Google Fit not connected. Please authorize first.' }, { status: 400 });
       }
 
@@ -96,7 +93,7 @@ Deno.serve(async (req) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({
-          refresh_token: userProfile.google_fit_refresh_token,
+          refresh_token: user.google_fit_refresh_token,
           client_id: Deno.env.get('GOOGLE_FIT_CLIENT_ID'),
           client_secret: Deno.env.get('GOOGLE_FIT_CLIENT_SECRET'),
           grant_type: 'refresh_token',
@@ -106,7 +103,7 @@ Deno.serve(async (req) => {
       const refreshData = await refreshResponse.json();
       
       if (!refreshData.access_token) {
-        return Response.json({ error: 'Failed to refresh access token' }, { status: 400 });
+        return Response.json({ error: 'Failed to refresh access token', details: refreshData }, { status: 400 });
       }
 
       const accessToken = refreshData.access_token;
@@ -135,9 +132,18 @@ Deno.serve(async (req) => {
       });
 
       const stepData = await stepDataResponse.json();
+      
+      if (stepData.error) {
+        return Response.json({ error: 'Google Fit API error', details: stepData.error }, { status: 400 });
+      }
 
-      // Process and sync step data to DailyActivity
-      const updates = [];
+      // Fetch all existing DailyActivity records at once
+      const allActivity = await base44.entities.DailyActivity.list();
+      const activityMap = new Map(allActivity.map(a => [a.date, a]));
+
+      // Prepare batch updates
+      const toCreate = [];
+      const toUpdate = [];
       
       if (stepData.bucket && Array.isArray(stepData.bucket)) {
         for (const bucket of stepData.bucket) {
@@ -145,39 +151,38 @@ Deno.serve(async (req) => {
           const dateStr = bucketDate.toISOString().split('T')[0];
           
           const steps = bucket.dataset[0]?.point[0]?.value[0]?.intVal || 0;
-
-          // Find or create DailyActivity record
-          const existing = await base44.entities.DailyActivity.filter({ date: dateStr });
           
-          if (existing.length > 0) {
-            updates.push(
-              base44.entities.DailyActivity.update(existing[0].id, {
-                steps,
-                date: dateStr,
-              })
-            );
+          const existing = activityMap.get(dateStr);
+          
+          if (existing) {
+            toUpdate.push({ id: existing.id, data: { steps } });
           } else {
-            updates.push(
-              base44.entities.DailyActivity.create({
-                date: dateStr,
-                steps,
-                active_minutes: 0,
-                sedentary_minutes: 0,
-                calories_burned: 0,
-                water_liters: 0,
-              })
-            );
+            toCreate.push({
+              date: dateStr,
+              steps,
+              active_minutes: 0,
+              sedentary_minutes: 0,
+              calories_burned: 0,
+              water_liters: 0,
+            });
           }
         }
       }
 
-      // Execute all updates
-      await Promise.all(updates);
+      // Execute batch operations
+      const results = await Promise.allSettled([
+        ...toCreate.map(data => base44.entities.DailyActivity.create(data)),
+        ...toUpdate.map(({ id, data }) => base44.entities.DailyActivity.update(id, data))
+      ]);
+
+      const successCount = results.filter(r => r.status === 'fulfilled').length;
 
       return Response.json({
         success: true,
-        message: `Synced ${updates.length} days of step data from Google Fit`,
-        syncedDays: updates.length,
+        message: `Synced ${successCount} days of step data from Google Fit`,
+        syncedDays: successCount,
+        created: toCreate.length,
+        updated: toUpdate.length,
       });
     }
 
