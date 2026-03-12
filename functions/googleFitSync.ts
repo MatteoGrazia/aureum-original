@@ -86,8 +86,14 @@ Deno.serve(async (req) => {
 
     // Step 3: Sync step data from Google Fit to DailyActivity
     if (action === 'sync') {
+      console.log('Checking refresh token. User object keys:', Object.keys(user));
+      console.log('google_fit_refresh_token value:', user.google_fit_refresh_token);
+      
       if (!user.google_fit_refresh_token) {
-        return Response.json({ error: 'Google Fit not connected. Please authorize first.' }, { status: 400 });
+        return Response.json({ 
+          error: 'Google Fit not connected. Please authorize first.',
+          debug: { hasToken: !!user.google_fit_refresh_token, userKeys: Object.keys(user) }
+        }, { status: 400 });
       }
 
       // Refresh the access token using refresh token
