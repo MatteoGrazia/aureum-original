@@ -9,10 +9,17 @@ export default function GoogleFitConnect({ isConnected, onSyncComplete }) {
   const [isLoading, setIsLoading] = useState(false);
   const [lastSyncTime, setLastSyncTime] = useState(null);
 
-  // Auto-sync on mount if connected
+  // Auto-sync on mount and periodically if connected
   useEffect(() => {
     if (isConnected) {
       handleSync();
+      
+      // Set up periodic sync every 5 minutes
+      const intervalId = setInterval(() => {
+        handleSync();
+      }, 5 * 60 * 1000);
+      
+      return () => clearInterval(intervalId);
     }
   }, [isConnected]);
 
