@@ -32,13 +32,19 @@ export default function GoogleFitConnect({ isConnected, onSyncComplete }) {
 
   const handleSync = async () => {
     try {
+      setIsLoading(true);
       const response = await base44.functions.invoke('googleFitSync', { action: 'sync' });
+      console.log('Sync response:', response.data);
       if (response.data.success) {
         setLastSyncTime(new Date());
         onSyncComplete?.();
+      } else {
+        console.error('Sync failed:', response.data);
       }
     } catch (error) {
       console.error('Failed to sync Google Fit data:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -52,11 +58,12 @@ export default function GoogleFitConnect({ isConnected, onSyncComplete }) {
         <VoidCard className="text-center">
           <div className="mb-4">
             <div className="w-16 h-16 mx-auto mb-3">
-              <img 
-                src="https://www.gstatic.com/images/branding/product/2x/google_fit_2020q4_512dp.png" 
-                alt="Google Fit"
-                className="w-full h-full object-contain"
-              />
+              <svg viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+                <circle cx="96" cy="96" r="88" fill="#4285F4"/>
+                <path d="M96 48c-26.5 0-48 21.5-48 48s21.5 48 48 48 48-21.5 48-48-21.5-48-48-48zm0 80c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32z" fill="#fff"/>
+                <circle cx="96" cy="96" r="12" fill="#fff"/>
+                <path d="M96 72c-13.2 0-24 10.8-24 24h8c0-8.8 7.2-16 16-16s16 7.2 16 16-7.2 16-16 16v8c13.2 0 24-10.8 24-24s-10.8-24-24-24z" fill="#fff"/>
+              </svg>
             </div>
             <h3 className="text-white mb-2" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>
               Connect Google Fit
@@ -86,11 +93,12 @@ export default function GoogleFitConnect({ isConnected, onSyncComplete }) {
     >
       <VoidCard className="text-center">
         <div className="w-16 h-16 mx-auto mb-3">
-          <img 
-            src="https://www.gstatic.com/images/branding/product/2x/google_fit_2020q4_512dp.png" 
-            alt="Google Fit"
-            className="w-full h-full object-contain"
-          />
+          <svg viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+            <circle cx="96" cy="96" r="88" fill="#4285F4"/>
+            <path d="M96 48c-26.5 0-48 21.5-48 48s21.5 48 48 48 48-21.5 48-48-21.5-48-48-48zm0 80c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32z" fill="#fff"/>
+            <circle cx="96" cy="96" r="12" fill="#fff"/>
+            <path d="M96 72c-13.2 0-24 10.8-24 24h8c0-8.8 7.2-16 16-16s16 7.2 16 16-7.2 16-16 16v8c13.2 0 24-10.8 24-24s-10.8-24-24-24z" fill="#fff"/>
+          </svg>
         </div>
         <h3 className="text-white mb-2" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>
           Google Fit Connected
