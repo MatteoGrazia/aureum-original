@@ -228,7 +228,16 @@ export default function Activity() {
           
           {/* Dynamic View */}
           {timeView === 'week' ? (
-            <div className="flex items-end justify-between mb-4 gap-1" style={{ minHeight: '180px' }}>
+            <div className="relative flex items-end justify-between mb-4 gap-1" style={{ minHeight: '180px' }}>
+              {/* Goal Line */}
+              <div 
+                className="absolute left-0 right-0 border-t border-dashed border-[#D4AF37]/40 pointer-events-none"
+                style={{ bottom: '100%' }}
+              >
+                <span className="absolute -top-2 right-0 text-[8px] text-[#D4AF37]/60 uppercase tracking-wider">
+                  Goal
+                </span>
+              </div>
               {weeklyActivity.slice(-7).reverse().map((day, index) => {
                 const steps = day?.steps || 0;
                 const heightPercent = stepGoal > 0 ? Math.min((steps / stepGoal) * 100, 100) : 0;
