@@ -228,16 +228,17 @@ export default function Activity() {
           
           {/* Dynamic View */}
           {timeView === 'week' ? (
-            <div className="relative flex items-end justify-between mb-4 gap-1" style={{ minHeight: '180px' }}>
-              {/* Goal Line */}
-              <div 
-                className="absolute left-0 right-0 border-t border-dashed border-[#D4AF37]/40 pointer-events-none"
-                style={{ bottom: '100%' }}
-              >
-                <span className="absolute -top-2 right-0 text-[8px] text-[#D4AF37]/60 uppercase tracking-wider">
-                  Goal
-                </span>
-              </div>
+            <div className="mb-4">
+              <div className="relative flex items-end justify-between gap-1" style={{ height: '140px' }}>
+                {/* Goal Line at 100% mark */}
+                <div 
+                  className="absolute left-0 right-0 border-t border-dashed border-[#D4AF37]/50 pointer-events-none z-10"
+                  style={{ bottom: '100%' }}
+                >
+                  <span className="absolute -top-3 right-0 text-[8px] text-[#D4AF37]/70 uppercase tracking-wider font-medium">
+                    Goal
+                  </span>
+                </div>
               {weeklyActivity.slice(-7).reverse().map((day, index) => {
                 const steps = day?.steps || 0;
                 const heightPercent = stepGoal > 0 ? Math.min((steps / stepGoal) * 100, 100) : 0;
@@ -278,6 +279,17 @@ export default function Activity() {
                   </div>
                 );
               })}
+              </div>
+              {selectedDay && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-[#D4AF37] text-[#080808] px-3 py-2 rounded text-xs font-medium mt-3 text-center"
+                >
+                  <div className="text-[10px] opacity-70 mb-0.5">{format(new Date(selectedDay?.date || new Date()), 'MMM d')}</div>
+                  <div className="text-sm font-semibold">{(selectedDay?.steps || 0).toLocaleString()} steps</div>
+                </motion.div>
+              )}
             </div>
           ) : timeView === 'month' ? (
             <div className="mb-4">
