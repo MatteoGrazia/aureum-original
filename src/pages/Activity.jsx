@@ -241,7 +241,7 @@ export default function Activity() {
                 </div>
               {weeklyActivity.slice(-7).reverse().map((day, index) => {
                 const steps = day?.steps || 0;
-                const heightPercent = stepGoal > 0 ? (steps / stepGoal) * 100 : 0;
+                const heightPx = stepGoal > 0 ? Math.min((steps / stepGoal) * 140, 280) : 0;
                 const isToday = day?.date === today;
                 const isSelected = selectedDay?.id === day?.id;
                 
@@ -250,7 +250,7 @@ export default function Activity() {
                     <div className="w-full h-full flex items-end justify-center relative" style={{ overflow: 'visible' }}>
                       <motion.div
                         initial={{ height: 0 }}
-                        animate={{ height: `${Math.min(heightPercent, 200)}%` }}
+                        animate={{ height: `${heightPx}px` }}
                         transition={{ delay: index * 0.05, duration: 0.4 }}
                         onClick={() => setSelectedDay(isSelected ? null : day)}
                         className={`w-4 rounded-t-full cursor-pointer transition-all ${
@@ -261,8 +261,7 @@ export default function Activity() {
                             : 'bg-white/20 hover:bg-white/30'
                         }`}
                         style={{ 
-                          minHeight: heightPercent > 0 ? '8px' : '4px',
-                          maxHeight: '200%'
+                          minHeight: heightPx > 0 ? '8px' : '4px'
                         }}
                       />
                     </div>
