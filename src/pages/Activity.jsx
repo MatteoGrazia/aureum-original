@@ -41,19 +41,7 @@ export default function Activity() {
     queryKey: ['dailyActivity', today],
     queryFn: async () => {
       const activities = await base44.entities.DailyActivity.filter({ date: today });
-      if (activities.length > 0) return activities[0];
-      
-      // Create today's activity record
-      const newActivity = await base44.entities.DailyActivity.create({
-        date: today,
-        steps: 0,
-        active_minutes: 0,
-        sedentary_minutes: 480, // 8 hours default
-        calories_burned: 0,
-        water_liters: 0,
-        step_goal: 10000
-      });
-      return newActivity;
+      return activities[0] || { steps: 0, water_liters: 0, active_minutes: 0, calories_burned: 0, sedentary_minutes: 480 };
     },
     refetchInterval: 30000 // Refetch every 30 seconds
   });
@@ -243,31 +231,35 @@ export default function Activity() {
               </div>
             </div>
           ) : (
-            <div className="flex items-end justify-between h-32 mb-4">
+            <div className="flex items-end justify-between h-32 mb-4 gap-1">
               {(timeView === 'week' ? weeklyActivity.slice(-7).reverse() : 
                 timeView === 'month' ? monthlyActivity.filter((_, i) => i % 4 === 0).slice(-7).reverse() :
                 yearlyActivity.filter((_, i) => i % 52 === 0).slice(-7).reverse()
               ).map((day, index) => {
-                const height = stepGoal > 0 ? (day.steps / stepGoal) * 100 : 0;
-                const isToday = day.date === today;
+                const steps = day?.steps || 0;
+                const maxHeight = 100;
+                const heightPercent = stepGoal > 0 ? Math.min((steps / stepGoal) * 100, maxHeight) : 0;
+                const isToday = day?.date === today;
                 
                 return (
-                  <div key={day.id || index} className="flex flex-col items-center flex-1">
-                    <motion.div
-                      initial={{ height: 0 }}
-                      animate={{ height: `${Math.min(height, 100)}%` }}
-                      transition={{ delay: index * 0.1, duration: 0.5 }}
-                      className={`w-4 rounded-t-full ${
-                        isToday 
-                          ? 'bg-gradient-to-t from-[#D4AF37] to-[#F4D03F]' 
-                          : 'bg-white/20'
-                      }`}
-                      style={{ minHeight: '4px' }}
-                    />
+                  <div key={day?.id || index} className="flex flex-col items-center flex-1">
+                    <div className="w-full h-32 flex items-end justify-center">
+                      <motion.div
+                        initial={{ height: 0 }}
+                        animate={{ height: `${heightPercent}%` }}
+                        transition={{ delay: index * 0.05, duration: 0.4 }}
+                        className={`w-4 rounded-t-full ${
+                          isToday 
+                            ? 'bg-gradient-to-t from-[#D4AF37] to-[#F4D03F]' 
+                            : 'bg-white/20'
+                        }`}
+                        style={{ minHeight: heightPercent > 0 ? '8px' : '4px' }}
+                      />
+                    </div>
                     <p className={`text-[10px] mt-2 ${isToday ? 'text-[#D4AF37]' : 'text-white/30'}`}>
-                      {timeView === 'week' ? format(new Date(day.date), 'EEE').charAt(0) :
-                       timeView === 'month' ? format(new Date(day.date), 'd') :
-                       format(new Date(day.date), 'MMM').charAt(0)}
+                      {timeView === 'week' ? format(new Date(day?.date || new Date()), 'EEE').charAt(0) :
+                       timeView === 'month' ? format(new Date(day?.date || new Date()), 'd') :
+                       format(new Date(day?.date || new Date()), 'MMM').charAt(0)}
                     </p>
                   </div>
                 );
