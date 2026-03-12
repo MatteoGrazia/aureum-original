@@ -122,9 +122,15 @@ Deno.serve(async (req) => {
 
       const accessToken = refreshData.access_token;
 
-      // Fetch step data from Google Fit (last 30 days)
+      // Fetch step data from Google Fit (last 30 days + today)
       const now = new Date();
-      const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      const thirtyDaysAgo = new Date(now);
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      thirtyDaysAgo.setHours(0, 0, 0, 0);
+
+      // Ensure we capture all of today's data by setting end time to end of today
+      const endOfToday = new Date(now);
+      endOfToday.setHours(23, 59, 59, 999);
 
       const stepDataResponse = await fetch(GOOGLE_FIT_API_URL, {
         method: 'POST',
@@ -140,8 +146,8 @@ Deno.serve(async (req) => {
             },
           ],
           bucketByTime: { durationMillis: 86400000 }, // 1 day buckets
-          startTimeMillis: Math.floor(thirtyDaysAgo.getTime()),
-          endTimeMillis: Math.floor(now.getTime()),
+          startTimeMillis: thirtyDaysAgo.getTime(),
+          endTimeMillis: endOfToday.getTime(),
         }),
       });
 
@@ -164,7 +170,13 @@ Deno.serve(async (req) => {
           const bucketDate = new Date(parseInt(bucket.startTimeMillis));
           const dateStr = bucketDate.toISOString().split('T')[0];
           
-          const steps = bucket.dataset[0]?.point[0]?.value[0]?.intVal || 0;
+          // Sum all step values from all data points in the bucket
+          let steps = 0;
+          if (bucket.dataset && bucket.dataset[0] && bucket.dataset[0].point) {
+            for (const point of bucket.dataset[0].point) {
+              steps += point.value[0]?.intVal || 0;
+            }
+          }
           
           const existing = activityMap.get(dateStr);
           
