@@ -62,6 +62,7 @@ export default function Activity() {
   }, [profile]);
 
   const [timeView, setTimeView] = useState('week'); // 'today', 'week', 'month', 'year'
+  const [selectedDay, setSelectedDay] = useState(null);
 
   const { data: weeklyActivity = [] } = useQuery({
     queryKey: ['weeklyActivity'],
@@ -231,32 +232,45 @@ export default function Activity() {
               </div>
             </div>
           ) : (
-            <div className="flex items-end justify-between h-32 mb-4 gap-1">
+            <div className="flex items-end justify-between h-28 mb-4 gap-1">
               {(timeView === 'week' ? weeklyActivity.slice(-7).reverse() : 
                 timeView === 'month' ? monthlyActivity.filter((_, i) => i % 4 === 0).slice(-7).reverse() :
                 yearlyActivity.filter((_, i) => i % 52 === 0).slice(-7).reverse()
               ).map((day, index) => {
                 const steps = day?.steps || 0;
-                const maxHeight = 100;
-                const heightPercent = stepGoal > 0 ? Math.min((steps / stepGoal) * 100, maxHeight) : 0;
+                const heightPercent = stepGoal > 0 ? Math.min((steps / stepGoal) * 70, 70) : 0;
                 const isToday = day?.date === today;
+                const isSelected = selectedDay?.id === day?.id;
                 
                 return (
                   <div key={day?.id || index} className="flex flex-col items-center flex-1">
-                    <div className="w-full h-32 flex items-end justify-center">
+                    <div className="w-full h-28 flex items-end justify-center relative">
+                      {isSelected && (
+                        <motion.div 
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="absolute bottom-full mb-2 bg-[#D4AF37] text-[#080808] px-2 py-1 rounded text-[10px] whitespace-nowrap font-medium"
+                        >
+                          <div>{format(new Date(day?.date || new Date()), 'MMM d')}</div>
+                          <div className="font-semibold">{steps.toLocaleString()} steps</div>
+                        </motion.div>
+                      )}
                       <motion.div
                         initial={{ height: 0 }}
                         animate={{ height: `${heightPercent}%` }}
                         transition={{ delay: index * 0.05, duration: 0.4 }}
-                        className={`w-4 rounded-t-full ${
-                          isToday 
+                        onClick={() => setSelectedDay(isSelected ? null : day)}
+                        className={`w-4 rounded-t-full cursor-pointer transition-all ${
+                          isSelected
+                            ? 'bg-gradient-to-t from-[#D4AF37] to-[#F4D03F] shadow-[0_0_12px_rgba(212,175,55,0.6)]' 
+                            : isToday 
                             ? 'bg-gradient-to-t from-[#D4AF37] to-[#F4D03F]' 
-                            : 'bg-white/20'
+                            : 'bg-white/20 hover:bg-white/30'
                         }`}
                         style={{ minHeight: heightPercent > 0 ? '8px' : '4px' }}
                       />
                     </div>
-                    <p className={`text-[10px] mt-2 ${isToday ? 'text-[#D4AF37]' : 'text-white/30'}`}>
+                    <p className={`text-[10px] mt-2 ${isSelected || isToday ? 'text-[#D4AF37]' : 'text-white/30'}`}>
                       {timeView === 'week' ? format(new Date(day?.date || new Date()), 'EEE').charAt(0) :
                        timeView === 'month' ? format(new Date(day?.date || new Date()), 'd') :
                        format(new Date(day?.date || new Date()), 'MMM').charAt(0)}
