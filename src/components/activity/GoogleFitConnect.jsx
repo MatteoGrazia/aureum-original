@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Smartphone, Check } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import VoidCard from '@/components/ui/VoidCard';
 import GoldButton from '@/components/ui/GoldButton';
@@ -9,10 +9,17 @@ export default function GoogleFitConnect({ isConnected, onSyncComplete }) {
   const [isLoading, setIsLoading] = useState(false);
   const [lastSyncTime, setLastSyncTime] = useState(null);
 
-  // Auto-sync on mount if connected
+  // Auto-sync on mount if connected (throttled to prevent rate limiting)
   useEffect(() => {
     if (isConnected) {
-      handleSync();
+      const lastSync = localStorage.getItem('google_fit_last_sync');
+      const now = Date.now();
+      
+      // Only sync if more than 5 minutes have passed since last sync
+      if (!lastSync || now - parseInt(lastSync) > 5 * 60 * 1000) {
+        handleSync();
+        localStorage.setItem('google_fit_last_sync', now.toString());
+      }
     }
   }, [isConnected]);
 
@@ -51,8 +58,12 @@ export default function GoogleFitConnect({ isConnected, onSyncComplete }) {
       >
         <VoidCard className="text-center">
           <div className="mb-4">
-            <div className="w-12 h-12 rounded-full bg-[#4285F4]/10 flex items-center justify-center mx-auto mb-3">
-              <Smartphone className="w-6 h-6 text-[#4285F4]" />
+            <div className="w-16 h-16 mx-auto mb-3">
+              <img 
+                src="https://www.gstatic.com/images/branding/product/2x/google_fit_2020q4_512dp.png" 
+                alt="Google Fit"
+                className="w-full h-full object-contain"
+              />
             </div>
             <h3 className="text-white mb-2" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>
               Connect Google Fit
@@ -81,8 +92,12 @@ export default function GoogleFitConnect({ isConnected, onSyncComplete }) {
       className="mb-6"
     >
       <VoidCard className="text-center">
-        <div className="w-12 h-12 rounded-full bg-[#4285F4]/10 flex items-center justify-center mx-auto mb-3">
-          <Smartphone className="w-6 h-6 text-[#4285F4]" />
+        <div className="w-16 h-16 mx-auto mb-3">
+          <img 
+            src="https://www.gstatic.com/images/branding/product/2x/google_fit_2020q4_512dp.png" 
+            alt="Google Fit"
+            className="w-full h-full object-contain"
+          />
         </div>
         <h3 className="text-white mb-2" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>
           Google Fit Connected
