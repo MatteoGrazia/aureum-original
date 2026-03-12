@@ -11,6 +11,10 @@ export default function StepCounter({ steps, goal }) {
   
   // Glow intensity increases as we approach goal
   const glowIntensity = Math.min(progress * 1.5, 1);
+  
+  // Calculate extra steps if goal exceeded
+  const extraSteps = steps > goal ? steps - goal : 0;
+  const isGoalExceeded = steps > goal;
 
   return (
     <div 
@@ -107,6 +111,27 @@ export default function StepCounter({ steps, goal }) {
           </p>
         </div>
       </div>
+      
+      {/* Extra steps notification when goal exceeded */}
+      {isGoalExceeded && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="relative z-10 text-center pb-2"
+        >
+          <p 
+            className="text-xs tracking-wide"
+            style={{ 
+              fontFamily: 'Montserrat, sans-serif', 
+              fontWeight: 500,
+              color: '#4ADE80'
+            }}
+          >
+            +{extraSteps.toLocaleString()} extra steps today! 🎉
+          </p>
+        </motion.div>
+      )}
     </div>
   );
 }
