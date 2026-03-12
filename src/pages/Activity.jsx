@@ -240,17 +240,17 @@ export default function Activity() {
                 
                 return (
                   <div key={day?.id || index} className="flex flex-col items-center flex-1">
+                    {isSelected && (
+                      <motion.div 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="bg-[#D4AF37] text-[#080808] px-2 py-1 rounded text-[10px] whitespace-nowrap font-medium mb-2"
+                      >
+                        <div>{format(new Date(day?.date || new Date()), 'MMM d')}</div>
+                        <div className="font-semibold">{steps.toLocaleString()} steps</div>
+                      </motion.div>
+                    )}
                     <div className="w-full h-28 flex items-end justify-center relative">
-                      {isSelected && (
-                        <motion.div 
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          className="absolute bottom-full mb-1 bg-[#D4AF37] text-[#080808] px-2 py-1 rounded text-[10px] whitespace-nowrap font-medium z-10"
-                        >
-                          <div>{format(new Date(day?.date || new Date()), 'MMM d')}</div>
-                          <div className="font-semibold">{steps.toLocaleString()} steps</div>
-                        </motion.div>
-                      )}
                       <motion.div
                         initial={{ height: 0 }}
                         animate={{ height: `${heightPercent}%` }}
