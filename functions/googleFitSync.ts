@@ -73,10 +73,18 @@ Deno.serve(async (req) => {
         return Response.json({ error: 'Failed to get access token from Google' }, { status: 400 });
       }
 
-      // Store the refresh token in user profile for future syncs
-      await base44.auth.updateMe({
-        google_fit_refresh_token: tokenData.refresh_token,
-      });
+      // Store the refresh token in UserProfile for future syncs
+      const profiles = await base44.entities.UserProfile.filter({ created_by: user.email });
+      
+      if (profiles.length > 0) {
+        await base44.entities.UserProfile.update(profiles[0].id, {
+          google_fit_refresh_token: tokenData.refresh_token,
+        });
+      } else {
+        await base44.entities.UserProfile.create({
+          google_fit_refresh_token: tokenData.refresh_token,
+        });
+      }
 
       return Response.json({
         success: true,
@@ -86,14 +94,12 @@ Deno.serve(async (req) => {
 
     // Step 3: Sync step data from Google Fit to DailyActivity
     if (action === 'sync') {
-      console.log('Checking refresh token. User object keys:', Object.keys(user));
-      console.log('google_fit_refresh_token value:', user.google_fit_refresh_token);
+      // Fetch the user's profile to get the refresh token (stored in UserProfile entity)
+      const profiles = await base44.entities.UserProfile.filter({ created_by: user.email });
+      const refreshToken = profiles[0]?.google_fit_refresh_token;
       
-      if (!user.google_fit_refresh_token) {
-        return Response.json({ 
-          error: 'Google Fit not connected. Please authorize first.',
-          debug: { hasToken: !!user.google_fit_refresh_token, userKeys: Object.keys(user) }
-        }, { status: 400 });
+      if (!refreshToken) {
+        return Response.json({ error: 'Google Fit not connected. Please authorize first.' }, { status: 400 });
       }
 
       // Refresh the access token using refresh token
@@ -101,7 +107,7 @@ Deno.serve(async (req) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({
-          refresh_token: user.google_fit_refresh_token,
+          refresh_token: refreshToken,
           client_id: Deno.env.get('GOOGLE_FIT_CLIENT_ID'),
           client_secret: Deno.env.get('GOOGLE_FIT_CLIENT_SECRET'),
           grant_type: 'refresh_token',
