@@ -18,6 +18,8 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    console.log('User data:', JSON.stringify(user, null, 2));
+
     const url = new URL(req.url);
     let action = url.searchParams.get('action');
     let code = url.searchParams.get('code');
