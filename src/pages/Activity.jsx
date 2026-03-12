@@ -250,7 +250,7 @@ export default function Activity() {
                         <div className="font-semibold">{steps.toLocaleString()} steps</div>
                       </motion.div>
                     )}
-                    <div className="w-full flex items-end justify-center relative" style={{ height: isSelected ? 'calc(100% - 50px)' : '100%' }}>
+                    <div className="w-full flex items-end justify-center relative" style={{ height: isSelected ? '100px' : '140px' }}>
                       <motion.div
                         initial={{ height: 0 }}
                         animate={{ height: `${heightPercent}%` }}
