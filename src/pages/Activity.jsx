@@ -229,13 +229,10 @@ export default function Activity() {
           {/* Dynamic View */}
           {timeView === 'week' ? (
             <div className="mb-4">
-              {/* Week total header */}
-              <div className="flex items-center justify-center gap-2 mb-4">
+              {/* Week date range */}
+              <div className="flex items-center justify-center mb-4">
                 <div className="text-white/40 text-xs">
                   {format(new Date(weeklyActivity[0]?.date || new Date()), 'MMM d')} – {format(new Date(weeklyActivity[6]?.date || new Date()), 'MMM d')}
-                </div>
-                <div className="text-[#D4AF37] text-lg font-medium">
-                  {weeklySteps.toLocaleString()} steps
                 </div>
               </div>
 
