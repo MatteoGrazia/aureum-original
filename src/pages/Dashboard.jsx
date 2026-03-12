@@ -66,7 +66,8 @@ export default function Dashboard() {
       return profiles[0] || null;
     },
     staleTime: 10 * 60 * 1000,
-    gcTime: 15 * 60 * 1000
+    gcTime: 15 * 60 * 1000,
+    refetchInterval: 60000 // Refetch every 60 seconds
   });
 
   const { data: dailyActivity, refetch: refetchActivity, isLoading: activityLoading } = useQuery({
@@ -76,7 +77,8 @@ export default function Dashboard() {
       return activities[0] || { steps: 0, water_liters: 0, active_minutes: 0, calories_burned: 0 };
     },
     staleTime: 2 * 60 * 1000,
-    gcTime: 5 * 60 * 1000
+    gcTime: 5 * 60 * 1000,
+    refetchInterval: 30000 // Refetch every 30 seconds
   });
 
   const { data: todaysFoodLogs, isLoading: foodLoading } = useQuery({
