@@ -128,7 +128,7 @@ export default function StepCounter({ steps, goal }) {
               color: '#4ADE80'
             }}
           >
-            +{extraSteps.toLocaleString()} extra steps today! 🎉
+            +{extraSteps.toLocaleString()} extra steps today
           </p>
         </motion.div>
       )}
