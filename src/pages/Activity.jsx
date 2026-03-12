@@ -250,7 +250,7 @@ export default function Activity() {
                     <div className="w-full h-full flex items-end justify-center relative">
                       <motion.div
                         initial={{ height: 0 }}
-                        animate={{ height: `${heightPercent}%` }}
+                        animate={{ height: `${Math.min(heightPercent, 200)}%` }}
                         transition={{ delay: index * 0.05, duration: 0.4 }}
                         onClick={() => setSelectedDay(isSelected ? null : day)}
                         className={`w-4 rounded-t-full cursor-pointer transition-all ${
@@ -260,7 +260,10 @@ export default function Activity() {
                             ? 'bg-gradient-to-t from-[#D4AF37] to-[#F4D03F]' 
                             : 'bg-white/20 hover:bg-white/30'
                         }`}
-                        style={{ minHeight: heightPercent > 0 ? '8px' : '4px' }}
+                        style={{ 
+                          minHeight: heightPercent > 0 ? '8px' : '4px',
+                          maxHeight: '200%'
+                        }}
                       />
                     </div>
                     <p className={`text-[10px] mt-2 ${isSelected || isToday ? 'text-[#D4AF37]' : 'text-white/30'}`}>
