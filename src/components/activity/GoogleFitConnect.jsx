@@ -9,17 +9,10 @@ export default function GoogleFitConnect({ isConnected, onSyncComplete }) {
   const [isLoading, setIsLoading] = useState(false);
   const [lastSyncTime, setLastSyncTime] = useState(null);
 
-  // Auto-sync on mount if connected (throttled to prevent rate limiting)
+  // Auto-sync on mount if connected
   useEffect(() => {
     if (isConnected) {
-      const lastSync = localStorage.getItem('google_fit_last_sync');
-      const now = Date.now();
-      
-      // Only sync if more than 5 minutes have passed since last sync
-      if (!lastSync || now - parseInt(lastSync) > 5 * 60 * 1000) {
-        handleSync();
-        localStorage.setItem('google_fit_last_sync', now.toString());
-      }
+      handleSync();
     }
   }, [isConnected]);
 
