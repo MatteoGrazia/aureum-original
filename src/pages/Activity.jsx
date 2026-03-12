@@ -226,13 +226,10 @@ export default function Activity() {
             {timeView === 'week' ? 'This Week' : timeView === 'month' ? 'This Month' : 'This Year'}
           </h3>
           
-          {/* Dynamic Bar Chart */}
-          {(
+          {/* Dynamic View */}
+          {timeView === 'week' ? (
             <div className="flex items-end justify-between mb-4 gap-1" style={{ minHeight: '180px' }}>
-              {(timeView === 'week' ? weeklyActivity.slice(-7).reverse() : 
-                timeView === 'month' ? monthlyActivity.filter((_, i) => i % 4 === 0).slice(-7).reverse() :
-                yearlyActivity.filter((_, i) => i % 52 === 0).slice(-7).reverse()
-              ).map((day, index) => {
+              {weeklyActivity.slice(-7).reverse().map((day, index) => {
                 const steps = day?.steps || 0;
                 const heightPercent = stepGoal > 0 ? Math.min((steps / stepGoal) * 100, 100) : 0;
                 const isToday = day?.date === today;
@@ -267,9 +264,113 @@ export default function Activity() {
                       />
                     </div>
                     <p className={`text-[10px] mt-2 ${isSelected || isToday ? 'text-[#D4AF37]' : 'text-white/30'}`}>
-                      {timeView === 'week' ? format(new Date(day?.date || new Date()), 'EEE').charAt(0) :
-                       timeView === 'month' ? format(new Date(day?.date || new Date()), 'd') :
-                       format(new Date(day?.date || new Date()), 'MMM').charAt(0)}
+                      {format(new Date(day?.date || new Date()), 'EEE').charAt(0)}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          ) : timeView === 'month' ? (
+            <div className="mb-4">
+              {/* Calendar Grid */}
+              <div className="grid grid-cols-7 gap-2 mb-3">
+                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                  <div key={day} className="text-center text-[9px] text-white/40 uppercase tracking-wider pb-1">
+                    {day.slice(0, 3)}
+                  </div>
+                ))}
+              </div>
+              <div className="grid grid-cols-7 gap-2">
+                {monthlyActivity.slice(-31).reverse().map((day, index) => {
+                  const steps = day?.steps || 0;
+                  const intensity = stepGoal > 0 ? Math.min((steps / stepGoal), 1) : 0;
+                  const isToday = day?.date === today;
+                  const isSelected = selectedDay?.id === day?.id;
+                  
+                  // Calculate opacity and size based on intensity
+                  const opacity = intensity > 0 ? 0.3 + (intensity * 0.7) : 0.1;
+                  const scale = intensity > 0 ? 0.7 + (intensity * 0.3) : 0.5;
+                  
+                  return (
+                    <motion.div
+                      key={day?.id || index}
+                      initial={{ opacity: 0, scale: 0 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: index * 0.02, duration: 0.3 }}
+                      className="aspect-square flex items-center justify-center relative"
+                    >
+                      <motion.div
+                        onClick={() => setSelectedDay(isSelected ? null : day)}
+                        className={`w-full h-full rounded-full cursor-pointer flex items-center justify-center transition-all ${
+                          isSelected
+                            ? 'bg-[#D4AF37] shadow-[0_0_12px_rgba(212,175,55,0.6)]'
+                            : isToday
+                            ? 'bg-[#D4AF37]/80'
+                            : 'bg-[#D4AF37] hover:bg-[#F4D03F]'
+                        }`}
+                        style={{ 
+                          opacity: isSelected || isToday ? 1 : opacity,
+                          transform: `scale(${isSelected ? 1 : scale})`
+                        }}
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <span className="text-[10px] text-[#080808] font-medium">
+                          {format(new Date(day?.date || new Date()), 'd')}
+                        </span>
+                      </motion.div>
+                      {isSelected && (
+                        <motion.div 
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-[#D4AF37] text-[#080808] px-2 py-1 rounded text-[9px] whitespace-nowrap font-medium z-10"
+                        >
+                          {steps.toLocaleString()}
+                        </motion.div>
+                      )}
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-end justify-between mb-4 gap-1" style={{ minHeight: '180px' }}>
+              {yearlyActivity.filter((_, i) => i % 52 === 0).slice(-7).reverse().map((day, index) => {
+                const steps = day?.steps || 0;
+                const heightPercent = stepGoal > 0 ? Math.min((steps / stepGoal) * 100, 100) : 0;
+                const isToday = day?.date === today;
+                const isSelected = selectedDay?.id === day?.id;
+                
+                return (
+                  <div key={day?.id || index} className="flex flex-col items-center flex-1">
+                    {isSelected && (
+                      <motion.div 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="bg-[#D4AF37] text-[#080808] px-2 py-1 rounded text-[10px] whitespace-nowrap font-medium mb-2"
+                      >
+                        <div>{format(new Date(day?.date || new Date()), 'MMM d')}</div>
+                        <div className="font-semibold">{steps.toLocaleString()} steps</div>
+                      </motion.div>
+                    )}
+                    <div className="w-full flex items-end justify-center relative" style={{ height: isSelected ? '100px' : '140px' }}>
+                      <motion.div
+                        initial={{ height: 0 }}
+                        animate={{ height: `${heightPercent}%` }}
+                        transition={{ delay: index * 0.05, duration: 0.4 }}
+                        onClick={() => setSelectedDay(isSelected ? null : day)}
+                        className={`w-4 rounded-t-full cursor-pointer transition-all ${
+                          isSelected
+                            ? 'bg-gradient-to-t from-[#D4AF37] to-[#F4D03F] shadow-[0_0_12px_rgba(212,175,55,0.6)]' 
+                            : isToday 
+                            ? 'bg-gradient-to-t from-[#D4AF37] to-[#F4D03F]' 
+                            : 'bg-white/20 hover:bg-white/30'
+                        }`}
+                        style={{ minHeight: heightPercent > 0 ? '8px' : '4px' }}
+                      />
+                    </div>
+                    <p className={`text-[10px] mt-2 ${isSelected || isToday ? 'text-[#D4AF37]' : 'text-white/30'}`}>
+                      {format(new Date(day?.date || new Date()), 'MMM').charAt(0)}
                     </p>
                   </div>
                 );
