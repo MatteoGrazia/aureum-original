@@ -228,7 +228,7 @@ export default function Activity() {
           
           {/* Dynamic Bar Chart */}
           {(
-            <div className="flex items-end justify-between h-28 mb-4 gap-1">
+            <div className="flex items-end justify-between h-28 mb-4 gap-1 pt-12">
               {(timeView === 'week' ? weeklyActivity.slice(-7).reverse() : 
                 timeView === 'month' ? monthlyActivity.filter((_, i) => i % 4 === 0).slice(-7).reverse() :
                 yearlyActivity.filter((_, i) => i % 52 === 0).slice(-7).reverse()
