@@ -44,9 +44,9 @@ export default function GoogleFitConnect({ isConnected, onSyncComplete }) {
       console.log('Sync response:', response.data);
       if (response.data.success) {
         setLastSyncTime(new Date());
-        onSyncComplete?.();
-        // Notify Dashboard to refetch
+        // Notify Dashboard and Activity page to refetch
         window.dispatchEvent(new CustomEvent('googleFitSynced'));
+        onSyncComplete?.();
       } else {
         console.error('Sync failed:', response.data);
       }
@@ -66,7 +66,7 @@ export default function GoogleFitConnect({ isConnected, onSyncComplete }) {
       >
         <VoidCard className="text-center">
           <div className="mb-4">
-            <div className="w-16 h-16 mx-auto mb-3">
+            <div className="w-12 h-12 mx-auto mb-3">
               <img 
                 src="https://media.base44.com/images/public/698347d058d3014d6271ccff/71b7fb0a2_googlefitlogo.png" 
                 alt="Google Fit"
@@ -100,7 +100,7 @@ export default function GoogleFitConnect({ isConnected, onSyncComplete }) {
       className="mb-6"
     >
       <VoidCard className="text-center">
-        <div className="w-16 h-16 mx-auto mb-3">
+        <div className="w-12 h-12 mx-auto mb-3">
           <img 
             src="https://media.base44.com/images/public/698347d058d3014d6271ccff/71b7fb0a2_googlefitlogo.png" 
             alt="Google Fit"

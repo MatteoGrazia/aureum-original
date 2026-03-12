@@ -61,6 +61,19 @@ export default function Activity() {
     }
   }, [profile]);
 
+  // Listen for Google Fit sync events
+  useEffect(() => {
+    const handleSync = () => {
+      refetch();
+      queryClient.invalidateQueries(['dailyActivity']);
+      queryClient.invalidateQueries(['weeklyActivity']);
+      queryClient.invalidateQueries(['monthlyActivity']);
+      queryClient.invalidateQueries(['yearlyActivity']);
+    };
+    window.addEventListener('googleFitSynced', handleSync);
+    return () => window.removeEventListener('googleFitSynced', handleSync);
+  }, [refetch, queryClient]);
+
   const [timeView, setTimeView] = useState('week'); // 'today', 'week', 'month', 'year'
   const [selectedDay, setSelectedDay] = useState(null);
 
