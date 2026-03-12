@@ -35,7 +35,7 @@ Deno.serve(async (req) => {
 
     // Step 1: Initiate OAuth flow
     if (action === 'init') {
-      const redirectUri = `${url.origin}/Activity`;
+      const redirectUri = 'https://aureumfitness.base44.app/Activity';
       const authUrl = new URL(GOOGLE_FIT_AUTH_URL);
       authUrl.searchParams.set('client_id', Deno.env.get('GOOGLE_FIT_CLIENT_ID'));
       authUrl.searchParams.set('redirect_uri', redirectUri);
@@ -51,7 +51,7 @@ Deno.serve(async (req) => {
 
     // Step 2: Handle OAuth callback - exchange code for token
     if (action === 'exchange' && code) {
-      const redirectUri = `${url.origin}/Activity`;
+      const redirectUri = 'https://aureumfitness.base44.app/Activity';
       
       const tokenResponse = await fetch(GOOGLE_FIT_TOKEN_URL, {
         method: 'POST',
