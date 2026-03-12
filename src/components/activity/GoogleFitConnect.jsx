@@ -45,6 +45,8 @@ export default function GoogleFitConnect({ isConnected, onSyncComplete }) {
       if (response.data.success) {
         setLastSyncTime(new Date());
         onSyncComplete?.();
+        // Notify Dashboard to refetch
+        window.dispatchEvent(new CustomEvent('googleFitSynced'));
       } else {
         console.error('Sync failed:', response.data);
       }
