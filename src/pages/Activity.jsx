@@ -13,9 +13,7 @@ import GoogleFitConnect from '@/components/activity/GoogleFitConnect';
 export default function Activity() {
   const queryClient = useQueryClient();
   const today = format(new Date(), 'yyyy-MM-dd');
-  const [isGoogleFitConnected, setIsGoogleFitConnected] = useState(
-    () => localStorage.getItem('google_fit_connected') === 'true'
-  );
+  const [isGoogleFitConnected, setIsGoogleFitConnected] = useState(false);
 
   // Handle OAuth callback
   useEffect(() => {
@@ -67,6 +65,13 @@ export default function Activity() {
       return profiles[0] || null;
     }
   });
+
+  // Check Google Fit connection from profile
+  useEffect(() => {
+    if (profile?.google_fit_refresh_token) {
+      setIsGoogleFitConnected(true);
+    }
+  }, [profile]);
 
   const [timeView, setTimeView] = useState('week'); // 'today', 'week', 'month', 'year'
 
@@ -153,9 +158,9 @@ export default function Activity() {
       <GoogleFitConnect 
         isConnected={isGoogleFitConnected}
         onSyncComplete={() => {
-          localStorage.setItem('google_fit_connected', 'true');
           setIsGoogleFitConnected(true);
-          refetch();
+          queryClient.invalidateQueries(['dailyActivity']);
+          queryClient.invalidateQueries(['userProfile']);
         }}
       />
 
@@ -239,10 +244,10 @@ export default function Activity() {
             </div>
           ) : (
             <div className="flex items-end justify-between h-32 mb-4">
-              {(timeView === 'week' ? weeklyActivity.slice(-7) : 
-                timeView === 'month' ? monthlyActivity.filter((_, i) => i % 4 === 0).slice(-7) :
-                yearlyActivity.filter((_, i) => i % 52 === 0).slice(-7)
-              ).reverse().map((day, index) => {
+              {(timeView === 'week' ? weeklyActivity.slice(-7).reverse() : 
+                timeView === 'month' ? monthlyActivity.filter((_, i) => i % 4 === 0).slice(-7).reverse() :
+                yearlyActivity.filter((_, i) => i % 52 === 0).slice(-7).reverse()
+              ).map((day, index) => {
                 const height = stepGoal > 0 ? (day.steps / stepGoal) * 100 : 0;
                 const isToday = day.date === today;
                 
