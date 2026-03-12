@@ -234,7 +234,7 @@ export default function Activity() {
                 yearlyActivity.filter((_, i) => i % 52 === 0).slice(-7).reverse()
               ).map((day, index) => {
                 const steps = day?.steps || 0;
-                const heightPercent = stepGoal > 0 ? Math.min((steps / stepGoal) * 70, 70) : 0;
+                const heightPercent = stepGoal > 0 ? Math.min((steps / stepGoal) * 100, 100) : 0;
                 const isToday = day?.date === today;
                 const isSelected = selectedDay?.id === day?.id;
                 
@@ -250,7 +250,7 @@ export default function Activity() {
                         <div className="font-semibold">{steps.toLocaleString()} steps</div>
                       </motion.div>
                     )}
-                    <div className="w-full h-28 flex items-end justify-center relative">
+                    <div className="w-full flex items-end justify-center relative" style={{ height: isSelected ? 'calc(100% - 50px)' : '100%' }}>
                       <motion.div
                         initial={{ height: 0 }}
                         animate={{ height: `${heightPercent}%` }}
