@@ -219,12 +219,19 @@ export default function Activity() {
         className="mb-6"
       >
         <VoidCard>
-          <h3 
-            className="text-[10px] uppercase tracking-[0.3em] text-[#D4AF37] mb-4"
-            style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
-          >
-            {timeView === 'week' ? 'This Week' : timeView === 'month' ? 'This Month' : 'This Year'}
-          </h3>
+          <div className="flex items-start justify-between mb-4">
+            <h3 
+              className="text-[10px] uppercase tracking-[0.3em] text-[#D4AF37]"
+              style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
+            >
+              {timeView === 'week' ? 'This Week' : timeView === 'month' ? 'This Month' : 'This Year'}
+            </h3>
+            {timeView === 'week' && (
+              <div className="text-[#D4AF37] text-lg font-medium">
+                {weeklySteps.toLocaleString()}
+              </div>
+            )}
+          </div>
           
           {/* Dynamic View */}
           {timeView === 'week' ? (
