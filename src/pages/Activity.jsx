@@ -52,11 +52,12 @@ export default function Activity() {
         active_minutes: 0,
         sedentary_minutes: 480, // 8 hours default
         calories_burned: 0,
-        water_glasses: 0,
+        water_liters: 0,
         step_goal: 10000
       });
       return newActivity;
-    }
+    },
+    refetchInterval: 30000 // Refetch every 30 seconds
   });
 
   const { data: profile } = useQuery({
@@ -67,13 +68,14 @@ export default function Activity() {
     }
   });
 
+  const [timeView, setTimeView] = useState('week'); // 'today', 'week', 'month', 'year'
+
   const { data: weeklyActivity = [] } = useQuery({
     queryKey: ['weeklyActivity'],
     queryFn: async () => {
-      const weekAgo = new Date();
-      weekAgo.setDate(weekAgo.getDate() - 7);
       return base44.entities.DailyActivity.filter({}, '-date', 7);
-    }
+    },
+    refetchInterval: 30000
   });
 
   const stepGoal = profile?.daily_step_goal || 10000;
@@ -89,14 +91,16 @@ export default function Activity() {
     queryKey: ['monthlyActivity'],
     queryFn: async () => {
       return base44.entities.DailyActivity.filter({}, '-date', 30);
-    }
+    },
+    refetchInterval: 30000
   });
   
   const { data: yearlyActivity = [] } = useQuery({
     queryKey: ['yearlyActivity'],
     queryFn: async () => {
       return base44.entities.DailyActivity.filter({}, '-date', 365);
-    }
+    },
+    refetchInterval: 30000
   });
   
   const monthlySteps = monthlyActivity.reduce((sum, day) => sum + (day.steps || 0), 0);
@@ -171,7 +175,37 @@ export default function Activity() {
         />
       </motion.div>
 
-      {/* Weekly Overview */}
+      {/* Time View Selector */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.35 }}
+        className="mb-4"
+      >
+        <div className="flex gap-2">
+          {[
+            { value: 'today', label: 'Today' },
+            { value: 'week', label: 'Week' },
+            { value: 'month', label: 'Month' },
+            { value: 'year', label: 'Year' }
+          ].map(view => (
+            <button
+              key={view.value}
+              onClick={() => setTimeView(view.value)}
+              className={`flex-1 py-2 px-3 rounded-lg text-xs uppercase tracking-wider transition-all ${
+                timeView === view.value
+                  ? 'bg-[#D4AF37] text-[#080808]'
+                  : 'bg-white/5 text-white/40 hover:bg-white/10'
+              }`}
+              style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
+            >
+              {view.label}
+            </button>
+          ))}
+        </div>
+      </motion.div>
+
+      {/* Time-based Overview */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -183,92 +217,95 @@ export default function Activity() {
             className="text-[10px] uppercase tracking-[0.3em] text-[#D4AF37] mb-4"
             style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
           >
-            This Week
+            {timeView === 'today' ? 'Today' : timeView === 'week' ? 'This Week' : timeView === 'month' ? 'This Month' : 'This Year'}
           </h3>
           
-          {/* Weekly Bar Chart */}
-          <div className="flex items-end justify-between h-32 mb-4">
-            {weeklyActivity.slice(-7).reverse().map((day, index) => {
-              const height = stepGoal > 0 ? (day.steps / stepGoal) * 100 : 0;
-              const isToday = day.date === today;
-              
-              return (
-                <div key={day.id || index} className="flex flex-col items-center flex-1">
-                  <motion.div
-                    initial={{ height: 0 }}
-                    animate={{ height: `${Math.min(height, 100)}%` }}
-                    transition={{ delay: index * 0.1, duration: 0.5 }}
-                    className={`w-4 rounded-t-full ${
-                      isToday 
-                        ? 'bg-gradient-to-t from-[#D4AF37] to-[#F4D03F]' 
-                        : 'bg-white/20'
-                    }`}
-                    style={{ minHeight: '4px' }}
-                  />
-                  <p className={`text-[10px] mt-2 ${isToday ? 'text-[#D4AF37]' : 'text-white/30'}`}>
-                    {format(new Date(day.date), 'EEE').charAt(0)}
-                  </p>
+          {/* Dynamic Bar Chart */}
+          {timeView === 'today' ? (
+            <div className="text-center py-8">
+              <p className="text-5xl text-white mb-2" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>
+                {currentSteps.toLocaleString()}
+              </p>
+              <p className="text-white/40 text-sm" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>
+                steps today
+              </p>
+              <div className="mt-4 h-2 bg-white/10 rounded-full overflow-hidden">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${Math.min((currentSteps / stepGoal) * 100, 100)}%` }}
+                  className="h-full bg-gradient-to-r from-[#D4AF37] to-[#F4D03F]"
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-end justify-between h-32 mb-4">
+              {(timeView === 'week' ? weeklyActivity.slice(-7) : 
+                timeView === 'month' ? monthlyActivity.filter((_, i) => i % 4 === 0).slice(-7) :
+                yearlyActivity.filter((_, i) => i % 52 === 0).slice(-7)
+              ).reverse().map((day, index) => {
+                const height = stepGoal > 0 ? (day.steps / stepGoal) * 100 : 0;
+                const isToday = day.date === today;
+                
+                return (
+                  <div key={day.id || index} className="flex flex-col items-center flex-1">
+                    <motion.div
+                      initial={{ height: 0 }}
+                      animate={{ height: `${Math.min(height, 100)}%` }}
+                      transition={{ delay: index * 0.1, duration: 0.5 }}
+                      className={`w-4 rounded-t-full ${
+                        isToday 
+                          ? 'bg-gradient-to-t from-[#D4AF37] to-[#F4D03F]' 
+                          : 'bg-white/20'
+                      }`}
+                      style={{ minHeight: '4px' }}
+                    />
+                    <p className={`text-[10px] mt-2 ${isToday ? 'text-[#D4AF37]' : 'text-white/30'}`}>
+                      {timeView === 'week' ? format(new Date(day.date), 'EEE').charAt(0) :
+                       timeView === 'month' ? format(new Date(day.date), 'd') :
+                       format(new Date(day.date), 'MMM').charAt(0)}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Dynamic Stats */}
+          {timeView !== 'today' && (
+            <div className="grid grid-cols-3 gap-4 pt-4 border-t border-white/10">
+              <div className="text-center">
+                <div className="flex items-center justify-center gap-1 mb-1">
+                  <Target className="w-3 h-3 text-[#D4AF37]" strokeWidth={1.5} />
                 </div>
-              );
-            })}
-          </div>
-
-          {/* Weekly Stats */}
-          <div className="grid grid-cols-3 gap-4 pt-4 border-t border-white/10">
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-1 mb-1">
-                <Target className="w-3 h-3 text-[#D4AF37]" strokeWidth={1.5} />
+                <p className="text-white text-lg" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>
+                  {(timeView === 'week' ? weeklySteps : timeView === 'month' ? monthlySteps : yearlySteps).toLocaleString()}
+                </p>
+                <p className="text-white/30 text-[10px] uppercase tracking-wider" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>Total Steps</p>
               </div>
-              <p className="text-white text-lg" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>{weeklySteps.toLocaleString()}</p>
-              <p className="text-white/30 text-[10px] uppercase tracking-wider" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>Total Steps</p>
-            </div>
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-1 mb-1">
-                <TrendingUp className="w-3 h-3 text-[#D4AF37]" strokeWidth={1.5} />
+              <div className="text-center">
+                <div className="flex items-center justify-center gap-1 mb-1">
+                  <TrendingUp className="w-3 h-3 text-[#D4AF37]" strokeWidth={1.5} />
+                </div>
+                <p className="text-white text-lg" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>
+                  {(timeView === 'week' ? weeklyAverage : timeView === 'month' ? monthlyAverage : yearlyAverage).toLocaleString()}
+                </p>
+                <p className="text-white/30 text-[10px] uppercase tracking-wider" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>Daily Avg</p>
               </div>
-              <p className="text-white text-lg" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>{weeklyAverage.toLocaleString()}</p>
-              <p className="text-white/30 text-[10px] uppercase tracking-wider" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>Daily Avg</p>
-            </div>
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-1 mb-1">
-                <Award className="w-3 h-3 text-[#D4AF37]" strokeWidth={1.5} />
+              <div className="text-center">
+                <div className="flex items-center justify-center gap-1 mb-1">
+                  <Award className="w-3 h-3 text-[#D4AF37]" strokeWidth={1.5} />
+                </div>
+                <p className="text-white text-lg" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>
+                  {Math.max(...(timeView === 'week' ? weeklyActivity : timeView === 'month' ? monthlyActivity : yearlyActivity).map(d => d.steps || 0), 0).toLocaleString()}
+                </p>
+                <p className="text-white/30 text-[10px] uppercase tracking-wider" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>Best Day</p>
               </div>
-              <p className="text-white text-lg" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>{bestDay.toLocaleString()}</p>
-              <p className="text-white/30 text-[10px] uppercase tracking-wider" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>Best Day</p>
             </div>
-          </div>
+          )}
         </VoidCard>
       </motion.div>
 
-      {/* Monthly & Yearly Averages */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
-        className="grid grid-cols-2 gap-4 mt-6 mb-24"
-      >
-        <VoidCard>
-          <h3 
-            className="text-[10px] uppercase tracking-[0.3em] text-[#D4AF37] mb-3"
-            style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
-          >
-            Monthly Average
-          </h3>
-          <p className="text-3xl text-white mb-1" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>{monthlyAverage.toLocaleString()}</p>
-          <p className="text-white/30 text-xs" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>steps per day</p>
-        </VoidCard>
-        
-        <VoidCard>
-          <h3 
-            className="text-[10px] uppercase tracking-[0.3em] text-[#D4AF37] mb-3"
-            style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
-          >
-            Yearly Average
-          </h3>
-          <p className="text-3xl text-white mb-1" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>{yearlyAverage.toLocaleString()}</p>
-          <p className="text-white/30 text-xs" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>steps per day</p>
-        </VoidCard>
-      </motion.div>
+
       </div>
     </div>
   );
