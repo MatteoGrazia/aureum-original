@@ -80,7 +80,8 @@ export default function StepCounter({ steps, goal }) {
         {/* Center Content */}
         <div className="absolute text-center">
           <Footprints 
-            className="w-8 h-8 mx-auto mb-2 text-[#D4AF37]" 
+            className="w-8 h-8 mx-auto mb-2" 
+            style={{ color: '#8ECAE6' }}
             strokeWidth={1.5}
           />
           
