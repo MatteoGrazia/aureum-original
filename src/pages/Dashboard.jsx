@@ -38,6 +38,17 @@ export default function Dashboard() {
     return () => clearTimeout(timer);
   }, []);
 
+  const { data: dailyActivity, refetch: refetchActivity, isLoading: activityLoading } = useQuery({
+    queryKey: ['dailyActivity', today],
+    queryFn: async () => {
+      const activities = await base44.entities.DailyActivity.filter({ date: today });
+      return activities[0] || { steps: 0, water_liters: 0, active_minutes: 0, calories_burned: 0 };
+    },
+    staleTime: 2 * 60 * 1000,
+    gcTime: 5 * 60 * 1000,
+    refetchInterval: 30000 // Refetch every 30 seconds
+  });
+
   // Subscribe to global step count changes
   useEffect(() => {
     const unsubscribe = subscribeToSteps((steps) => {
@@ -46,7 +57,7 @@ export default function Dashboard() {
       refetchActivity();
     });
     return unsubscribe;
-  }, []);
+  }, [refetchActivity]);
 
   // Listen for Google Fit sync events
   useEffect(() => {
@@ -78,17 +89,6 @@ export default function Dashboard() {
     staleTime: 10 * 60 * 1000,
     gcTime: 15 * 60 * 1000,
     refetchInterval: 60000 // Refetch every 60 seconds
-  });
-
-  const { data: dailyActivity, refetch: refetchActivity, isLoading: activityLoading } = useQuery({
-    queryKey: ['dailyActivity', today],
-    queryFn: async () => {
-      const activities = await base44.entities.DailyActivity.filter({ date: today });
-      return activities[0] || { steps: 0, water_liters: 0, active_minutes: 0, calories_burned: 0 };
-    },
-    staleTime: 2 * 60 * 1000,
-    gcTime: 5 * 60 * 1000,
-    refetchInterval: 30000 // Refetch every 30 seconds
   });
 
   const { data: todaysFoodLogs, isLoading: foodLoading } = useQuery({
