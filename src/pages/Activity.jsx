@@ -229,11 +229,11 @@ export default function Activity() {
           {/* Dynamic View */}
           {timeView === 'week' ? (
             <div className="mb-4">
-              <div className="relative flex items-end justify-between gap-1" style={{ height: '140px', overflow: 'visible' }}>
+              <div className="relative flex items-end justify-between gap-1" style={{ height: '200px', overflow: 'visible' }}>
                 {/* Goal Line at 100% mark */}
                 <div 
                   className="absolute left-0 right-0 border-t border-dashed border-[#D4AF37]/50 pointer-events-none z-10"
-                  style={{ bottom: '100%' }}
+                  style={{ bottom: '140px' }}
                 >
                   <span className="absolute -top-3 right-0 text-[8px] text-[#D4AF37]/70 uppercase tracking-wider font-medium">
                     Goal
@@ -241,7 +241,7 @@ export default function Activity() {
                 </div>
               {weeklyActivity.slice(-7).reverse().map((day, index) => {
                 const steps = day?.steps || 0;
-                const heightPx = stepGoal > 0 ? Math.min((steps / stepGoal) * 140, 180) : 0;
+                const heightPx = stepGoal > 0 ? Math.min((steps / stepGoal) * 140, 240) : 0;
                 const isToday = day?.date === today;
                 const isSelected = selectedDay?.id === day?.id;
                 
