@@ -235,7 +235,7 @@ export default function Activity() {
                   className="absolute left-0 right-0 border-t border-dashed border-[#D4AF37]/50 pointer-events-none z-10"
                   style={{ bottom: '140px' }}
                 >
-                  <span className="absolute -top-3 right-0 text-[8px] text-[#D4AF37]/70 uppercase tracking-wider font-medium">
+                  <span className="absolute -top-3 -left-1 text-[8px] text-[#D4AF37]/70 uppercase tracking-wider font-medium">
                     Goal
                   </span>
                 </div>
