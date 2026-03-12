@@ -241,7 +241,7 @@ export default function Activity() {
                 </div>
               {weeklyActivity.slice(-7).reverse().map((day, index) => {
                 const steps = day?.steps || 0;
-                const heightPx = stepGoal > 0 ? Math.min((steps / stepGoal) * 140, 280) : 0;
+                const heightPx = stepGoal > 0 ? Math.min((steps / stepGoal) * 140, 180) : 0;
                 const isToday = day?.date === today;
                 const isSelected = selectedDay?.id === day?.id;
                 
