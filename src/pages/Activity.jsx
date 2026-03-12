@@ -229,7 +229,7 @@ export default function Activity() {
           {/* Dynamic View */}
           {timeView === 'week' ? (
             <div className="mb-4">
-              <div className="relative flex items-end justify-between gap-1" style={{ height: '140px' }}>
+              <div className="relative flex items-end justify-between gap-1" style={{ height: '140px', overflow: 'visible' }}>
                 {/* Goal Line at 100% mark */}
                 <div 
                   className="absolute left-0 right-0 border-t border-dashed border-[#D4AF37]/50 pointer-events-none z-10"
@@ -246,8 +246,8 @@ export default function Activity() {
                 const isSelected = selectedDay?.id === day?.id;
                 
                 return (
-                  <div key={day?.id || index} className="flex flex-col items-center flex-1">
-                    <div className="w-full h-full flex items-end justify-center relative">
+                  <div key={day?.id || index} className="flex flex-col items-center flex-1" style={{ overflow: 'visible' }}>
+                    <div className="w-full h-full flex items-end justify-center relative" style={{ overflow: 'visible' }}>
                       <motion.div
                         initial={{ height: 0 }}
                         animate={{ height: `${Math.min(heightPercent, 200)}%` }}
