@@ -229,54 +229,87 @@ export default function Activity() {
           {/* Dynamic View */}
           {timeView === 'week' ? (
             <div className="mb-4">
-              <div className="relative flex items-end justify-between gap-1" style={{ height: '200px', overflow: 'visible' }}>
-                {/* Goal Line at 100% mark */}
-                <div 
-                  className="absolute left-0 right-0 border-t border-dashed border-[#D4AF37]/50 pointer-events-none z-10"
-                  style={{ bottom: '140px' }}
-                >
-                  <span className="absolute -top-3 -left-1 text-[8px] text-[#D4AF37]/70 uppercase tracking-wider font-medium">
-                    Goal
-                  </span>
+              {/* Week total header */}
+              <div className="flex items-center justify-center gap-2 mb-4">
+                <div className="text-white/40 text-xs">
+                  {format(new Date(weeklyActivity[0]?.date || new Date()), 'MMM d')} – {format(new Date(weeklyActivity[6]?.date || new Date()), 'MMM d')}
                 </div>
-              {weeklyActivity.slice(-7).reverse().map((day, index) => {
-                const steps = day?.steps || 0;
-                const heightPx = stepGoal > 0 ? Math.min((steps / stepGoal) * 140, 240) : 0;
-                const isToday = day?.date === today;
-                const isSelected = selectedDay?.id === day?.id;
-                
-                return (
-                  <div key={day?.id || index} className="flex flex-col items-center flex-1" style={{ overflow: 'visible' }}>
-                    <div className="w-full h-full flex items-end justify-center relative" style={{ overflow: 'visible' }}>
-                      <motion.div
-                        initial={{ height: 0 }}
-                        animate={{ height: `${heightPx}px` }}
-                        transition={{ delay: index * 0.05, duration: 0.4 }}
-                        onClick={() => setSelectedDay(isSelected ? null : day)}
-                        className={`w-4 rounded-t-full cursor-pointer transition-all ${
-                          isSelected
-                            ? 'bg-gradient-to-t from-[#D4AF37] to-[#F4D03F] shadow-[0_0_12px_rgba(212,175,55,0.6)]' 
-                            : isToday 
-                            ? 'bg-gradient-to-t from-[#D4AF37] to-[#F4D03F]' 
-                            : 'bg-white/20 hover:bg-white/30'
-                        }`}
-                        style={{ 
-                          minHeight: heightPx > 0 ? '8px' : '4px'
-                        }}
-                      />
-                    </div>
-                    <p className={`text-[10px] mt-2 ${isSelected || isToday ? 'text-[#D4AF37]' : 'text-white/30'}`}>
-                      {format(new Date(day?.date || new Date()), 'EEE').charAt(0)}
-                    </p>
-                  </div>
-                );
-              })}
+                <div className="text-[#D4AF37] text-lg font-medium">
+                  {weeklySteps.toLocaleString()} steps
+                </div>
               </div>
+
+              <div className="relative" style={{ paddingLeft: '32px', paddingRight: '8px' }}>
+                {/* Y-axis labels */}
+                <div className="absolute left-0 top-0 bottom-8 flex flex-col justify-between text-right" style={{ width: '28px' }}>
+                  <span className="text-[9px] text-white/30">{(stepGoal * 1.5).toLocaleString()}</span>
+                  <span className="text-[9px] text-[#D4AF37]/70">{stepGoal.toLocaleString()}</span>
+                  <span className="text-[9px] text-white/30">{Math.floor(stepGoal * 0.5).toLocaleString()}</span>
+                  <span className="text-[9px] text-white/30">0</span>
+                </div>
+
+                {/* Chart area */}
+                <div className="relative flex items-end justify-between gap-1" style={{ height: '200px' }}>
+                  {/* Goal line */}
+                  <div 
+                    className="absolute left-0 right-0 border-t border-dashed border-[#D4AF37]/40 pointer-events-none"
+                    style={{ bottom: '133px' }}
+                  />
+                  
+                  {weeklyActivity.slice(-7).reverse().map((day, index) => {
+                    const steps = day?.steps || 0;
+                    const heightPx = stepGoal > 0 ? Math.min((steps / stepGoal) * 133, 240) : 0;
+                    const isToday = day?.date === today;
+                    const isSelected = selectedDay?.id === day?.id;
+                    const hitGoal = steps >= stepGoal;
+                    
+                    return (
+                      <div key={day?.id || index} className="flex flex-col items-center flex-1">
+                        <div className="w-full h-full flex items-end justify-center relative">
+                          <motion.div
+                            initial={{ height: 0 }}
+                            animate={{ height: `${heightPx}px` }}
+                            transition={{ delay: index * 0.05, duration: 0.4 }}
+                            onClick={() => setSelectedDay(isSelected ? null : day)}
+                            className={`w-5 rounded-t-md cursor-pointer transition-all relative ${
+                              isSelected || isToday
+                                ? 'bg-gradient-to-t from-[#D4AF37] to-[#F4D03F]' 
+                                : 'bg-gradient-to-t from-[#9C7E46] to-[#BFA68F]'
+                            }`}
+                            style={{ 
+                              minHeight: heightPx > 0 ? '8px' : '4px',
+                              boxShadow: (isSelected || isToday) ? '0 0 12px rgba(212,175,55,0.5)' : 'none'
+                            }}
+                          >
+                            {hitGoal && (
+                              <motion.div
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                transition={{ delay: index * 0.05 + 0.3, type: "spring" }}
+                                className="absolute -top-5 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-[#D4AF37] flex items-center justify-center"
+                                style={{ boxShadow: '0 2px 8px rgba(212,175,55,0.4)' }}
+                              >
+                                <svg className="w-2.5 h-2.5 text-[#080808]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                </svg>
+                              </motion.div>
+                            )}
+                          </motion.div>
+                        </div>
+                        <p className={`text-[11px] mt-2 ${isSelected || isToday ? 'text-[#D4AF37] font-medium' : 'text-white/40'}`}>
+                          {format(new Date(day?.date || new Date()), 'EEE')}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
               {selectedDay && (
                 <motion.div 
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-[#D4AF37] text-[#080808] px-3 py-2 rounded text-xs font-medium mt-3 text-center"
+                  className="bg-[#D4AF37] text-[#080808] px-3 py-2 rounded-lg text-xs font-medium mt-4 text-center"
                 >
                   <div className="text-[10px] opacity-70 mb-0.5">{format(new Date(selectedDay?.date || new Date()), 'MMM d')}</div>
                   <div className="text-sm font-semibold">{(selectedDay?.steps || 0).toLocaleString()} steps</div>
