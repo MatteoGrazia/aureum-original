@@ -305,6 +305,35 @@ export default function Activity() {
         </VoidCard>
       </motion.div>
 
+      {/* Monthly & Yearly Averages */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
+        className="grid grid-cols-2 gap-4 mb-24"
+      >
+        <VoidCard>
+          <h3 
+            className="text-[10px] uppercase tracking-[0.3em] text-[#D4AF37] mb-3"
+            style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
+          >
+            Monthly Average
+          </h3>
+          <p className="text-3xl text-white mb-1" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>{monthlyAverage.toLocaleString()}</p>
+          <p className="text-white/30 text-xs" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>steps per day</p>
+        </VoidCard>
+        
+        <VoidCard>
+          <h3 
+            className="text-[10px] uppercase tracking-[0.3em] text-[#D4AF37] mb-3"
+            style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
+          >
+            Yearly Average
+          </h3>
+          <p className="text-3xl text-white mb-1" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>{yearlyAverage.toLocaleString()}</p>
+          <p className="text-white/30 text-xs" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>steps per day</p>
+        </VoidCard>
+      </motion.div>
 
       </div>
     </div>
