@@ -245,7 +245,7 @@ export default function Activity() {
                         <motion.div 
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
-                          className="absolute bottom-full mb-2 bg-[#D4AF37] text-[#080808] px-2 py-1 rounded text-[10px] whitespace-nowrap font-medium"
+                          className="absolute bottom-full mb-1 bg-[#D4AF37] text-[#080808] px-2 py-1 rounded text-[10px] whitespace-nowrap font-medium z-10"
                         >
                           <div>{format(new Date(day?.date || new Date()), 'MMM d')}</div>
                           <div className="font-semibold">{steps.toLocaleString()} steps</div>
