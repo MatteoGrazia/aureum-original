@@ -178,7 +178,6 @@ export default function Activity() {
       >
         <div className="flex gap-2">
           {[
-            { value: 'today', label: 'Today' },
             { value: 'week', label: 'Week' },
             { value: 'month', label: 'Month' },
             { value: 'year', label: 'Year' }
@@ -211,27 +210,11 @@ export default function Activity() {
             className="text-[10px] uppercase tracking-[0.3em] text-[#D4AF37] mb-4"
             style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
           >
-            {timeView === 'today' ? 'Today' : timeView === 'week' ? 'This Week' : timeView === 'month' ? 'This Month' : 'This Year'}
+            {timeView === 'week' ? 'This Week' : timeView === 'month' ? 'This Month' : 'This Year'}
           </h3>
           
           {/* Dynamic Bar Chart */}
-          {timeView === 'today' ? (
-            <div className="text-center py-8">
-              <p className="text-5xl text-white mb-2" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>
-                {currentSteps.toLocaleString()}
-              </p>
-              <p className="text-white/40 text-sm" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>
-                steps today
-              </p>
-              <div className="mt-4 h-2 bg-white/10 rounded-full overflow-hidden">
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: `${Math.min((currentSteps / stepGoal) * 100, 100)}%` }}
-                  className="h-full bg-gradient-to-r from-[#D4AF37] to-[#F4D03F]"
-                />
-              </div>
-            </div>
-          ) : (
+          {(
             <div className="flex items-end justify-between h-28 mb-4 gap-1">
               {(timeView === 'week' ? weeklyActivity.slice(-7).reverse() : 
                 timeView === 'month' ? monthlyActivity.filter((_, i) => i % 4 === 0).slice(-7).reverse() :
@@ -282,7 +265,7 @@ export default function Activity() {
           )}
 
           {/* Dynamic Stats */}
-          {timeView !== 'today' && (
+          {(
             <div className="grid grid-cols-3 gap-4 pt-4 border-t border-white/10">
               <div className="text-center">
                 <div className="flex items-center justify-center gap-1 mb-1">
