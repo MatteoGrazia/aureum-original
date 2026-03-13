@@ -209,7 +209,7 @@ export default function Dashboard() {
           
           {/* Muted Bronze Date */}
           <p 
-            className="text-[#C9A961] text-[11px] uppercase tracking-[0.25em]"
+            className="text-[#D4AF37] text-[11px] uppercase tracking-[0.25em]"
             style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
           >
             {format(new Date(), 'EEEE, MMMM d')}
@@ -370,7 +370,7 @@ export default function Dashboard() {
               <span className="text-[#D4AF37]/60 text-base">+</span>
               <div>
                 <p 
-                  className="text-xl text-[#C9A961]"
+                  className="text-xl text-[#D4AF37]"
                   style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
                 >
                   {activityCalories}
@@ -385,7 +385,7 @@ export default function Dashboard() {
               <span className="text-[#D4AF37]/60 text-base">−</span>
               <div>
                 <p 
-                  className="text-xl text-[#C9A961]"
+                  className="text-xl text-[#D4AF37]"
                   style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
                 >
                   {consumedCalories}
@@ -400,7 +400,7 @@ export default function Dashboard() {
               <span className="text-[#D4AF37]/60 text-base">=</span>
               <div>
                 <p 
-                  className={`text-xl ${remainingCalories >= 0 ? 'text-[#F4D03F]' : 'text-red-400'}`}
+                  className={`text-xl ${remainingCalories >= 0 ? 'text-[#D4AF37]' : 'text-red-400'}`}
                   style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
                 >
                   {remainingCalories}

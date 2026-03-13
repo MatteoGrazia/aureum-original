@@ -105,7 +105,7 @@ export default function StepCounter({ steps, goal }) {
           
           <p 
             className="text-sm mt-2 tracking-wider"
-            style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500, color: '#B2D8D8' }}
+            style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500, color: '#D4AF37' }}
           >
             {Math.round(progress * 100)}%
           </p>
