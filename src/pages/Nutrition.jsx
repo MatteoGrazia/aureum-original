@@ -345,7 +345,7 @@ export default function Nutrition() {
           </div>
           <button
             onClick={() => setShowScanner(true)}
-            className="flex-shrink-0 rounded-xl flex items-center justify-center hover:bg-[#FFDAB9]/30 transition-colors"
+            className="flex-shrink-0 rounded-xl flex items-center justify-center hover:bg-[#D4AF37]/30 transition-colors"
             style={{
               width: '48px',
               height: '48px',
