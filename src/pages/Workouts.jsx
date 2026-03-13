@@ -8,7 +8,7 @@ import VoidCard from '@/components/ui/VoidCard';
 import VoidBackground from '@/components/dashboard/VoidBackground';
 import GoldButton from '@/components/ui/GoldButton';
 import PlateCalculator from '@/components/workouts/PlateCalculator';
-import HevyLogger from '@/components/workouts/HevyLogger';
+import AureumLogger from '@/components/workouts/AureumLogger';
 import SmartSaveModal from '@/components/workouts/SmartSaveModal';
 import WorkoutSummary from '@/components/workouts/WorkoutSummary';
 import ExercisePicker from '@/components/workouts/ExercisePicker';
@@ -380,7 +380,7 @@ export default function Workouts() {
       <PlateCalculator isOpen={showCalculator} onClose={() => setShowCalculator(false)} />
 
       {view === 'active' && activeWorkout && (
-        <HevyLogger
+        <AureumLogger
           activeWorkout={activeWorkout}
           allExercises={exercises}
           onUpdateWorkout={setActiveWorkout}
