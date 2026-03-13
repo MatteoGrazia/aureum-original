@@ -57,7 +57,7 @@ function LayoutInner({ children, currentPageName }) {
         .gold-text { color: var(--gold); }
 
         .gold-gradient {
-          background: linear-gradient(135deg, #D4AF37 0%, #F4D03F 50%, #D4AF37 100%);
+          background: linear-gradient(135deg, #D4AF37 0%, #D4AF37 50%, #D4AF37 100%);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
