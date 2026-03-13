@@ -17,7 +17,7 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
   );
 
   const trackOpacity = isDarkMode ? 0.08 : 1; // light mode uses explicit rgba color below
-  const centerPctColor = isDarkMode ? '#F4D03F' : '#1D1D1F';
+  const centerPctColor = '#FFFFFF';
   const centerSubColor = isDarkMode ? 'rgba(255,255,255,0.4)' : '#1D1D1F';
 
   return (
