@@ -7,13 +7,13 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 
 const GOLD   = '#D4AF37';
-const BRONZE = '#9C7E46';
+const BRONZE = '#D4AF37';
 const BLUE   = '#8ECAE6';
 const AMBER  = '#F4A261';
 
 // Darker versions for light mode
-const GOLD_DARK   = '#7A5C10';
-const BRONZE_DARK = '#5C3A0A';
+const GOLD_DARK   = '#D4AF37';
+const BRONZE_DARK = '#D4AF37';
 const BLUE_DARK   = '#1E6A8C';
 const AMBER_DARK  = '#A04D10';
 const SUPPLEMENT_LOG_KEY = 'aureum_supplement_log';
@@ -258,7 +258,7 @@ export default function QuickLogFAB({ onUpdate }) {
                 onClick={logWeight} disabled={!weight || loading}
                 style={{
                   width: '100%', padding: '14px', borderRadius: 16, border: 'none', cursor: 'pointer',
-                  background: `linear-gradient(135deg, ${GOLD}, #F4D03F, ${GOLD})`,
+                  background: `linear-gradient(135deg, ${GOLD}, ${GOLD}, ${GOLD})`,
                   color: '#080808', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.14em',
                   fontFamily: 'Montserrat', minHeight: 50,
                   opacity: (!weight || loading) ? 0.35 : 1,
@@ -478,7 +478,7 @@ export default function QuickLogFAB({ onUpdate }) {
           position: 'absolute', inset: 0, border: 'none', cursor: 'pointer',
           background: waterPulse
             ? `linear-gradient(135deg, ${BLUE} 0%, #A8D8EA 50%, ${BLUE} 100%)`
-            : `linear-gradient(135deg, ${GOLD} 0%, #F4D03F 50%, ${GOLD} 100%)`,
+            : `linear-gradient(135deg, ${GOLD} 0%, ${GOLD} 50%, ${GOLD} 100%)`,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           touchAction: 'none', userSelect: 'none', WebkitUserSelect: 'none',
           willChange: 'transform',

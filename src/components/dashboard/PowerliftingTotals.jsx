@@ -85,7 +85,7 @@ export default function PowerliftingTotals({ bodyweight = 80 }) {
               style={{
                 fontFamily: 'Montserrat, sans-serif',
                 fontWeight: 300,
-                background: best[lift] > 0 ? 'linear-gradient(135deg, #F4D03F, #D4AF37)' : undefined,
+                background: best[lift] > 0 ? 'linear-gradient(135deg, #D4AF37, #D4AF37)' : undefined,
                 WebkitBackgroundClip: best[lift] > 0 ? 'text' : undefined,
                 WebkitTextFillColor: best[lift] > 0 ? 'transparent' : undefined,
                 color: best[lift] > 0 ? undefined : 'rgba(255,255,255,0.2)',
@@ -121,7 +121,7 @@ export default function PowerliftingTotals({ bodyweight = 80 }) {
             className="text-2xl"
             style={{
               fontFamily: 'Montserrat, sans-serif', fontWeight: 300,
-              background: 'linear-gradient(135deg, #F4D03F, #D4AF37)',
+              background: 'linear-gradient(135deg, #D4AF37, #D4AF37)',
               WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
             }}
           >

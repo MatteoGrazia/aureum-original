@@ -38,7 +38,7 @@ Keep it sophisticated and brief.`,
     <div>
       <div className="flex items-start justify-between mb-4">
         <h3 
-          className="text-[10px] uppercase tracking-[0.4em] text-[#9C7E46]"
+          className="text-[10px] uppercase tracking-[0.4em] text-[#D4AF37]"
           style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}
         >
           Daily Insight

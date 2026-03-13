@@ -75,7 +75,7 @@ export default function SupplementStreak() {
   const barStyle = (pct, i, delay = 0.05) => ({
     height: `${pct}%`,
     minHeight: pct > 0 ? 4 : 0,
-    background: pct >= 100 ? 'linear-gradient(180deg, #F4D03F, #D4AF37)' : 'rgba(212,175,55,0.5)',
+    background: pct >= 100 ? 'linear-gradient(180deg, #D4AF37, #D4AF37)' : 'rgba(212,175,55,0.5)',
     borderRadius: 4,
     width: '100%',
   });
@@ -124,7 +124,7 @@ export default function SupplementStreak() {
             <div key={d.key} className="flex flex-col items-center gap-1">
               <div className="w-full h-8 rounded-lg flex items-center justify-center transition-all duration-300"
                 style={{
-                  background: d.done ? 'linear-gradient(135deg, #D4AF37, #F4D03F)' : isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
+                  background: d.done ? 'linear-gradient(135deg, #D4AF37, #D4AF37)' : isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
                   border: d.isToday ? '1px solid rgba(212,175,55,0.7)' : d.done ? '0.5px solid rgba(212,175,55,0.4)' : '0.5px solid rgba(255,255,255,0.08)',
                   boxShadow: d.done ? '0 2px 8px rgba(212,175,55,0.3)' : 'none',
                 }}>
@@ -183,7 +183,7 @@ export default function SupplementStreak() {
         className="w-full py-3 rounded-xl uppercase tracking-wider transition-all duration-300"
         style={{
           fontFamily: 'Montserrat, sans-serif', fontWeight: 400, fontSize: 10,
-          background: takenToday ? (isDarkMode ? 'rgba(212,175,55,0.1)' : 'rgba(212,175,55,0.12)') : 'linear-gradient(135deg, #D4AF37, #F4D03F)',
+          background: takenToday ? (isDarkMode ? 'rgba(212,175,55,0.1)' : 'rgba(212,175,55,0.12)') : 'linear-gradient(135deg, #D4AF37, #D4AF37)',
           color: takenToday ? '#D4AF37' : '#080808',
           border: takenToday ? '0.5px solid rgba(212,175,55,0.4)' : 'none',
           boxShadow: takenToday ? 'none' : '0 4px 16px rgba(212,175,55,0.3)',
