@@ -9,13 +9,13 @@ import { format } from 'date-fns';
 const GOLD   = '#D4AF37';
 const BRONZE = '#D4AF37';
 const BLUE   = '#8ECAE6';
-const AMBER  = '#F4A261';
+const AMBER  = '#D4AF37';
 
 // Darker versions for light mode
 const GOLD_DARK   = '#D4AF37';
 const BRONZE_DARK = '#D4AF37';
 const BLUE_DARK   = '#1E6A8C';
-const AMBER_DARK  = '#A04D10';
+const AMBER_DARK  = '#D4AF37';
 const SUPPLEMENT_LOG_KEY = 'aureum_supplement_log';
 const getSupplementLog = () => { try { return JSON.parse(localStorage.getItem(SUPPLEMENT_LOG_KEY) || '{}'); } catch { return {}; } };
 
@@ -191,9 +191,9 @@ export default function QuickLogFAB({ onUpdate }) {
   const ENERGY_ICONS = [
     { Icon: Moon,     color: '#8ECAE6', label: 'Low'      },
     { Icon: Activity, color: '#9BB7D4', label: 'Moderate' },
-    { Icon: Zap,      color: '#F4A261', label: 'Good'     },
-    { Icon: Zap,      color: '#E8C44A', label: 'High'     },
-    { Icon: Flame,    color: '#E8734A', label: 'Peak'     },
+    { Icon: Zap,      color: '#D4AF37', label: 'Good'     },
+    { Icon: Zap,      color: '#D4AF37', label: 'High'     },
+    { Icon: Flame,    color: '#D4AF37', label: 'Peak'     },
   ];
 
   return (
@@ -285,13 +285,13 @@ export default function QuickLogFAB({ onUpdate }) {
             style={{ position: 'fixed', bottom: 185, right: 20, zIndex: 1002, width: 240 }}
           >
             <div style={{
-              background: 'rgba(244,162,97,0.07)',
-              border: '0.5px solid rgba(244,162,97,0.45)',
+              background: 'rgba(212,175,55,0.07)',
+              border: '0.5px solid rgba(212,175,55,0.45)',
               backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)',
               borderRadius: 26, padding: '22px 20px',
             }}>
               <p style={{
-                color: 'rgba(244,162,97,0.7)', fontSize: 8.5, textTransform: 'uppercase',
+                color: 'rgba(212,175,55,0.7)', fontSize: 8.5, textTransform: 'uppercase',
                 letterSpacing: '0.26em', marginBottom: 10, fontFamily: 'Montserrat', textAlign: 'center',
               }}>
                 Energy Level
@@ -313,7 +313,7 @@ export default function QuickLogFAB({ onUpdate }) {
                   width: 100%;
                   height: 6px;
                   border-radius: 4px;
-                  background: linear-gradient(90deg, #F4A261 ${(energyLevel - 1) * 25}%, rgba(255,255,255,0.12) ${(energyLevel - 1) * 25}%);
+                  background: linear-gradient(90deg, #D4AF37 ${(energyLevel - 1) * 25}%, rgba(255,255,255,0.12) ${(energyLevel - 1) * 25}%);
                   outline: none;
                   cursor: pointer;
                   margin-bottom: 12px;
@@ -322,14 +322,14 @@ export default function QuickLogFAB({ onUpdate }) {
                   -webkit-appearance: none;
                   width: 22px; height: 22px;
                   border-radius: 50%;
-                  background: #F4A261;
-                  box-shadow: 0 0 12px rgba(244,162,97,0.6);
+                  background: #D4AF37;
+                  box-shadow: 0 0 12px rgba(212,175,55,0.6);
                   cursor: pointer;
                 }
                 .energy-slider::-moz-range-thumb {
                   width: 22px; height: 22px;
                   border-radius: 50%;
-                  background: #F4A261;
+                  background: #D4AF37;
                   border: none;
                   cursor: pointer;
                 }
@@ -347,7 +347,7 @@ export default function QuickLogFAB({ onUpdate }) {
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 {['1','2','3','4','5'].map(n => (
                   <span key={n} style={{
-                    color: Number(n) <= energyLevel ? 'rgba(244,162,97,0.7)' : 'rgba(255,255,255,0.2)',
+                    color: Number(n) <= energyLevel ? 'rgba(212,175,55,0.7)' : 'rgba(255,255,255,0.2)',
                     fontSize: 10, fontFamily: 'Montserrat',
                     transition: 'color 0.2s',
                   }}>{n}</span>
@@ -477,7 +477,7 @@ export default function QuickLogFAB({ onUpdate }) {
         style={{
           position: 'absolute', inset: 0, border: 'none', cursor: 'pointer',
           background: waterPulse
-            ? `linear-gradient(135deg, ${BLUE} 0%, #A8D8EA 50%, ${BLUE} 100%)`
+            ? `linear-gradient(135deg, ${BLUE} 0%, ${BLUE} 50%, ${BLUE} 100%)`
             : `linear-gradient(135deg, ${GOLD} 0%, ${GOLD} 50%, ${GOLD} 100%)`,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           touchAction: 'none', userSelect: 'none', WebkitUserSelect: 'none',
