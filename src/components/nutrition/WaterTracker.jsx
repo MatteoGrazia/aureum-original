@@ -3,9 +3,9 @@ import { motion } from 'framer-motion';
 import { Droplets, Plus, Minus } from 'lucide-react';
 import GlassCard from '@/components/ui/GlassCard';
 
-const BLUE = '#8ECAE6';
-const BLUE_BG = 'rgba(142, 202, 230, 0.18)';
-const BLUE_WAVE = 'rgba(142, 202, 230, 0.22)';
+const BLUE = '#B2D8D8';
+const BLUE_BG = 'rgba(178, 216, 216, 0.18)';
+const BLUE_WAVE = 'rgba(178, 216, 216, 0.22)';
 
 export default function WaterTracker({ glasses, goal, onAdd, onRemove }) {
   const [localGlasses, setLocalGlasses] = useState(glasses);
@@ -100,7 +100,7 @@ export default function WaterTracker({ glasses, goal, onAdd, onRemove }) {
             <button
               onClick={handleAdd}
               className="w-10 h-10 rounded-full flex items-center justify-center transition-colors"
-              style={{ background: 'rgba(142,202,230,0.18)', border: `1px solid rgba(142,202,230,0.38)` }}
+              style={{ background: 'rgba(178,216,216,0.18)', border: `1px solid rgba(178,216,216,0.38)` }}
             >
               <Plus className="w-4 h-4" style={{ color: BLUE }} />
             </button>
@@ -114,7 +114,7 @@ export default function WaterTracker({ glasses, goal, onAdd, onRemove }) {
               key={i}
               className="w-3 h-6 rounded-sm transition-all duration-200"
               style={i < localGlasses
-                ? { background: BLUE, boxShadow: `0 0 8px rgba(142,202,230,0.35)`, opacity: 0.85 }
+                ? { background: BLUE, boxShadow: `0 0 8px rgba(178,216,216,0.35)`, opacity: 0.85 }
                 : { background: 'rgba(255,255,255,0.08)' }
               }
             />

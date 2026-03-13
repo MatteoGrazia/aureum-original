@@ -6,9 +6,9 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
   const { isDarkMode } = useTheme();
 
   const orbitals = [
-    { value: calories,  goal: caloriesGoal, color: '#D4AF37', size: 240, offset: { x: -8, y: -8 }, rotation: 0 },
-    { value: steps,     goal: stepsGoal,    color: isDarkMode ? '#C0C0C0' : '#9C7E46', size: 180, offset: { x: 5, y: -5 }, rotation: 45 },
-    { value: volume,    goal: volumeGoal,   color: '#CD7F32', size: 120, offset: { x: -3, y: 3 }, rotation: -30 }
+    { value: calories,  goal: caloriesGoal, color: '#FFDAB9', size: 240, offset: { x: -8, y: -8 }, rotation: 0 },
+    { value: steps,     goal: stepsGoal,    color: '#B2D8D8', size: 180, offset: { x: 5, y: -5 }, rotation: 45 },
+    { value: volume,    goal: volumeGoal,   color: '#BDB5D5', size: 120, offset: { x: -3, y: 3 }, rotation: -30 }
   ];
 
   const totalProgress = Math.min(
@@ -122,7 +122,7 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
                 color: isDarkMode ? 'rgba(255,255,255,0.3)' : '#1D1D1F'
               }}
             >
-              {i === 0 ? 'Calories' : i === 1 ? 'Steps' : 'Volume'}
+              {i === 0 ? 'Energy' : i === 1 ? 'Steps' : 'Volume'}
             </p>
           </div>
         ))}

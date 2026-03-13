@@ -64,17 +64,17 @@ export default function StepCounter({ steps, goal }) {
             transition={{ duration: 1.2, ease: [0.34, 1.56, 0.64, 1] }}
             style={{
               filter: progress > 0.8 
-                ? 'drop-shadow(0 0 5px rgba(212, 175, 55, 0.5))' 
-                : 'drop-shadow(0 0 3px rgba(212, 175, 55, 0.3))'
+                ? 'drop-shadow(0 0 5px rgba(178, 216, 216, 0.5))' 
+                : 'drop-shadow(0 0 3px rgba(178, 216, 216, 0.3))'
             }}
           />
 
           {/* Gradient definition */}
           <defs>
             <linearGradient id="stepGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#9C7E46" />
-              <stop offset="50%" stopColor="#D4AF37" />
-              <stop offset="100%" stopColor="#D4AF37" />
+              <stop offset="0%" stopColor="#B2D8D8" stopOpacity="0.6" />
+              <stop offset="50%" stopColor="#B2D8D8" stopOpacity="0.85" />
+              <stop offset="100%" stopColor="#B2D8D8" />
             </linearGradient>
           </defs>
 
@@ -85,7 +85,7 @@ export default function StepCounter({ steps, goal }) {
         <div className="absolute text-center">
           <Footprints 
             className="w-8 h-8 mx-auto mb-2" 
-            style={{ color: '#8ECAE6' }}
+            style={{ color: '#B2D8D8' }}
             strokeWidth={1.5}
           />
           
@@ -104,8 +104,8 @@ export default function StepCounter({ steps, goal }) {
           </p>
           
           <p 
-            className="text-[#C9A961] text-sm mt-2 tracking-wider"
-            style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
+            className="text-sm mt-2 tracking-wider"
+            style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500, color: '#B2D8D8' }}
           >
             {Math.round(progress * 100)}%
           </p>

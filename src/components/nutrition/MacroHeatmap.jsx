@@ -8,21 +8,21 @@ export default function MacroHeatmap({ protein, carbs, fat, goals }) {
       name: 'Protein', 
       value: protein, 
       goal: goals?.protein || 150, 
-      color: '#F4A261',
+      color: '#FFDAB9',
       unit: 'g' 
     },
     { 
       name: 'Carbs', 
       value: carbs, 
       goal: goals?.carbs || 250, 
-      color: '#8ECAE6',
+      color: '#FFDAB9',
       unit: 'g' 
     },
     { 
       name: 'Fat', 
       value: fat, 
       goal: goals?.fat || 70, 
-      color: '#E8C5A5',
+      color: '#FFDAB9',
       unit: 'g' 
     },
   ];

@@ -13,21 +13,21 @@ export default function ActivityStats({ activeMinutes, sedentaryMinutes, calorie
       label: 'Active',
       value: activeMinutes,
       unit: 'min',
-      color: '#A8D5BA'
+      color: '#B2D8D8'
     },
     {
       icon: Coffee,
       label: 'Sedentary',
       value: sedentaryMinutes,
       unit: 'min',
-      color: '#E8B4A8'
+      color: '#E5E5E7'
     },
     {
       icon: Flame,
       label: 'Burned',
       value: caloriesBurned,
       unit: 'kcal',
-      color: '#F4A261'
+      color: '#FFDAB9'
     }
   ];
 
@@ -47,23 +47,25 @@ export default function ActivityStats({ activeMinutes, sedentaryMinutes, calorie
             initial={{ width: 0 }}
             animate={{ width: `${activePercentage}%` }}
             transition={{ duration: 1, ease: "easeOut" }}
-            className="absolute inset-y-0 left-0 bg-gradient-to-r from-[#A8D5BA] to-[#8ECAE6] rounded-full"
+            className="absolute inset-y-0 left-0 rounded-full"
+            style={{ background: 'linear-gradient(90deg, #B2D8D8, #B2D8D8)' }}
           />
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${100 - activePercentage}%` }}
             transition={{ duration: 1, ease: "easeOut" }}
-            className="absolute inset-y-0 right-0 bg-gradient-to-r from-[#E8B4A8] to-[#D4A5A5] rounded-full"
+            className="absolute inset-y-0 right-0 rounded-full"
+            style={{ background: 'rgba(229, 229, 231, 0.3)' }}
           />
         </div>
 
         <div className="flex justify-between mt-3 text-xs" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>
           <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-[#A8D5BA]" />
+            <div className="w-2 h-2 rounded-full" style={{ background: '#B2D8D8' }} />
             <span className="text-white/60">Active ({Math.round(activePercentage)}%)</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-[#E8B4A8]" />
+            <div className="w-2 h-2 rounded-full" style={{ background: '#E5E5E7' }} />
             <span className="text-white/60">Sedentary ({Math.round(100 - activePercentage)}%)</span>
           </div>
         </div>
