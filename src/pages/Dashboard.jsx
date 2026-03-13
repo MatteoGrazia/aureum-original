@@ -164,7 +164,7 @@ export default function Dashboard() {
       }}>
         <div className="text-center">
           <img
-            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698347d058d3014d6271ccff/d15227ea9_AUREUM1.png"
+            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698347d058d3014d6271ccff/f764a7a57_2.png"
             alt="Aureum"
             className="w-24 h-24 mx-auto mb-6"
             style={{ filter: 'drop-shadow(0 0 20px rgba(212,175,55,0.4))' }}
@@ -195,16 +195,16 @@ export default function Dashboard() {
 
           {/* Golden Feather Icon */}
           <img 
-            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698347d058d3014d6271ccff/d15227ea9_AUREUM1.png"
+            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698347d058d3014d6271ccff/f764a7a57_2.png"
             alt="Aureum"
-            className="w-12 h-12 mx-auto mb-3 opacity-90"
+            className="w-16 h-16 mx-auto mb-4 opacity-90"
           />
           
           {/* AUREUM Logo */}
           <img 
-            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698347d058d3014d6271ccff/974750ba9_Untitleddesign.png"
+            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698347d058d3014d6271ccff/b3f8233c4_3.png"
             alt="AUREUM"
-            className="w-72 h-auto mx-auto mb-3"
+            className="w-64 h-auto mx-auto mb-3"
           />
           
           {/* Muted Bronze Date */}
