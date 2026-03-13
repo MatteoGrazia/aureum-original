@@ -202,7 +202,7 @@ export default function Dashboard() {
           
           {/* AUREUM Logo */}
           <img 
-            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698347d058d3014d6271ccff/b3f8233c4_3.png"
+            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698347d058d3014d6271ccff/161ef6a6d_Untitleddesign1.png"
             alt="AUREUM"
             className="w-64 h-auto mx-auto mb-3"
           />
