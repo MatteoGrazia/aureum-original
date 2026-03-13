@@ -130,7 +130,7 @@ export default function Activity() {
             style={{ 
               fontFamily: 'Montserrat, sans-serif', 
               fontWeight: 400,
-              background: 'linear-gradient(135deg, #F4D03F 0%, #D4AF37 50%, #F4D03F 100%)',
+              background: 'linear-gradient(135deg, #D4AF37 0%, #D4AF37 50%, #D4AF37 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text'
@@ -139,7 +139,7 @@ export default function Activity() {
             ACTIVITY
           </h1>
           <p 
-            className="text-[#C9A961] text-[11px] uppercase tracking-[0.25em]"
+            className="text-[#D4AF37] text-[11px] uppercase tracking-[0.25em]"
             style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
           >
             {format(new Date(), 'EEEE, MMMM d')}
@@ -277,8 +277,8 @@ export default function Activity() {
                             onClick={() => setSelectedDay(isSelected ? null : day)}
                             className={`w-5 rounded-t-md cursor-pointer transition-all relative ${
                               isSelected || isToday
-                                ? 'bg-gradient-to-t from-[#D4AF37] to-[#F4D03F]' 
-                                : 'bg-gradient-to-t from-[#9C7E46] to-[#BFA68F]'
+                                ? 'bg-gradient-to-t from-[#D4AF37] to-[#D4AF37]' 
+                                : 'bg-gradient-to-t from-[#D4AF37] to-[#D4AF37]'
                             }`}
                             style={{ 
                               minHeight: heightPx > 0 ? '8px' : '4px',
@@ -411,9 +411,9 @@ export default function Activity() {
                         onClick={() => setSelectedDay(isSelected ? null : day)}
                         className={`w-4 rounded-t-full cursor-pointer transition-all ${
                           isSelected
-                            ? 'bg-gradient-to-t from-[#D4AF37] to-[#F4D03F] shadow-[0_0_12px_rgba(212,175,55,0.6)]' 
+                            ? 'bg-gradient-to-t from-[#D4AF37] to-[#D4AF37] shadow-[0_0_12px_rgba(212,175,55,0.6)]' 
                             : isToday 
-                            ? 'bg-gradient-to-t from-[#D4AF37] to-[#F4D03F]' 
+                            ? 'bg-gradient-to-t from-[#D4AF37] to-[#D4AF37]' 
                             : 'bg-white/20 hover:bg-white/30'
                         }`}
                         style={{ minHeight: heightPercent > 0 ? '8px' : '4px' }}
