@@ -107,19 +107,24 @@ export default function FoodSearch({ onSelectFood }) {
   };
 
   return (
-    <div className="space-y-4 w-full max-w-full overflow-hidden">
-      <div className="relative">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+    <div className="space-y-4 w-full max-w-full overflow-hidden h-full">
+      <div className="relative h-full">
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: '#FFDAB9' }} />
         <Input
           type="text"
           placeholder="Search foods..."
           value={query}
           onChange={handleSearch}
-          className="pl-11 py-6 bg-white/5 border-[#D4AF37]/20 text-white placeholder:text-white/30 rounded-xl"
+          className="pl-11 h-full rounded-xl"
+          style={{
+            background: 'rgba(255,255,255,0.05)',
+            border: '0.5px solid rgba(255, 218, 185, 0.2)',
+            color: '#FFFFFF'
+          }}
         />
         {loading && (
           <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center justify-center">
-            <Loader2 className="w-4 h-4 text-[#D4AF37] animate-spin" />
+            <Loader2 className="w-4 h-4 animate-spin" style={{ color: '#FFDAB9' }} />
           </div>
         )}
       </div>
@@ -165,42 +170,61 @@ export default function FoodSearch({ onSelectFood }) {
                 transition={{ delay: index * 0.03 }}
               >
                 <button
-                  onClick={() => onSelectFood(food)}
-                  className="w-full text-left p-2 rounded-lg transition-all hover:border-[#D4AF37]/50 active:scale-95"
-                  style={{
-                    background: 'rgba(255, 255, 255, 0.03)',
-                    backdropFilter: 'blur(30px) saturate(180%)',
-                    border: '0.5px solid rgba(212, 175, 55, 0.1)',
-                    overflow: 'hidden'
-                  }}
+                onClick={() => onSelectFood(food)}
+                className="w-full text-left p-2 rounded-lg transition-all active:scale-95"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.04)',
+                  backdropFilter: 'blur(30px) saturate(180%)',
+                  border: '0.5px solid rgba(229, 229, 231, 0.1)',
+                  overflow: 'hidden',
+                  boxShadow: '0 2px 8px rgba(255, 218, 185, 0.03)'
+                }}
                 >
-                  <div className="flex items-start gap-1.5 w-full">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-baseline gap-2 mb-0.5">
-                        <p className="text-xs text-white flex-1"
-                          style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                          {food.name}
-                        </p>
-                        <span className="text-[11px] text-[#D4AF37] font-semibold flex-shrink-0 whitespace-nowrap">
-                          {food.calories}kcal
-                        </span>
-                      </div>
-                      {food.brand && (
-                        <p className="text-[9px] text-white/40 mb-1"
-                          style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 300, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                          {food.brand}
-                        </p>
-                      )}
-                      <div className="flex flex-wrap gap-x-3 gap-y-1 text-[9px]" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>
-                        <span style={{ color: '#9C7E46' }}>P: {food.protein}g</span>
-                        <span style={{ color: '#9C7E46' }}>C: {food.carbs}g</span>
-                        <span style={{ color: '#9C7E46' }}>F: {food.fat}g</span>
-                      </div>
+                <div className="flex items-start gap-1.5 w-full">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-baseline gap-2 mb-0.5">
+                      <p className="text-xs text-white flex-1"
+                        style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {food.name}
+                      </p>
+                      <span 
+                        className="text-[11px] font-semibold flex-shrink-0 whitespace-nowrap"
+                        style={{ color: '#FFDAB9' }}
+                      >
+                        {food.calories}kcal
+                      </span>
                     </div>
-                    <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[#D4AF37]/20 flex items-center justify-center hover:bg-[#D4AF37]/30 transition-colors mt-0.5">
-                      <Plus className="w-3 h-3 text-[#D4AF37]" />
+                    {food.brand && (
+                      <p 
+                        className="text-[9px] mb-1"
+                        style={{ 
+                          fontFamily: 'Montserrat, sans-serif', 
+                          fontWeight: 300, 
+                          overflow: 'hidden', 
+                          textOverflow: 'ellipsis', 
+                          whiteSpace: 'nowrap',
+                          color: '#E5E5E7'
+                        }}
+                      >
+                        {food.brand}
+                      </p>
+                    )}
+                    <div className="flex flex-wrap gap-x-3 gap-y-1 text-[9px]" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400, color: '#E5E5E7' }}>
+                      <span>P: {food.protein}g</span>
+                      <span>C: {food.carbs}g</span>
+                      <span>F: {food.fat}g</span>
                     </div>
                   </div>
+                  <div 
+                    className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center transition-colors mt-0.5"
+                    style={{ 
+                      background: 'rgba(255, 218, 185, 0.15)',
+                      border: '0.5px solid rgba(255, 218, 185, 0.2)'
+                    }}
+                  >
+                    <Plus className="w-3 h-3" style={{ color: '#FFDAB9' }} />
+                  </div>
+                </div>
                 </button>
               </motion.div>
             ))}

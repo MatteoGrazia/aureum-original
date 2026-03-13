@@ -55,7 +55,7 @@ const createSet = (type = 'normal', weight = 0, reps = 0) => ({
   completed: false,
 });
 
-export default function HevyLogger({ activeWorkout, allExercises, onUpdateWorkout, onFinish, onCancel, previousWorkoutSets = {} }) {
+export default function AureumLogger({ activeWorkout, allExercises, onUpdateWorkout, onFinish, onCancel, previousWorkoutSets = {} }) {
   const [elapsed, setElapsed] = useState(0);
   const [showRestTimer, setShowRestTimer] = useState(false);
   const [restDuration, setRestDuration] = useState(90);

@@ -333,15 +333,21 @@ export default function Nutrition() {
         transition={{ delay: 0.2 }}
         className="mb-6 space-y-3"
       >
-        <div className="flex gap-3 items-stretch">
-          <div className="flex-1 min-w-0">
+        <div className="flex gap-3 items-center">
+          <div className="flex-1 min-w-0" style={{ height: '48px' }}>
             <FoodSearch onSelectFood={handleSelectFood} />
           </div>
           <button
             onClick={() => setShowScanner(true)}
-            className="w-14 flex-shrink-0 rounded-xl bg-[#D4AF37]/20 border border-[#D4AF37]/30 flex items-center justify-center hover:bg-[#D4AF37]/30 transition-colors"
+            className="flex-shrink-0 rounded-xl flex items-center justify-center hover:bg-[#FFDAB9]/30 transition-colors"
+            style={{
+              width: '48px',
+              height: '48px',
+              background: 'rgba(255, 218, 185, 0.2)',
+              border: '0.5px solid rgba(255, 218, 185, 0.3)'
+            }}
           >
-            <Scan className="w-6 h-6 text-[#D4AF37]" />
+            <Scan className="w-5 h-5" style={{ color: '#FFDAB9' }} />
           </button>
         </div>
       </motion.div>
@@ -369,7 +375,21 @@ export default function Nutrition() {
               }}
               onClick={(e) => e.stopPropagation()}
             >
-              <VoidCard className="p-5 rounded-b-none" style={{ overflow: 'visible', borderBottomLeftRadius: 0, borderBottomRightRadius: 0, margin: 0, width: '100%' }}>
+              <div 
+                className="p-6 rounded-b-none" 
+                style={{ 
+                  overflow: 'visible', 
+                  borderBottomLeftRadius: 0, 
+                  borderBottomRightRadius: 0, 
+                  margin: 0, 
+                  width: '100%',
+                  background: 'rgba(18, 18, 18, 0.95)',
+                  backdropFilter: 'blur(25px)',
+                  WebkitBackdropFilter: 'blur(25px)',
+                  border: '1px solid #D4AF37',
+                  borderBottom: 'none'
+                }}
+              >
                 {loadingDetails ? (
                   <div className="flex flex-col items-center justify-center py-8">
                     <Loader2 className="w-8 h-8 text-[#D4AF37] animate-spin mb-3" />
@@ -408,12 +428,18 @@ export default function Nutrition() {
                         onClick={() => setSelectedMeal(meal)}
                         className="py-2 px-1 rounded-xl flex flex-col items-center justify-center gap-1 transition-all"
                         style={{
-                          background: selectedMeal === meal ? 'rgba(255,191,0,0.20)' : 'rgba(255,255,255,0.05)',
-                          border: selectedMeal === meal ? '1px solid rgba(255,191,0,0.45)' : '1px solid transparent'
+                          background: selectedMeal === meal ? 'rgba(255, 218, 185, 0.20)' : 'rgba(255,255,255,0.05)',
+                          border: selectedMeal === meal ? '0.5px solid rgba(255, 218, 185, 0.5)' : '0.5px solid rgba(229, 229, 231, 0.1)'
                         }}
                       >
-                        <Icon className={`w-4 h-4 ${selectedMeal === meal ? 'text-[#D4AF37]' : 'text-white/40'}`} />
-                        <span className={`text-[10px] capitalize truncate w-full text-center ${selectedMeal === meal ? 'text-[#D4AF37]' : 'text-white/40'}`}>
+                        <Icon 
+                          className="w-4 h-4" 
+                          style={{ color: selectedMeal === meal ? '#FFDAB9' : '#E5E5E7' }}
+                        />
+                        <span 
+                          className="text-[10px] capitalize truncate w-full text-center"
+                          style={{ color: selectedMeal === meal ? '#FFDAB9' : '#E5E5E7' }}
+                        >
                           {meal}
                         </span>
                       </button>
@@ -425,7 +451,12 @@ export default function Nutrition() {
                 <div className="space-y-3 mb-4" style={{ position: 'relative', zIndex: 10 }}>
                   <div className="flex items-center gap-3">
                     <div className="flex-1">
-                      <label className="text-white/40 text-xs mb-1 block">Quantity</label>
+                      <label 
+                        className="text-xs mb-1.5 block uppercase tracking-wider"
+                        style={{ color: '#E5E5E7', fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}
+                      >
+                        Quantity
+                      </label>
                       <input
                         type="number"
                         step="0.1"
@@ -435,23 +466,35 @@ export default function Nutrition() {
                           const v = parseFloat(e.target.value);
                           setAmount(v > 0 ? v : 1);
                         }}
-                        className="w-full px-4 py-3 rounded-xl bg-white/5 border border-[#D4AF37]/20 text-white text-center"
-                        style={{ fontFamily: 'Montserrat, sans-serif', minHeight: '48px' }}
+                        className="w-full px-4 py-3 rounded-xl text-center"
+                        style={{ 
+                          fontFamily: 'Montserrat, sans-serif', 
+                          minHeight: '52px',
+                          background: 'rgba(255,255,255,0.06)',
+                          border: '0.5px solid rgba(212,175,55,0.3)',
+                          color: '#FFFFFF'
+                        }}
                       />
                     </div>
                     <div className="flex-1" style={{ position: 'relative' }}>
-                      <label className="text-white/40 text-xs mb-1 block">Serving Size</label>
+                      <label 
+                        className="text-xs mb-1.5 block uppercase tracking-wider"
+                        style={{ color: '#E5E5E7', fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}
+                      >
+                        Unit
+                      </label>
                       <div style={{ position: 'relative' }}>
                         <select
                           value={selectedUnit ? JSON.stringify(selectedUnit) : ''}
                           onChange={(e) => setSelectedUnit(JSON.parse(e.target.value))}
-                          className="w-full px-3 py-3 rounded-xl border border-[#D4AF37]/30 cursor-pointer"
+                          className="w-full px-3 py-3 rounded-xl cursor-pointer"
                           style={{ 
                             fontFamily: 'Montserrat, sans-serif',
                             backdropFilter: 'blur(30px)',
-                            background: '#050505',
+                            background: 'rgba(255,255,255,0.06)',
+                            border: '0.5px solid rgba(212,175,55,0.3)',
                             color: '#D4AF37',
-                            minHeight: '48px',
+                            minHeight: '52px',
                             position: 'relative',
                             zIndex: 10000,
                             WebkitAppearance: 'none',
@@ -471,7 +514,7 @@ export default function Nutrition() {
                               key={idx} 
                               value={JSON.stringify(unit)}
                               style={{ 
-                                background: '#050505', 
+                                background: 'rgba(18,18,18,0.98)', 
                                 color: '#D4AF37',
                                 padding: '8px'
                               }}
@@ -493,21 +536,64 @@ export default function Nutrition() {
 
                 {/* Nutrition Info - Live Calculation */}
                 <div className="flex flex-wrap gap-2 mb-6 justify-center">
-                  <div className="text-center p-3 rounded-xl bg-white/5 flex-1 min-w-[70px]">
-                    <p className="text-lg text-[#D4AF37]">{calculateLiveMacros().calories}</p>
-                    <p className="text-[10px] text-white/40 uppercase" style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>kcal</p>
+                  <div 
+                    className="text-center p-3 rounded-xl flex-1 min-w-[70px]"
+                    style={{ 
+                      background: 'rgba(255, 218, 185, 0.08)',
+                      border: '0.5px solid rgba(255, 218, 185, 0.15)'
+                    }}
+                  >
+                    <p className="text-lg" style={{ color: '#FFDAB9', fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>
+                      {calculateLiveMacros().calories}
+                    </p>
+                    <p 
+                      className="text-[10px] uppercase" 
+                      style={{ color: '#E5E5E7', overflow: 'hidden', textOverflow: 'ellipsis', fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}
+                    >
+                      kcal
+                    </p>
                   </div>
-                  <div className="text-center p-3 rounded-xl bg-white/5 flex-1 min-w-[70px]">
-                    <p className="text-lg text-white">{calculateLiveMacros().protein}g</p>
-                    <p className="text-[10px] text-white/40 uppercase" style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>protein</p>
+                  <div 
+                    className="text-center p-3 rounded-xl flex-1 min-w-[70px]"
+                    style={{ background: 'rgba(255,255,255,0.05)', border: '0.5px solid rgba(229,229,231,0.1)' }}
+                  >
+                    <p className="text-lg text-white" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>
+                      {calculateLiveMacros().protein}g
+                    </p>
+                    <p 
+                      className="text-[10px] uppercase" 
+                      style={{ color: '#E5E5E7', overflow: 'hidden', textOverflow: 'ellipsis', fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}
+                    >
+                      protein
+                    </p>
                   </div>
-                  <div className="text-center p-3 rounded-xl bg-white/5 flex-1 min-w-[70px]">
-                    <p className="text-lg text-white">{calculateLiveMacros().carbs}g</p>
-                    <p className="text-[10px] text-white/40 uppercase" style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>carbs</p>
+                  <div 
+                    className="text-center p-3 rounded-xl flex-1 min-w-[70px]"
+                    style={{ background: 'rgba(255,255,255,0.05)', border: '0.5px solid rgba(229,229,231,0.1)' }}
+                  >
+                    <p className="text-lg text-white" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>
+                      {calculateLiveMacros().carbs}g
+                    </p>
+                    <p 
+                      className="text-[10px] uppercase" 
+                      style={{ color: '#E5E5E7', overflow: 'hidden', textOverflow: 'ellipsis', fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}
+                    >
+                      carbs
+                    </p>
                   </div>
-                  <div className="text-center p-3 rounded-xl bg-white/5 flex-1 min-w-[70px]">
-                    <p className="text-lg text-white">{calculateLiveMacros().fat}g</p>
-                    <p className="text-[10px] text-white/40 uppercase" style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>fat</p>
+                  <div 
+                    className="text-center p-3 rounded-xl flex-1 min-w-[70px]"
+                    style={{ background: 'rgba(255,255,255,0.05)', border: '0.5px solid rgba(229,229,231,0.1)' }}
+                  >
+                    <p className="text-lg text-white" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>
+                      {calculateLiveMacros().fat}g
+                    </p>
+                    <p 
+                      className="text-[10px] uppercase" 
+                      style={{ color: '#E5E5E7', overflow: 'hidden', textOverflow: 'ellipsis', fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}
+                    >
+                      fat
+                    </p>
                   </div>
                 </div>
 
@@ -523,7 +609,7 @@ export default function Nutrition() {
                 </div>
                 </>
                 )}
-              </VoidCard>
+              </div>
             </motion.div>
           </motion.div>
         )}
@@ -542,6 +628,57 @@ export default function Nutrition() {
           fat={totalFat}
           goals={{ protein: 150, carbs: 250, fat: 70 }}
         />
+      </motion.div>
+
+      {/* Micronutrient Card */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.35 }}
+        className="mb-6"
+      >
+        <VoidCard 
+          className="p-4"
+          style={{
+            background: 'rgba(255, 218, 185, 0.08)',
+            border: '0.5px solid rgba(255, 218, 185, 0.2)'
+          }}
+        >
+          <h3 
+            className="text-[10px] uppercase tracking-[0.3em] mb-3"
+            style={{ 
+              fontFamily: 'Montserrat, sans-serif', 
+              fontWeight: 500,
+              color: '#FFDAB9'
+            }}
+          >
+            Micronutrients
+          </h3>
+          <div className="grid grid-cols-4 gap-3">
+            {[
+              { label: 'Fiber', value: foodLogs.reduce((sum, log) => sum + (log.fiber || 0), 0), unit: 'g' },
+              { label: 'Sugar', value: 0, unit: 'g' },
+              { label: 'Sodium', value: 0, unit: 'mg' },
+              { label: 'Potassium', value: 0, unit: 'mg' }
+            ].map(({ label, value, unit }) => (
+              <div key={label} className="text-center">
+                <p className="text-white text-base mb-0.5" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>
+                  {value}{unit}
+                </p>
+                <p 
+                  className="text-[10px] uppercase"
+                  style={{ 
+                    fontFamily: 'Montserrat, sans-serif', 
+                    fontWeight: 400,
+                    color: '#E5E5E7'
+                  }}
+                >
+                  {label}
+                </p>
+              </div>
+            ))}
+          </div>
+        </VoidCard>
       </motion.div>
 
       {/* Water Tracker */}
@@ -593,16 +730,46 @@ export default function Nutrition() {
                   {logs.map((log) => (
                     <div
                       key={log.id}
-                      className="flex items-center justify-between gap-2 p-3 rounded-xl bg-white/5"
+                      onClick={() => handleSelectFood({
+                        name: log.food_name,
+                        brand: log.brand,
+                        calories: log.calories,
+                        protein: log.protein,
+                        carbs: log.carbs,
+                        fat: log.fat,
+                        fiber: log.fiber,
+                        barcode: log.barcode,
+                        source: 'diary',
+                        availableUnits: [{
+                          servingDescription: log.serving_unit,
+                          unit: log.serving_unit,
+                          amount: log.serving_size,
+                          metricUnit: 'g',
+                          calories: log.calories / log.serving_size,
+                          protein: log.protein / log.serving_size,
+                          carbs: log.carbs / log.serving_size,
+                          fat: log.fat / log.serving_size,
+                          fiber: (log.fiber || 0) / log.serving_size,
+                          isDefault: true
+                        }]
+                      })}
+                      className="flex items-center justify-between gap-2 p-3 rounded-xl cursor-pointer transition-all hover:bg-white/10"
+                      style={{ 
+                        background: 'rgba(255,255,255,0.05)',
+                        border: '0.5px solid rgba(229,229,231,0.1)'
+                      }}
                     >
                       <div className="flex-1 min-w-0">
                         <p className="text-white text-sm truncate">{log.food_name}</p>
-                        <p className="text-white/40 text-xs truncate">
+                        <p className="text-xs truncate" style={{ color: '#E5E5E7' }}>
                           {log.serving_size}{log.serving_unit} • {log.calories} kcal
                         </p>
                       </div>
                       <button
-                        onClick={() => handleDeleteLog(log.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteLog(log.id);
+                        }}
                         className="w-8 h-8 flex-shrink-0 rounded-full bg-red-500/10 flex items-center justify-center hover:bg-red-500/20 transition-colors"
                       >
                         <Trash2 className="w-4 h-4 text-red-400" />
