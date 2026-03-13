@@ -274,7 +274,7 @@ export default function Nutrition() {
             style={{
               fontFamily: 'Montserrat, sans-serif',
               fontWeight: 400,
-              background: 'linear-gradient(135deg, #F4D03F 0%, #D4AF37 50%, #F4D03F 100%)',
+              background: 'linear-gradient(135deg, #D4AF37 0%, #D4AF37 50%, #D4AF37 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text'

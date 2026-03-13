@@ -161,7 +161,7 @@ export default function AureumLogger({ activeWorkout, allExercises, onUpdateWork
           </div>
           <div className="h-0.5 bg-white/5 rounded-full overflow-hidden">
             <motion.div
-              className="h-full bg-gradient-to-r from-[#D4AF37] to-[#F4D03F] rounded-full"
+              className="h-full bg-gradient-to-r from-[#D4AF37] to-[#D4AF37] rounded-full"
               animate={{ width: `${totalSets > 0 ? (completedSets / totalSets) * 100 : 0}%` }}
               transition={{ duration: 0.5 }}
             />

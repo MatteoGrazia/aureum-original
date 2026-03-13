@@ -48,7 +48,7 @@ export default function MacroHeatmap({ protein, carbs, fat, goals }) {
               </div>
               
               {/* Thread visualization */}
-              <div className="relative h-[1px] bg-[#9C7E46]/20 overflow-hidden">
+              <div className="relative h-[1px] bg-[#D4AF37]/20 overflow-hidden">
                 {/* Progress thread */}
                 <motion.div
                   initial={{ width: 0 }}
@@ -80,8 +80,8 @@ export default function MacroHeatmap({ protein, carbs, fat, goals }) {
 
                 {/* Goal marker */}
                 <div 
-                  className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-1 rounded-full bg-[#9C7E46]/40"
-                  style={{ boxShadow: '0 0 4px rgba(156,126,70,0.3)' }}
+                  className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-1 rounded-full bg-[#D4AF37]/40"
+                  style={{ boxShadow: '0 0 4px rgba(212,175,55,0.3)' }}
                 />
               </div>
             </div>

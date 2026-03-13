@@ -431,7 +431,7 @@ export default function Workouts() {
               style={{
                 fontFamily: 'Montserrat, sans-serif',
                 fontWeight: 400,
-                background: 'linear-gradient(135deg, #F4D03F 0%, #D4AF37 50%, #F4D03F 100%)',
+                background: 'linear-gradient(135deg, #D4AF37 0%, #D4AF37 50%, #D4AF37 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text'
@@ -451,7 +451,7 @@ export default function Workouts() {
                 bottom: '120px',
                 width: 56,
                 height: 56,
-                background: 'linear-gradient(135deg, #F4D03F 0%, #D4AF37 100%)',
+                background: 'linear-gradient(135deg, #D4AF37 0%, #D4AF37 100%)',
                 boxShadow: '0 0 30px rgba(212,175,55,0.5), 0 0 60px rgba(212,175,55,0.2)',
               }}
               animate={{ boxShadow: ['0 0 20px rgba(212,175,55,0.4)', '0 0 40px rgba(212,175,55,0.7)', '0 0 20px rgba(212,175,55,0.4)'] }}

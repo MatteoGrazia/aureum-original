@@ -140,7 +140,7 @@ export default function Profile() {
           style={{
             fontFamily: 'Montserrat, sans-serif',
             fontWeight: 400,
-            background: 'linear-gradient(135deg, #F4D03F 0%, #D4AF37 50%, #F4D03F 100%)',
+            background: 'linear-gradient(135deg, #D4AF37 0%, #D4AF37 50%, #D4AF37 100%)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text'
@@ -149,7 +149,7 @@ export default function Profile() {
           {user?.full_name?.toUpperCase() || 'PROFILE'}
         </h1>
         <p
-          className="text-[#C9A961] text-[11px] uppercase tracking-[0.25em] text-center"
+          className="text-[#D4AF37] text-[11px] uppercase tracking-[0.25em] text-center"
           style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
         >
           {format(new Date(), 'EEEE, MMMM d')}
