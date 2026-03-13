@@ -356,7 +356,7 @@ export default function Activity() {
                             ? 'bg-[#D4AF37] shadow-[0_0_12px_rgba(212,175,55,0.6)]'
                             : isToday
                             ? 'bg-[#D4AF37]/80'
-                            : 'bg-[#D4AF37] hover:bg-[#F4D03F]'
+                            : 'bg-[#D4AF37] hover:bg-[#D4AF37]'
                         }`}
                         style={{ 
                           opacity: isSelected || isToday ? 1 : opacity,
