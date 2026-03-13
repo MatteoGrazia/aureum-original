@@ -267,10 +267,10 @@ export default function Nutrition() {
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-6 pt-6"
+          className="mb-6 pt-6 text-center"
         >
           <h1
-            className="text-3xl tracking-[0.4em] mb-4 text-center"
+            className="text-3xl tracking-[0.4em] text-center"
             style={{
               fontFamily: 'Montserrat, sans-serif',
               fontWeight: 400,
@@ -282,6 +282,12 @@ export default function Nutrition() {
           >
             NUTRITION
           </h1>
+          <p
+            className="text-[#D4AF37] text-[11px] uppercase tracking-[0.25em] text-center mt-3"
+            style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
+          >
+            {format(selectedDate, 'EEEE, MMMM d')}
+          </p>
 
           <VoidCard className="p-3">
           <div className="flex items-center justify-between">
@@ -347,7 +353,7 @@ export default function Nutrition() {
               border: '0.5px solid rgba(255, 218, 185, 0.3)'
             }}
           >
-            <Scan className="w-5 h-5" style={{ color: '#FFDAB9' }} />
+            <Scan className="w-5 h-5" style={{ color: '#D4AF37' }} />
           </button>
         </div>
       </motion.div>
@@ -428,17 +434,17 @@ export default function Nutrition() {
                         onClick={() => setSelectedMeal(meal)}
                         className="py-2 px-1 rounded-xl flex flex-col items-center justify-center gap-1 transition-all"
                         style={{
-                          background: selectedMeal === meal ? 'rgba(255, 218, 185, 0.20)' : 'rgba(255,255,255,0.05)',
-                          border: selectedMeal === meal ? '0.5px solid rgba(255, 218, 185, 0.5)' : '0.5px solid rgba(229, 229, 231, 0.1)'
+                          background: selectedMeal === meal ? 'rgba(212, 175, 55, 0.20)' : 'rgba(255,255,255,0.05)',
+                          border: selectedMeal === meal ? '0.5px solid rgba(212, 175, 55, 0.5)' : '0.5px solid rgba(229, 229, 231, 0.1)'
                         }}
                       >
                         <Icon 
                           className="w-4 h-4" 
-                          style={{ color: selectedMeal === meal ? '#FFDAB9' : '#E5E5E7' }}
+                          style={{ color: selectedMeal === meal ? '#D4AF37' : '#E5E5E7' }}
                         />
                         <span 
                           className="text-[10px] capitalize truncate w-full text-center"
-                          style={{ color: selectedMeal === meal ? '#FFDAB9' : '#E5E5E7' }}
+                          style={{ color: selectedMeal === meal ? '#D4AF37' : '#E5E5E7' }}
                         >
                           {meal}
                         </span>
@@ -539,11 +545,11 @@ export default function Nutrition() {
                   <div 
                     className="text-center p-3 rounded-xl flex-1 min-w-[70px]"
                     style={{ 
-                      background: 'rgba(255, 218, 185, 0.08)',
-                      border: '0.5px solid rgba(255, 218, 185, 0.15)'
+                      background: 'rgba(212, 175, 55, 0.08)',
+                      border: '0.5px solid rgba(212, 175, 55, 0.15)'
                     }}
                   >
-                    <p className="text-lg" style={{ color: '#FFDAB9', fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>
+                    <p className="text-lg" style={{ color: '#D4AF37', fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>
                       {calculateLiveMacros().calories}
                     </p>
                     <p 
@@ -640,8 +646,8 @@ export default function Nutrition() {
         <VoidCard 
           className="p-4"
           style={{
-            background: 'rgba(255, 218, 185, 0.08)',
-            border: '0.5px solid rgba(255, 218, 185, 0.2)'
+            background: 'rgba(212, 175, 55, 0.08)',
+            border: '0.5px solid rgba(212, 175, 55, 0.2)'
           }}
         >
           <h3 
@@ -649,7 +655,7 @@ export default function Nutrition() {
             style={{ 
               fontFamily: 'Montserrat, sans-serif', 
               fontWeight: 500,
-              color: '#FFDAB9'
+              color: '#D4AF37'
             }}
           >
             Micronutrients
@@ -706,7 +712,7 @@ export default function Nutrition() {
         {mealGroups.map(({ type, logs }) => {
           const Icon = mealIcons[type];
           const mealCalories = logs.reduce((sum, log) => sum + (log.calories || 0), 0);
-          const iconColors = { breakfast: '#F4A261', lunch: '#8ECAE6', dinner: '#E8C5A5', snack: '#C9ADA7' };
+          const iconColors = { breakfast: '#D4AF37', lunch: '#8ECAE6', dinner: '#D4AF37', snack: '#D4AF37' };
 
           return (
             <VoidCard key={type}>

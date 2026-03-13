@@ -133,10 +133,10 @@ export default function Profile() {
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mb-6"
+        className="mb-6 pt-6 text-center"
       >
         <h1
-          className="text-3xl tracking-[0.4em] text-center mb-3"
+          className="text-3xl tracking-[0.4em]"
           style={{
             fontFamily: 'Montserrat, sans-serif',
             fontWeight: 400,
@@ -149,7 +149,7 @@ export default function Profile() {
           {user?.full_name?.toUpperCase() || 'PROFILE'}
         </h1>
         <p
-          className="text-[#D4AF37] text-[11px] uppercase tracking-[0.25em] text-center"
+          className="text-[#D4AF37] text-[11px] uppercase tracking-[0.25em] mt-3"
           style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
         >
           {format(new Date(), 'EEEE, MMMM d')}

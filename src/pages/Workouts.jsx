@@ -425,9 +425,9 @@ export default function Workouts() {
 
       {(view === 'routines' || view === 'create') && (
         <div className="relative z-10 p-5">
-          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-4 pt-10">
+          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-6 pt-6 text-center">
             <h1
-              className="text-3xl tracking-[0.4em] text-center"
+              className="text-3xl tracking-[0.4em]"
               style={{
                 fontFamily: 'Montserrat, sans-serif',
                 fontWeight: 400,
@@ -439,6 +439,12 @@ export default function Workouts() {
             >
               STRENGTH
             </h1>
+            <p
+              className="text-[#D4AF37] text-[11px] uppercase tracking-[0.25em] mt-3"
+              style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
+            >
+              {format(new Date(), 'EEEE, MMMM d')}
+            </p>
           </motion.div>
 
           {/* Floating Gold Orb FAB */}
