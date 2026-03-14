@@ -22,8 +22,8 @@ export default function StepCounter({ steps, goal }) {
       style={{
         background: isDarkMode ? 'rgba(255, 255, 255, 0.03)' : 'rgba(255, 255, 255, 0.6)',
         backdropFilter: 'blur(20px) saturate(180%)',
-        boxShadow: isDarkMode ? '0 20px 50px rgba(0, 0, 0, 0.6)' : '0 4px 16px rgba(225, 193, 110, 0.08)',
-        border: '0.5px solid rgba(212, 175, 55, 0.18)',
+        boxShadow: isDarkMode ? '0 20px 50px rgba(0, 0, 0, 0.6)' : '0 2px 8px rgba(225, 193, 110, 0.04)',
+        border: isDarkMode ? '0.5px solid rgba(212, 175, 55, 0.18)' : '0.5px solid rgba(225, 193, 110, 0.45)',
         padding: '20px 18px',
         borderRadius: '14px'
       }}
