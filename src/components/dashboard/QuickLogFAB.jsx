@@ -369,10 +369,10 @@ export default function QuickLogFAB({ onUpdate }) {
             const isStreak = btn.action === 'streak';
 
             // Pick dark variants for light mode
-            const lightColorMap = { [GOLD]: GOLD_DARK, [BRONZE]: BRONZE_DARK, [BLUE]: BLUE_DARK, [AMBER]: AMBER_DARK };
+            const lightColorMap = { [GOLD]: '#9C7E46', [BRONZE]: '#9C7E46', [BLUE]: '#5A8FA8', [AMBER]: '#9C7E46' };
             const baseColor = isDarkMode ? btn.color : (lightColorMap[btn.color] || btn.color);
             const btnColor = isStreak
-              ? (streakDone ? (isDarkMode ? GOLD : GOLD_DARK) : (isDarkMode ? BRONZE : BRONZE_DARK))
+              ? (streakDone ? (isDarkMode ? GOLD : '#9C7E46') : (isDarkMode ? BRONZE : '#9C7E46'))
               : baseColor;
 
             return (
@@ -432,10 +432,10 @@ export default function QuickLogFAB({ onUpdate }) {
                 {/* Primary arc */}
               <motion.path
                 d={ARC_PATH}
-                stroke={isDarkMode ? '#FFFFFF' : '#B8860B'}
+                stroke={isDarkMode ? '#FFFFFF' : '#FFFFFF'}
                 strokeWidth="1.5"
                 fill="none"
-                style={{ willChange: 'opacity' }}
+                style={{ willCheck: 'opacity' }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 0.9 }}
                 transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
