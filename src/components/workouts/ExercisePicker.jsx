@@ -150,7 +150,13 @@ function LazyAnatomical({ src, alt, fallback, customSrc, customSrcDark, isDarkMo
     <div ref={ref} style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       {shouldLoad && !err
         ? <img src={imageUrl} alt={alt} loading="lazy" onError={() => setErr(true)}
-            style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }} />
+            style={{ 
+              width: '100%', 
+              height: '100%', 
+              objectFit: 'cover', 
+              objectPosition: 'center',
+              filter: isDarkMode ? 'invert(1) brightness(1.1)' : 'none'
+            }} />
         : err ? fallback : null}
     </div>
   );
@@ -260,15 +266,14 @@ export default function ExercisePicker({ exercises, onSelect, onClose, mode = 'a
             const isActive = muscleFilter === m;
             return (
               <button key={m} onClick={() => setMuscleFilter(m)}
-                className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs capitalize"
+                className="flex-shrink-0 px-3 py-1.5 rounded-full text-xs capitalize"
                 style={{
                   background: isActive ? 'rgba(212,175,55,0.18)' : (isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'),
                   color: isActive ? '#D4AF37' : textMuted,
                   border: `0.5px solid ${isActive ? 'rgba(212,175,55,0.55)' : borderColor}`,
-                  boxShadow: isActive ? '0 0 10px rgba(212,175,55,0.4), 0 0 22px rgba(212,175,55,0.15)' : 'none',
+                  boxShadow: isActive ? 'inset 0 0 0 0.5px rgba(212,175,55,0.6), 0 0 0 2px rgba(212,175,55,0.25)' : 'none',
                   transition: 'all 0.2s ease',
                 }}>
-                {m !== 'all' && <MuscleIcon muscle={m} size={11} color={isActive ? '#D4AF37' : textMuted} />}
                 {m}
               </button>
             );
@@ -288,7 +293,7 @@ export default function ExercisePicker({ exercises, onSelect, onClose, mode = 'a
                   background: isActive ? 'rgba(156,126,70,0.18)' : (isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'),
                   color: isActive ? iconColor : textMuted,
                   border: `0.5px solid ${isActive ? 'rgba(156,126,70,0.55)' : borderColor}`,
-                  boxShadow: isActive ? '0 0 10px rgba(212,175,55,0.35), 0 0 20px rgba(212,175,55,0.12)' : 'none',
+                  boxShadow: isActive ? 'inset 0 0 0 0.5px rgba(212,175,55,0.6), 0 0 0 2px rgba(212,175,55,0.25)' : 'none',
                   transition: 'all 0.2s ease',
                 }}>
                 {eq}
@@ -317,7 +322,15 @@ export default function ExercisePicker({ exercises, onSelect, onClose, mode = 'a
                      <button key={ex.id} onClick={() => setSelected(ex)}
                        className="w-full px-3 py-2.5 rounded-xl text-left flex items-center gap-3 transition-all active:scale-[0.98]"
                        style={{ background: cardBg, border: `0.5px solid ${borderColor}` }}>
-                       <div style={{ width: 48, height: 48, borderRadius: '50%', overflow: 'hidden', flexShrink: 0 }}>
+                       <div style={{ 
+                         width: 48, 
+                         height: 48, 
+                         borderRadius: '50%', 
+                         overflow: 'hidden', 
+                         flexShrink: 0,
+                         border: `0.5px solid ${isDarkMode ? 'rgba(212,175,55,0.2)' : 'rgba(156,126,70,0.2)'}`,
+                         background: 'rgba(255,255,255,0.03)'
+                       }}>
                           <LazyAnatomical
                             src={fallbackUrl}
                             alt={ex.name}
@@ -385,14 +398,25 @@ export default function ExercisePicker({ exercises, onSelect, onClose, mode = 'a
             <div className="flex items-start gap-4 mb-4">
               {/* Large pearl circle */}
               <div style={{
-                width: 68, height: 68, borderRadius: '50%',
-                overflow: 'hidden', flexShrink: 0
+                width: 68, 
+                height: 68, 
+                borderRadius: '50%',
+                overflow: 'hidden', 
+                flexShrink: 0,
+                border: `0.5px solid ${isDarkMode ? 'rgba(212,175,55,0.25)' : 'rgba(156,126,70,0.25)'}`,
+                background: 'rgba(255,255,255,0.03)'
               }}>
                 <img
                   src={isDarkMode ? (selected.image_url_dark || selected.image_url || getWgerAnatomyUrl(selected.muscle_group)) : (selected.image_url || getWgerAnatomyUrl(selected.muscle_group))}
                   alt={selected.name}
                   loading="lazy"
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }}
+                  style={{ 
+                    width: '100%', 
+                    height: '100%', 
+                    objectFit: 'cover', 
+                    objectPosition: 'center',
+                    filter: isDarkMode ? 'invert(1) brightness(1.1)' : 'none'
+                  }}
                   onError={e => { e.target.src = FALLBACK_ANATOMY; }}
                 />
               </div>
