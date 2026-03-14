@@ -4,14 +4,13 @@ import { Activity, Coffee, Flame, Clock } from 'lucide-react';
 import VoidCard from '@/components/ui/VoidCard';
 
 export default function ActivityStats({ activeMinutes, sedentaryMinutes, caloriesBurned, steps, profile }) {
-  // Calculate activity from steps
-  const calculatedActiveMinutes = Math.round((steps || 0) / 100); // ~100 steps = 1 min activity
+  // Calculate activity from steps - more realistic: ~1 minute per 120-150 steps (average walking pace)
+  const calculatedActiveMinutes = Math.round((steps || 0) / 120);
   const finalActiveMinutes = Math.max(activeMinutes, calculatedActiveMinutes);
   
   const totalDayMinutes = 1440; // 24 hours
   const finalSedentaryMinutes = Math.max(0, totalDayMinutes - finalActiveMinutes);
-  const totalMinutes = finalActiveMinutes + finalSedentaryMinutes;
-  const activePercentage = totalMinutes > 0 ? (finalActiveMinutes / totalMinutes) * 100 : 0;
+  const activePercentage = (finalActiveMinutes / totalDayMinutes) * 100;
   
   // Calculate calories burned based on profile
   const calculateCaloriesBurned = () => {
@@ -30,13 +29,14 @@ export default function ActivityStats({ activeMinutes, sedentaryMinutes, calorie
       bmr = 10 * weight + 6.25 * height - 5 * age - 161;
     }
     
-    // Calories burned throughout the day (BMR spread over 24h)
-    const baseDailyBurn = Math.round(bmr / 24 * (totalMinutes / 60));
+    // Calories burned from activity (BMR for the active time)
+    const activeHours = finalActiveMinutes / 60;
+    const activityBurn = Math.round(bmr / 24 * activeHours * 1.5); // 1.5x multiplier for activity
     
-    // Additional calories from steps (roughly 0.04 kcal per step for average person)
+    // Additional calories from steps (roughly 0.04 kcal per step)
     const stepCalories = Math.round(steps * 0.04);
     
-    return baseDailyBurn + stepCalories;
+    return activityBurn + stepCalories;
   };
   
   const finalCaloriesBurned = calculateCaloriesBurned();
@@ -82,14 +82,17 @@ export default function ActivityStats({ activeMinutes, sedentaryMinutes, calorie
             animate={{ width: `${activePercentage}%` }}
             transition={{ duration: 1, ease: "easeOut" }}
             className="absolute inset-y-0 left-0 rounded-full"
-            style={{ background: 'linear-gradient(90deg, #B2D8D8, #B2D8D8)' }}
+            style={{ 
+              background: 'linear-gradient(90deg, #8ECAE6 0%, #B2D8D8 100%)',
+              boxShadow: '0 0 8px rgba(142,202,230,0.3)'
+            }}
           />
-          <motion.div
-            initial={{ width: 0 }}
-            animate={{ width: `${100 - activePercentage}%` }}
-            transition={{ duration: 1, ease: "easeOut" }}
+          <div 
             className="absolute inset-y-0 right-0 rounded-full"
-            style={{ background: 'rgba(229, 229, 231, 0.3)' }}
+            style={{ 
+              width: `${100 - activePercentage}%`,
+              background: 'linear-gradient(90deg, rgba(229,229,231,0.15) 0%, rgba(229,229,231,0.3) 100%)'
+            }}
           />
         </div>
 
