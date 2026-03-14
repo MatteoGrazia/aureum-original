@@ -361,8 +361,8 @@ export default function Dashboard() {
                   {maintenanceCalories}
                 </p>
                 <p 
-                  className="text-[10px] text-white/40 uppercase tracking-wider mt-1"
-                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}
+                  className="text-[10px] uppercase tracking-wider mt-1"
+                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400, color: '#8ECAE6' }}
                 >
                   Base
                 </p>
