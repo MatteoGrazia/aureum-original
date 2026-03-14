@@ -100,7 +100,7 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
         </p>
         <p
           className="text-[10px] uppercase tracking-[0.35em]"
-          style={{ fontWeight: 400, fontFamily: 'Montserrat, sans-serif', color: centerSubColor }}
+          style={{ fontWeight: 400, fontFamily: 'Montserrat, sans-serif', color: '#000000' }}
         >
           Complete
         </p>
