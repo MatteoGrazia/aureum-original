@@ -204,16 +204,18 @@ export default function QuickLogFAB({ onUpdate }) {
           <motion.div
             key="bd"
             initial={{ opacity: 0, backdropFilter: 'blur(0px)' }} 
-            animate={{ opacity: 1, backdropFilter: 'blur(20px)' }} 
+            animate={{ opacity: 1, backdropFilter: 'blur(12px)' }} 
             exit={{ opacity: 0, backdropFilter: 'blur(0px)' }}
             transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
             onClick={close}
             className="fixed inset-0"
             style={{ 
-              background: isDarkMode ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.4)', 
+              background: isDarkMode 
+                ? 'rgba(0,0,0,0.25)' 
+                : 'linear-gradient(135deg, rgba(212,175,55,0.08) 0%, rgba(255,255,255,0.15) 100%)', 
               zIndex: 999, 
               willChange: 'opacity, backdrop-filter',
-              WebkitBackdropFilter: 'blur(20px)'
+              WebkitBackdropFilter: 'blur(12px)'
             }}
           />
         )}
