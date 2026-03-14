@@ -199,7 +199,7 @@ export default function Profile() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/90 z-[100] overflow-y-auto"
-            style={{ '--hide-nav': 'none' } as React.CSSProperties}
+            style={{ '--hide-nav': 'none' }}
           >
             <div className="min-h-screen p-6">
               <GlassCard className="p-6 max-w-lg mx-auto">
