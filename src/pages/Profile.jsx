@@ -149,7 +149,7 @@ export default function Profile() {
           {user?.full_name?.toUpperCase() || 'PROFILE'}
         </h1>
         <p
-          className="text-[#D4AF37] text-[11px] uppercase tracking-[0.25em] mt-3"
+          className="text-white text-[11px] uppercase tracking-[0.25em] mt-3"
           style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
         >
           {format(new Date(), 'EEEE, MMMM d')}
