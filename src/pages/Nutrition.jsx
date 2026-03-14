@@ -283,7 +283,7 @@ export default function Nutrition() {
             NUTRITION
           </h1>
           <p
-            className="text-[#D4AF37] text-[11px] uppercase tracking-[0.25em] text-center mt-3"
+            className="text-white text-[11px] uppercase tracking-[0.25em] text-center mt-3"
             style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
           >
             {format(selectedDate, 'EEEE, MMMM d')}
@@ -319,7 +319,7 @@ export default function Nutrition() {
           className="mb-6"
         >
           <VoidCard className="text-center">
-            <p className="text-5xl text-[#D4AF37]" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>{totalCalories}</p>
+            <p className="text-5xl text-white" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>{totalCalories}</p>
             <p 
               className="text-white/40 text-xs uppercase tracking-widest mt-2"
               style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}
@@ -655,7 +655,7 @@ export default function Nutrition() {
             style={{ 
               fontFamily: 'Montserrat, sans-serif', 
               fontWeight: 500,
-              color: '#D4AF37'
+              color: '#FFFFFF'
             }}
           >
             Micronutrients
@@ -722,7 +722,7 @@ export default function Nutrition() {
                   <span className="text-white capitalize" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>{type}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-[#D4AF37] text-sm" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>{mealCalories} kcal</span>
+                  <span className="text-white text-sm" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>{mealCalories} kcal</span>
                   <CopyFromYesterdayButton 
                     mealType={type} 
                     selectedDate={selectedDate}

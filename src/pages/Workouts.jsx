@@ -440,7 +440,7 @@ export default function Workouts() {
               STRENGTH
             </h1>
             <p
-              className="text-[#D4AF37] text-[11px] uppercase tracking-[0.25em] mt-3"
+              className="text-white text-[11px] uppercase tracking-[0.25em] mt-3"
               style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
             >
               {format(new Date(), 'EEEE, MMMM d')}
@@ -475,7 +475,7 @@ export default function Workouts() {
 
               {/* Routines label */}
               <div className="flex items-center justify-between">
-                <p className="text-[10px] uppercase tracking-[0.3em] text-[#D4AF37]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                <p className="text-[10px] uppercase tracking-[0.3em] text-white" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                   Routines
                 </p>
                 <button
