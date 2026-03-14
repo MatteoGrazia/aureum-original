@@ -143,7 +143,7 @@ export default function SupplementStreak() {
         <div className="flex gap-2 mb-4 items-end" style={{ height: 80 }}>
           {weeklyData.map((w, i) => (
             <div key={i} className="flex-1 flex flex-col items-center gap-1 h-full justify-end">
-              <p style={{ color: '#D4AF37', fontFamily: 'Montserrat', fontSize: 8, marginBottom: 2 }}>{w.count}/7</p>
+              <p style={{ color: '#FFFFFF', fontFamily: 'Montserrat', fontSize: 8, marginBottom: 2 }}>{w.count}/7</p>
               <div className="w-full rounded-md flex flex-col justify-end overflow-hidden"
                 style={{ flex: 1, background: 'rgba(255,255,255,0.05)', border: '0.5px solid rgba(255,255,255,0.07)' }}>
                 <motion.div
@@ -162,7 +162,7 @@ export default function SupplementStreak() {
         <div className="flex gap-2 mb-4 items-end" style={{ height: 80 }}>
           {monthlyData.map((m, i) => (
             <div key={i} className="flex-1 flex flex-col items-center gap-1 h-full justify-end">
-              <p style={{ color: '#D4AF37', fontFamily: 'Montserrat', fontSize: 8, marginBottom: 2 }}>{m.pct}%</p>
+              <p style={{ color: '#FFFFFF', fontFamily: 'Montserrat', fontSize: 8, marginBottom: 2 }}>{m.pct}%</p>
               <div className="w-full rounded-md flex flex-col justify-end overflow-hidden"
                 style={{ flex: 1, background: 'rgba(255,255,255,0.05)', border: '0.5px solid rgba(255,255,255,0.07)' }}>
                 <motion.div
