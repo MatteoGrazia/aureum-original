@@ -26,7 +26,7 @@ export default function VolumeBenchmarks({ lifetimeVolume }) {
 
   return (
     <GlassCard className="p-5">
-      <h3 className="text-xs uppercase tracking-widest text-[#D4AF37] mb-4">Volume Benchmarks</h3>
+      <h3 className="text-xs uppercase tracking-widest text-white mb-4">Volume Benchmarks</h3>
 
       {/* Current Progress */}
       <div className="text-center mb-6">

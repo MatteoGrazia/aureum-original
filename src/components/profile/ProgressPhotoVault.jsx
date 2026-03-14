@@ -44,7 +44,7 @@ export default function ProgressPhotoVault({ photos, onPhotoAdded }) {
     <>
       <GlassCard className="p-5">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xs uppercase tracking-widest text-[#D4AF37]">Progress Vault</h3>
+          <h3 className="text-xs uppercase tracking-widest text-white">Progress Vault</h3>
           <button
             onClick={() => setShowUpload(true)}
             className="w-8 h-8 rounded-full bg-[#D4AF37]/20 flex items-center justify-center"

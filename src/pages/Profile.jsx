@@ -7,6 +7,7 @@ import {
   User, Settings, Scale, Target, Ruler, Calendar,
   LogOut, ChevronRight, Edit3, Save, Droplets
 } from 'lucide-react';
+import ProfilePictureUpload from '@/components/profile/ProfilePictureUpload';
 import GlassCard from '@/components/ui/GlassCard';
 import GoldButton from '@/components/ui/GoldButton';
 import WeightGraph from '@/components/profile/WeightGraph';
@@ -165,9 +166,7 @@ export default function Profile() {
       >
         <GlassCard className="p-6" glow>
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#D4AF37]/30 to-[#D4AF37]/10 flex items-center justify-center">
-              <User className="w-8 h-8 text-[#D4AF37]" />
-            </div>
+            <ProfilePictureUpload user={user} onUpdate={() => queryClient.invalidateQueries(['currentUser'])} />
             <div className="flex-1">
               <h2 className="text-xl text-white" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>{user?.full_name || 'User'}</h2>
               <p className="text-white/40 text-sm" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>{user?.email}</p>
@@ -199,7 +198,8 @@ export default function Profile() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/90 z-50 overflow-y-auto"
+            className="fixed inset-0 bg-black/90 z-[100] overflow-y-auto"
+            style={{ '--hide-nav': 'none' } as React.CSSProperties}
           >
             <div className="min-h-screen p-6">
               <GlassCard className="p-6 max-w-lg mx-auto">
@@ -331,7 +331,7 @@ export default function Profile() {
                   </div>
 
                   <div className="border-t border-white/10 pt-4 mt-4">
-                    <h3 className="text-[10px] uppercase tracking-[0.3em] text-[#D4AF37] mb-4" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}>Settings</h3>
+                    <h3 className="text-[10px] uppercase tracking-[0.3em] text-white mb-4" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}>Settings</h3>
                     
                     <div className="space-y-4">
                       <div>
