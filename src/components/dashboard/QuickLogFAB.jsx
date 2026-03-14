@@ -203,11 +203,18 @@ export default function QuickLogFAB({ onUpdate }) {
         {(isOpen || activeAction) && (
           <motion.div
             key="bd"
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
+            initial={{ opacity: 0, backdropFilter: 'blur(0px)' }} 
+            animate={{ opacity: 1, backdropFilter: 'blur(20px)' }} 
+            exit={{ opacity: 0, backdropFilter: 'blur(0px)' }}
+            transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
             onClick={close}
             className="fixed inset-0"
-            style={{ background: 'rgba(0,0,0,0.35)', zIndex: 999, willChange: 'opacity' }}
+            style={{ 
+              background: isDarkMode ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.4)', 
+              zIndex: 999, 
+              willChange: 'opacity, backdrop-filter',
+              WebkitBackdropFilter: 'blur(20px)'
+            }}
           />
         )}
       </AnimatePresence>
