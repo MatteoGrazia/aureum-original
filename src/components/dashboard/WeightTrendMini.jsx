@@ -74,7 +74,7 @@ export default function WeightTrendMini({ weightHistory }) {
       {/* Stats overlay */}
       <div className="flex justify-between mt-2 text-xs">
         <div>
-          <p className="text-[#D4AF37]">{last90Days[0].weight} kg</p>
+          <p className="text-white">{last90Days[0].weight} kg</p>
           <p className="text-white/30">90d ago</p>
         </div>
         <div className="text-right">
