@@ -106,7 +106,7 @@ export default function AureumPulse({ label, value, goal, unit, index = 0, icon,
       <div className="mt-3 text-right relative z-10">
         <span
           className="text-xs tracking-wider"
-          style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500, color: pctColor }}
+          style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500, color: '#FFFFFF' }}
         >
           {Math.round(progress)}%
         </span>
