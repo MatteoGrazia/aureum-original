@@ -107,15 +107,15 @@ export default function FoodSearch({ onSelectFood }) {
   };
 
   return (
-    <div className="space-y-4 w-full max-w-full overflow-hidden h-full">
-      <div className="relative h-full">
+    <div className="space-y-4 w-full max-w-full overflow-visible">
+      <div className="relative h-12">
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: '#FFDAB9' }} />
         <Input
           type="text"
           placeholder="Search foods..."
           value={query}
           onChange={handleSearch}
-          className="pl-11 h-full rounded-xl"
+          className="pl-11 h-12 rounded-xl"
           style={{
             background: 'rgba(255,255,255,0.05)',
             border: '0.5px solid rgba(255, 218, 185, 0.2)',

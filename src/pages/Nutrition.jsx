@@ -339,8 +339,8 @@ export default function Nutrition() {
         transition={{ delay: 0.2 }}
         className="mb-6 space-y-3"
       >
-        <div className="flex gap-3 items-center">
-          <div className="flex-1 min-w-0" style={{ height: '48px' }}>
+        <div className="flex gap-3 items-start">
+          <div className="flex-1 min-w-0">
             <FoodSearch onSelectFood={handleSelectFood} />
           </div>
           <button
