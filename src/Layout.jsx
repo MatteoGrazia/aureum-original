@@ -96,7 +96,7 @@ function LayoutInner({ children, currentPageName }) {
         html[data-theme="light"] .glass-card {
           background: rgba(255, 255, 255, 0.88) !important;
           border: 0.5px solid rgba(225, 193, 110, 0.45) !important;
-          box-shadow: 0 4px 24px rgba(0, 0, 0, 0.07) !important;
+          box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05) !important;
           transition: background 0.18s ease, border-color 0.18s ease !important;
         }
 
