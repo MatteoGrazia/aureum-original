@@ -78,7 +78,7 @@ export default function WeightTrendMini({ weightHistory }) {
           <p className="text-white/30">90d ago</p>
         </div>
         <div className="text-right">
-          <p className="text-[#D4AF37]">{last90Days[last90Days.length - 1].weight} kg</p>
+          <p className="text-white">{last90Days[last90Days.length - 1].weight} kg</p>
           <p className="text-white/30">Today</p>
         </div>
       </div>
