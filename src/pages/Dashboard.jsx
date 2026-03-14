@@ -347,7 +347,7 @@ export default function Dashboard() {
 
           <VoidCard>
             <h3 
-              className="text-[10px] uppercase tracking-[0.3em] text-[#D4AF37] mb-4"
+              className="text-[10px] uppercase tracking-[0.3em] text-white mb-4"
               style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
             >
               Energy Balance
