@@ -128,7 +128,7 @@ function PearlCircle({ size = 48, isDarkMode, children }) {
 }
 
 // ─── Lazy image — IntersectionObserver + error fallback ───────────────────────
-function LazyAnatomical({ src, alt, fallback, customSrc }) {
+function LazyAnatomical({ src, alt, fallback, customSrc, customSrcDark, isDarkMode }) {
   const [shouldLoad, setShouldLoad] = useState(false);
   const [err, setErr] = useState(false);
   const ref = useRef(null);
@@ -144,13 +144,13 @@ function LazyAnatomical({ src, alt, fallback, customSrc }) {
     return () => obs.disconnect();
   }, []);
 
-  const imageUrl = customSrc || src;
+  const imageUrl = isDarkMode ? (customSrcDark || customSrc || src) : (customSrc || src);
 
   return (
     <div ref={ref} style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       {shouldLoad && !err
         ? <img src={imageUrl} alt={alt} loading="lazy" onError={() => setErr(true)}
-            style={{ width: '90%', height: '90%', objectFit: 'contain', filter: 'none' }} />
+            style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }} />
         : err ? fallback : null}
     </div>
   );
@@ -317,14 +317,16 @@ export default function ExercisePicker({ exercises, onSelect, onClose, mode = 'a
                      <button key={ex.id} onClick={() => setSelected(ex)}
                        className="w-full px-3 py-2.5 rounded-xl text-left flex items-center gap-3 transition-all active:scale-[0.98]"
                        style={{ background: cardBg, border: `0.5px solid ${borderColor}` }}>
-                       <PearlCircle size={48} isDarkMode={isDarkMode}>
-                         <LazyAnatomical
-                           src={fallbackUrl}
-                           alt={ex.name}
-                           customSrc={customUrl}
-                           fallback={<ExerciseIcon name={ex.name} muscle={ex.muscle_group} size={20} color={iconColor} />}
-                         />
-                       </PearlCircle>
+                       <div style={{ width: 48, height: 48, borderRadius: '50%', overflow: 'hidden', flexShrink: 0 }}>
+                          <LazyAnatomical
+                            src={fallbackUrl}
+                            alt={ex.name}
+                            customSrc={ex.image_url}
+                            customSrcDark={ex.image_url_dark}
+                            isDarkMode={isDarkMode}
+                            fallback={<ExerciseIcon name={ex.name} muscle={ex.muscle_group} size={20} color={iconColor} />}
+                          />
+                        </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm truncate" style={{ fontFamily: 'Montserrat, sans-serif', color: textPrimary }}>{ex.name}</p>
                         <p className="text-[11px] capitalize mt-0.5" style={{ color: textMuted }}>{ex.muscle_group} · {ex.equipment}</p>
@@ -384,19 +386,13 @@ export default function ExercisePicker({ exercises, onSelect, onClose, mode = 'a
               {/* Large pearl circle */}
               <div style={{
                 width: 68, height: 68, borderRadius: '50%',
-                border: `0.5px solid ${isDarkMode ? '#D4AF37' : '#9C7E46'}`,
-                background: 'rgba(255,255,255,0.05)',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)',
-                boxShadow: isDarkMode ? '0 0 10px rgba(212,175,55,0.1)' : 'none',
-                overflow: 'hidden', flexShrink: 0,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                overflow: 'hidden', flexShrink: 0
               }}>
                 <img
-                  src={selected.image_url || getWgerAnatomyUrl(selected.muscle_group)}
+                  src={isDarkMode ? (selected.image_url_dark || selected.image_url || getWgerAnatomyUrl(selected.muscle_group)) : (selected.image_url || getWgerAnatomyUrl(selected.muscle_group))}
                   alt={selected.name}
                   loading="lazy"
-                  style={{ width: '88%', height: '88%', objectFit: 'contain', filter: 'none' }}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }}
                   onError={e => { e.target.src = FALLBACK_ANATOMY; }}
                 />
               </div>
@@ -459,7 +455,7 @@ export default function ExercisePicker({ exercises, onSelect, onClose, mode = 'a
                 whileTap={{ scale: 0.96 }}
                 onClick={() => handleAdd(selected)}
                 className="flex-[2] py-3.5 rounded-2xl text-sm flex items-center justify-center gap-2"
-                style={{ background: 'linear-gradient(135deg, #F4D03F 0%, #D4AF37 100%)', color: '#0a0a0a', fontFamily: 'Montserrat, sans-serif' }}>
+                style={{ background: 'linear-gradient(135deg, #D4AF37 0%, #D4AF37 100%)', color: '#0a0a0a', fontFamily: 'Montserrat, sans-serif' }}>
                 <Plus className="w-4 h-4" />
                 Add to Routine
               </motion.button>
