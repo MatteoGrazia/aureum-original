@@ -85,7 +85,7 @@ export default function SupplementStreak() {
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <div>
-          <p className="text-[10px] uppercase tracking-[0.3em] text-[#D4AF37]"
+          <p className="text-[10px] uppercase tracking-[0.3em] text-white"
             style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}>
             Supplement Streak
           </p>
