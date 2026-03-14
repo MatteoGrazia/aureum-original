@@ -271,32 +271,29 @@ export default function Activity() {
                       <div key={day?.id || index} className="flex flex-col items-center flex-1">
                         <div className="w-full h-full flex items-end justify-center relative">
                           <motion.div
-                            initial={{ height: 0 }}
-                            animate={{ height: `${heightPx}px` }}
-                            transition={{ delay: index * 0.05, duration: 0.4 }}
-                            onClick={() => setSelectedDay(isSelected ? null : day)}
-                            className={`w-5 rounded-t-md cursor-pointer transition-all relative ${
-                              isSelected || isToday
-                                ? 'bg-gradient-to-t from-[#D4AF37] to-[#D4AF37]' 
-                                : 'bg-gradient-to-t from-[#D4AF37] to-[#D4AF37]'
-                            }`}
-                            style={{ 
-                              minHeight: heightPx > 0 ? '8px' : '4px',
-                              boxShadow: (isSelected || isToday) ? '0 0 12px rgba(212,175,55,0.5)' : 'none'
-                            }}
-                          >
+                               initial={{ height: 0 }}
+                               animate={{ height: `${heightPx}px` }}
+                               transition={{ delay: index * 0.05, duration: 0.4 }}
+                               onClick={() => setSelectedDay(isSelected ? null : day)}
+                               className={`w-5 rounded-t-md cursor-pointer transition-all relative`}
+                               style={{ 
+                                 minHeight: heightPx > 0 ? '8px' : '4px',
+                                 boxShadow: (isSelected || isToday) ? '0 0 12px rgba(142,202,230,0.5)' : 'none',
+                                 background: 'linear-gradient(to top, #8ECAE6, rgba(255,255,255,0.9))'
+                               }}
+                             >
                             {hitGoal && (
                               <motion.div
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                transition={{ delay: index * 0.05 + 0.3, type: "spring" }}
-                                className="absolute -top-5 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-[#D4AF37] flex items-center justify-center"
-                                style={{ boxShadow: '0 2px 8px rgba(212,175,55,0.4)' }}
-                              >
-                                <svg className="w-2.5 h-2.5 text-[#080808]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                                </svg>
-                              </motion.div>
+                                 initial={{ scale: 0 }}
+                                 animate={{ scale: 1 }}
+                                 transition={{ delay: index * 0.05 + 0.3, type: "spring" }}
+                                 className="absolute -top-5 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full flex items-center justify-center"
+                                 style={{ boxShadow: '0 2px 8px rgba(142,202,230,0.4)', background: '#8ECAE6' }}
+                               >
+                                 <svg className="w-2.5 h-2.5 text-[#080808]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                 </svg>
+                               </motion.div>
                             )}
                           </motion.div>
                         </div>
@@ -324,9 +321,9 @@ export default function Activity() {
             <div className="mb-4">
               {/* Calendar Grid */}
               <div className="grid grid-cols-7 gap-2 mb-3">
-                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                  <div key={day} className="text-center text-[9px] text-white/40 uppercase tracking-wider pb-1">
-                    {day.slice(0, 3)}
+                {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, idx) => (
+                  <div key={idx} className="text-center text-[9px] text-white/40 uppercase tracking-wider pb-1">
+                    {day}
                   </div>
                 ))}
               </div>
@@ -472,7 +469,7 @@ export default function Activity() {
       >
         <VoidCard>
           <h3 
-            className="text-[10px] uppercase tracking-[0.3em] text-[#D4AF37] mb-3"
+            className="text-[10px] uppercase tracking-[0.3em] text-white mb-3"
             style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
           >
             Monthly Average
@@ -483,7 +480,7 @@ export default function Activity() {
         
         <VoidCard>
           <h3 
-            className="text-[10px] uppercase tracking-[0.3em] text-[#D4AF37] mb-3"
+            className="text-[10px] uppercase tracking-[0.3em] text-white mb-3"
             style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
           >
             Yearly Average

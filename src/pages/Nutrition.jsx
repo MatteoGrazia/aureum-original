@@ -645,10 +645,6 @@ export default function Nutrition() {
       >
         <VoidCard 
           className="p-4"
-          style={{
-            background: 'rgba(212, 175, 55, 0.08)',
-            border: '0.5px solid rgba(212, 175, 55, 0.2)'
-          }}
         >
           <h3 
             className="text-[10px] uppercase tracking-[0.3em] mb-3"
@@ -712,7 +708,7 @@ export default function Nutrition() {
         {mealGroups.map(({ type, logs }) => {
           const Icon = mealIcons[type];
           const mealCalories = logs.reduce((sum, log) => sum + (log.calories || 0), 0);
-          const iconColors = { breakfast: '#D4AF37', lunch: '#8ECAE6', dinner: '#D4AF37', snack: '#D4AF37' };
+          const iconColors = { breakfast: '#D4AF37', lunch: '#D4AF37', dinner: '#D4AF37', snack: '#D4AF37' };
 
           return (
             <VoidCard key={type}>

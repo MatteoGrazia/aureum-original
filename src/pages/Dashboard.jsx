@@ -355,14 +355,14 @@ export default function Dashboard() {
             <div className="flex items-baseline justify-between text-center">
               <div>
                 <p 
-                  className="text-xl text-white"
-                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
+                  className="text-xl"
+                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500, color: '#8ECAE6' }}
                 >
                   {maintenanceCalories}
                 </p>
                 <p 
                   className="text-[10px] uppercase tracking-wider mt-1"
-                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400, color: '#8ECAE6' }}
+                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400, color: 'rgba(255,255,255,0.4)' }}
                 >
                   Base
                 </p>
@@ -370,14 +370,14 @@ export default function Dashboard() {
               <span className="text-[#D4AF37]/60 text-base">+</span>
               <div>
                 <p 
-                  className="text-xl text-[#D4AF37]"
-                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
+                  className="text-xl"
+                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500, color: '#8ECAE6' }}
                 >
                   {activityCalories}
                 </p>
                 <p 
                   className="text-[10px] uppercase tracking-wider mt-1"
-                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400, color: '#F4A261' }}
+                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400, color: 'rgba(255,255,255,0.4)' }}
                 >
                   Active
                 </p>
@@ -385,8 +385,8 @@ export default function Dashboard() {
               <span className="text-[#D4AF37]/60 text-base">−</span>
               <div>
                 <p 
-                  className="text-xl text-[#D4AF37]"
-                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
+                  className="text-xl"
+                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500, color: '#F4A261' }}
                 >
                   {consumedCalories}
                 </p>

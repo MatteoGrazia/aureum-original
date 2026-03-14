@@ -51,9 +51,9 @@ const ECHO_ARCS = [22, 46, 72, 100, 132].map((offset, i) => {
 
 const BUTTONS = [
   { angle: -90, label: 'Streak',    action: 'streak',    Icon: Pill,     color: BRONZE },
-  { angle: -60, label: 'Readiness', action: 'readiness', Icon: Zap,      color: AMBER  },
+  { angle: -60, label: 'Readiness', action: 'readiness', Icon: Zap,      color: '#F4A261'  },
   { angle: -30, label: 'Water',     action: 'water',     Icon: Droplets, color: BLUE   },
-  { angle:   0, label: 'Weight',    action: 'weight',    Icon: Scale,    color: GOLD   },
+  { angle:   0, label: 'Weight',    action: 'weight',    Icon: Scale,    color: '#8ECAE6'   },
 ];
 
 const haptic = (type) => {
@@ -432,7 +432,7 @@ export default function QuickLogFAB({ onUpdate }) {
                 {/* Primary arc */}
               <motion.path
                 d={ARC_PATH}
-                stroke={isDarkMode ? GOLD : '#B8860B'}
+                stroke={isDarkMode ? '#FFFFFF' : '#B8860B'}
                 strokeWidth="1.5"
                 fill="none"
                 style={{ willChange: 'opacity' }}
@@ -445,7 +445,7 @@ export default function QuickLogFAB({ onUpdate }) {
                 <motion.path
                   key={i}
                   d={arc.path}
-                  stroke={isDarkMode ? GOLD : '#B8860B'}
+                  stroke={isDarkMode ? '#FFFFFF' : '#B8860B'}
                   strokeWidth={arc.strokeWidth}
                   fill="none"
                   style={{ willChange: 'opacity' }}

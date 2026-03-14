@@ -6,7 +6,7 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
   const { isDarkMode } = useTheme();
 
   const orbitals = [
-    { value: calories,  goal: caloriesGoal, color: '#D4AF37', size: 240, offset: { x: -8, y: -8 }, rotation: 0 },
+    { value: calories,  goal: caloriesGoal, color: '#F4A261', size: 240, offset: { x: -8, y: -8 }, rotation: 0 },
     { value: steps,     goal: stepsGoal,    color: '#B2D8D8', size: 180, offset: { x: 5, y: -5 }, rotation: 45 },
     { value: volume,    goal: volumeGoal,   color: '#BDB5D5', size: 120, offset: { x: -3, y: 3 }, rotation: -30 }
   ];
@@ -100,7 +100,7 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
         </p>
         <p
           className="text-[10px] uppercase tracking-[0.35em]"
-          style={{ fontWeight: 400, fontFamily: 'Montserrat, sans-serif', color: '#000000' }}
+          style={{ fontWeight: 400, fontFamily: 'Montserrat, sans-serif', color: isDarkMode ? '#FFFFFF' : '#000000' }}
         >
           Complete
         </p>
