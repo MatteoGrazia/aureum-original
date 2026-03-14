@@ -355,8 +355,8 @@ export default function Dashboard() {
             <div className="flex items-baseline justify-between text-center">
               <div>
                 <p 
-                  className="text-xl"
-                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500, color: '#8ECAE6' }}
+                  className="text-xl text-white"
+                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
                 >
                   {maintenanceCalories}
                 </p>
@@ -400,7 +400,7 @@ export default function Dashboard() {
               <span className="text-[#D4AF37]/60 text-base">=</span>
               <div>
                 <p 
-                  className={`text-xl ${remainingCalories >= 0 ? 'text-[#D4AF37]' : 'text-red-400'}`}
+                  className="text-xl text-white"
                   style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
                 >
                   {remainingCalories}
