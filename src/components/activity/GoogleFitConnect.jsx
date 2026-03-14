@@ -8,10 +8,21 @@ import GoldButton from '@/components/ui/GoldButton';
 export default function GoogleFitConnect({ isConnected, onSyncComplete }) {
   const [isLoading, setIsLoading] = useState(false);
   const [lastSyncTime, setLastSyncTime] = useState(null);
+  const [showReconnect, setShowReconnect] = useState(false);
+
+  // Listen for token expiration events
+  useEffect(() => {
+    const handleTokenExpired = () => {
+      setShowReconnect(true);
+    };
+    
+    window.addEventListener('googleFitTokenExpired', handleTokenExpired);
+    return () => window.removeEventListener('googleFitTokenExpired', handleTokenExpired);
+  }, []);
 
   // Auto-sync on mount and periodically if connected
   useEffect(() => {
-    if (isConnected) {
+    if (isConnected && !showReconnect) {
       handleSync();
       
       // Set up periodic sync every 5 minutes
@@ -21,7 +32,7 @@ export default function GoogleFitConnect({ isConnected, onSyncComplete }) {
       
       return () => clearInterval(intervalId);
     }
-  }, [isConnected]);
+  }, [isConnected, showReconnect]);
 
   const handleConnect = async () => {
     try {
@@ -37,6 +48,11 @@ export default function GoogleFitConnect({ isConnected, onSyncComplete }) {
     }
   };
 
+  const handleReconnect = async () => {
+    setShowReconnect(false);
+    await handleConnect();
+  };
+
   const handleSync = async () => {
     try {
       setIsLoading(true);
@@ -47,17 +63,28 @@ export default function GoogleFitConnect({ isConnected, onSyncComplete }) {
         // Notify Dashboard and Activity page to refetch
         window.dispatchEvent(new CustomEvent('googleFitSynced'));
         onSyncComplete?.();
+      } else if (response.data.needsReauth) {
+        // Token expired - trigger reconnection
+        window.dispatchEvent(new CustomEvent('googleFitTokenExpired'));
+        onSyncComplete?.();
       } else {
         console.error('Sync failed:', response.data);
       }
     } catch (error) {
-      console.error('Failed to sync Google Fit data:', error);
+      // Check if it's an auth error (401)
+      if (error.response?.status === 401 || error.response?.data?.needsReauth) {
+        window.dispatchEvent(new CustomEvent('googleFitTokenExpired'));
+        onSyncComplete?.();
+      } else {
+        console.error('Failed to sync Google Fit data:', error);
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
-  if (!isConnected) {
+  // Show reconnect prompt if token expired
+  if (showReconnect || !isConnected) {
     return (
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -74,19 +101,22 @@ export default function GoogleFitConnect({ isConnected, onSyncComplete }) {
               />
             </div>
             <h3 className="text-white mb-2" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>
-              Connect Google Fit
+              {showReconnect ? '⚠️ Reconnect Google Fit' : 'Connect Google Fit'}
             </h3>
             <p className="text-white/60 text-sm mb-4">
-              Sync your step data directly from your device via Google Fit to keep Aureum updated.
+              {showReconnect 
+                ? 'Your Google Fit connection was interrupted. Please reconnect to resume step tracking.'
+                : 'Sync your step data directly from your device via Google Fit to keep Aureum updated.'
+              }
             </p>
           </div>
           <GoldButton 
-            onClick={handleConnect} 
+            onClick={showReconnect ? handleReconnect : handleConnect} 
             disabled={isLoading}
             className="w-full flex items-center justify-center gap-2"
           >
             <Check className="w-4 h-4" strokeWidth={2} />
-            {isLoading ? 'Connecting...' : 'Connect Google Fit'}
+            {isLoading ? 'Connecting...' : showReconnect ? 'Reconnect Google Fit' : 'Connect Google Fit'}
           </GoldButton>
         </VoidCard>
       </motion.div>

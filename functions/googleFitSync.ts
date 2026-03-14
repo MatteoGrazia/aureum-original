@@ -44,6 +44,7 @@ Deno.serve(async (req) => {
       authUrl.searchParams.set('response_type', 'code');
       authUrl.searchParams.set('scope', SCOPES.join(' '));
       authUrl.searchParams.set('access_type', 'offline');
+      authUrl.searchParams.set('prompt', 'consent');
 
       return Response.json({ 
         authUrl: authUrl.toString(),
@@ -79,10 +80,14 @@ Deno.serve(async (req) => {
       if (profiles.length > 0) {
         await base44.entities.UserProfile.update(profiles[0].id, {
           google_fit_refresh_token: tokenData.refresh_token,
+          step_tracking_enabled: true,
+          permissions_requested: true,
         });
       } else {
         await base44.entities.UserProfile.create({
           google_fit_refresh_token: tokenData.refresh_token,
+          step_tracking_enabled: true,
+          permissions_requested: true,
         });
       }
 
@@ -117,6 +122,18 @@ Deno.serve(async (req) => {
       const refreshData = await refreshResponse.json();
       
       if (!refreshData.access_token) {
+        // Token is invalid - clear it from UserProfile and mark as disconnected
+        if (refreshData.error === 'invalid_grant' || refreshResponse.status === 401) {
+          await base44.entities.UserProfile.update(profiles[0].id, {
+            google_fit_refresh_token: null,
+            step_tracking_enabled: false,
+          });
+          return Response.json({ 
+            error: 'Token expired or revoked', 
+            needsReauth: true,
+            message: 'Please reconnect Google Fit to resume step tracking'
+          }, { status: 401 });
+        }
         return Response.json({ error: 'Failed to refresh access token', details: refreshData }, { status: 400 });
       }
 
@@ -154,6 +171,19 @@ Deno.serve(async (req) => {
       const stepData = await stepDataResponse.json();
       
       if (stepData.error) {
+        // Check for authentication errors from Google Fit API
+        if (stepData.error.code === 401 || stepData.error.status === 'UNAUTHENTICATED') {
+          await base44.entities.UserProfile.update(profiles[0].id, {
+            google_fit_refresh_token: null,
+            step_tracking_enabled: false,
+          });
+          return Response.json({ 
+            error: 'Authentication failed', 
+            needsReauth: true,
+            message: 'Google Fit connection lost. Please reconnect.',
+            details: stepData.error 
+          }, { status: 401 });
+        }
         return Response.json({ error: 'Google Fit API error', details: stepData.error }, { status: 400 });
       }
 
