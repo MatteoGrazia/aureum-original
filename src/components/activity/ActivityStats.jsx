@@ -3,29 +3,63 @@ import { motion } from 'framer-motion';
 import { Activity, Coffee, Flame, Clock } from 'lucide-react';
 import VoidCard from '@/components/ui/VoidCard';
 
-export default function ActivityStats({ activeMinutes, sedentaryMinutes, caloriesBurned }) {
-  const totalMinutes = activeMinutes + sedentaryMinutes;
-  const activePercentage = totalMinutes > 0 ? (activeMinutes / totalMinutes) * 100 : 0;
+export default function ActivityStats({ activeMinutes, sedentaryMinutes, caloriesBurned, steps, profile }) {
+  // Calculate activity from steps
+  const calculatedActiveMinutes = Math.round((steps || 0) / 100); // ~100 steps = 1 min activity
+  const finalActiveMinutes = Math.max(activeMinutes, calculatedActiveMinutes);
+  
+  const totalDayMinutes = 1440; // 24 hours
+  const finalSedentaryMinutes = Math.max(0, totalDayMinutes - finalActiveMinutes);
+  const totalMinutes = finalActiveMinutes + finalSedentaryMinutes;
+  const activePercentage = totalMinutes > 0 ? (finalActiveMinutes / totalMinutes) * 100 : 0;
+  
+  // Calculate calories burned based on profile
+  const calculateCaloriesBurned = () => {
+    if (!profile || !steps) return caloriesBurned || 0;
+    
+    const weight = profile.current_weight || 70;
+    const height = profile.height || 170;
+    const age = profile.birth_date ? new Date().getFullYear() - new Date(profile.birth_date).getFullYear() : 30;
+    const gender = profile.gender || 'male';
+    
+    // BMR using Mifflin-St Jeor
+    let bmr = 0;
+    if (gender === 'male') {
+      bmr = 10 * weight + 6.25 * height - 5 * age + 5;
+    } else {
+      bmr = 10 * weight + 6.25 * height - 5 * age - 161;
+    }
+    
+    // Calories burned throughout the day (BMR spread over 24h)
+    const baseDailyBurn = Math.round(bmr / 24 * (totalMinutes / 60));
+    
+    // Additional calories from steps (roughly 0.04 kcal per step for average person)
+    const stepCalories = Math.round(steps * 0.04);
+    
+    return baseDailyBurn + stepCalories;
+  };
+  
+  const finalCaloriesBurned = calculateCaloriesBurned();
 
   const stats = [
     {
       icon: Activity,
       label: 'Active',
-      value: activeMinutes,
+      value: finalActiveMinutes,
       unit: 'min',
       color: '#B2D8D8'
     },
     {
       icon: Coffee,
       label: 'Sedentary',
-      value: sedentaryMinutes,
+      value: finalSedentaryMinutes,
       unit: 'min',
       color: '#E5E5E7'
     },
     {
       icon: Flame,
       label: 'Burned',
-      value: caloriesBurned,
+      value: finalCaloriesBurned,
       unit: 'kcal',
       color: '#FFDAB9'
     }
@@ -36,7 +70,7 @@ export default function ActivityStats({ activeMinutes, sedentaryMinutes, calorie
       {/* Activity Balance Bar */}
       <VoidCard>
         <h3 
-          className="text-[10px] uppercase tracking-[0.3em] text-[#D4AF37] mb-4"
+          className="text-[10px] uppercase tracking-[0.3em] text-white mb-4"
           style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
         >
           Activity Balance

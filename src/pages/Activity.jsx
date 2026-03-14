@@ -177,8 +177,10 @@ export default function Activity() {
       >
         <ActivityStats
           activeMinutes={dailyActivity?.active_minutes || 0}
-          sedentaryMinutes={dailyActivity?.sedentary_minutes || 480}
+          sedentaryMinutes={dailyActivity?.sedentary_minutes || 0}
           caloriesBurned={dailyActivity?.calories_burned || 0}
+          steps={dailyActivity?.steps || 0}
+          profile={profile}
         />
       </motion.div>
 
