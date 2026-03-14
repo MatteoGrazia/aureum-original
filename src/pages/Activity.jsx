@@ -369,7 +369,8 @@ export default function Activity() {
                         <motion.div 
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
-                          className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-[#D4AF37] text-[#080808] px-2 py-1 rounded text-[9px] whitespace-nowrap font-medium z-10"
+                          className="absolute -top-10 left-1/2 transform -translate-x-1/2 px-2 py-1 rounded text-[9px] whitespace-nowrap font-medium z-10"
+                          style={{ border: '1px solid #D4AF37', background: 'transparent', color: 'white' }}
                         >
                           {steps.toLocaleString()}
                         </motion.div>
