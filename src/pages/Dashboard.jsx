@@ -209,7 +209,7 @@ export default function Dashboard() {
           
           {/* Muted Bronze Date */}
           <p 
-            className="text-[#D4AF37] text-[11px] uppercase tracking-[0.25em]"
+            className="text-white text-[11px] uppercase tracking-[0.25em]"
             style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
           >
             {format(new Date(), 'EEEE, MMMM d')}
