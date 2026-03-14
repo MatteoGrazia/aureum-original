@@ -29,7 +29,7 @@ export default function MacroHeatmap({ protein, carbs, fat, goals }) {
 
   return (
     <GlassCard className="p-5">
-      <h3 className="text-xs uppercase tracking-widest text-[#D4AF37] mb-4">Macro Breakdown</h3>
+      <h3 className="text-xs uppercase tracking-widest text-white mb-4">Macro Breakdown</h3>
       
       <div className="space-y-4">
         {macros.map((macro, index) => {
