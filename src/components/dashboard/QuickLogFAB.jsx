@@ -445,7 +445,7 @@ export default function QuickLogFAB({ onUpdate }) {
                 <motion.path
                   key={i}
                   d={arc.path}
-                  stroke={isDarkMode ? '#FFFFFF' : '#B8860B'}
+                  stroke={isDarkMode ? '#FFFFFF' : '#FFFFFF'}
                   strokeWidth={arc.strokeWidth}
                   fill="none"
                   style={{ willChange: 'opacity' }}
