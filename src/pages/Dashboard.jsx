@@ -376,8 +376,8 @@ export default function Dashboard() {
                   {activityCalories}
                 </p>
                 <p 
-                  className="text-[10px] text-white/40 uppercase tracking-wider mt-1"
-                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}
+                  className="text-[10px] uppercase tracking-wider mt-1"
+                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400, color: '#F4A261' }}
                 >
                   Active
                 </p>
