@@ -208,6 +208,33 @@ export default function Nutrition() {
     refetch();
   };
 
+  // Log multiple foods at once (from meal scan / voice log)
+  const handleLogMultipleFoods = async (foods) => {
+    for (const food of foods) {
+      await base44.entities.FoodLog.create({
+        date: dateStr,
+        meal_type: selectedMeal,
+        food_name: food.name,
+        brand: food.brand || '',
+        serving_size: 1,
+        serving_unit: food.serving_description || 'serving',
+        calories: Math.round(food.calories || 0),
+        protein: Math.round(food.protein || 0),
+        carbs: Math.round(food.carbs || 0),
+        fat: Math.round(food.fat || 0),
+        fiber: Math.round(food.fiber || 0),
+      });
+    }
+    refetch();
+  };
+
+  const handleToolbarAction = (action) => {
+    if (action === 'scan_meal') setShowMealScan(true);
+    else if (action === 'voice_log') setShowVoiceLog(true);
+    else if (action === 'quick_add') setShowQuickAdd(true);
+    else if (action === 'create_food') setShowCreateFood(true);
+  };
+
   const handleWaterAdd = async () => {
     try {
       const waterUnit = profile?.water_unit || 'liters';
