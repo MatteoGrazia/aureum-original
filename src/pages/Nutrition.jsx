@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Scan, ChevronLeft, ChevronRight, Trash2, Coffee, Sun, Moon, Cookie, Loader2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Trash2, Coffee, Sun, Moon, Cookie, Loader2 } from 'lucide-react';
 import VoidCard from '@/components/ui/VoidCard';
 import VoidBackground from '@/components/dashboard/VoidBackground';
 import GoldButton from '@/components/ui/GoldButton';
@@ -13,6 +13,11 @@ import MacroHeatmap from '@/components/nutrition/MacroHeatmap';
 import WaterTracker from '@/components/nutrition/WaterTracker';
 import RecentMeals from '@/components/nutrition/RecentMeals';
 import CopyFromYesterdayButton from '@/components/nutrition/CopyFromYesterdayButton';
+import MealScanModal from '@/components/nutrition/MealScanModal';
+import VoiceLogModal from '@/components/nutrition/VoiceLogModal';
+import QuickAddModal from '@/components/nutrition/QuickAddModal';
+import CreateFoodModal from '@/components/nutrition/CreateFoodModal';
+import NutritionToolbar from '@/components/nutrition/NutritionToolbar';
 
 const mealIcons = {
   breakfast: Coffee,
