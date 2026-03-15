@@ -5,6 +5,7 @@ import GlassCard from '@/components/ui/GlassCard';
 import { useTheme } from '@/components/shared/ThemeContext';
 
 export default function WeightGraph({ data }) {
+  const { isDarkMode } = useTheme();
   const chartData = data
     .sort((a, b) => new Date(a.date) - new Date(b.date))
     .slice(-30)
