@@ -414,29 +414,22 @@ export default function ExercisePicker({ exercises, onSelect, onClose, mode = 'a
                 background: 'rgba(255,255,255,0.03)'
               }}>
                 <img
-                  src={isDarkMode ? (selected.image_url_dark || selected.image_url || getWgerAnatomyUrl(selected.muscle_group)) : (selected.image_url || getWgerAnatomyUrl(selected.muscle_group))}
-                  alt={selected.name}
-                  loading="lazy"
-                  style={{ 
-                    width: '100%', 
-                    height: '100%', 
-                    objectFit: 'cover', 
-                    objectPosition: 'center',
-                    filter: isDarkMode ? 'invert(1) brightness(1.1)' : 'none'
-                  }}
-                  onError={e => { e.target.style.display = 'none'; e.target.nextSibling && (e.target.nextSibling.style.display = 'flex'); }}
-                  style={{ 
-                    width: '100%', 
-                    height: '100%', 
-                    objectFit: 'contain',
-                    filter: isDarkMode
-                      ? 'invert(1) sepia(1) saturate(0.4) hue-rotate(320deg) brightness(1.15)'
-                      : 'invert(0.85) sepia(0.5) saturate(0.6) hue-rotate(310deg) brightness(1.05)'
-                  }}
-                  />
-                  <div style={{ display: 'none', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' }}>
-                  <ExerciseIcon name={selected.name} muscle={selected.muscle_group} size={32} color={'#FFDAB9'} />
-                  </div>
+                    src={isDarkMode ? (selected.image_url_dark || selected.image_url || getWgerAnatomyUrl(selected.muscle_group)) : (selected.image_url || getWgerAnatomyUrl(selected.muscle_group))}
+                    alt={selected.name}
+                    loading="lazy"
+                    style={{ 
+                      width: '100%', 
+                      height: '100%', 
+                      objectFit: 'contain',
+                      filter: isDarkMode
+                        ? 'invert(1) sepia(1) saturate(0.4) hue-rotate(320deg) brightness(1.15)'
+                        : 'invert(0.85) sepia(0.5) saturate(0.6) hue-rotate(310deg) brightness(1.05)'
+                    }}
+                    onError={e => { e.target.style.display = 'none'; e.target.parentNode.querySelector('.fallback-icon') && (e.target.parentNode.querySelector('.fallback-icon').style.display = 'flex'); }}
+                   />
+                   <div className="fallback-icon" style={{ display: 'none', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', position: 'absolute', top: 0, left: 0 }}>
+                     <ExerciseIcon name={selected.name} muscle={selected.muscle_group} size={32} color={'#FFDAB9'} />
+                   </div>
               </div>
 
               <div className="flex-1 min-w-0">
