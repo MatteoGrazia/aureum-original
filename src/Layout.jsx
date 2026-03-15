@@ -176,6 +176,28 @@ function LayoutInner({ children, currentPageName }) {
         html[data-theme="light"] .text-white\\/40 {
           color: rgba(29,29,31,0.55) !important;
         }
+
+        /* Dashboard & page section headers */
+        html[data-theme="light"] h1,
+        html[data-theme="light"] h2,
+        html[data-theme="light"] h3,
+        html[data-theme="light"] p,
+        html[data-theme="light"] span {
+          /* only override elements that still have dark-mode white color */
+        }
+
+        /* Explicit white text in inline styles → charcoal in light mode */
+        html[data-theme="light"] [style*="color: #FFFFFF"],
+        html[data-theme="light"] [style*="color: white"],
+        html[data-theme="light"] [style*="color: rgb(255, 255, 255)"] {
+          color: #1D1D1F !important;
+        }
+        html[data-theme="light"] [style*="color: rgba(255,255,255,0.4)"] { color: rgba(29,29,31,0.4) !important; }
+        html[data-theme="light"] [style*="color: rgba(255,255,255,0.3)"] { color: rgba(29,29,31,0.3) !important; }
+        html[data-theme="light"] [style*="color: rgba(255,255,255,0.2)"] { color: rgba(29,29,31,0.2) !important; }
+        html[data-theme="light"] [style*="color: rgba(255,255,255,0.35)"] { color: rgba(29,29,31,0.35) !important; }
+        html[data-theme="light"] [style*="color: rgba(255,255,255,0.5)"] { color: rgba(29,29,31,0.5) !important; }
+        html[data-theme="light"] [style*="color: rgba(255,255,255,0.6)"] { color: rgba(29,29,31,0.6) !important; }
       `}</style>
 
       {/* ── Theme Toggle: fixed top-right, 48×48 tap target ── */}
