@@ -434,8 +434,8 @@ export default function Nutrition() {
                         onClick={() => setSelectedMeal(meal)}
                         className="py-2 px-1 rounded-xl flex flex-col items-center justify-center gap-1 transition-all"
                         style={{
-                          background: selectedMeal === meal ? 'rgba(212, 175, 55, 0.20)' : 'rgba(255,255,255,0.05)',
-                          border: selectedMeal === meal ? '0.5px solid rgba(212, 175, 55, 0.5)' : '0.5px solid rgba(229, 229, 231, 0.1)'
+                          background: selectedMeal === meal ? 'rgba(255, 218, 185, 0.15)' : 'rgba(255,255,255,0.05)',
+                          border: selectedMeal === meal ? '0.5px solid rgba(255, 218, 185, 0.5)' : '0.5px solid rgba(229, 229, 231, 0.1)'
                         }}
                       >
                         <Icon 
