@@ -33,7 +33,7 @@ export default function WeightGraph({ data }) {
 
   return (
     <GlassCard className="p-5">
-      <h3 className="text-xs uppercase tracking-widest mb-4" style={{ color: '#FFFFFF' }}>Weight Progress</h3>
+      <h3 className="text-xs uppercase tracking-widest mb-4" style={{ color: isDarkMode ? '#FFFFFF' : '#1D1D1F' }}>Weight Progress</h3>
       
       {chartData.length > 1 ? (
         <div className="h-48">
