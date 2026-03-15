@@ -297,6 +297,29 @@ export default function Nutrition() {
           handleSelectFood(food);
         }}
       />
+      <MealScanModal
+        isOpen={showMealScan}
+        onClose={() => setShowMealScan(false)}
+        onFoodsSelected={handleLogMultipleFoods}
+        selectedMeal={selectedMeal}
+      />
+      <VoiceLogModal
+        isOpen={showVoiceLog}
+        onClose={() => setShowVoiceLog(false)}
+        onFoodsSelected={handleLogMultipleFoods}
+        selectedMeal={selectedMeal}
+      />
+      <QuickAddModal
+        isOpen={showQuickAdd}
+        onClose={() => setShowQuickAdd(false)}
+        onAdd={handleSelectFood}
+        selectedMeal={selectedMeal}
+      />
+      <CreateFoodModal
+        isOpen={showCreateFood}
+        onClose={() => setShowCreateFood(false)}
+        onCreated={handleSelectFood}
+      />
 
       <div className="relative z-10 p-6" style={{ paddingBottom: 'calc(120px + env(safe-area-inset-bottom))' }}>
         {/* Header with Date Navigation */}
