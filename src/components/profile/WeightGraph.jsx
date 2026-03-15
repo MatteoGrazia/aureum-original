@@ -2,6 +2,7 @@ import React from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { format } from 'date-fns';
 import GlassCard from '@/components/ui/GlassCard';
+import { useTheme } from '@/components/shared/ThemeContext';
 
 export default function WeightGraph({ data }) {
   const chartData = data
