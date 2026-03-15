@@ -146,12 +146,16 @@ function LazyAnatomical({ src, alt, fallback, customSrc, customSrcDark, isDarkMo
 
   const imageUrl = isDarkMode ? (customSrcDark || customSrc || src) : (customSrc || src);
 
-  // Peach filter: invert to get white silhouette, then tint it peach (#FFDAB9)
-  // Dark: invert(1) gives white body, then hue-rotate+sepia to warm peach for highlighted muscle
-  // Light: same peach tint but slightly warmer
-  const peachFilter = isDarkMode
-    ? 'invert(1) sepia(1) saturate(0.4) hue-rotate(320deg) brightness(1.15)'
-    : 'invert(0.85) sepia(0.5) saturate(0.6) hue-rotate(310deg) brightness(1.05)';
+  // Light purple (#BDB5D5) filter for highlighted muscles.
+  // wger anatomy images: white background, black sketch lines, red highlighted muscle.
+  // Dark mode: invert(1) → black bg, white sketch, cyan highlight → then shift to light purple
+  // Light mode: keep white bg + black sketch (no invert), shift red highlight → light purple
+  const darkFilter = 'invert(1) sepia(1) saturate(1.2) hue-rotate(200deg) brightness(1.1)';
+  // Light mode: only recolor the red highlight (red→purple) without inverting background
+  // Use hue-rotate to shift red (0°) → purple (~270°), with sepia+saturate to keep it muted/light
+  const lightFilter = 'sepia(0.6) saturate(1.8) hue-rotate(200deg) brightness(1.05)';
+
+  const imgFilter = isDarkMode ? darkFilter : lightFilter;
 
   return (
     <div ref={ref} style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -162,7 +166,7 @@ function LazyAnatomical({ src, alt, fallback, customSrc, customSrcDark, isDarkMo
               height: '100%', 
               objectFit: 'contain', 
               objectPosition: 'center',
-              filter: peachFilter
+              filter: imgFilter
             }} />
         : err ? fallback : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{fallback}</div>}
     </div>
