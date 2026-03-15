@@ -432,7 +432,7 @@ export default function ExercisePicker({ exercises, onSelect, onClose, mode = 'a
                     onError={e => { e.target.style.display = 'none'; e.target.parentNode.querySelector('.fallback-icon') && (e.target.parentNode.querySelector('.fallback-icon').style.display = 'flex'); }}
                    />
                    <div className="fallback-icon" style={{ display: 'none', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', position: 'absolute', top: 0, left: 0 }}>
-                     <ExerciseIcon name={selected.name} muscle={selected.muscle_group} size={32} color={'#FFDAB9'} />
+                     <ExerciseIcon name={selected.name} muscle={selected.muscle_group} size={32} color={'#BDB5D5'} />
                    </div>
               </div>
 
