@@ -26,6 +26,9 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
         const progress = Math.min(orbital.value / orbital.goal * 100, 100);
         const circumference = orbital.size * Math.PI;
         const strokeDashoffset = circumference - (progress / 100 * circumference);
+        const glowId = `glow-${index}`;
+        const gradId = `grad-${index}`;
+        const r = (orbital.size - 4) / 2;
 
         return (
           <div
@@ -39,46 +42,65 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
           >
             <svg
               className="w-full h-full"
-              style={{ transform: 'rotate(-90deg)' }}
+              style={{ transform: 'rotate(-90deg)', overflow: 'visible' }}
               viewBox={`0 0 ${orbital.size} ${orbital.size}`}
             >
               <defs>
-                <linearGradient id={`pulse-${index}`} x1="0%" y1="0%" x2="100%" y2="0%">
+                <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="0%">
                   <stop offset="0%" stopColor={orbital.color} stopOpacity={isDarkMode ? "0.1" : "0.45"} />
                   <stop offset="50%" stopColor={orbital.color} stopOpacity={isDarkMode ? "0.3" : "0.75"} />
                   <stop offset="100%" stopColor={orbital.color} stopOpacity="0.9" />
                 </linearGradient>
+                {/* Tight glow filter — stdDeviation kept very small so glow hugs the stroke */}
+                <filter id={glowId} x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur in="SourceGraphic" stdDeviation={isDarkMode ? "1.5" : "1"} result="blur" />
+                  <feComposite in="blur" in2="SourceGraphic" operator="over" />
+                </filter>
               </defs>
 
               {/* Background track */}
               <circle
                 cx={orbital.size / 2}
                 cy={orbital.size / 2}
-                r={(orbital.size - 4) / 2}
+                r={r}
                 fill="none"
                 stroke={isDarkMode ? orbital.color : 'rgba(156,126,70,0.10)'}
                 strokeWidth={isDarkMode ? "1" : "1.5"}
                 opacity={isDarkMode ? trackOpacity : 1}
               />
 
-              {/* Progress thread */}
+              {/* Progress thread — glow ring behind */}
+              {isDarkMode && (
+                <motion.circle
+                  cx={orbital.size / 2}
+                  cy={orbital.size / 2}
+                  r={r}
+                  fill="none"
+                  stroke={orbital.color}
+                  strokeWidth="4"
+                  strokeLinecap="round"
+                  strokeDasharray={circumference}
+                  initial={{ strokeDashoffset: circumference }}
+                  animate={{ strokeDashoffset }}
+                  transition={{ duration: 1.8, ease: [0.34, 1.56, 0.64, 1], delay: index * 0.12 }}
+                  opacity={0.25}
+                  filter={`url(#${glowId})`}
+                />
+              )}
+
+              {/* Progress thread — crisp visible stroke on top */}
               <motion.circle
                 cx={orbital.size / 2}
                 cy={orbital.size / 2}
-                r={(orbital.size - 4) / 2}
+                r={r}
                 fill="none"
-                stroke={isDarkMode ? `url(#pulse-${index})` : '#D4AF37'}
+                stroke={isDarkMode ? `url(#${gradId})` : '#D4AF37'}
                 strokeWidth={isDarkMode ? "1.5" : "2.5"}
                 strokeLinecap="round"
                 strokeDasharray={circumference}
                 initial={{ strokeDashoffset: circumference }}
                 animate={{ strokeDashoffset }}
                 transition={{ duration: 1.8, ease: [0.34, 1.56, 0.64, 1], delay: index * 0.12 }}
-                style={{
-                  filter: isDarkMode
-                    ? `drop-shadow(0 0 2px ${orbital.color}70)`
-                    : `drop-shadow(0 0 2px rgba(212,175,55,0.4))`
-                }}
               />
             </svg>
           </div>
