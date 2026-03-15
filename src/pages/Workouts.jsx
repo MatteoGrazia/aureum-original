@@ -437,7 +437,7 @@ export default function Workouts() {
                 backgroundClip: 'text'
               }}
             >
-              STRENGTH
+              WORKOUTS
             </h1>
             <p
               className="text-white text-[11px] uppercase tracking-[0.25em] mt-3"
