@@ -440,11 +440,11 @@ export default function Nutrition() {
                       >
                         <Icon 
                           className="w-4 h-4" 
-                          style={{ color: selectedMeal === meal ? '#D4AF37' : '#E5E5E7' }}
+                          style={{ color: selectedMeal === meal ? '#FFDAB9' : '#E5E5E7' }}
                         />
                         <span 
                           className="text-[10px] capitalize truncate w-full text-center"
-                          style={{ color: selectedMeal === meal ? '#D4AF37' : '#E5E5E7' }}
+                          style={{ color: selectedMeal === meal ? '#FFDAB9' : '#E5E5E7' }}
                         >
                           {meal}
                         </span>
