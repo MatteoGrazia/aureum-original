@@ -368,30 +368,24 @@ export default function Nutrition() {
       {/* Recent Meals */}
       <RecentMeals onSelectFood={handleSelectFood} selectedDate={selectedDate} />
 
-      {/* Search & Scan */}
+      {/* Search */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="mb-6 space-y-3"
+        className="mb-3"
       >
-        <div className="flex gap-3 items-start">
-          <div className="flex-1 min-w-0">
-            <FoodSearch onSelectFood={handleSelectFood} />
-          </div>
-          <button
-            onClick={() => setShowScanner(true)}
-            className="flex-shrink-0 rounded-xl flex items-center justify-center hover:bg-[#D4AF37]/30 transition-colors"
-            style={{
-              width: '48px',
-              height: '48px',
-              background: 'rgba(255, 218, 185, 0.2)',
-              border: '0.5px solid rgba(255, 218, 185, 0.3)'
-            }}
-          >
-            <Scan className="w-5 h-5" style={{ color: '#D4AF37' }} />
-          </button>
-        </div>
+        <FoodSearch onSelectFood={handleSelectFood} />
+      </motion.div>
+
+      {/* Nutrition Toolbar */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.25 }}
+        className="mb-6"
+      >
+        <NutritionToolbar onAction={handleToolbarAction} onOpenScanner={() => setShowScanner(true)} />
       </motion.div>
 
       {/* Selected Food Modal */}
