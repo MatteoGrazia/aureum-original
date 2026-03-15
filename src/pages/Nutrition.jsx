@@ -32,6 +32,10 @@ export default function Nutrition() {
     const params = new URLSearchParams(window.location.search);
     return params.get('openScanner') === 'true';
   });
+  const [showMealScan, setShowMealScan] = useState(false);
+  const [showVoiceLog, setShowVoiceLog] = useState(false);
+  const [showQuickAdd, setShowQuickAdd] = useState(false);
+  const [showCreateFood, setShowCreateFood] = useState(false);
   const [selectedFood, setSelectedFood] = useState(null);
   const [selectedMeal, setSelectedMeal] = useState('lunch');
   const [amount, setAmount] = useState(100);
