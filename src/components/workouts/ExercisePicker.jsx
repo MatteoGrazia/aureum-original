@@ -424,8 +424,19 @@ export default function ExercisePicker({ exercises, onSelect, onClose, mode = 'a
                     objectPosition: 'center',
                     filter: isDarkMode ? 'invert(1) brightness(1.1)' : 'none'
                   }}
-                  onError={e => { e.target.src = FALLBACK_ANATOMY; }}
-                />
+                  onError={e => { e.target.style.display = 'none'; e.target.nextSibling && (e.target.nextSibling.style.display = 'flex'); }}
+                  style={{ 
+                    width: '100%', 
+                    height: '100%', 
+                    objectFit: 'contain',
+                    filter: isDarkMode
+                      ? 'invert(1) sepia(1) saturate(0.4) hue-rotate(320deg) brightness(1.15)'
+                      : 'invert(0.85) sepia(0.5) saturate(0.6) hue-rotate(310deg) brightness(1.05)'
+                  }}
+                  />
+                  <div style={{ display: 'none', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' }}>
+                  <ExerciseIcon name={selected.name} muscle={selected.muscle_group} size={32} color={'#FFDAB9'} />
+                  </div>
               </div>
 
               <div className="flex-1 min-w-0">
