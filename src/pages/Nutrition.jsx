@@ -708,7 +708,7 @@ export default function Nutrition() {
         {mealGroups.map(({ type, logs }) => {
           const Icon = mealIcons[type];
           const mealCalories = logs.reduce((sum, log) => sum + (log.calories || 0), 0);
-          const iconColors = { breakfast: '#D4AF37', lunch: '#D4AF37', dinner: '#D4AF37', snack: '#D4AF37' };
+          const iconColors = { breakfast: '#FFDAB9', lunch: '#FFDAB9', dinner: '#FFDAB9', snack: '#FFDAB9' };
 
           return (
             <VoidCard key={type}>
