@@ -146,6 +146,13 @@ function LazyAnatomical({ src, alt, fallback, customSrc, customSrcDark, isDarkMo
 
   const imageUrl = isDarkMode ? (customSrcDark || customSrc || src) : (customSrc || src);
 
+  // Peach filter: invert to get white silhouette, then tint it peach (#FFDAB9)
+  // Dark: invert(1) gives white body, then hue-rotate+sepia to warm peach for highlighted muscle
+  // Light: same peach tint but slightly warmer
+  const peachFilter = isDarkMode
+    ? 'invert(1) sepia(1) saturate(0.4) hue-rotate(320deg) brightness(1.15)'
+    : 'invert(0.85) sepia(0.5) saturate(0.6) hue-rotate(310deg) brightness(1.05)';
+
   return (
     <div ref={ref} style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       {shouldLoad && !err
@@ -153,11 +160,11 @@ function LazyAnatomical({ src, alt, fallback, customSrc, customSrcDark, isDarkMo
             style={{ 
               width: '100%', 
               height: '100%', 
-              objectFit: 'cover', 
+              objectFit: 'contain', 
               objectPosition: 'center',
-              filter: isDarkMode ? 'invert(1) brightness(1.1)' : 'none'
+              filter: peachFilter
             }} />
-        : err ? fallback : null}
+        : err ? fallback : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{fallback}</div>}
     </div>
   );
 }
