@@ -91,18 +91,18 @@ export default function WeightGraph({ data }) {
       {chartData.length > 1 && (
         <div className="flex justify-between mt-4 pt-4 border-t border-white/10">
           <div className="text-center">
-            <p className="text-white text-lg">{chartData[0]?.weight}</p>
-            <p className="text-white/30 text-[10px] uppercase">Start</p>
+            <p className="text-lg" style={{ color: isDarkMode ? '#FFFFFF' : '#1D1D1F' }}>{chartData[0]?.weight}</p>
+            <p className="text-[10px] uppercase" style={{ color: isDarkMode ? 'rgba(255,255,255,0.3)' : 'rgba(29,29,31,0.35)' }}>Start</p>
           </div>
           <div className="text-center">
             <p className="text-[#D4AF37] text-lg">{chartData[chartData.length - 1]?.weight}</p>
-            <p className="text-white/30 text-[10px] uppercase">Current</p>
+            <p className="text-[10px] uppercase" style={{ color: isDarkMode ? 'rgba(255,255,255,0.3)' : 'rgba(29,29,31,0.35)' }}>Current</p>
           </div>
           <div className="text-center">
             <p className={`text-lg ${chartData[chartData.length - 1]?.weight - chartData[0]?.weight < 0 ? 'text-green-400' : 'text-red-400'}`}>
               {(chartData[chartData.length - 1]?.weight - chartData[0]?.weight).toFixed(1)}
             </p>
-            <p className="text-white/30 text-[10px] uppercase">Change</p>
+            <p className="text-[10px] uppercase" style={{ color: isDarkMode ? 'rgba(255,255,255,0.3)' : 'rgba(29,29,31,0.35)' }}>Change</p>
           </div>
         </div>
       )}
