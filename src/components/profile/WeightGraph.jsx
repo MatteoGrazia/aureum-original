@@ -58,14 +58,14 @@ export default function WeightGraph({ data }) {
                 dataKey="date" 
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 10 }}
+                tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.3)' : 'rgba(29,29,31,0.4)', fontSize: 10 }}
                 interval="preserveStartEnd"
               />
               <YAxis 
                 domain={[minWeight, maxWeight]}
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 10 }}
+                tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.3)' : 'rgba(29,29,31,0.4)', fontSize: 10 }}
                 width={40}
               />
               <Tooltip content={<CustomTooltip />} />
