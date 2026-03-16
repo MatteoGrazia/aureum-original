@@ -305,45 +305,50 @@ export default function Activity() {
                     style={{ bottom: '133px' }}
                   />
                   
-                  {weeklyActivity.slice(-7).reverse().map((day, index) => {
-                    const steps = day?.steps || 0;
+                  {Array.from({ length: 7 }, (_, i) => {
+                    const d = new Date(startOfWeek);
+                    d.setDate(startOfWeek.getDate() + i);
+                    const dateStr = format(d, 'yyyy-MM-dd');
+                    const dayData = weeklyActivity.find(a => a.date === dateStr);
+                    const steps = dayData?.steps || 0;
                     const heightPx = stepGoal > 0 ? Math.min((steps / stepGoal) * 133, 240) : 0;
-                    const isToday = day?.date === today;
-                    const isSelected = selectedDay?.id === day?.id;
+                    const isToday = dateStr === today;
+                    const isSelected = selectedDay?.date === dateStr;
                     const hitGoal = steps >= stepGoal;
-                    
+                    const isFuture = d > new Date();
+
                     return (
-                      <div key={day?.id || index} className="flex flex-col items-center flex-1">
+                      <div key={dateStr} className="flex flex-col items-center flex-1">
                         <div className="w-full h-full flex items-end justify-center relative">
                           <motion.div
-                               initial={{ height: 0 }}
-                               animate={{ height: `${heightPx}px` }}
-                               transition={{ delay: index * 0.05, duration: 0.4 }}
-                               onClick={() => setSelectedDay(isSelected ? null : day)}
-                               className={`w-5 rounded-t-md cursor-pointer transition-all relative`}
-                               style={{ 
-                                 minHeight: heightPx > 0 ? '8px' : '4px',
-                                 boxShadow: (isSelected || isToday) ? '0 0 12px rgba(142,202,230,0.5)' : 'none',
-                                 background: 'linear-gradient(to top, #8ECAE6, rgba(255,255,255,0.9))'
-                               }}
-                             >
-                            {hitGoal && (
+                            initial={{ height: 0 }}
+                            animate={{ height: isFuture ? '4px' : `${Math.max(heightPx, steps > 0 ? 8 : 4)}px` }}
+                            transition={{ delay: i * 0.05, duration: 0.4 }}
+                            onClick={() => !isFuture && setSelectedDay(isSelected ? null : dayData || { date: dateStr, steps: 0 })}
+                            className="w-5 rounded-t-md cursor-pointer transition-all relative"
+                            style={{
+                              boxShadow: (isSelected || isToday) ? '0 0 12px rgba(142,202,230,0.5)' : 'none',
+                              background: isFuture ? 'rgba(255,255,255,0.08)' : 'linear-gradient(to top, #8ECAE6, rgba(255,255,255,0.9))',
+                              opacity: isFuture ? 0.3 : 1,
+                            }}
+                          >
+                            {hitGoal && !isFuture && (
                               <motion.div
-                                 initial={{ scale: 0 }}
-                                 animate={{ scale: 1 }}
-                                 transition={{ delay: index * 0.05 + 0.3, type: "spring" }}
-                                 className="absolute -top-5 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full flex items-center justify-center"
-                                 style={{ boxShadow: '0 2px 8px rgba(142,202,230,0.4)', background: '#8ECAE6' }}
-                               >
-                                 <svg className="w-2.5 h-2.5 text-[#080808]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                                 </svg>
-                               </motion.div>
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                transition={{ delay: i * 0.05 + 0.3, type: 'spring' }}
+                                className="absolute -top-5 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full flex items-center justify-center"
+                                style={{ boxShadow: '0 2px 8px rgba(142,202,230,0.4)', background: '#8ECAE6' }}
+                              >
+                                <svg className="w-2.5 h-2.5 text-[#080808]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                </svg>
+                              </motion.div>
                             )}
                           </motion.div>
                         </div>
                         <p className={`text-[11px] mt-2 ${isSelected || isToday ? 'text-[#D4AF37] font-medium' : 'text-white/40'}`}>
-                          {format(new Date(day?.date || new Date()), 'EEE')}
+                          {format(d, 'EEE')}
                         </p>
                       </div>
                     );
