@@ -157,9 +157,19 @@ export default function CreateFoodModal({ isOpen, onClose, onCreated }) {
                     <label className="text-[10px] uppercase tracking-[0.15em] mb-1.5 block" style={{ color: textMuted, fontFamily: 'Montserrat, sans-serif' }}>Unit *</label>
                     <select value={form.serving_unit} onChange={e => set('serving_unit', e.target.value)}
                       className="w-full px-4 py-3 rounded-xl outline-none text-sm"
-                      style={{ background: inputBg, border: `0.5px solid ${inputBorder}`, color: textPrimary, fontFamily: 'Montserrat, sans-serif', WebkitAppearance: 'none' }}>
+                      style={{
+                        background: isDarkMode ? 'rgba(18,14,5,0.98)' : 'rgba(255,252,245,0.98)',
+                        border: `0.5px solid ${inputBorder}`,
+                        color: isDarkMode ? '#D4AF37' : '#9C7E46',
+                        fontFamily: 'Montserrat, sans-serif',
+                        WebkitAppearance: 'none',
+                        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23D4AF37' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
+                        backgroundRepeat: 'no-repeat',
+                        backgroundPosition: 'right 12px center',
+                        paddingRight: '36px'
+                      }}>
                       {['g', 'ml', 'oz', 'cup', 'tbsp', 'tsp', 'portion', 'piece', 'slice', 'container'].map(u => (
-                        <option key={u} value={u}>{u}</option>
+                        <option key={u} value={u} style={{ background: isDarkMode ? 'rgba(18,14,5,0.98)' : '#fff', color: isDarkMode ? '#D4AF37' : '#1D1D1F' }}>{u}</option>
                       ))}
                     </select>
                   </div>
