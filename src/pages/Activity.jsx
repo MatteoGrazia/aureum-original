@@ -487,37 +487,35 @@ export default function Activity() {
           )}
 
           {/* Dynamic Stats */}
-          {(
-            <div className="grid grid-cols-3 gap-4 pt-4 border-t border-white/10">
-              <div className="text-center">
-                <div className="flex items-center justify-center gap-1 mb-1">
-                  <Target className="w-3 h-3 text-[#D4AF37]" strokeWidth={1.5} />
-                </div>
-                <p className="text-white text-lg" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>
-                  {(timeView === 'week' ? weeklySteps : timeView === 'month' ? monthlySteps : yearlySteps).toLocaleString()}
-                </p>
-                <p className="text-white/30 text-[10px] uppercase tracking-wider" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>Total Steps</p>
+          <div className="grid grid-cols-3 gap-4 pt-4 border-t border-white/10">
+            <div className="text-center">
+              <div className="flex items-center justify-center gap-1 mb-1">
+                <Target className="w-3 h-3 text-[#D4AF37]" strokeWidth={1.5} />
               </div>
-              <div className="text-center">
-                <div className="flex items-center justify-center gap-1 mb-1">
-                  <TrendingUp className="w-3 h-3 text-[#D4AF37]" strokeWidth={1.5} />
-                </div>
-                <p className="text-white text-lg" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>
-                  {(timeView === 'week' ? weeklyAverage : timeView === 'month' ? monthlyAverage : yearlyAverage).toLocaleString()}
-                </p>
-                <p className="text-white/30 text-[10px] uppercase tracking-wider" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>Daily Avg</p>
-              </div>
-              <div className="text-center">
-                <div className="flex items-center justify-center gap-1 mb-1">
-                  <Award className="w-3 h-3 text-[#D4AF37]" strokeWidth={1.5} />
-                </div>
-                <p className="text-white text-lg" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>
-                  {Math.max(...(timeView === 'week' ? weeklyActivity : timeView === 'month' ? monthlyActivity : yearlyActivity).map(d => d.steps || 0), 0).toLocaleString()}
-                </p>
-                <p className="text-white/30 text-[10px] uppercase tracking-wider" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>Best Day</p>
-              </div>
+              <p className="text-white text-lg" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>
+                {(timeView === 'week' ? weeklySteps : timeView === 'month' ? monthlySteps : yearlySteps).toLocaleString()}
+              </p>
+              <p className="text-white/30 text-[10px] uppercase tracking-wider" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>Total</p>
             </div>
-          )}
+            <div className="text-center">
+              <div className="flex items-center justify-center gap-1 mb-1">
+                <TrendingUp className="w-3 h-3 text-[#D4AF37]" strokeWidth={1.5} />
+              </div>
+              <p className="text-white text-lg" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>
+                {(timeView === 'week' ? weeklyAverage : timeView === 'month' ? monthlyAverage : yearlyAverage).toLocaleString()}
+              </p>
+              <p className="text-white/30 text-[10px] uppercase tracking-wider" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>Daily Avg</p>
+            </div>
+            <div className="text-center">
+              <div className="flex items-center justify-center gap-1 mb-1">
+                <Award className="w-3 h-3 text-[#D4AF37]" strokeWidth={1.5} />
+              </div>
+              <p className="text-white text-lg" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>
+                {Math.max(...(timeView === 'week' ? weeklyActivity : timeView === 'month' ? monthlyActivity : yearlyActivity).map(d => d.steps || 0), 0).toLocaleString()}
+              </p>
+              <p className="text-white/30 text-[10px] uppercase tracking-wider" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>Best Day</p>
+            </div>
+          </div>
         </VoidCard>
       </motion.div>
 
