@@ -78,6 +78,34 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
                 animate={{ strokeDashoffset }}
                 transition={{ duration: 1.5, ease: 'easeOut', delay: index * 0.12 }}
               />
+
+              {/* Shimmer arc — small bright arc that travels along the filled portion */}
+              <motion.circle
+                cx={orbital.size / 2}
+                cy={orbital.size / 2}
+                r={r}
+                fill="none"
+                stroke={orbital.color}
+                strokeWidth={isDarkMode ? "2" : "2.5"}
+                strokeLinecap="round"
+                strokeOpacity="0.7"
+                strokeDasharray={`${circumference * 0.08} ${circumference}`}
+                initial={{ strokeDashoffset: circumference }}
+                animate={{
+                  strokeDashoffset: [
+                    circumference - (progress / 100 * circumference) + circumference * 0.08,
+                    circumference - (progress / 100 * circumference) - circumference * 0.02,
+                    circumference - (progress / 100 * circumference) + circumference * 0.08,
+                  ],
+                  strokeOpacity: [0.3, 0.8, 0.3],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                  delay: index * 0.12 + 1.5,
+                }}
+              />
             </svg>
           </div>
         );
