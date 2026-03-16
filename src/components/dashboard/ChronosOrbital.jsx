@@ -88,7 +88,7 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
                 />
               )}
 
-              {/* Progress thread — crisp visible stroke on top */}
+              {/* Progress arc — simple easeOut fill, no dot */}
               <motion.circle
                 cx={orbital.size / 2}
                 cy={orbital.size / 2}
@@ -99,55 +99,27 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
                 strokeLinecap="round"
                 strokeDasharray={circumference}
                 initial={{ strokeDashoffset: circumference }}
-                animate={{
-                  strokeDashoffset: [circumference, strokeDashoffset, strokeDashoffset - circumference * 0.01, strokeDashoffset],
-                  opacity: [1, 1, 0.75, 1],
-                }}
-                transition={{
-                  strokeDashoffset: {
-                    times: [0, 0.6, 0.8, 1],
-                    duration: 3.5,
-                    ease: [0.34, 1.56, 0.64, 1],
-                    delay: index * 0.12,
-                    repeat: Infinity,
-                    repeatDelay: 4,
-                  },
-                  opacity: {
-                    times: [0, 0.6, 0.8, 1],
-                    duration: 3.5,
-                    delay: index * 0.12,
-                    repeat: Infinity,
-                    repeatDelay: 4,
-                  }
-                }}
+                animate={{ strokeDashoffset }}
+                transition={{ duration: 1.5, ease: 'easeOut', delay: index * 0.12 }}
               />
 
-              {/* Outward-pulse ring at progress end — no dot */}
+              {/* Outward-pulse ring at progress end — breathing, no dot */}
               {(() => {
-                const progressAngle = (progress / 100) * 360 - 90; // -90 = start at top
+                const progressAngle = (progress / 100) * 360 - 90;
                 const rad = (progressAngle * Math.PI) / 180;
                 const cx2 = orbital.size / 2 + r * Math.cos(rad);
                 const cy2 = orbital.size / 2 + r * Math.sin(rad);
+                const pulseDelay = index * 0.12 + 1.5;
                 return (
                   <motion.circle
                     cx={cx2}
                     cy={cy2}
-                    r={0}
+                    r={3}
                     fill="none"
                     stroke={orbital.color}
                     strokeWidth="1"
-                    opacity={0}
-                    animate={{
-                      r: [2, 7, 2],
-                      opacity: [0.8, 0, 0.8],
-                    }}
-                    transition={{
-                      duration: 2.8,
-                      repeat: Infinity,
-                      ease: 'easeOut',
-                      delay: index * 0.3 + 1.2,
-                      repeatDelay: 0.5,
-                    }}
+                    animate={{ r: [3, 9, 3], opacity: [0.7, 0, 0.7] }}
+                    transition={{ duration: 2.8, repeat: Infinity, ease: 'easeOut', delay: pulseDelay }}
                   />
                 );
               })()}
