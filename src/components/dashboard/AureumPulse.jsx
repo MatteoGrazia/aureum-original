@@ -84,7 +84,7 @@ export default function AureumPulse({ label, value, goal, unit, index = 0, icon,
       </div>
 
       {/* Thread visualization */}
-      <div className="relative h-[1px] overflow-visible z-10" style={{ background: trackColor }}>
+      <div className="relative h-[1px] overflow-hidden z-10" style={{ background: trackColor }}>
         {/* Main crisp bar */}
         <motion.div
           initial={{ width: 0 }}
