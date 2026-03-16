@@ -51,7 +51,7 @@ export default function WeeklyMuscleVolume({ logs = [] }) {
   return (
     <div className="mb-28">
       <p
-        className="text-[10px] uppercase tracking-[0.3em] text-[#D4AF37] mb-4"
+        className="text-[10px] uppercase tracking-[0.3em] text-white mb-4"
         style={{ fontFamily: 'Montserrat, sans-serif' }}
       >
         Weekly Volume
