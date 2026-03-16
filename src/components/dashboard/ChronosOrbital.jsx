@@ -69,7 +69,7 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
                 opacity={isDarkMode ? trackOpacity : 1}
               />
 
-              {/* Progress thread — glow ring behind */}
+              {/* Progress glow ring behind */}
               {isDarkMode && (
                 <motion.circle
                   cx={orbital.size / 2}
@@ -82,7 +82,7 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
                   strokeDasharray={circumference}
                   initial={{ strokeDashoffset: circumference }}
                   animate={{ strokeDashoffset }}
-                  transition={{ duration: 1.8, ease: [0.34, 1.56, 0.64, 1], delay: index * 0.12 }}
+                  transition={{ duration: 1.5, ease: 'easeOut', delay: index * 0.12 }}
                   opacity={0.25}
                   filter={`url(#${glowId})`}
                 />
