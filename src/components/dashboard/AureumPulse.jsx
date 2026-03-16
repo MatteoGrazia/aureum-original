@@ -120,15 +120,16 @@ export default function AureumPulse({ label, value, goal, unit, index = 0, icon,
             willChange: 'width',
           }}
         />
-        {/* Breathing dot at progress head */}
+        {/* Outward pulse ring at progress head — no dot */}
         <motion.div
-          animate={{ opacity: [0.5, 1, 0.5], scale: [0.8, 1.3, 0.8] }}
-          transition={{ duration: 2.8, repeat: Infinity, ease: 'easeInOut', delay: pulseDelay }}
-          className="absolute top-1/2 -translate-y-1/2 w-[5px] h-[5px] rounded-full"
+          animate={{ scale: [1, 2.8, 1], opacity: [0.7, 0, 0.7] }}
+          transition={{ duration: 2.8, repeat: Infinity, ease: 'easeOut', delay: pulseDelay }}
+          className="absolute top-1/2 -translate-y-1/2 w-[6px] h-[6px] rounded-full pointer-events-none"
           style={{
-            left: `calc(${progress}% - 2.5px)`,
-            background: progressColor,
-            boxShadow: `0 0 6px ${progressColor}`,
+            left: `calc(${progress}% - 3px)`,
+            border: `1px solid ${progressColor}`,
+            background: 'transparent',
+            boxShadow: `0 0 4px ${progressColor}80`,
           }}
         />
       </div>
