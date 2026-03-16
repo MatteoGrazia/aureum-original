@@ -38,9 +38,6 @@ export default function AureumPulse({ label, value, goal, unit, index = 0, icon,
   const goalColor = isDarkMode ? 'rgba(255,255,255,0.3)' : 'rgba(29,29,31,0.35)';
   const trackColor = isDarkMode ? 'rgba(156,126,70,0.2)' : 'rgba(156,126,70,0.15)';
 
-  // Breathing pulse: scale slightly in + out, synced with progress bar animation
-  const pulseDelay = index * 0.08 + 1.2; // start after bar finishes animating in
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}

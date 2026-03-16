@@ -26,7 +26,6 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
         const progress = Math.min(orbital.value / orbital.goal * 100, 100);
         const circumference = orbital.size * Math.PI;
         const strokeDashoffset = circumference - (progress / 100 * circumference);
-        const glowId = `glow-${index}`;
         const gradId = `grad-${index}`;
         const r = (orbital.size - 4) / 2;
 
