@@ -365,11 +365,22 @@ export default function Workouts() {
     setShowExercisePicker(false);
   };
 
+  const handleEditRoutine = (routine) => {
+    setNewRoutine({ name: routine.name, exercises: routine.exercises || [] });
+    setEditingRoutineId(routine.id);
+    setView('create');
+  };
+
   const saveRoutine = async () => {
     if (!newRoutine.name || newRoutine.exercises.length === 0) return;
-    const targetMuscles = [...new Set(newRoutine.exercises.map(e => e.muscle_group))];
-    await base44.entities.Routine.create({ ...newRoutine, target_muscles: targetMuscles });
+    const targetMuscles = [...new Set(newRoutine.exercises.map(e => e.muscle_group).filter(Boolean))];
+    if (editingRoutineId) {
+      await base44.entities.Routine.update(editingRoutineId, { ...newRoutine, target_muscles: targetMuscles });
+    } else {
+      await base44.entities.Routine.create({ ...newRoutine, target_muscles: targetMuscles });
+    }
     setNewRoutine({ name: '', exercises: [] });
+    setEditingRoutineId(null);
     setView('routines');
     queryClient.invalidateQueries(['routines']);
   };
