@@ -146,14 +146,15 @@ function LazyAnatomical({ src, alt, fallback, customSrc, customSrcDark, isDarkMo
 
   const imageUrl = isDarkMode ? (customSrcDark || customSrc || src) : (customSrc || src);
 
-  // Light purple (#BDB5D5) filter for highlighted muscles.
   // wger anatomy images: white background, black sketch lines, red highlighted muscle.
-  // Dark mode: invert(1) → black bg, white sketch, cyan highlight → then shift to light purple
-  // Light mode: keep white bg + black sketch (no invert), shift red highlight → light purple
-  const darkFilter = 'invert(1) sepia(1) saturate(1.2) hue-rotate(200deg) brightness(1.1)';
-  // Light mode: only recolor the red highlight (red→purple) without inverting background
-  // Use hue-rotate to shift red (0°) → purple (~270°), with sepia+saturate to keep it muted/light
-  const lightFilter = 'sepia(0.6) saturate(1.8) hue-rotate(200deg) brightness(1.05)';
+  // Dark mode: we want black bg + white sketch + light-purple muscle highlight.
+  //   Step 1: invert(1) → black bg, white sketch, cyan highlight
+  //   Step 2: hue-rotate to shift the now-cyan highlight toward purple (~+100deg)
+  //   The white sketch stays white (invert of black), bg stays black.
+  // Light mode: keep white bg + black sketch, only recolor red highlight → light purple.
+  //   hue-rotate(220deg) shifts red → blue-purple range; saturate keeps it soft.
+  const darkFilter = 'invert(1) hue-rotate(100deg) saturate(0.8) brightness(1.05)';
+  const lightFilter = 'hue-rotate(220deg) saturate(0.7) brightness(1.02)';
 
   const imgFilter = isDarkMode ? darkFilter : lightFilter;
 
