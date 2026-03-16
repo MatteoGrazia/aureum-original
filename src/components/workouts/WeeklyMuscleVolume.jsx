@@ -76,8 +76,8 @@ export default function WeeklyMuscleVolume({ logs = [] }) {
                 <motion.div
                   className="h-full rounded-full"
                   style={{
-                    background: 'linear-gradient(to right, rgba(212,175,55,0.35), rgba(244,208,63,0.85))',
-                    boxShadow: '0 0 6px rgba(212,175,55,0.4)',
+                    background: 'linear-gradient(to right, rgba(189,181,213,0.4), rgba(189,181,213,0.9))',
+                    boxShadow: '0 0 6px rgba(189,181,213,0.35)',
                   }}
                   initial={{ width: 0 }}
                   animate={{ width: `${pct * 100}%` }}
