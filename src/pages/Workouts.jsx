@@ -83,6 +83,7 @@ export default function Workouts() {
   const [pendingSave, setPendingSave] = useState(null);
   const [workoutSummary, setWorkoutSummary] = useState(null);
   const [newRoutine, setNewRoutine] = useState({ name: '', exercises: [] });
+  const [editingRoutineId, setEditingRoutineId] = useState(null);
   const [showExercisePicker, setShowExercisePicker] = useState(false);
 
   const queryClient = useQueryClient();
