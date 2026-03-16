@@ -204,8 +204,9 @@ export default function Nutrition() {
   };
 
   const handleDeleteLog = async (logId) => {
-    await base44.entities.FoodLog.delete(logId);
-    refetch();
+    // Optimistic: remove from cache immediately for instant UI response
+    queryClient.setQueryData(['foodLogs', dateStr], (old) => (old || []).filter(l => l.id !== logId));
+    base44.entities.FoodLog.delete(logId);
   };
 
   // Log multiple foods at once (from meal scan / voice log)
