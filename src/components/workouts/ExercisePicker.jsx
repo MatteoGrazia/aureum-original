@@ -282,8 +282,8 @@ export default function ExercisePicker({ exercises, onSelect, onClose, mode = 'a
                 style={{
                   background: isActive ? 'rgba(212,175,55,0.18)' : (isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'),
                   color: isActive ? '#D4AF37' : textMuted,
-                  border: `0.5px solid ${isActive ? 'rgba(212,175,55,0.55)' : borderColor}`,
-                  boxShadow: isActive ? 'inset 0 0 0 0.5px rgba(212,175,55,0.6), 0 0 0 2px rgba(212,175,55,0.25)' : 'none',
+                  border: `${isActive ? '1px' : '0.5px'} solid ${isActive ? 'rgba(212,175,55,0.7)' : borderColor}`,
+                  boxShadow: isActive ? 'inset 0 0 8px rgba(212,175,55,0.18)' : 'none',
                   transition: 'all 0.2s ease',
                 }}>
                 {m}
