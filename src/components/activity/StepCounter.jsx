@@ -61,7 +61,7 @@ export default function StepCounter({ steps, goal }) {
             strokeDasharray={circumference}
             initial={{ strokeDashoffset: circumference }}
             animate={{ strokeDashoffset }}
-            transition={{ duration: 1.2, ease: [0.34, 1.56, 0.64, 1] }}
+            transition={{ duration: 1.5, ease: 'easeOut' }}
             style={{
               filter: progress > 0.8 
                 ? 'drop-shadow(0 0 5px rgba(178, 216, 216, 0.5))' 
