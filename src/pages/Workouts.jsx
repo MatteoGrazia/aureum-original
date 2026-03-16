@@ -527,6 +527,7 @@ export default function Workouts() {
                       onToggle={() => setSelectedRoutine(selectedRoutine?.id === routine.id ? null : routine)}
                       onStart={startWorkout}
                       onDelete={deleteRoutine}
+                      onEdit={handleEditRoutine}
                       allLogs={recentWorkouts}
                     />
                   ))
