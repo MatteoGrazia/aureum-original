@@ -99,8 +99,27 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
                 strokeLinecap="round"
                 strokeDasharray={circumference}
                 initial={{ strokeDashoffset: circumference }}
-                animate={{ strokeDashoffset }}
-                transition={{ duration: 1.8, ease: [0.34, 1.56, 0.64, 1], delay: index * 0.12 }}
+                animate={{
+                  strokeDashoffset: [circumference, strokeDashoffset, strokeDashoffset - circumference * 0.01, strokeDashoffset],
+                  opacity: [1, 1, 0.75, 1],
+                }}
+                transition={{
+                  strokeDashoffset: {
+                    times: [0, 0.6, 0.8, 1],
+                    duration: 3.5,
+                    ease: [0.34, 1.56, 0.64, 1],
+                    delay: index * 0.12,
+                    repeat: Infinity,
+                    repeatDelay: 4,
+                  },
+                  opacity: {
+                    times: [0, 0.6, 0.8, 1],
+                    duration: 3.5,
+                    delay: index * 0.12,
+                    repeat: Infinity,
+                    repeatDelay: 4,
+                  }
+                }}
               />
             </svg>
           </div>
