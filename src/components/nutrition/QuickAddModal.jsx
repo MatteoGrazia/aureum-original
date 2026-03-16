@@ -89,11 +89,25 @@ export default function QuickAddModal({ isOpen, onClose, onAdd, selectedMeal: in
           />
         </div>
 
-        {/* Meal chip */}
-        <div className="mt-4 mb-6 flex items-center gap-2">
-          <p className="text-[10px] uppercase tracking-[0.2em]" style={{ color: textMuted, fontFamily: 'Montserrat, sans-serif' }}>Adding to</p>
-          <div className="px-3 py-1 rounded-full" style={{ background: PEACH_DIM, border: `0.5px solid ${PEACH_BORDER}` }}>
-            <span className="text-xs capitalize" style={{ color: PEACH, fontFamily: 'Montserrat, sans-serif' }}>{selectedMeal}</span>
+        {/* Meal selector */}
+        <div className="mt-4 mb-6">
+          <p className="text-[10px] uppercase tracking-[0.2em] mb-2" style={{ color: textMuted, fontFamily: 'Montserrat, sans-serif' }}>Adding to</p>
+          <div className="grid grid-cols-4 gap-1.5">
+            {MEALS.map(m => (
+              <button
+                key={m}
+                onClick={() => setMeal(m)}
+                className="py-2 rounded-xl text-[10px] capitalize transition-all"
+                style={{
+                  background: meal === m ? PEACH_DIM : 'rgba(255,255,255,0.04)',
+                  border: `0.5px solid ${meal === m ? PEACH_BORDER : 'rgba(255,255,255,0.08)'}`,
+                  color: meal === m ? PEACH : textMuted,
+                  fontFamily: 'Montserrat, sans-serif',
+                }}
+              >
+                {m}
+              </button>
+            ))}
           </div>
         </div>
 
