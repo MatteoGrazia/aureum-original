@@ -15,10 +15,13 @@ const FIELDS = [
   { key: 'fiber', label: 'Fiber', unit: 'g', required: false },
 ];
 
-export default function QuickAddModal({ isOpen, onClose, onAdd, selectedMeal }) {
+const MEALS = ['breakfast', 'lunch', 'dinner', 'snack'];
+
+export default function QuickAddModal({ isOpen, onClose, onAdd, selectedMeal: initialMeal }) {
   const { isDarkMode } = useTheme();
   const [values, setValues] = useState({ calories: '', protein: '', carbs: '', fat: '', fiber: '' });
   const [name, setName] = useState('');
+  const [meal, setMeal] = useState(initialMeal || 'lunch');
 
   const bg = isDarkMode ? 'rgba(10,8,4,0.97)' : 'rgba(255,252,245,0.97)';
   const textPrimary = isDarkMode ? '#FFFFFF' : '#1D1D1F';
