@@ -476,7 +476,7 @@ export default function Workouts() {
               {/* Routines label */}
               <div className="flex items-center justify-between">
                 <p className="text-[10px] uppercase tracking-[0.3em] text-white" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                  Routines
+                  My Routines
                 </p>
                 <button
                   onClick={() => setShowCalculator(true)}
