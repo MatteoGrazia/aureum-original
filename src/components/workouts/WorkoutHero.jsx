@@ -52,7 +52,7 @@ export default function WorkoutHero({ logs = [], bodyweight = 80 }) {
         transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
       />
 
-      <p className="text-[9px] uppercase tracking-[0.4em] mb-3" style={{ color: '#9C7E46' }}>
+      <p className="text-[9px] uppercase tracking-[0.4em] mb-3" style={{ color: '#FFFFFF' }}>
         Total Max Weights
       </p>
 
