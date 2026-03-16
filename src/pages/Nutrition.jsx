@@ -378,12 +378,14 @@ export default function Nutrition() {
           className="mb-6"
         >
           <VoidCard className="text-center">
-            <p className="text-5xl text-white" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>{totalCalories}</p>
+            <p className="text-5xl text-white" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>
+              {Math.max((profile?.maintenance_calories || 2000) - totalCalories, 0)}
+            </p>
             <p 
               className="text-white/40 text-xs uppercase tracking-widest mt-2"
               style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}
             >
-              of {profile?.maintenance_calories || 2000} kcal consumed
+              kcal remaining of {profile?.maintenance_calories || 2000}
             </p>
           </VoidCard>
         </motion.div>

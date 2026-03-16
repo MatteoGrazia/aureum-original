@@ -18,7 +18,7 @@ export default function AureumPulse({ label, value, goal, unit, index = 0, icon,
   const Icon = icon || iconMap[label];
 
   // Use iconColor for progress bar too so Steps = Pastel Blue, etc.
-  const progressColor = label === 'Energy Remaining' ? '#F4A261' : iconColor;
+  const progressColor = iconColor;
 
   const cardStyle = isDarkMode
     ? {

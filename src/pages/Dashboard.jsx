@@ -247,12 +247,12 @@ export default function Dashboard() {
         {/* Aureum Pulse Horizontal Visualizations */}
         <div className="space-y-3 mb-6">
           <AureumPulse
-            label="Energy Remaining"
-            value={Math.max(remainingCalories, 0)}
+            label="Calories Consumed"
+            value={consumedCalories}
             goal={maintenanceCalories + activityCalories}
             unit="kcal"
             icon={Flame}
-            iconColor="#F4A261"
+            iconColor="#FFDAB9"
             index={0}
           />
           <AureumPulse
