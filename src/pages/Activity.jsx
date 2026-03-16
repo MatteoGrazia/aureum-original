@@ -245,19 +245,40 @@ export default function Activity() {
           {/* Header */}
           <div className="mb-4">
             <div className="flex items-center justify-between mb-1">
-              <div>
+              <div className="flex-1">
                 <h3 className="text-[10px] uppercase tracking-[0.3em] text-white" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}>
-                  {timeView === 'week' ? 'This Week' : timeView === 'month' ? 'This Month' : 'This Year'}
+                  {timeView === 'week' ? (weekOffset === 0 ? 'This Week' : weekOffset === -1 ? 'Last Week' : `${Math.abs(weekOffset)} Weeks Ago`) : timeView === 'month' ? 'This Month' : 'This Year'}
                 </h3>
                 <div className="text-white/40 text-xs mt-0.5">
-                  {timeView === 'week' && weeklyActivity.length > 0 &&
-                    `${format(new Date(weeklyActivity[weeklyActivity.length - 1]?.date || new Date()), 'MMM d')} – ${format(new Date(weeklyActivity[0]?.date || new Date()), 'MMM d')}`}
+                  {timeView === 'week' &&
+                    `${format(startOfWeek, 'MMM d')} – ${format(endOfWeek, 'MMM d')}`}
                   {timeView === 'month' && monthlyActivity.length > 0 &&
                     `${format(new Date(monthlyActivity[monthlyActivity.length - 1]?.date || new Date()), 'MMM d')} – ${format(new Date(monthlyActivity[0]?.date || new Date()), 'MMM d')}`}
                   {timeView === 'year' &&
                     `${format(new Date(new Date().getFullYear(), 0, 1), 'MMM d')} – ${format(new Date(), 'MMM d, yyyy')}`}
                 </div>
               </div>
+              {/* Week navigation arrows */}
+              {timeView === 'week' && (
+                <div className="flex items-center gap-1 mr-2">
+                  <button
+                    onClick={() => { setWeekOffset(o => o - 1); setSelectedDay(null); }}
+                    className="w-7 h-7 rounded-lg flex items-center justify-center"
+                    style={{ background: 'rgba(255,255,255,0.06)', border: '0.5px solid rgba(255,255,255,0.1)' }}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                  </button>
+                  {weekOffset < 0 && (
+                    <button
+                      onClick={() => { setWeekOffset(o => o + 1); setSelectedDay(null); }}
+                      className="w-7 h-7 rounded-lg flex items-center justify-center"
+                      style={{ background: 'rgba(255,255,255,0.06)', border: '0.5px solid rgba(255,255,255,0.1)' }}
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                    </button>
+                  )}
+                </div>
+              )}
               <div className="text-white text-lg font-medium">
                 {(timeView === 'week' ? weeklySteps : timeView === 'month' ? monthlySteps : yearlySteps).toLocaleString()}
               </div>
