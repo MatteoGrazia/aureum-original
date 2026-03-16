@@ -122,17 +122,24 @@ export default function Workouts() {
     return map;
   }, [recentWorkouts]);
 
-  // Restore from localStorage on mount
+  // Restore from localStorage on mount — only if there's a valid in-progress workout
   useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const data = JSON.parse(saved);
-        setActiveWorkout(data.workout);
-        setWorkoutStartTime(new Date(data.startTime));
-        setView('active');
+        // Only restore if the workout has at least one exercise (not a stale/empty entry)
+        if (data.workout && data.workout.exercises && data.workout.exercises.length > 0 && data.startTime) {
+          setActiveWorkout(data.workout);
+          setWorkoutStartTime(new Date(data.startTime));
+          setView('active');
+        } else {
+          localStorage.removeItem(STORAGE_KEY);
+        }
       }
-    } catch (_) {}
+    } catch (_) {
+      localStorage.removeItem(STORAGE_KEY);
+    }
   }, []);
 
   // Persist every 10s
