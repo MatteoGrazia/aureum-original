@@ -370,16 +370,16 @@ export default function Dashboard() {
               <span className="text-[#D4AF37]/60 text-base">+</span>
               <div>
                 <p 
-                  className="text-xl"
-                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500, color: '#8ECAE6' }}
+                className="text-xl"
+                style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500, color: '#8ECAE6' }}
                 >
-                  {activityCalories}
+                {activityCalories}
                 </p>
                 <p 
-                  className="text-[10px] uppercase tracking-wider mt-1"
-                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400, color: 'rgba(255,255,255,0.4)' }}
+                className="text-[10px] uppercase tracking-wider mt-1"
+                style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400, color: '#8ECAE6' }}
                 >
-                  Active
+                Active
                 </p>
               </div>
               <span className="text-[#D4AF37]/60 text-base">−</span>
