@@ -579,10 +579,10 @@ export default function Workouts() {
           {view === 'create' && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4 pb-[140px]">
               <div className="flex items-center gap-4">
-                <button onClick={() => setView('routines')} className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
+                <button onClick={() => { setView('routines'); setEditingRoutineId(null); setNewRoutine({ name: '', exercises: [] }); }} className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
                   <X className="w-5 h-5 text-white" />
                 </button>
-                <h2 className="text-white text-lg" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>Create Routine</h2>
+                <h2 className="text-white text-lg" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>{editingRoutineId ? 'Edit Routine' : 'Create Routine'}</h2>
               </div>
 
               <Input
