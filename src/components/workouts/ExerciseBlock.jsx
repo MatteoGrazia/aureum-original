@@ -2,6 +2,27 @@ import React from 'react';
 import { Plus, RefreshCw } from 'lucide-react';
 import SetRow from './SetRow';
 
+const playSetBell = () => {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    // Two-tone premium bell: fundamental + harmonic
+    [[880, 0, 0.18], [1760, 0, 0.09], [880, 0.06, 0.12]].forEach(([freq, delay, vol]) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.frequency.value = freq;
+      osc.type = 'sine';
+      const t = ctx.currentTime + delay;
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(vol, t + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.9);
+      osc.start(t);
+      osc.stop(t + 0.9);
+    });
+  } catch (_) {}
+};
+
 const createSet = (type = 'normal', weight = 0, reps = 0) => ({
   id: Math.random().toString(36).slice(2),
   type,
