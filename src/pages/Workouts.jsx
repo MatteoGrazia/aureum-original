@@ -454,14 +454,12 @@ export default function Workouts() {
               whileTap={{ scale: 0.93 }}
               className="fixed right-5 z-50 flex items-center justify-center rounded-full"
               style={{
-                bottom: '120px',
+                bottom: 'calc(5.5rem + env(safe-area-inset-bottom, 0px))',
                 width: 56,
                 height: 56,
                 background: 'linear-gradient(135deg, #D4AF37 0%, #D4AF37 100%)',
-                boxShadow: '0 0 30px rgba(212,175,55,0.5), 0 0 60px rgba(212,175,55,0.2)',
+                boxShadow: '0 0 24px rgba(212,175,55,0.45)',
               }}
-              animate={{ boxShadow: ['0 0 20px rgba(212,175,55,0.4)', '0 0 40px rgba(212,175,55,0.7)', '0 0 20px rgba(212,175,55,0.4)'] }}
-              transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
             >
               <Plus className="w-6 h-6 text-black" strokeWidth={2} />
             </motion.button>
