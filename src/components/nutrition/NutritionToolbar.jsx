@@ -33,7 +33,7 @@ export default function NutritionToolbar({ onAction, onOpenScanner }) {
         className="w-full flex items-center justify-center gap-2.5 py-3 rounded-xl transition-all active:scale-95"
         style={{ ...btnStyle, minHeight: 48 }}
       >
-        <ScanBarcode className="w-4 h-4" style={{ color: PURPLE }} strokeWidth={1.5} />
+        <ScanBarcode className="w-4 h-4" style={{ color: PEACH }} strokeWidth={1.5} />
         <span className="text-[10px] uppercase tracking-[0.18em]" style={{ color: textMuted, fontFamily: 'Montserrat, sans-serif' }}>
           Scan Barcode
         </span>

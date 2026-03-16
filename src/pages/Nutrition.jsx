@@ -820,7 +820,14 @@ export default function Nutrition() {
                       <div className="flex-1 min-w-0">
                         <p className="text-white text-sm truncate">{log.food_name}</p>
                         <p className="text-xs truncate" style={{ color: '#E5E5E7' }}>
-                          {log.serving_size > 1 ? `${log.serving_size} ` : ''}{log.serving_unit} • {log.calories} kcal
+                          {(() => {
+                            const unit = (log.serving_unit || '').toLowerCase();
+                            const isWeight = unit === 'g' || unit === 'ml' || unit === 'oz' || unit.endsWith('g') || unit.endsWith('ml');
+                            if (isWeight) {
+                              return `${log.serving_size}${log.serving_unit} · ${log.calories} kcal`;
+                            }
+                            return `${log.serving_size > 1 ? log.serving_size + ' · ' : ''}${log.calories} kcal`;
+                          })()}
                         </p>
                       </div>
                       <button
