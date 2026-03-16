@@ -147,14 +147,11 @@ function LazyAnatomical({ src, alt, fallback, customSrc, customSrcDark, isDarkMo
   const imageUrl = isDarkMode ? (customSrcDark || customSrc || src) : (customSrc || src);
 
   // wger anatomy images: white background, black sketch lines, red highlighted muscle.
-  // Dark mode: we want black bg + white sketch + light-purple muscle highlight.
-  //   Step 1: invert(1) → black bg, white sketch, cyan highlight
-  //   Step 2: hue-rotate to shift the now-cyan highlight toward purple (~+100deg)
-  //   The white sketch stays white (invert of black), bg stays black.
-  // Light mode: keep white bg + black sketch, only recolor red highlight → light purple.
-  //   hue-rotate(220deg) shifts red → blue-purple range; saturate keeps it soft.
-  const darkFilter = 'invert(1) hue-rotate(100deg) saturate(0.8) brightness(1.05)';
-  const lightFilter = 'hue-rotate(220deg) saturate(0.7) brightness(1.02)';
+  // Target highlight color: #BDB5D5 (light purple, matching app workout elements).
+  // Dark mode: invert → black bg, white sketch, cyan highlight → hue-rotate+saturate → light purple
+  // Light mode: keep white bg + black sketch, shift red → light purple via hue-rotate
+  const darkFilter = 'invert(1) hue-rotate(155deg) saturate(0.55) brightness(1.1)';
+  const lightFilter = 'hue-rotate(200deg) saturate(0.5) brightness(1.05)';
 
   const imgFilter = isDarkMode ? darkFilter : lightFilter;
 
