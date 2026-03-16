@@ -386,7 +386,7 @@ export default function Dashboard() {
               <div>
                 <p 
                   className="text-xl"
-                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500, color: '#F4A261' }}
+                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500, color: '#FFDAB9' }}
                 >
                   {consumedCalories}
                 </p>
