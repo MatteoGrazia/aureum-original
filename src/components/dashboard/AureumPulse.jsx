@@ -88,48 +88,15 @@ export default function AureumPulse({ label, value, goal, unit, index = 0, icon,
 
       {/* Thread visualization */}
       <div className="relative h-[1px] overflow-visible z-10" style={{ background: trackColor }}>
-        {/* Breathing glow blob behind the bar head */}
-        <motion.div
-          animate={{
-            opacity: [0.3, 0.7, 0.3],
-            scaleY: [1, 2.5, 1],
-          }}
-          transition={{
-            duration: 2.8,
-            repeat: Infinity,
-            ease: 'easeInOut',
-            delay: pulseDelay,
-          }}
-          className="absolute top-1/2 -translate-y-1/2 h-[6px] rounded-full pointer-events-none"
-          style={{
-            left: 0,
-            width: `${progress}%`,
-            background: `linear-gradient(90deg, transparent, ${progressColor}40, ${progressColor}60)`,
-            filter: `blur(3px)`,
-            transformOrigin: 'center',
-          }}
-        />
         {/* Main crisp bar */}
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${progress}%` }}
-          transition={{ duration: 1.2, ease: [0.34, 1.56, 0.64, 1], delay: index * 0.08 }}
+          transition={{ duration: 1.2, ease: 'easeOut', delay: index * 0.08 }}
           className="absolute left-0 top-0 h-[1px]"
           style={{
             background: `linear-gradient(90deg, ${progressColor}80, ${progressColor}cc, ${progressColor})`,
             willChange: 'width',
-          }}
-        />
-        {/* Outward pulse ring at progress head — no dot */}
-        <motion.div
-          animate={{ scale: [1, 2.8, 1], opacity: [0.7, 0, 0.7] }}
-          transition={{ duration: 2.8, repeat: Infinity, ease: 'easeOut', delay: pulseDelay }}
-          className="absolute top-1/2 -translate-y-1/2 w-[6px] h-[6px] rounded-full pointer-events-none"
-          style={{
-            left: `calc(${progress}% - 3px)`,
-            border: `1px solid ${progressColor}`,
-            background: 'transparent',
-            boxShadow: `0 0 4px ${progressColor}80`,
           }}
         />
       </div>

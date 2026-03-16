@@ -69,26 +69,7 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
                 opacity={isDarkMode ? trackOpacity : 1}
               />
 
-              {/* Progress glow ring behind */}
-              {isDarkMode && (
-                <motion.circle
-                  cx={orbital.size / 2}
-                  cy={orbital.size / 2}
-                  r={r}
-                  fill="none"
-                  stroke={orbital.color}
-                  strokeWidth="4"
-                  strokeLinecap="round"
-                  strokeDasharray={circumference}
-                  initial={{ strokeDashoffset: circumference }}
-                  animate={{ strokeDashoffset }}
-                  transition={{ duration: 1.5, ease: 'easeOut', delay: index * 0.12 }}
-                  opacity={0.25}
-                  filter={`url(#${glowId})`}
-                />
-              )}
-
-              {/* Progress arc — simple easeOut fill, no dot */}
+              {/* Progress arc */}
               <motion.circle
                 cx={orbital.size / 2}
                 cy={orbital.size / 2}
@@ -102,27 +83,6 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
                 animate={{ strokeDashoffset }}
                 transition={{ duration: 1.5, ease: 'easeOut', delay: index * 0.12 }}
               />
-
-              {/* Outward-pulse ring at progress end — breathing, no dot */}
-              {(() => {
-                const progressAngle = (progress / 100) * 360 - 90;
-                const rad = (progressAngle * Math.PI) / 180;
-                const cx2 = orbital.size / 2 + r * Math.cos(rad);
-                const cy2 = orbital.size / 2 + r * Math.sin(rad);
-                const pulseDelay = index * 0.12 + 1.5;
-                return (
-                  <motion.circle
-                    cx={cx2}
-                    cy={cy2}
-                    r={3}
-                    fill="none"
-                    stroke={orbital.color}
-                    strokeWidth="1"
-                    animate={{ r: [3, 9, 3], opacity: [0.7, 0, 0.7] }}
-                    transition={{ duration: 2.8, repeat: Infinity, ease: 'easeOut', delay: pulseDelay }}
-                  />
-                );
-              })()}
             </svg>
           </div>
         );
