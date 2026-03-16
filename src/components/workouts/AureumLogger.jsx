@@ -135,7 +135,7 @@ export default function AureumLogger({ activeWorkout, allExercises, onUpdateWork
       <div className="relative z-10 min-h-screen bg-[#080808]" style={{ paddingBottom: '120px' }}>
         {/* Sticky header */}
         <div
-          className="sticky top-0 z-30 pt-10 pb-3 px-5"
+          className="sticky top-0 z-30 pt-14 pb-3 px-5"
           style={{ background: 'rgba(8,8,8,0.97)', backdropFilter: 'blur(20px)' }}
         >
           <div className="flex items-center justify-between mb-3">
