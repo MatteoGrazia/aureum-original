@@ -252,7 +252,7 @@ export default function Dashboard() {
             goal={maintenanceCalories + activityCalories}
             unit="kcal"
             icon={Flame}
-            iconColor="#F4A261"
+            iconColor="#FFDAB9"
             index={0}
           />
           <AureumPulse
