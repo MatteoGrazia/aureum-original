@@ -95,8 +95,8 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
                 cy={orbital.size / 2}
                 r={r}
                 fill="none"
-                stroke={isDarkMode ? `url(#${gradId})` : '#D4AF37'}
-                strokeWidth={isDarkMode ? "1.5" : "2.5"}
+                stroke={isDarkMode ? `url(#${gradId})` : orbital.color}
+                strokeWidth={isDarkMode ? "1.5" : "2"}
                 strokeLinecap="round"
                 strokeDasharray={circumference}
                 initial={{ strokeDashoffset: circumference }}
@@ -122,6 +122,36 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
                   }
                 }}
               />
+
+              {/* Outward-pulse ring at progress end — no dot */}
+              {(() => {
+                const progressAngle = (progress / 100) * 360 - 90; // -90 = start at top
+                const rad = (progressAngle * Math.PI) / 180;
+                const cx2 = orbital.size / 2 + r * Math.cos(rad);
+                const cy2 = orbital.size / 2 + r * Math.sin(rad);
+                return (
+                  <motion.circle
+                    cx={cx2}
+                    cy={cy2}
+                    r={0}
+                    fill="none"
+                    stroke={orbital.color}
+                    strokeWidth="1"
+                    opacity={0}
+                    animate={{
+                      r: [2, 7, 2],
+                      opacity: [0.8, 0, 0.8],
+                    }}
+                    transition={{
+                      duration: 2.8,
+                      repeat: Infinity,
+                      ease: 'easeOut',
+                      delay: index * 0.3 + 1.2,
+                      repeatDelay: 0.5,
+                    }}
+                  />
+                );
+              })()}
             </svg>
           </div>
         );
