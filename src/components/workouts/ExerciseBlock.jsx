@@ -62,6 +62,7 @@ export default function ExerciseBlock({ exercise, onUpdate, onStructuralUpdate, 
     onUpdate({ ...exercise, sets });
     if (updated.completed) {
       if ('vibrate' in navigator) navigator.vibrate(50);
+      playSetBell();
       onTimerStart(exercise);
     }
   };
