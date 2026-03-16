@@ -667,7 +667,7 @@ export default function Workouts() {
                 className="w-full"
                 disabled={!newRoutine.name || newRoutine.exercises.length === 0}
               >
-                Save Routine
+                {editingRoutineId ? 'Update Routine' : 'Save Routine'}
               </GoldButton>
 
 
