@@ -516,7 +516,7 @@ export default function Workouts() {
               {recentWorkouts.length > 0 && (
                 <div className="space-y-3 mb-8">
                   <div className="flex items-center justify-between">
-                    <p className="text-[10px] uppercase tracking-[0.3em] text-[#D4AF37]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                    <p className="text-[10px] uppercase tracking-[0.3em] text-white" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                       History
                     </p>
                     <p className="text-white/20 text-[10px]">{recentWorkouts.length} sessions</p>
