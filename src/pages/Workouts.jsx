@@ -40,20 +40,34 @@ const buildWorkoutExercises = (routine) => {
 const playGoldenChime = () => {
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const notes = [523, 659, 784, 1047];
-    notes.forEach((freq, i) => {
+    // Majestic 5-note ascending arpeggio with rich harmonics
+    const sequence = [
+      { freq: 523.25, delay: 0,    vol: 0.28, dur: 1.2 },  // C5
+      { freq: 659.25, delay: 0.16, vol: 0.26, dur: 1.1 },  // E5
+      { freq: 783.99, delay: 0.32, vol: 0.24, dur: 1.0 },  // G5
+      { freq: 1046.5, delay: 0.48, vol: 0.22, dur: 1.4 },  // C6
+      { freq: 1318.5, delay: 0.70, vol: 0.18, dur: 1.6 },  // E6 – crown note
+    ];
+    sequence.forEach(({ freq, delay, vol, dur }) => {
+      // Fundamental
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.frequency.value = freq;
-      osc.type = 'sine';
-      const t = ctx.currentTime + i * 0.18;
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.type = 'sine'; osc.frequency.value = freq;
+      const t = ctx.currentTime + delay;
       gain.gain.setValueAtTime(0, t);
-      gain.gain.linearRampToValueAtTime(0.35, t + 0.04);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.6);
-      osc.start(t);
-      osc.stop(t + 0.6);
+      gain.gain.linearRampToValueAtTime(vol, t + 0.015);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+      osc.start(t); osc.stop(t + dur);
+      // Gentle harmonic at 2x (adds warmth)
+      const osc2 = ctx.createOscillator();
+      const gain2 = ctx.createGain();
+      osc2.connect(gain2); gain2.connect(ctx.destination);
+      osc2.type = 'sine'; osc2.frequency.value = freq * 2;
+      gain2.gain.setValueAtTime(0, t);
+      gain2.gain.linearRampToValueAtTime(vol * 0.18, t + 0.015);
+      gain2.gain.exponentialRampToValueAtTime(0.001, t + dur * 0.7);
+      osc2.start(t); osc2.stop(t + dur);
     });
   } catch (_) {}
 };
