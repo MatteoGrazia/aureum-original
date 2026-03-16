@@ -9,7 +9,6 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
     { value: calories,  goal: caloriesGoal, color: '#F4A261', size: 240, offset: { x: -8, y: -8 }, rotation: 0 },
     { value: steps,     goal: stepsGoal,    color: '#B2D8D8', size: 180, offset: { x: 5, y: -5 }, rotation: 45 },
     { value: volume,    goal: volumeGoal,   color: '#BDB5D5', size: 120, offset: { x: -3, y: 3 }, rotation: -30 }
-
   ];
 
   const totalProgress = Math.min(
