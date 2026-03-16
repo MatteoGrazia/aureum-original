@@ -33,6 +33,7 @@ export default function QuickAddModal({ isOpen, onClose, onAdd, selectedMeal: in
     if (!values.calories) return;
     onAdd({
       name: name || 'Quick Add',
+      meal_type: meal,
       calories: parseFloat(values.calories) || 0,
       protein: parseFloat(values.protein) || 0,
       carbs: parseFloat(values.carbs) || 0,
