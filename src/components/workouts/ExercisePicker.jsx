@@ -424,8 +424,8 @@ export default function ExercisePicker({ exercises, onSelect, onClose, mode = 'a
                       height: '100%', 
                       objectFit: 'contain',
                       filter: isDarkMode
-                        ? 'invert(1) hue-rotate(155deg) saturate(0.55) brightness(1.1)'
-                        : 'hue-rotate(200deg) saturate(0.5) brightness(1.05)'
+                        ? 'invert(1) hue-rotate(60deg) saturate(0.6) brightness(1.1)'
+                        : 'hue-rotate(240deg) saturate(0.45) brightness(1.05)'
                     }}
                     onError={e => { e.target.style.display = 'none'; e.target.parentNode.querySelector('.fallback-icon') && (e.target.parentNode.querySelector('.fallback-icon').style.display = 'flex'); }}
                    />
