@@ -150,8 +150,8 @@ function LazyAnatomical({ src, alt, fallback, customSrc, customSrcDark, isDarkMo
   // Target highlight color: #BDB5D5 (light purple, matching app workout elements).
   // Dark mode: invert → black bg, white sketch, cyan highlight → hue-rotate+saturate → light purple
   // Light mode: keep white bg + black sketch, shift red → light purple via hue-rotate
-  const darkFilter = 'invert(1) hue-rotate(155deg) saturate(0.55) brightness(1.1)';
-  const lightFilter = 'hue-rotate(200deg) saturate(0.5) brightness(1.05)';
+  const darkFilter = 'invert(1) hue-rotate(60deg) saturate(0.6) brightness(1.1)';
+  const lightFilter = 'hue-rotate(240deg) saturate(0.45) brightness(1.05)';
 
   const imgFilter = isDarkMode ? darkFilter : lightFilter;
 
