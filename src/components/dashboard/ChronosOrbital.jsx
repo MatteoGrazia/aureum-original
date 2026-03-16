@@ -50,11 +50,7 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
                   <stop offset="50%" stopColor={orbital.color} stopOpacity={isDarkMode ? "0.3" : "0.75"} />
                   <stop offset="100%" stopColor={orbital.color} stopOpacity="0.9" />
                 </linearGradient>
-                {/* Tight glow filter — stdDeviation kept very small so glow hugs the stroke */}
-                <filter id={glowId} x="-20%" y="-20%" width="140%" height="140%">
-                  <feGaussianBlur in="SourceGraphic" stdDeviation={isDarkMode ? "1.5" : "1"} result="blur" />
-                  <feComposite in="blur" in2="SourceGraphic" operator="over" />
-                </filter>
+
               </defs>
 
               {/* Background track */}
