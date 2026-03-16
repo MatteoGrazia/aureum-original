@@ -338,8 +338,8 @@ export default function Activity() {
                   const intensity = stepGoal > 0 ? Math.min((steps / stepGoal), 1) : 0;
                   const isToday = day?.date === today;
                   const isSelected = selectedDay?.id === day?.id;
+                  const hitGoal = steps >= stepGoal;
                   
-                  // Calculate opacity and size based on intensity
                   const opacity = intensity > 0 ? 0.3 + (intensity * 0.7) : 0.1;
                   const scale = intensity > 0 ? 0.7 + (intensity * 0.3) : 0.5;
                   
@@ -353,7 +353,7 @@ export default function Activity() {
                     >
                       <motion.div
                         onClick={() => setSelectedDay(isSelected ? null : day)}
-                        className="w-full h-full rounded-full cursor-pointer flex items-center justify-center transition-all"
+                        className="w-full h-full rounded-full cursor-pointer flex items-center justify-center transition-all relative"
                         style={{ 
                           opacity: isSelected || isToday ? 1 : opacity,
                           transform: `scale(${isSelected ? 1 : scale})`,
@@ -363,24 +363,40 @@ export default function Activity() {
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.95 }}
                       >
-                        <span className="text-[10px] text-[#080808] font-medium">
-                          {format(new Date(day?.date || new Date()), 'd')}
-                        </span>
+                        {hitGoal ? (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ delay: index * 0.02 + 0.2, type: 'spring' }}
+                            className="w-full h-full rounded-full flex items-center justify-center"
+                            style={{ background: '#8ECAE6', boxShadow: '0 2px 8px rgba(142,202,230,0.4)' }}
+                          >
+                            <svg className="w-[55%] h-[55%] text-[#080808]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                          </motion.div>
+                        ) : (
+                          <span className="text-[10px] text-[#080808] font-medium">
+                            {format(new Date(day?.date || new Date()), 'd')}
+                          </span>
+                        )}
                       </motion.div>
-                      {isSelected && (
-                        <motion.div 
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          className="absolute -top-10 left-1/2 transform -translate-x-1/2 px-2 py-1 rounded text-[9px] whitespace-nowrap font-medium z-10"
-                          style={{ border: '1px solid #D4AF37', background: 'transparent', color: 'white' }}
-                        >
-                          {steps.toLocaleString()}
-                        </motion.div>
-                      )}
                     </motion.div>
                   );
                 })}
               </div>
+
+              {selectedDay && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="px-3 py-2 rounded-lg text-xs font-medium mt-4 text-center"
+                  style={{ border: '1px solid #D4AF37', background: 'transparent' }}
+                >
+                  <div className="text-[10px] text-white/60 mb-0.5">{format(new Date(selectedDay?.date || new Date()), 'MMM d')}</div>
+                  <div className="text-sm font-semibold text-white">{(selectedDay?.steps || 0).toLocaleString()} steps</div>
+                </motion.div>
+              )}
             </div>
           ) : (
             // ── Year view: total steps per month ──
