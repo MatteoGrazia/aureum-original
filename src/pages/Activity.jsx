@@ -77,11 +77,31 @@ export default function Activity() {
   const [timeView, setTimeView] = useState('week');
   const [selectedDay, setSelectedDay] = useState(null);
   const [selectedMonth, setSelectedMonth] = useState(null);
+  const [weekOffset, setWeekOffset] = useState(0); // 0 = current week, -1 = last week, etc.
+
+  // Get start/end dates for the selected week
+  const getWeekRange = (offset) => {
+    const now = new Date();
+    const dayOfWeek = now.getDay(); // 0=Sun
+    const startOfWeek = new Date(now);
+    startOfWeek.setDate(now.getDate() - dayOfWeek + offset * 7);
+    startOfWeek.setHours(0, 0, 0, 0);
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
+    endOfWeek.setHours(23, 59, 59, 999);
+    return { startOfWeek, endOfWeek };
+  };
+
+  const { startOfWeek, endOfWeek } = getWeekRange(weekOffset);
+  const startDateStr = format(startOfWeek, 'yyyy-MM-dd');
+  const endDateStr = format(endOfWeek, 'yyyy-MM-dd');
 
   const { data: weeklyActivity = [] } = useQuery({
-    queryKey: ['weeklyActivity'],
+    queryKey: ['weeklyActivity', weekOffset],
     queryFn: async () => {
-      return base44.entities.DailyActivity.filter({}, '-date', 7);
+      // Fetch enough days and filter to the week range
+      const all = await base44.entities.DailyActivity.filter({}, '-date', 90);
+      return all.filter(d => d.date >= startDateStr && d.date <= endDateStr).sort((a, b) => a.date.localeCompare(b.date));
     },
     refetchInterval: 30000
   });
