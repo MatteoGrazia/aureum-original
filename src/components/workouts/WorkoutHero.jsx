@@ -53,7 +53,7 @@ export default function WorkoutHero({ logs = [], bodyweight = 80 }) {
       />
 
       <p className="text-[9px] uppercase tracking-[0.4em] mb-3" style={{ color: '#9C7E46' }}>
-        Current Total
+        Total Max Weights
       </p>
 
       <motion.div
@@ -62,42 +62,49 @@ export default function WorkoutHero({ logs = [], bodyweight = 80 }) {
         transition={{ duration: 0.5, delay: 0.1 }}
       >
         <span
-          className="text-8xl leading-none"
-          style={{
-            fontFamily: 'Inter, sans-serif',
-            fontWeight: 100,
-            background: 'linear-gradient(135deg, #F4D03F 0%, #D4AF37 60%, #BFA68F 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-          }}
+          className="text-8xl leading-none text-white"
+          style={{ fontFamily: 'Inter, sans-serif', fontWeight: 100 }}
         >
           {total}
         </span>
-        <span className="text-2xl text-[#D4AF37]/30 ml-2" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 300 }}>
+        <span className="text-2xl text-white/30 ml-2" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 300 }}>
           kg
         </span>
       </motion.div>
 
-      {/* Big 3 breakdown */}
+      {/* Big 3 breakdown with icons */}
       <div className="flex justify-center gap-8 mt-4 mb-3">
-        {BIG3.map(lift => (
-          <div key={lift} className="text-center">
-            <p className="text-white/50 text-base" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 300 }}>
-              {best[lift] || '—'}
-            </p>
-            <p className="text-white/20 text-[9px] uppercase tracking-[0.15em] mt-0.5">{lift}</p>
-          </div>
-        ))}
-      </div>
-
-      {/* Wilks score */}
-      <div className="flex items-center justify-center gap-3">
-        <div className="w-10 h-px" style={{ background: 'linear-gradient(to right, transparent, rgba(156,126,70,0.35))' }} />
-        <p className="text-sm tracking-wider" style={{ color: '#9C7E46', fontFamily: 'Montserrat, sans-serif', fontWeight: 300 }}>
-          Wilks {wilksScore}
-        </p>
-        <div className="w-10 h-px" style={{ background: 'linear-gradient(to left, transparent, rgba(156,126,70,0.35))' }} />
+        {BIG3.map(lift => {
+          const icons = {
+            'Squat': (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#BDB5D5" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="mx-auto mb-1">
+                <line x1="3" y1="8" x2="21" y2="8"/><line x1="3" y1="6.5" x2="3" y2="9.5"/><line x1="6" y1="6" x2="6" y2="10"/><line x1="18" y1="6" x2="18" y2="10"/><line x1="21" y1="6.5" x2="21" y2="9.5"/>
+                <circle cx="12" cy="5" r="1.8"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="13" x2="7" y2="18"/><line x1="12" y1="13" x2="17" y2="18"/><line x1="7" y1="18" x2="6" y2="22"/><line x1="17" y1="18" x2="18" y2="22"/>
+              </svg>
+            ),
+            'Bench Press': (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#BDB5D5" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="mx-auto mb-1">
+                <line x1="2" y1="7" x2="22" y2="7"/><line x1="2" y1="5.5" x2="2" y2="8.5"/><line x1="5" y1="5" x2="5" y2="9"/><line x1="19" y1="5" x2="19" y2="9"/><line x1="22" y1="5.5" x2="22" y2="8.5"/>
+                <circle cx="12" cy="14" r="2"/><line x1="10.2" y1="13" x2="7" y2="7.5"/><line x1="13.8" y1="13" x2="17" y2="7.5"/><line x1="12" y1="16" x2="9" y2="21"/><line x1="12" y1="16" x2="15" y2="21"/>
+              </svg>
+            ),
+            'Deadlift': (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#BDB5D5" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="mx-auto mb-1">
+                <line x1="3" y1="21" x2="21" y2="21"/><line x1="3" y1="19" x2="3" y2="23"/><line x1="6" y1="18" x2="6" y2="24"/><line x1="18" y1="18" x2="18" y2="24"/><line x1="21" y1="19" x2="21" y2="23"/>
+                <circle cx="16" cy="4" r="2"/><line x1="16" y1="6" x2="10" y2="13"/><line x1="10" y1="13" x2="8" y2="21"/><line x1="10" y1="13" x2="12" y2="21"/>
+              </svg>
+            ),
+          };
+          return (
+            <div key={lift} className="text-center">
+              {icons[lift]}
+              <p className="text-white text-base" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 300 }}>
+                {best[lift] || '—'}
+              </p>
+              <p className="text-white/20 text-[9px] uppercase tracking-[0.15em] mt-0.5">{lift}</p>
+            </div>
+          );
+        })}
       </div>
     </motion.div>
   );
