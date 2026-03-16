@@ -826,7 +826,7 @@ export default function Nutrition() {
                             if (isGrams) {
                               return `${log.serving_size}g · ${log.calories} kcal`;
                             }
-                            return `${log.serving_size > 1 ? log.serving_size + ' · ' : ''}${log.calories} kcal`;
+                            return `${log.serving_size} ${log.serving_unit} · ${log.calories} kcal`;
                           })()}
                         </p>
                       </div>
