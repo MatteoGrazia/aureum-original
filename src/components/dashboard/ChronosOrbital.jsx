@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useId } from 'react';
 import { motion } from 'framer-motion';
 import { useTheme } from '@/components/shared/ThemeContext';
 
