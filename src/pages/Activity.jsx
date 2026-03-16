@@ -74,8 +74,9 @@ export default function Activity() {
     return () => window.removeEventListener('googleFitSynced', handleSync);
   }, [refetch, queryClient]);
 
-  const [timeView, setTimeView] = useState('week'); // 'today', 'week', 'month', 'year'
+  const [timeView, setTimeView] = useState('week');
   const [selectedDay, setSelectedDay] = useState(null);
+  const [selectedMonth, setSelectedMonth] = useState(null);
 
   const { data: weeklyActivity = [] } = useQuery({
     queryKey: ['weeklyActivity'],
