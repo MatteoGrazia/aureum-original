@@ -252,7 +252,7 @@ export default function Dashboard() {
             goal={maintenanceCalories + activityCalories}
             unit="kcal"
             icon={Flame}
-            iconColor="#FFDAB9"
+            iconColor="#F4A261"
             index={0}
           />
           <AureumPulse
@@ -261,7 +261,7 @@ export default function Dashboard() {
             goal={stepsGoal}
             unit="steps"
             icon={Footprints}
-            iconColor="#8ECAE6"
+            iconColor="#B2D8D8"
             index={1}
           />
           <AureumPulse
@@ -270,7 +270,7 @@ export default function Dashboard() {
             goal={5000}
             unit="kg"
             icon={Dumbbell}
-            iconColor="#C9ADA7"
+            iconColor="#BDB5D5"
             index={2}
           />
           <AureumPulse
