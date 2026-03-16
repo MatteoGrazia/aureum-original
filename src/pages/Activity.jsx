@@ -222,47 +222,25 @@ export default function Activity() {
         className="mb-6"
       >
         <VoidCard>
+          {/* Header */}
           <div className="mb-4">
             <div className="flex items-center justify-between mb-1">
-              <h3 
-                className="text-[10px] uppercase tracking-[0.3em] text-white"
-                style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
-              >
-                {timeView === 'week' ? 'This Week' : timeView === 'month' ? 'This Month' : 'This Year'}
-              </h3>
-              {timeView === 'week' && (
-                <div className="text-white text-lg font-medium">
-                  {weeklySteps.toLocaleString()}
+              <div>
+                <h3 className="text-[10px] uppercase tracking-[0.3em] text-white" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}>
+                  {timeView === 'week' ? 'This Week' : timeView === 'month' ? 'This Month' : 'This Year'}
+                </h3>
+                <div className="text-white/40 text-xs mt-0.5">
+                  {timeView === 'week' && weeklyActivity.length > 0 &&
+                    `${format(new Date(weeklyActivity[weeklyActivity.length - 1]?.date || new Date()), 'MMM d')} – ${format(new Date(weeklyActivity[0]?.date || new Date()), 'MMM d')}`}
+                  {timeView === 'month' && monthlyActivity.length > 0 &&
+                    `${format(new Date(monthlyActivity[monthlyActivity.length - 1]?.date || new Date()), 'MMM d')} – ${format(new Date(monthlyActivity[0]?.date || new Date()), 'MMM d')}`}
+                  {timeView === 'year' &&
+                    `${format(new Date(new Date().getFullYear(), 0, 1), 'MMM d')} – ${format(new Date(), 'MMM d, yyyy')}`}
                 </div>
-              )}
-            </div>
-            {timeView === 'week' && weeklyActivity.length > 0 && (
-              <div className="text-white/40 text-xs">
-                {format(new Date(weeklyActivity[weeklyActivity.length - 1]?.date || new Date()), 'MMM d')} – {format(new Date(weeklyActivity[0]?.date || new Date()), 'MMM d')}
               </div>
-            )}
-          </div>
-          
-          {/* Header: title + total + date range */}
-          <div className="mb-4">
-            <div className="flex items-center justify-between mb-1">
-              <h3
-                className="text-[10px] uppercase tracking-[0.3em] text-white"
-                style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
-              >
-                {timeView === 'week' ? 'This Week' : timeView === 'month' ? 'This Month' : 'This Year'}
-              </h3>
               <div className="text-white text-lg font-medium">
                 {(timeView === 'week' ? weeklySteps : timeView === 'month' ? monthlySteps : yearlySteps).toLocaleString()}
               </div>
-            </div>
-            <div className="text-white/40 text-xs">
-              {timeView === 'week' && weeklyActivity.length > 0 &&
-                `${format(new Date(weeklyActivity[weeklyActivity.length - 1]?.date || new Date()), 'MMM d')} – ${format(new Date(weeklyActivity[0]?.date || new Date()), 'MMM d')}`}
-              {timeView === 'month' && monthlyActivity.length > 0 &&
-                `${format(new Date(monthlyActivity[monthlyActivity.length - 1]?.date || new Date()), 'MMM d')} – ${format(new Date(monthlyActivity[0]?.date || new Date()), 'MMM d')}`}
-              {timeView === 'year' &&
-                `${format(new Date(new Date().getFullYear(), 0, 1), 'MMM d')} – ${format(new Date(), 'MMM d, yyyy')}`}
             </div>
           </div>
 
