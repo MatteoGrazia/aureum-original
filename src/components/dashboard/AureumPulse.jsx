@@ -89,13 +89,22 @@ export default function AureumPulse({ label, value, goal, unit, index = 0, icon,
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${progress}%` }}
-          transition={{ duration: 1.2, ease: 'easeOut', delay: index * 0.08 }}
+          transition={{ duration: 1.5, ease: 'easeOut', delay: index * 0.1 }}
           className="absolute left-0 top-0 h-[1px]"
           style={{
-            background: `linear-gradient(90deg, ${progressColor}80, ${progressColor}cc, ${progressColor})`,
+            background: `linear-gradient(to right, ${progressColor}80, ${progressColor})`,
+            boxShadow: `0 0 4px ${progressColor}99, 0 0 8px ${progressColor}66`,
             willChange: 'width',
           }}
-        />
+        >
+          {/* Shimmer effect */}
+          <motion.div
+            className="absolute right-0 top-0 w-16 h-[1px]"
+            style={{ background: `linear-gradient(90deg, transparent, ${progressColor}, transparent)` }}
+            animate={{ x: [-16, 16, -16], opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
+          />
+        </motion.div>
       </div>
 
       {/* Percentage */}
