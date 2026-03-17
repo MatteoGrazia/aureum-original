@@ -40,13 +40,13 @@ export default function WeightGraph({ data }) {
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={chartData} margin={{ top: 5, right: 5, bottom: 5, left: -20 }}>
               <defs>
-                <linearGradient id="goldGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#D4AF37" stopOpacity={0.3} />
-                  <stop offset="100%" stopColor="#D4AF37" stopOpacity={0} />
+                <linearGradient id="blueGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#8ECAE6" stopOpacity={0.3} />
+                  <stop offset="100%" stopColor="#8ECAE6" stopOpacity={0} />
                 </linearGradient>
-                <filter id="goldGlow" x="-50%" y="-50%" width="200%" height="200%">
+                <filter id="blueGlow" x="-50%" y="-50%" width="200%" height="200%">
                   <feGaussianBlur stdDeviation="3" result="blur" />
-                  <feFlood floodColor="#D4AF37" floodOpacity="0.5" />
+                  <feFlood floodColor="#8ECAE6" floodOpacity="0.5" />
                   <feComposite in2="blur" operator="in" />
                   <feMerge>
                     <feMergeNode />
