@@ -8,18 +8,19 @@ const BLUE_BG = 'rgba(178, 216, 216, 0.18)';
 const BLUE_WAVE = 'rgba(178, 216, 216, 0.22)';
 
 export default function WaterTracker({ glasses, goal, onAdd, onRemove }) {
-  // Use a ref to track the "committed" server value to avoid animation reset on refetch
-  const serverGlasses = useRef(glasses);
   const [localGlasses, setLocalGlasses] = useState(glasses);
   const lastInteractionRef = useRef(0);
+  // Track whether the initial server value has been loaded (non-zero)
+  const initializedRef = useRef(glasses > 0);
 
-  // Only sync from server if no recent user interaction (within 2.5s)
-  // and only when server value actually changed
   useEffect(() => {
-    if (glasses !== serverGlasses.current) {
-      serverGlasses.current = glasses;
-    }
-    if (Date.now() - lastInteractionRef.current > 2500) {
+    const timeSinceInteraction = Date.now() - lastInteractionRef.current;
+    if (timeSinceInteraction > 2500) {
+      // Suppress the "jump from 0 to N" animation on first load
+      // by setting without triggering framer-motion transition
+      if (!initializedRef.current && glasses > 0) {
+        initializedRef.current = true;
+      }
       setLocalGlasses(glasses);
     }
   }, [glasses]);
