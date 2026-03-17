@@ -768,13 +768,25 @@ export default function Nutrition() {
 
           return (
             <VoidCard key={type}>
-              <div className="flex items-center justify-between mb-3">
+              <div
+                className="flex items-center justify-between mb-3 cursor-pointer"
+                onClick={() => { setSelectedMeal(type); document.querySelector('input[type="text"]')?.focus(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+              >
                 <div className="flex items-center gap-2">
                   <Icon className="w-4 h-4" style={{ color: iconColors[type] }} strokeWidth={1.5} />
                   <span className="text-white capitalize" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>{type}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-white text-sm" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>{mealCalories} kcal</span>
+                  <div
+                    className="w-7 h-7 rounded-full flex items-center justify-center"
+                    style={{ background: 'rgba(212,175,55,0.1)', border: '0.5px solid rgba(212,175,55,0.3)' }}
+                    title={`Add to ${type}`}
+                  >
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#D4AF37" strokeWidth="1.8" strokeLinecap="round">
+                      <line x1="6" y1="1" x2="6" y2="11"/><line x1="1" y1="6" x2="11" y2="6"/>
+                    </svg>
+                  </div>
                   <CopyFromYesterdayButton 
                     mealType={type} 
                     selectedDate={selectedDate}

@@ -182,7 +182,7 @@ export default function Dashboard() {
       transition={{ duration: 0.3 }}
       className="min-h-screen relative overflow-x-hidden bg-[#080808]">
       <VoidBackground />
-      {showWelcome && <WelcomeModal onComplete={handleWelcomeComplete} />}
+      {showWelcome && <OnboardingModal onComplete={handleWelcomeComplete} />}
       
       <div className="relative z-10 px-6 pt-6 pb-4">
       
