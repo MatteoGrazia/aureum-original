@@ -104,9 +104,9 @@ export default function WeightTrendMini({ weightHistory }) {
           <LineChart data={data} margin={{ top: 8, right: 8, bottom: 5, left: 5 }} onClick={handleClick}>
             <defs>
               <linearGradient id="goldLineGradient" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stopColor="#D4AF37" stopOpacity="0.3" />
-                <stop offset="50%" stopColor="#D4AF37" stopOpacity="1" />
-                <stop offset="100%" stopColor="#D4AF37" stopOpacity="0.3" />
+                <stop offset="0%" stopColor="#8ECAE6" stopOpacity="0.3" />
+                <stop offset="50%" stopColor="#8ECAE6" stopOpacity="1" />
+                <stop offset="100%" stopColor="#8ECAE6" stopOpacity="0.3" />
               </linearGradient>
               <filter id="goldGlow">
                 <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
