@@ -318,9 +318,9 @@ export default function OnboardingModal({ onComplete }) {
                     onClick={() => set('gender', g)}
                     className="py-3 rounded-xl capitalize text-sm transition-all"
                     style={{
-                      background: data.gender === g ? 'rgba(212,175,55,0.12)' : 'rgba(212,175,55,0.04)',
-                      border: `0.5px solid ${data.gender === g ? 'rgba(212,175,55,0.55)' : 'rgba(212,175,55,0.15)'}`,
-                      color: data.gender === g ? '#D4AF37' : 'rgba(255,255,255,0.4)',
+                      background: data.gender === g ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.03)',
+                      border: `0.5px solid ${data.gender === g ? 'rgba(212,175,55,0.5)' : 'rgba(255,255,255,0.08)'}`,
+                      color: data.gender === g ? '#D4AF37' : 'rgba(255,255,255,0.35)',
                       fontFamily: 'Montserrat, sans-serif',
                     }}
                   >
