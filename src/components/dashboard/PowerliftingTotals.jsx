@@ -58,9 +58,10 @@ export default function PowerliftingTotals({ bodyweight = 80 }) {
       transition={{ duration: 0.3 }}
       className="mb-6 rounded-2xl overflow-hidden"
       style={{
-        background: 'rgba(18,14,4,0.85)',
-        border: '0.5px solid rgba(212,175,55,0.35)',
-        boxShadow: '0 0 30px rgba(212,175,55,0.08), inset 0 0 30px rgba(212,175,55,0.03)',
+        background: 'rgba(255,255,255,0.03)',
+        backdropFilter: 'blur(20px) saturate(180%)',
+        border: '0.5px solid rgba(212,175,55,0.2)',
+        boxShadow: '0 20px 50px rgba(0,0,0,0.6)',
       }}
     >
       {/* Header */}
