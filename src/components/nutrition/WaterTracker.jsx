@@ -56,6 +56,7 @@ export default function WaterTracker({ glasses, goal, onAdd, onRemove }) {
           originY: 1,
           pointerEvents: 'none',
         }}
+        initial={{ scaleY: pct }}
         animate={{ scaleY: pct }}
         transition={{ duration: 0.55, ease: 'easeOut' }}
       />
