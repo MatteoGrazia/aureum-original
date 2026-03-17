@@ -544,7 +544,7 @@ export default function OnboardingModal({ onComplete }) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
               className="rounded-2xl p-4 text-left space-y-2"
-              style={{ background: 'rgba(212,175,55,0.06)', border: '0.5px solid rgba(212,175,55,0.18)' }}
+              style={{ background: 'rgba(255,255,255,0.04)', border: '0.5px solid rgba(212,175,55,0.18)' }}
             >
               {[
                 { label: 'Goal', value: GOALS.find(g => g.value === data.goal)?.label },
