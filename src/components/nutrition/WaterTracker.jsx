@@ -10,20 +10,20 @@ const BLUE_WAVE = 'rgba(178, 216, 216, 0.22)';
 export default function WaterTracker({ glasses, goal, onAdd, onRemove }) {
   const [localGlasses, setLocalGlasses] = useState(glasses);
   const lastInteractionRef = useRef(0);
-  // Track whether the initial server value has been loaded (non-zero)
-  const initializedRef = useRef(glasses > 0);
+  // Skip animation on the very first server sync (avoids fill → reset flash)
+  const mountedRef = useRef(false);
 
   useEffect(() => {
     const timeSinceInteraction = Date.now() - lastInteractionRef.current;
     if (timeSinceInteraction > 2500) {
-      // Suppress the "jump from 0 to N" animation on first load
-      // by setting without triggering framer-motion transition
-      if (!initializedRef.current && glasses > 0) {
-        initializedRef.current = true;
-      }
       setLocalGlasses(glasses);
     }
   }, [glasses]);
+
+  useEffect(() => {
+    // Mark as mounted after first render so we can control initial animation
+    mountedRef.current = true;
+  }, []);
 
   const safeGoal = Math.max(goal, 1);
   const pct = Math.min(localGlasses / safeGoal, 1);
