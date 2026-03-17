@@ -86,7 +86,7 @@ export default function WorkoutHero({ logs = [], bodyweight = 80 }) {
                 src={imgUrls[lift]}
                 alt={lift}
                 className="mx-auto mb-1"
-                style={{ width: 48, height: 48, objectFit: 'contain', filter: 'brightness(0) invert(0.7) sepia(0.2) saturate(0.5) hue-rotate(240deg)' }}
+                style={{ width: 48, height: 48, objectFit: 'contain', mixBlendMode: 'screen', filter: 'invert(1)' }}
               />
               <p className="text-white text-base" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 300 }}>
                 {best[lift] || '—'}
