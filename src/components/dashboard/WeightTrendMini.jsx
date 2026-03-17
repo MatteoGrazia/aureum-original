@@ -154,9 +154,9 @@ export default function WeightTrendMini({ weightHistory }) {
             <span
               className="inline-block px-3 py-1 rounded-lg text-xs"
               style={{
-                border: '0.5px solid rgba(212,175,55,0.45)',
-                background: 'rgba(212,175,55,0.07)',
-                color: '#D4AF37',
+                border: '0.5px solid rgba(142,202,230,0.45)',
+                background: 'rgba(142,202,230,0.07)',
+                color: '#8ECAE6',
                 fontFamily: 'Montserrat, sans-serif',
               }}
             >
