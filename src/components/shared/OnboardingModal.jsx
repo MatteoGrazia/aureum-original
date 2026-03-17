@@ -178,18 +178,14 @@ export default function OnboardingModal({ onComplete }) {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
+        transition={{ duration: 0.4 }}
         className="fixed inset-0 z-[100] flex flex-col items-center justify-center"
-        style={{
-          background: 'radial-gradient(ellipse 120% 100% at 50% 0%, rgba(212,175,55,0.08) 0%, rgba(8,8,8,1) 60%)',
-          backgroundColor: '#080808',
-        }}
+        style={{ backgroundColor: '#080808' }}
       >
-        {/* Ambient glow */}
-        <motion.div
+        {/* Subtle ambient glow — same as app bg */}
+        <div
           className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full pointer-events-none"
-          style={{ background: 'radial-gradient(circle, rgba(212,175,55,0.12) 0%, transparent 70%)', filter: 'blur(60px)' }}
-          animate={{ opacity: [0.5, 1, 0.5] }}
-          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+          style={{ background: 'radial-gradient(circle, rgba(212,175,55,0.05) 0%, transparent 70%)', filter: 'blur(80px)' }}
         />
 
         <div className="relative z-10 flex flex-col items-center px-8 text-center">
