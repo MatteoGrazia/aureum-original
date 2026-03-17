@@ -37,7 +37,7 @@ export default function Dashboard() {
     },
     staleTime: 2 * 60 * 1000,
     gcTime: 5 * 60 * 1000,
-    refetchInterval: 30000 // Refetch every 30 seconds
+    refetchInterval: 30000
   });
 
   // Listen for Google Fit sync events
@@ -69,7 +69,7 @@ export default function Dashboard() {
     },
     staleTime: 10 * 60 * 1000,
     gcTime: 15 * 60 * 1000,
-    refetchInterval: 60000 // Refetch every 60 seconds
+    refetchInterval: 60000
   });
 
   const { data: todaysFoodLogs, isLoading: foodLoading } = useQuery({
@@ -98,45 +98,17 @@ export default function Dashboard() {
     gcTime: 15 * 60 * 1000
   });
 
+  // Show onboarding for ALL users — always shown until completed
   useEffect(() => {
-    if (profile === null) {
-      const checkProfile = async () => {
-        const profiles = await base44.entities.UserProfile.filter({});
-        if (profiles.length === 0) {
-          setShowWelcome(true);
-        }
-      };
-      checkProfile();
-    } else if (profile) {
-      // Check if this is a new user (no basic profile data)
-      const isNewUser = !profile.height && !profile.current_weight && !profile.permissions_requested;
-      
-      if (isNewUser) {
-        setShowWelcome(true);
-      }
+    if (!profileLoading) {
+      setShowWelcome(true);
     }
-  }, [profile]);
+  }, [profileLoading]);
 
   const handleWelcomeComplete = async () => {
-    try {
-      const profiles = await base44.entities.UserProfile.filter({});
-      if (profiles.length > 0) {
-        await base44.entities.UserProfile.update(profiles[0].id, { permissions_requested: true });
-      } else {
-        await base44.entities.UserProfile.create({
-          permissions_requested: true,
-          maintenance_calories: 2000,
-          daily_step_goal: 10000
-        });
-      }
-    } catch (error) {
-      console.error(error);
-    }
     setShowWelcome(false);
     queryClient.invalidateQueries(['userProfile']);
   };
-
-
 
   const maintenanceCalories = profile?.maintenance_calories || 2000;
   const activityCalories = dailyActivity?.calories_burned || 0;
@@ -146,9 +118,6 @@ export default function Dashboard() {
   const workoutVolume = todaysWorkout?.total_volume || 0;
   const waterGoal = profile?.water_goal || 2.5;
   const waterUnit = profile?.water_unit || 'liters';
-
-  // Pulse stats are now defined inline in the JSX for better icon handling
-
 
   const handleUpdate = () => {
     refetchActivity();
