@@ -72,11 +72,11 @@ export default function WeightGraph({ data }) {
               <Line
                 type="monotone"
                 dataKey="weight"
-                stroke="#D4AF37"
+                stroke="#8ECAE6"
                 strokeWidth={2}
-                dot={{ fill: '#D4AF37', strokeWidth: 0, r: 3 }}
-                activeDot={{ r: 6, fill: '#D4AF37', filter: 'url(#goldGlow)' }}
-                filter="url(#goldGlow)"
+                dot={{ fill: '#8ECAE6', strokeWidth: 0, r: 3 }}
+                activeDot={{ r: 6, fill: '#8ECAE6', filter: 'url(#blueGlow)' }}
+                filter="url(#blueGlow)"
               />
             </LineChart>
           </ResponsiveContainer>
