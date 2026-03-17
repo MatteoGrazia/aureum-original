@@ -376,8 +376,8 @@ export default function OnboardingModal({ onComplete }) {
                     onClick={() => set('activity', level.value)}
                     className="w-full flex items-center gap-4 px-4 py-3 rounded-2xl transition-all text-left"
                     style={{
-                      background: isSelected ? 'rgba(212,175,55,0.1)' : 'rgba(212,175,55,0.03)',
-                      border: `0.5px solid ${isSelected ? 'rgba(212,175,55,0.5)' : 'rgba(212,175,55,0.12)'}`,
+                      background: isSelected ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0.02)',
+                      border: `0.5px solid ${isSelected ? 'rgba(212,175,55,0.45)' : 'rgba(255,255,255,0.07)'}`,
                     }}
                   >
                     <div className="flex-1">
