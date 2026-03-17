@@ -453,16 +453,17 @@ export default function OnboardingModal({ onComplete }) {
                     <div
                       className="w-20 h-20 rounded-xl overflow-hidden flex items-center justify-center"
                       style={{
-                        background: isSelected ? 'rgba(255,255,255,0.92)' : 'rgba(255,255,255,0.06)',
-                        border: `0.5px solid ${isSelected ? 'rgba(212,175,55,0.4)' : 'rgba(255,255,255,0.08)'}`,
-                        transition: 'background 0.25s, border-color 0.25s',
+                        background: isSelected ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.06)',
+                        border: `0.5px solid ${isSelected ? 'rgba(212,175,55,0.35)' : 'rgba(255,255,255,0.08)'}`,
+                        transition: 'background 0.2s ease, border-color 0.2s ease',
+                        willChange: 'auto',
                       }}
                     >
                       <img
                         src={goal.img}
                         alt={goal.label}
                         className="w-16 h-16 object-contain"
-                        style={{ filter: isSelected ? 'none' : 'brightness(0) invert(1) opacity(0.25)' }}
+                        style={{ opacity: isSelected ? 1 : 0.2 }}
                       />
                     </div>
                     <p
