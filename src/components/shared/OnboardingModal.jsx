@@ -61,11 +61,11 @@ function ProgressBar({ step, total }) {
   );
 }
 
-// Gold-accented input
+// Glass input — matches app VoidCard style
 function GoldInput({ label, type = 'text', value, onChange, placeholder, min, max }) {
   return (
     <div>
-      <label className="block text-[10px] uppercase tracking-[0.22em] mb-2" style={{ color: 'rgba(212,175,55,0.7)', fontFamily: 'Montserrat, sans-serif' }}>
+      <label className="block text-[10px] uppercase tracking-[0.22em] mb-2" style={{ color: 'rgba(255,255,255,0.35)', fontFamily: 'Montserrat, sans-serif' }}>
         {label}
       </label>
       <input
@@ -77,8 +77,8 @@ function GoldInput({ label, type = 'text', value, onChange, placeholder, min, ma
         max={max}
         className="w-full px-4 py-3 rounded-xl outline-none text-white text-sm"
         style={{
-          background: 'rgba(212,175,55,0.06)',
-          border: '0.5px solid rgba(212,175,55,0.3)',
+          background: 'rgba(255,255,255,0.05)',
+          border: '0.5px solid rgba(212,175,55,0.2)',
           fontFamily: 'Montserrat, sans-serif',
         }}
       />
