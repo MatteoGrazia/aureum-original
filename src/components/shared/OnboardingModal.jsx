@@ -362,7 +362,7 @@ export default function OnboardingModal({ onComplete }) {
             className="space-y-4"
           >
             <div>
-              <p className="text-[10px] uppercase tracking-[0.3em] mb-1" style={{ color: 'rgba(212,175,55,0.5)', fontFamily: 'Montserrat, sans-serif' }}>Step 2 of 3</p>
+              <p className="text-[10px] uppercase tracking-[0.3em] mb-1" style={{ color: 'rgba(255,255,255,0.3)', fontFamily: 'Montserrat, sans-serif' }}>Step 2 of 3</p>
               <h2 className="text-xl text-white mb-1" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 300 }}>Activity Level</h2>
               <p className="text-white/30 text-xs" style={{ fontFamily: 'Montserrat, sans-serif' }}>How active are you on a typical week?</p>
             </div>
