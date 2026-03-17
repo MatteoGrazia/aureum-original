@@ -487,7 +487,7 @@ export default function Workouts() {
               whileTap={{ scale: 0.93 }}
               className="fixed right-5 z-50 flex items-center justify-center rounded-full"
               style={{
-                bottom: 'calc(5.5rem + env(safe-area-inset-bottom, 0px))',
+                bottom: 100,
                 width: 56,
                 height: 56,
                 background: 'linear-gradient(135deg, #D4AF37 0%, #D4AF37 100%)',
