@@ -128,7 +128,7 @@ export default function WeightTrendMini({ weightHistory }) {
                   key={props.index}
                   {...props}
                   selectedIndex={selectedIndex}
-                  color="#D4AF37"
+                  color="#8ECAE6"
                 />
               )}
               activeDot={false}
