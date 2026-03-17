@@ -303,7 +303,7 @@ export default function OnboardingModal({ onComplete }) {
             className="space-y-5"
           >
             <div>
-              <p className="text-[10px] uppercase tracking-[0.3em] mb-1" style={{ color: 'rgba(212,175,55,0.5)', fontFamily: 'Montserrat, sans-serif' }}>Step 1 of 3</p>
+              <p className="text-[10px] uppercase tracking-[0.3em] mb-1" style={{ color: 'rgba(255,255,255,0.3)', fontFamily: 'Montserrat, sans-serif' }}>Step 1 of 3</p>
               <h2 className="text-xl text-white mb-1" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 300 }}>The Basics</h2>
               <p className="text-white/30 text-xs" style={{ fontFamily: 'Montserrat, sans-serif' }}>We'll use this to calculate your exact calorie needs.</p>
             </div>
