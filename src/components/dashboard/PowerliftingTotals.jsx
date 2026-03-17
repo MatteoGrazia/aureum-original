@@ -69,7 +69,7 @@ export default function PowerliftingTotals({ bodyweight = 80 }) {
         className="px-5 pt-4 pb-2 flex items-center justify-between"
         style={{ borderBottom: '0.5px solid rgba(212,175,55,0.12)' }}
       >
-        <p className="text-[10px] uppercase tracking-[0.3em]" style={{ color: '#D4AF37', fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}>
+        <p className="text-[10px] uppercase tracking-[0.3em]" style={{ color: '#FFFFFF', fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}>
           Powerlifting Totals
         </p>
         <p className="text-[10px] uppercase tracking-[0.15em] text-white/20" style={{ fontFamily: 'Montserrat, sans-serif' }}>
