@@ -66,6 +66,7 @@ export default function WaterTracker({ glasses, goal, onAdd, onRemove }) {
         <motion.div
           className="absolute left-0 right-0 overflow-hidden pointer-events-none"
           style={{ height: 28 }}
+          initial={{ bottom: `calc(${pct * 100}% - 14px)` }}
           animate={{ bottom: `calc(${pct * 100}% - 14px)` }}
           transition={{ duration: 0.55, ease: 'easeOut' }}
         >
