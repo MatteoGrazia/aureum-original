@@ -518,7 +518,7 @@ export default function OnboardingModal({ onComplete }) {
             className="text-center space-y-6"
           >
             <div>
-              <p className="text-[10px] uppercase tracking-[0.3em] mb-3" style={{ color: 'rgba(212,175,55,0.5)', fontFamily: 'Montserrat, sans-serif' }}>Your Daily Target</p>
+              <p className="text-[10px] uppercase tracking-[0.3em] mb-3" style={{ color: 'rgba(255,255,255,0.3)', fontFamily: 'Montserrat, sans-serif' }}>Your Daily Target</p>
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
