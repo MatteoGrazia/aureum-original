@@ -79,27 +79,47 @@ export default function ChronosOrbital({ calories, caloriesGoal, steps, stepsGoa
                 transition={{ duration: 1.5, ease: 'easeOut', delay: index * 0.12 }}
               />
 
-              {/* Shimmer arc — small bright arc at the leading tip of the fill */}
+              {/* Pulse dot at the leading tip of the arc */}
               {progress > 0 && (
-                <motion.circle
-                  cx={orbital.size / 2}
-                  cy={orbital.size / 2}
-                  r={r}
-                  fill="none"
-                  stroke={orbital.color}
-                  strokeWidth={isDarkMode ? "3" : "3.5"}
-                  strokeLinecap="round"
-                  strokeDasharray={`${circumference * 0.04} ${circumference}`}
-                  initial={{ strokeDashoffset: circumference, strokeOpacity: 0 }}
-                  animate={{
-                    strokeDashoffset: strokeDashoffset - circumference * 0.02,
-                    strokeOpacity: [0, 0.9, 0.4, 0.9, 0],
-                  }}
-                  transition={{
-                    strokeDashoffset: { duration: 1.5, ease: 'easeOut', delay: index * 0.12 },
-                    strokeOpacity: { duration: 2, repeat: Infinity, ease: 'easeInOut', delay: index * 0.12 + 1.5 },
-                  }}
-                />
+                <>
+                  {/* Base dot */}
+                  <motion.circle
+                    cx={orbital.size / 2}
+                    cy={orbital.size / 2}
+                    r={r}
+                    fill="none"
+                    stroke={orbital.color}
+                    strokeWidth="4"
+                    strokeLinecap="round"
+                    strokeDasharray={`1 ${circumference}`}
+                    initial={{ strokeDashoffset: circumference }}
+                    animate={{ strokeDashoffset: strokeDashoffset - 0.5 }}
+                    transition={{ duration: 1.5, ease: 'easeOut', delay: index * 0.12 }}
+                    opacity="0.9"
+                  />
+                  {/* Pulsing ring expanding outward */}
+                  <motion.circle
+                    cx={orbital.size / 2}
+                    cy={orbital.size / 2}
+                    r={r}
+                    fill="none"
+                    stroke={orbital.color}
+                    strokeWidth="8"
+                    strokeLinecap="round"
+                    strokeDasharray={`1 ${circumference}`}
+                    initial={{ strokeDashoffset: circumference, strokeOpacity: 0 }}
+                    animate={{
+                      strokeDashoffset: strokeDashoffset - 0.5,
+                      strokeOpacity: [0, 0.7, 0],
+                      strokeWidth: ['4px', '12px', '4px'],
+                    }}
+                    transition={{
+                      strokeDashoffset: { duration: 1.5, ease: 'easeOut', delay: index * 0.12 },
+                      strokeOpacity: { duration: 1.6, repeat: Infinity, ease: 'easeOut', delay: index * 0.12 + 1.5 },
+                      strokeWidth: { duration: 1.6, repeat: Infinity, ease: 'easeOut', delay: index * 0.12 + 1.5 },
+                    }}
+                  />
+                </>
               )}
             </svg>
           </div>

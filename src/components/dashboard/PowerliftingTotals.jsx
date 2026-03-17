@@ -72,7 +72,7 @@ export default function PowerliftingTotals({ bodyweight = 80 }) {
         <p className="text-[10px] uppercase tracking-[0.3em]" style={{ color: '#FFFFFF', fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}>
           Powerlifting Totals
         </p>
-        <p className="text-[10px] uppercase tracking-[0.15em] text-white/20" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+        <p className="text-[10px] uppercase tracking-[0.15em]" style={{ color: 'rgba(255,255,255,0.3)', fontFamily: 'Montserrat, sans-serif' }}>
           All Time
         </p>
       </div>
@@ -86,15 +86,12 @@ export default function PowerliftingTotals({ bodyweight = 80 }) {
               style={{
                 fontFamily: 'Montserrat, sans-serif',
                 fontWeight: 300,
-                background: best[lift] > 0 ? 'linear-gradient(135deg, #D4AF37, #D4AF37)' : undefined,
-                WebkitBackgroundClip: best[lift] > 0 ? 'text' : undefined,
-                WebkitTextFillColor: best[lift] > 0 ? 'transparent' : undefined,
-                color: best[lift] > 0 ? undefined : 'rgba(255,255,255,0.2)',
+                color: best[lift] > 0 ? '#FFFFFF' : 'rgba(255,255,255,0.2)',
               }}
             >
               {best[lift] > 0 ? `${best[lift]}` : '—'}
             </p>
-            <p className="text-[9px] text-white/25 mt-0.5 uppercase tracking-[0.1em]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            <p className="text-[9px] mt-0.5 uppercase tracking-[0.1em]" style={{ fontFamily: 'Montserrat, sans-serif', color: 'rgba(255,255,255,0.35)' }}>
               {lift}
             </p>
           </div>
@@ -107,25 +104,18 @@ export default function PowerliftingTotals({ bodyweight = 80 }) {
         style={{ borderTop: '0.5px solid rgba(212,175,55,0.12)' }}
       >
         <div>
-          <p className="text-[9px] uppercase tracking-[0.15em] text-white/25" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+          <p className="text-[9px] uppercase tracking-[0.15em]" style={{ fontFamily: 'Montserrat, sans-serif', color: 'rgba(255,255,255,0.4)' }}>
             Total
           </p>
-          <p className="text-2xl text-white" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 300 }}>
-            {total}<span className="text-sm text-white/30 ml-1">kg</span>
+          <p className="text-2xl" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 300, color: '#FFFFFF' }}>
+            {total}<span className="text-sm ml-1" style={{ color: 'rgba(255,255,255,0.4)' }}>kg</span>
           </p>
         </div>
         <div className="text-right">
-          <p className="text-[9px] uppercase tracking-[0.15em] text-white/25" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+          <p className="text-[9px] uppercase tracking-[0.15em]" style={{ fontFamily: 'Montserrat, sans-serif', color: 'rgba(255,255,255,0.4)' }}>
             Wilks Score
           </p>
-          <p
-            className="text-2xl"
-            style={{
-              fontFamily: 'Montserrat, sans-serif', fontWeight: 300,
-              background: 'linear-gradient(135deg, #D4AF37, #D4AF37)',
-              WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-            }}
-          >
+          <p className="text-2xl" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 300, color: '#FFFFFF' }}>
             {wilksScore}
           </p>
         </div>

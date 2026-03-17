@@ -109,7 +109,7 @@ export default function FoodSearch({ onSelectFood }) {
   return (
     <div className="space-y-4 w-full max-w-full overflow-visible">
       <div className="relative h-12">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: '#FFDAB9' }} />
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: '#D4AF37' }} />
         <Input
           type="text"
           placeholder="Search foods..."

@@ -104,9 +104,9 @@ export default function WeightTrendMini({ weightHistory }) {
           <LineChart data={data} margin={{ top: 8, right: 8, bottom: 5, left: 5 }} onClick={handleClick}>
             <defs>
               <linearGradient id="goldLineGradient" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stopColor="#8ECAE6" stopOpacity="0.3" />
-                <stop offset="50%" stopColor="#8ECAE6" stopOpacity="1" />
-                <stop offset="100%" stopColor="#8ECAE6" stopOpacity="0.3" />
+                <stop offset="0%" stopColor="#B2D8D8" stopOpacity="0.3" />
+                <stop offset="50%" stopColor="#B2D8D8" stopOpacity="1" />
+                <stop offset="100%" stopColor="#B2D8D8" stopOpacity="0.3" />
               </linearGradient>
               <filter id="goldGlow">
                 <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
@@ -128,7 +128,7 @@ export default function WeightTrendMini({ weightHistory }) {
                   key={props.index}
                   {...props}
                   selectedIndex={selectedIndex}
-                  color="#8ECAE6"
+                  color="#B2D8D8"
                 />
               )}
               activeDot={false}
@@ -154,9 +154,9 @@ export default function WeightTrendMini({ weightHistory }) {
             <span
               className="inline-block px-3 py-1 rounded-lg text-xs"
               style={{
-                border: '0.5px solid rgba(142,202,230,0.45)',
-                background: 'rgba(142,202,230,0.07)',
-                color: '#8ECAE6',
+                border: '0.5px solid rgba(178,216,216,0.45)',
+                background: 'rgba(178,216,216,0.07)',
+                color: '#B2D8D8',
                 fontFamily: 'Montserrat, sans-serif',
               }}
             >

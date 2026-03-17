@@ -11,7 +11,7 @@ import VoidBackground from '@/components/dashboard/VoidBackground';
 import QuickLogFAB from '@/components/dashboard/QuickLogFAB';
 import AIInsight from '@/components/dashboard/AIInsight';
 import SupplementStreak from '@/components/dashboard/SupplementStreak';
-import WelcomeModal from '@/components/shared/WelcomeModal';
+import OnboardingModal from '@/components/shared/OnboardingModal';
 import WeightTrendMini from '@/components/dashboard/WeightTrendMini';
 import PowerliftingTotals from '@/components/dashboard/PowerliftingTotals';
 
