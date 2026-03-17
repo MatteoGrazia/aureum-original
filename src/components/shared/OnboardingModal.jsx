@@ -445,8 +445,8 @@ export default function OnboardingModal({ onComplete }) {
                     onClick={() => set('goal', goal.value)}
                     className="flex flex-col items-center gap-2 px-2 py-4 rounded-2xl transition-all"
                     style={{
-                      background: isSelected ? 'rgba(212,175,55,0.1)' : 'rgba(212,175,55,0.03)',
-                      border: `0.5px solid ${isSelected ? 'rgba(212,175,55,0.55)' : 'rgba(212,175,55,0.12)'}`,
+                      background: isSelected ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0.02)',
+                      border: `0.5px solid ${isSelected ? 'rgba(212,175,55,0.45)' : 'rgba(255,255,255,0.07)'}`,
                     }}
                   >
                     {/* Goal image — white background to show the illustration */}
