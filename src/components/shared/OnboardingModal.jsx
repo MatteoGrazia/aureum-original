@@ -86,27 +86,29 @@ function GoldInput({ label, type = 'text', value, onChange, placeholder, min, ma
   );
 }
 
-// Shared modal shell
+// Shared modal shell — matches app glass-card aesthetic
 const ModalShell = ({ children }) => (
   <motion.div
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
+    transition={{ duration: 0.25 }}
     className="fixed inset-0 z-[100] flex items-end justify-center"
-    style={{ background: 'rgba(8,8,8,0.88)' }}
+    style={{ background: 'rgba(8,8,8,0.82)' }}
   >
     <motion.div
-      initial={{ y: 80, opacity: 0 }}
+      initial={{ y: 60, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ type: 'spring', damping: 32, stiffness: 280 }}
+      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
       className="w-full max-w-md rounded-t-3xl px-6 pt-8 pb-12"
       style={{
-        backdropFilter: 'blur(30px) saturate(160%)',
-        WebkitBackdropFilter: 'blur(30px) saturate(160%)',
-        background: 'rgba(12,9,3,0.97)',
-        border: '0.5px solid rgba(212,175,55,0.3)',
+        backdropFilter: 'blur(20px) saturate(140%)',
+        WebkitBackdropFilter: 'blur(20px) saturate(140%)',
+        background: 'rgba(255,255,255,0.03)',
+        border: '0.5px solid rgba(212,175,55,0.2)',
         borderBottom: 'none',
         maxHeight: '92vh',
         overflowY: 'auto',
+        willChange: 'transform',
       }}
     >
       {children}
