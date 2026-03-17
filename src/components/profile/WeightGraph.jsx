@@ -95,7 +95,7 @@ export default function WeightGraph({ data }) {
             <p className="text-[10px] uppercase" style={{ color: isDarkMode ? 'rgba(255,255,255,0.3)' : 'rgba(29,29,31,0.35)' }}>Start</p>
           </div>
           <div className="text-center">
-            <p className="text-[#D4AF37] text-lg">{chartData[chartData.length - 1]?.weight}</p>
+            <p className="text-[#8ECAE6] text-lg">{chartData[chartData.length - 1]?.weight}</p>
             <p className="text-[10px] uppercase" style={{ color: isDarkMode ? 'rgba(255,255,255,0.3)' : 'rgba(29,29,31,0.35)' }}>Current</p>
           </div>
           <div className="text-center">
