@@ -35,7 +35,7 @@ export default function Community() {
   // Upsert Athlete_Identity on consent
   const ensureAthleteIdentity = async () => {
     if (!user) return;
-    const existing = await base44.entities.Athlete_Identity.filter({ created_by: user.email });
+    const existing = await base44.entities.AthleteIdentity.filter({ created_by: user.email });
     const payload = {
       network_consent: true,
       syndicate_visible: true,
@@ -43,9 +43,9 @@ export default function Community() {
       last_active: new Date().toISOString(),
     };
     if (existing.length > 0) {
-      await base44.entities.Athlete_Identity.update(existing[0].id, payload);
+      await base44.entities.AthleteIdentity.update(existing[0].id, payload);
     } else {
-      await base44.entities.Athlete_Identity.create(payload);
+      await base44.entities.AthleteIdentity.create(payload);
     }
     queryClient.invalidateQueries(['athleteIdentity']);
   };
@@ -65,7 +65,7 @@ export default function Community() {
   // Feed data
   const { data: feed = [], isLoading: feedLoading } = useQuery({
     queryKey: ['performanceFeed'],
-    queryFn: () => base44.entities.Performance_Feed.list('-created_date', 40),
+    queryFn: () => base44.entities.PerformanceFeed.list('-created_date', 40),
     enabled: consentGranted,
     staleTime: 60 * 1000,
   });
@@ -73,7 +73,7 @@ export default function Community() {
   // Athletes for Pulse Row
   const { data: athletes = [] } = useQuery({
     queryKey: ['syndicateAthletes'],
-    queryFn: () => base44.entities.Athlete_Identity.filter({ syndicate_visible: true }, '-last_active', 20),
+    queryFn: () => base44.entities.AthleteIdentity.filter({ syndicate_visible: true }, '-last_active', 20),
     enabled: consentGranted,
     staleTime: 2 * 60 * 1000,
   });
@@ -81,7 +81,7 @@ export default function Community() {
   const handleVoltage = async (post) => {
     if (!user) return;
     const newBy = [...(post.voltage_by || []), user.email];
-    await base44.entities.Performance_Feed.update(post.id, {
+    await base44.entities.PerformanceFeed.update(post.id, {
       voltage_count: (post.voltage_count || 0) + 1,
       voltage_by: newBy,
     });
