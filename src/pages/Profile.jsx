@@ -134,6 +134,34 @@ export default function Profile() {
     base44.auth.logout('/');
   };
 
+  const handleShareProfile = () => {
+    const username = athleteIdentity?.username || user?.full_name?.replace(/\s+/g, '').toLowerCase() || 'athlete';
+    const shareUrl = `https://aureum.app/athlete/${username}`;
+    const shareData = {
+      title: `${user?.full_name || 'Athlete'} on Aureum`,
+      text: `Check out my Athlete Profile on Aureum — premium fitness tracking.`,
+      url: shareUrl,
+    };
+    if (navigator.share) {
+      navigator.share(shareData);
+    } else {
+      navigator.clipboard?.writeText(shareUrl);
+    }
+  };
+
+  const handleSyndicateToggle = async () => {
+    const next = !syndicateVisible;
+    setSyndicateVisible(next);
+    if (athleteIdentity) {
+      await base44.entities.AthleteIdentity.update(athleteIdentity.id, {
+        syndicate_visible: next,
+        network_consent: next ? athleteIdentity.network_consent : false,
+      });
+      if (!next) localStorage.removeItem('aureum_syndicate_consent');
+      refetchIdentity();
+    }
+  };
+
   const stats = [
     { label: 'Workouts', value: workoutStats?.totalWorkouts || 0 },
     { label: 'Total Volume', value: `${((workoutStats?.totalVolume || 0) / 1000).toFixed(1)}t` },
