@@ -5,7 +5,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { 
   User, Settings, Scale, Target, Ruler, Calendar,
-  LogOut, ChevronRight, Edit3, Save, Droplets
+  LogOut, ChevronRight, Edit3, Save, Droplets, Share2, Zap
 } from 'lucide-react';
 import ProfilePictureUpload from '@/components/profile/ProfilePictureUpload';
 import GlassCard from '@/components/ui/GlassCard';
@@ -19,6 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 export default function Profile() {
   const [editMode, setEditMode] = useState(false);
   const [editData, setEditData] = useState({});
+  const [syndicateVisible, setSyndicateVisible] = useState(true);
   const queryClient = useQueryClient();
 
   const { data: user } = useQuery({
