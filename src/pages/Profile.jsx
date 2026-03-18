@@ -433,6 +433,28 @@ export default function Profile() {
                     </div>
                   </div>
 
+                  {/* Syndicate Visibility */}
+                  {athleteIdentity && (
+                    <div className="flex items-center justify-between py-4 px-4 rounded-xl" style={{ background: 'rgba(178,216,216,0.06)', border: '0.5px solid rgba(178,216,216,0.18)' }}>
+                      <div>
+                        <p className="text-sm" style={{ color: '#E5E5E7', fontFamily: 'Montserrat, sans-serif' }}>Syndicate Visibility</p>
+                        <p className="text-[11px] mt-0.5" style={{ color: 'rgba(229,229,231,0.45)', fontFamily: 'Montserrat, sans-serif' }}>Appear in the community feed</p>
+                      </div>
+                      <button
+                        onClick={handleSyndicateToggle}
+                        className="relative w-12 h-6 rounded-full transition-all"
+                        style={{ background: syndicateVisible ? '#B2D8D8' : 'rgba(255,255,255,0.12)' }}
+                      >
+                        <motion.div
+                          animate={{ x: syndicateVisible ? 24 : 2 }}
+                          transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                          className="absolute top-1 w-4 h-4 rounded-full"
+                          style={{ background: syndicateVisible ? '#0a0a0a' : '#E5E5E7' }}
+                        />
+                      </button>
+                    </div>
+                  )}
+
                   <GoldButton onClick={handleSaveProfile} className="w-full flex items-center justify-center gap-2 mt-6">
                     <Save className="w-4 h-4" />
                     Save Changes
