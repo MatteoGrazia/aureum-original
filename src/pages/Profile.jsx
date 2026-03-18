@@ -51,10 +51,11 @@ export default function Profile() {
       const records = await base44.entities.AthleteIdentity.filter({});
       return records[0] || null;
     },
-    onSuccess: (data) => {
-      if (data) setSyndicateVisible(data.syndicate_visible ?? true);
-    }
   });
+
+  useEffect(() => {
+    if (athleteIdentity) setSyndicateVisible(athleteIdentity.syndicate_visible ?? true);
+  }, [athleteIdentity]);
 
   const { data: workoutStats } = useQuery({
     queryKey: ['workoutStats'],
