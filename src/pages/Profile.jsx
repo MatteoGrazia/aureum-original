@@ -197,38 +197,62 @@ export default function Profile() {
         </p>
       </motion.div>
 
-      {/* User Card */}
+      {/* Identity Card */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
         className="mb-6"
       >
-        <GlassCard className="p-6" glow>
+        <div
+          className="rounded-2xl p-6 overflow-hidden"
+          style={{
+            background: 'rgba(255,255,255,0.03)',
+            backdropFilter: 'blur(20px)',
+            border: '1px solid #D4AF37',
+            boxShadow: '0 0 40px rgba(212,175,55,0.08)',
+          }}
+        >
           <div className="flex items-center gap-4">
             <ProfilePictureUpload user={user} onUpdate={() => queryClient.invalidateQueries(['currentUser'])} />
             <div className="flex-1">
-              <h2 className="text-xl text-white" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>{user?.full_name || 'User'}</h2>
-              <p className="text-white/40 text-sm" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>{user?.email}</p>
+              <h2 className="text-xl" style={{ color: '#D4AF37', fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>{user?.full_name || 'User'}</h2>
+              <p className="text-sm mt-0.5" style={{ color: '#E5E5E7', fontFamily: 'Montserrat, sans-serif', fontWeight: 300, opacity: 0.5 }}>{user?.email}</p>
             </div>
             <button
               onClick={handleEditProfile}
-              className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center"
+              className="w-10 h-10 rounded-xl flex items-center justify-center"
+              style={{ background: 'rgba(255,255,255,0.06)', border: '0.5px solid rgba(212,175,55,0.2)' }}
             >
-              <Settings className="w-5 h-5 text-white/50" />
+              <Settings className="w-5 h-5" style={{ color: 'rgba(255,255,255,0.4)' }} />
             </button>
           </div>
 
           {/* Quick Stats */}
-          <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-white/10">
+          <div className="grid grid-cols-3 gap-4 mt-6 pt-6" style={{ borderTop: '0.5px solid rgba(212,175,55,0.18)' }}>
             {stats.map((stat) => (
               <div key={stat.label} className="text-center">
-                <p className="text-xl text-white" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>{stat.value}</p>
-                <p className="text-white/30 text-[10px] uppercase tracking-wider" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>{stat.label}</p>
+                <p className="text-xl text-white" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 300 }}>{stat.value}</p>
+                <p className="text-[10px] uppercase tracking-wider mt-1" style={{ color: '#E5E5E7', fontFamily: 'Montserrat, sans-serif', fontWeight: 400, opacity: 0.4 }}>{stat.label}</p>
               </div>
             ))}
           </div>
-        </GlassCard>
+
+          {/* Share Button */}
+          <button
+            onClick={handleShareProfile}
+            className="w-full mt-5 py-3 rounded-xl flex items-center justify-center gap-2 text-sm tracking-[0.12em] transition-all active:scale-[0.97]"
+            style={{
+              background: 'linear-gradient(135deg, #D4AF37, #9C7E46)',
+              color: '#080808',
+              fontFamily: 'Montserrat, sans-serif',
+              fontWeight: 600,
+            }}
+          >
+            <Share2 className="w-4 h-4" />
+            SHARE ATHLETE PROFILE
+          </button>
+        </div>
       </motion.div>
 
       {/* Edit Profile Modal */}
