@@ -98,12 +98,12 @@ export default function Dashboard() {
     gcTime: 15 * 60 * 1000
   });
 
-  // Show onboarding for ALL users — always shown until completed
+  // Show onboarding only for users who haven't completed it yet (no profile saved)
   useEffect(() => {
-    if (!profileLoading) {
+    if (!profileLoading && !profile) {
       setShowWelcome(true);
     }
-  }, [profileLoading]);
+  }, [profileLoading, profile]);
 
   const handleWelcomeComplete = async () => {
     setShowWelcome(false);

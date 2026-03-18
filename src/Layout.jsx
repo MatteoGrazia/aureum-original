@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from './utils';
-import { House, Utensils, Dumbbell, Activity, User, Sun, Moon } from 'lucide-react';
+import { House, Utensils, Dumbbell, Activity, User, Sun, Moon, Users } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { ThemeProvider, useTheme } from '@/components/shared/ThemeContext';
 
@@ -12,6 +12,7 @@ function LayoutInner({ children, currentPageName }) {
     { name: 'Dashboard', icon: House, page: 'Dashboard' },
     { name: 'Nutrition', icon: Utensils, page: 'Nutrition' },
     { name: 'Workouts', icon: Dumbbell, page: 'Workouts' },
+    { name: 'Community', icon: Users, page: 'Community' },
     { name: 'Activity', icon: Activity, page: 'Activity' },
     { name: 'Profile', icon: User, page: 'Profile' },
   ];
