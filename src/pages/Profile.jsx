@@ -45,6 +45,17 @@ export default function Profile() {
     queryFn: () => base44.entities.ProgressPhoto.filter({}, '-date')
   });
 
+  const { data: athleteIdentity, refetch: refetchIdentity } = useQuery({
+    queryKey: ['athleteIdentity'],
+    queryFn: async () => {
+      const records = await base44.entities.AthleteIdentity.filter({});
+      return records[0] || null;
+    },
+    onSuccess: (data) => {
+      if (data) setSyndicateVisible(data.syndicate_visible ?? true);
+    }
+  });
+
   const { data: workoutStats } = useQuery({
     queryKey: ['workoutStats'],
     queryFn: async () => {
