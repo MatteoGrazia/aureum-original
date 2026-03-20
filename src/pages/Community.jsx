@@ -33,13 +33,13 @@ export default function Community() {
   }, [consentGranted]);
 
   // Upsert Athlete_Identity on consent
-  const ensureAthleteIdentity = async () => {
+  const ensureAthleteIdentity = async (username) => {
     if (!user) return;
     const existing = await base44.entities.AthleteIdentity.filter({ created_by: user.email });
     const payload = {
       network_consent: true,
       syndicate_visible: true,
-      username: user.full_name || user.email?.split('@')[0] || 'Athlete',
+      username: username || user.full_name || user.email?.split('@')[0] || 'Athlete',
       last_active: new Date().toISOString(),
     };
     if (existing.length > 0) {
@@ -50,11 +50,11 @@ export default function Community() {
     queryClient.invalidateQueries(['athleteIdentity']);
   };
 
-  const handleAllow = async () => {
+  const handleAllow = async (username) => {
     localStorage.setItem(CONSENT_KEY, 'true');
     setConsentGranted(true);
     setShowConsent(false);
-    await ensureAthleteIdentity();
+    await ensureAthleteIdentity(username);
   };
 
   const handleDecline = () => {

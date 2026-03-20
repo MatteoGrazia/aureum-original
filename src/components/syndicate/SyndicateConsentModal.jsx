@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Zap } from 'lucide-react';
 
 export default function SyndicateConsentModal({ onAllow, onDecline }) {
+  const [username, setUsername] = useState('');
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -45,22 +46,48 @@ export default function SyndicateConsentModal({ onAllow, onDecline }) {
 
         {/* Body */}
         <p
-          className="text-center text-sm leading-relaxed mb-8"
+          className="text-center text-sm leading-relaxed mb-6"
           style={{ color: '#E5E5E7', fontFamily: 'Montserrat, sans-serif', fontWeight: 300, lineHeight: 1.7 }}
         >
           To connect with the Aureum community, we need your permission to share your workout and nutrition milestones. Your data remains yours; we only show what you achieve.
         </p>
 
+        {/* Username Input */}
+        <div className="mb-6">
+          <label
+            className="block text-[10px] uppercase tracking-[0.25em] mb-2 text-center"
+            style={{ color: 'rgba(178,216,216,0.7)', fontFamily: 'Montserrat, sans-serif' }}
+          >
+            Choose Username
+          </label>
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="athlete_username"
+            className="w-full px-4 py-3 rounded-xl text-center outline-none text-sm"
+            style={{
+              background: 'rgba(255,255,255,0.05)',
+              border: '0.5px solid rgba(178,216,216,0.3)',
+              color: '#E5E5E7',
+              fontFamily: 'Montserrat, sans-serif',
+            }}
+          />
+        </div>
+
         {/* CTA */}
         <button
-          onClick={onAllow}
+          onClick={() => username.trim() && onAllow(username.trim())}
+          disabled={!username.trim()}
           className="w-full py-4 rounded-2xl mb-4 text-sm tracking-[0.18em] font-semibold transition-all active:scale-[0.97]"
           style={{
-            background: 'linear-gradient(135deg, #B2D8D8, #8BBCBC)',
-            color: '#0a0a0a',
+            background: username.trim() ? 'linear-gradient(135deg, #B2D8D8, #8BBCBC)' : 'rgba(178,216,216,0.2)',
+            color: username.trim() ? '#0a0a0a' : 'rgba(178,216,216,0.4)',
             fontFamily: 'Montserrat, sans-serif',
             fontWeight: 600,
-            boxShadow: '0 0 30px rgba(178,216,216,0.3)',
+            boxShadow: username.trim() ? '0 0 30px rgba(178,216,216,0.3)' : 'none',
+            opacity: username.trim() ? 1 : 0.5,
+            cursor: username.trim() ? 'pointer' : 'not-allowed',
           }}
         >
           ALLOW & ENTER
