@@ -19,6 +19,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 export default function Profile() {
   const [editMode, setEditMode] = useState(false);
   const [editData, setEditData] = useState({});
+  const [newUsername, setNewUsername] = useState('');
+  const [newEmail, setNewEmail] = useState('');
+  const [followModal, setFollowModal] = useState({ open: false, type: 'followers' });
   const [syndicateVisible, setSyndicateVisible] = useState(true);
   const queryClient = useQueryClient();
 
@@ -53,9 +56,24 @@ export default function Profile() {
     },
   });
 
+  const { data: followStats = { followers: 0, following: 0 } } = useQuery({
+    queryKey: ['followStats', user?.email],
+    queryFn: async () => {
+      if (!user?.email) return { followers: 0, following: 0 };
+      const followers = await base44.entities.Follow.filter({ following_id: user.email });
+      const following = await base44.entities.Follow.filter({ follower_id: user.email });
+      return { followers: followers.length, following: following.length };
+    },
+    enabled: !!user?.email,
+  });
+
   useEffect(() => {
-    if (athleteIdentity) setSyndicateVisible(athleteIdentity.syndicate_visible ?? true);
-  }, [athleteIdentity]);
+    if (athleteIdentity) {
+      setSyndicateVisible(athleteIdentity.syndicate_visible ?? true);
+      setNewUsername(athleteIdentity.username || '');
+    }
+    if (user) setNewEmail(user.email || '');
+  }, [athleteIdentity, user]);
 
   const { data: workoutStats } = useQuery({
     queryKey: ['workoutStats'],
@@ -231,11 +249,15 @@ export default function Profile() {
 
           {/* Quick Stats */}
           <div className="grid grid-cols-3 gap-4 mt-6 pt-6" style={{ borderTop: '0.5px solid rgba(212,175,55,0.18)' }}>
-            {stats.map((stat) => (
-              <div key={stat.label} className="text-center">
+            {stats.map((stat, i) => (
+              <button
+                key={stat.label}
+                onClick={() => i < 2 ? setFollowModal({ open: true, type: i === 0 ? 'followers' : 'following' }) : null}
+                className={`text-center ${i < 2 ? 'active:scale-95 transition-transform' : ''}`}
+              >
                 <p className="text-xl text-white" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 300 }}>{stat.value}</p>
                 <p className="text-[10px] uppercase tracking-wider mt-1" style={{ color: '#E5E5E7', fontFamily: 'Montserrat, sans-serif', fontWeight: 400, opacity: 0.4 }}>{stat.label}</p>
-              </div>
+              </button>
             ))}
           </div>
 
@@ -432,6 +454,28 @@ export default function Profile() {
                         </Select>
                       </div>
                     </div>
+                  </div>
+
+                  {/* Username */}
+                  <div>
+                    <label className="block text-[10px] uppercase tracking-[0.22em] mb-2" style={{ color: 'rgba(212,175,55,0.7)', fontFamily: 'Montserrat, sans-serif' }}>Username</label>
+                    <input
+                      type="text"
+                      value={newUsername}
+                      onChange={e => setNewUsername(e.target.value)}
+                      placeholder="athlete_username"
+                      className="w-full px-4 py-3 rounded-xl outline-none text-white text-sm"
+                      style={{ background: 'rgba(255,255,255,0.05)', border: '0.5px solid rgba(212,175,55,0.2)', fontFamily: 'Montserrat, sans-serif' }}
+                    />
+                  </div>
+
+                  {/* Email (read-only info) */}
+                  <div>
+                    <label className="block text-[10px] uppercase tracking-[0.22em] mb-2" style={{ color: 'rgba(212,175,55,0.7)', fontFamily: 'Montserrat, sans-serif' }}>Email</label>
+                    <div className="w-full px-4 py-3 rounded-xl text-sm" style={{ background: 'rgba(255,255,255,0.03)', border: '0.5px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.4)', fontFamily: 'Montserrat, sans-serif' }}>
+                      {user?.email || 'N/A'}
+                    </div>
+                    <p className="text-[9px] mt-1" style={{ color: 'rgba(255,255,255,0.25)', fontFamily: 'Montserrat, sans-serif' }}>Email cannot be changed directly. Contact support if needed.</p>
                   </div>
 
                   {/* Syndicate Visibility */}
