@@ -101,27 +101,35 @@ export default function Community() {
 
       {consentGranted && (
         <div className="relative z-10 pb-28">
-          {/* Fixed Header */}
-          <div
-            className="sticky top-0 z-30 flex items-center justify-center py-5"
-            style={{
-              background: 'rgba(8,8,8,0.85)',
-              backdropFilter: 'blur(20px)',
-              borderBottom: '0.5px solid rgba(212,175,55,0.15)',
-            }}
+          {/* Header */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6 pt-6 text-center"
           >
             <h1
-              className="text-lg tracking-[0.45em]"
-              style={{ color: '#D4AF37', fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}
+              className="text-3xl tracking-[0.4em]"
+              style={{
+                fontFamily: 'Montserrat, sans-serif',
+                fontWeight: 400,
+                background: 'linear-gradient(135deg, #D4AF37 0%, #D4AF37 50%, #D4AF37 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text'
+              }}
             >
               COMMUNITY
             </h1>
-          </div>
+            <p
+              className="text-white text-[11px] uppercase tracking-[0.25em] mt-3"
+              style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
+            >
+              {format(new Date(), 'EEEE, MMMM d')}
+            </p>
+          </motion.div>
 
           {/* Pulse Row */}
-          <div className="pt-6">
-            <PulseRow athletes={athletes} />
-          </div>
+          <PulseRow athletes={athletes} />
 
           {/* Feed */}
           {feedLoading ? (
