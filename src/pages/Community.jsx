@@ -138,13 +138,13 @@ export default function Community() {
                 className="text-2xl mb-3 tracking-[0.2em]"
                 style={{ color: '#D4AF37', fontFamily: 'Montserrat, sans-serif', fontWeight: 300 }}
               >
-                THE ARENA AWAITS
+                NO ACTIVITY YET
               </p>
               <p
                 className="text-sm leading-relaxed"
                 style={{ color: '#E5E5E7', fontFamily: 'Montserrat, sans-serif', fontWeight: 300, opacity: 0.5 }}
               >
-                Complete a workout or log a meal to ignite your Syndicate presence.
+                No one has completed a workout yet.
               </p>
             </motion.div>
           ) : (

@@ -1,4 +1,4 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.20';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.21';
 
 const GOOGLE_FIT_AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
 const GOOGLE_FIT_TOKEN_URL = 'https://oauth2.googleapis.com/token';
