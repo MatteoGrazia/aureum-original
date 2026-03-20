@@ -5,6 +5,17 @@ import { differenceInHours } from 'date-fns';
 export default function PulseRow({ athletes }) {
   if (!athletes || athletes.length === 0) return null;
 
+  // Deduplicate athletes by created_by/id
+  const uniqueAthletes = React.useMemo(() => {
+    const seen = new Set();
+    return athletes.filter(a => {
+      const key = a.created_by || a.id;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }, [athletes]);
+
   return (
     <div className="px-4 mb-6">
       <p

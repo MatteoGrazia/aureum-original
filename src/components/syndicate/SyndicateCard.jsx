@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Zap, Dumbbell, Flame, Clock, TrendingUp } from 'lucide-react';
+import { Zap, Dumbbell, Flame, Clock, TrendingUp, MoreVertical, EyeOff } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { base44 } from '@/api/base44Client';
+import { useQueryClient } from '@tanstack/react-query';
 
 const haptic = () => { if (navigator.vibrate) navigator.vibrate(8); };
 
 export default function SyndicateCard({ post, currentUserEmail, onVoltage, index = 0 }) {
   const hasGivenVoltage = (post.voltage_by || []).includes(currentUserEmail);
   const [voltageFlash, setVoltageFlash] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const queryClient = useQueryClient();
 
   const handleVoltage = async () => {
     if (hasGivenVoltage) return;
@@ -16,6 +19,22 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
     setVoltageFlash(true);
     setTimeout(() => setVoltageFlash(false), 600);
     onVoltage?.(post);
+  };
+
+  const handleMute = async () => {
+    const postAuthor = post.created_by || post.athlete_id;
+    if (!postAuthor || postAuthor === currentUserEmail) return;
+    try {
+      await base44.entities.MutedUser.create({
+        muted_user_id: postAuthor,
+        muted_user_name: post.athlete_name,
+      });
+      queryClient.invalidateQueries(['mutedUsers']);
+      queryClient.invalidateQueries(['performanceFeed']);
+      setShowMenu(false);
+    } catch (err) {
+      console.error('Mute failed:', err);
+    }
   };
 
   const isWorkout = post.post_type === 'workout';
@@ -60,6 +79,39 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
             {timeAgo}
           </p>
         </div>
+        {post.created_by !== currentUserEmail && (
+          <div className="relative">
+            <button
+              onClick={() => setShowMenu(!showMenu)}
+              className="w-8 h-8 rounded-full flex items-center justify-center"
+              style={{ background: 'rgba(255,255,255,0.04)' }}
+            >
+              <MoreVertical className="w-4 h-4" style={{ color: 'rgba(255,255,255,0.3)' }} />
+            </button>
+            {showMenu && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="absolute top-10 right-0 rounded-xl overflow-hidden"
+                style={{
+                  background: 'rgba(18,12,4,0.95)',
+                  border: '0.5px solid rgba(212,175,55,0.3)',
+                  minWidth: 160,
+                }}
+              >
+                <button
+                  onClick={handleMute}
+                  className="w-full flex items-center gap-2 px-4 py-3 text-left transition-all hover:bg-white/5"
+                >
+                  <EyeOff className="w-4 h-4" style={{ color: 'rgba(255,255,255,0.4)' }} />
+                  <span className="text-sm" style={{ color: 'rgba(255,255,255,0.7)', fontFamily: 'Montserrat, sans-serif' }}>
+                    Hide posts
+                  </span>
+                </button>
+              </motion.div>
+            )}
+          </div>
+        )}
         {/* Post type badge */}
         <div
           className="px-2 py-1 rounded-lg text-[9px] uppercase tracking-[0.15em]"
