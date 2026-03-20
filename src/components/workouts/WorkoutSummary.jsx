@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Trophy, Zap, Target } from 'lucide-react';
+import { Trophy, Zap, Target, Camera, X } from 'lucide-react';
 import GoldButton from '@/components/ui/GoldButton';
 import VoidCard from '@/components/ui/VoidCard';
+import { base44 } from '@/api/base44Client';
 
 const MUSCLE_DATA = {
   'Bench Press': { primary: ['Chest'], secondary: ['Front Deltoids', 'Triceps'] },
@@ -24,6 +25,9 @@ const MUSCLE_DATA = {
 
 export default function WorkoutSummary({ summary, onDone }) {
   const { routineName, duration, totalVolume, exercises } = summary;
+  const [photos, setPhotos] = useState([]);
+  const [uploading, setUploading] = useState(false);
+  const [posting, setPosting] = useState(false);
 
   const primaryMuscles = new Set();
   const secondaryMuscles = new Set();
@@ -33,6 +37,76 @@ export default function WorkoutSummary({ summary, onDone }) {
     data.secondary.forEach(m => secondaryMuscles.add(m));
   });
   [...primaryMuscles].forEach(m => secondaryMuscles.delete(m));
+
+  const handlePhotoUpload = async (e) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+    
+    setUploading(true);
+    try {
+      const uploadedUrls = [];
+      for (const file of files) {
+        const { data } = await base44.integrations.Core.UploadFile({ file });
+        uploadedUrls.push(data.file_url);
+      }
+      setPhotos(prev => [...prev, ...uploadedUrls]);
+    } catch (error) {
+      console.error('Photo upload failed:', error);
+    }
+    setUploading(false);
+  };
+
+  const handleRemovePhoto = (idx) => {
+    setPhotos(prev => prev.filter((_, i) => i !== idx));
+  };
+
+  const handleFinish = async () => {
+    setPosting(true);
+    try {
+      // Get user data
+      const user = await base44.auth.me();
+      const profiles = await base44.entities.UserProfile.filter({});
+      const profile = profiles[0];
+      
+      // Get athlete identity
+      const identities = await base44.entities.AthleteIdentity.filter({ created_by: user.email });
+      let athleteIdentity = identities[0];
+      
+      // Create post in PerformanceFeed
+      const exercisesList = exercises
+        .filter(ex => ex.sets.some(s => s.completed))
+        .map(ex => ex.exercise_name)
+        .slice(0, 3)
+        .join(', ');
+      
+      await base44.entities.PerformanceFeed.create({
+        athlete_id: athleteIdentity?.id || user.id,
+        athlete_name: athleteIdentity?.username || user.full_name || user.email?.split('@')[0],
+        athlete_avatar: athleteIdentity?.avatar_url || profile?.avatar_url || '',
+        post_type: 'workout',
+        title: routineName || 'Workout Complete',
+        workout_name: routineName,
+        volume_kg: totalVolume,
+        duration_minutes: duration,
+        notes: `${exercisesList}${exercises.length > 3 ? ` + ${exercises.length - 3} more` : ''}`,
+        voltage_count: 0,
+        voltage_by: [],
+        photos: photos,
+        comment_count: 0,
+      });
+      
+      // Update last_active for athlete
+      if (athleteIdentity) {
+        await base44.entities.AthleteIdentity.update(athleteIdentity.id, {
+          last_active: new Date().toISOString(),
+        });
+      }
+    } catch (error) {
+      console.error('Failed to post to community:', error);
+    }
+    setPosting(false);
+    onDone();
+  };
 
   return (
     <motion.div
@@ -156,7 +230,52 @@ export default function WorkoutSummary({ summary, onDone }) {
           )}
         </VoidCard>
 
-        <GoldButton onClick={onDone} className="w-full py-4">Done</GoldButton>
+        {/* Photo Upload */}
+        <VoidCard className="mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-white text-sm" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              Add Photos (Optional)
+            </h3>
+            <label className="cursor-pointer">
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handlePhotoUpload}
+                className="hidden"
+                disabled={uploading}
+              />
+              <div className="flex items-center gap-2 px-3 py-2 rounded-lg" style={{ background: 'rgba(212,175,55,0.1)', border: '0.5px solid rgba(212,175,55,0.3)' }}>
+                <Camera className="w-4 h-4 text-[#D4AF37]" />
+                <span className="text-[#D4AF37] text-xs">{uploading ? 'Uploading...' : 'Add Photo'}</span>
+              </div>
+            </label>
+          </div>
+          
+          {photos.length > 0 && (
+            <div className="grid grid-cols-3 gap-2">
+              {photos.map((url, idx) => (
+                <div key={idx} className="relative aspect-square rounded-lg overflow-hidden">
+                  <img src={url} alt="" className="w-full h-full object-cover" />
+                  <button
+                    onClick={() => handleRemovePhoto(idx)}
+                    className="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/60 flex items-center justify-center"
+                  >
+                    <X className="w-4 h-4 text-white" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+          
+          {photos.length === 0 && (
+            <p className="text-white/40 text-xs text-center py-4">Share your progress with the community</p>
+          )}
+        </VoidCard>
+
+        <GoldButton onClick={handleFinish} disabled={posting} className="w-full py-4">
+          {posting ? 'Posting...' : 'Finish & Share'}
+        </GoldButton>
       </div>
     </motion.div>
   );
