@@ -25,7 +25,7 @@ export default function PulseRow({ athletes }) {
         Active Now
       </p>
       <div className="flex gap-4 overflow-x-auto pb-2" style={{ scrollbarWidth: 'none' }}>
-        {athletes.map((athlete, i) => {
+        {uniqueAthletes.map((athlete, i) => {
           const isRecent = athlete.last_active
             ? differenceInHours(new Date(), new Date(athlete.last_active)) < 12
             : false;
