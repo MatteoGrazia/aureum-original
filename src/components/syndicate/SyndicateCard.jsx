@@ -1,24 +1,66 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Zap, Dumbbell, Flame, Clock, TrendingUp, MoreVertical, EyeOff } from 'lucide-react';
+import { Zap, Dumbbell, Flame, Clock, TrendingUp, MoreVertical, EyeOff, Link2 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { base44 } from '@/api/base44Client';
 import { useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
+import AthleteAvatar from './AthleteAvatar';
 
 const haptic = () => { if (navigator.vibrate) navigator.vibrate(8); };
+const selectionHaptic = () => { if (navigator.vibrate) navigator.vibrate([5, 10, 5]); };
 
 export default function SyndicateCard({ post, currentUserEmail, onVoltage, index = 0 }) {
   const hasGivenVoltage = (post.voltage_by || []).includes(currentUserEmail);
   const [voltageFlash, setVoltageFlash] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  
+  const voltageCount = post.voltage_count || 0;
+  const isPulsing = voltageCount > 50;
 
   const handleVoltage = async () => {
     if (hasGivenVoltage) return;
-    haptic();
+    selectionHaptic();
     setVoltageFlash(true);
     setTimeout(() => setVoltageFlash(false), 600);
     onVoltage?.(post);
+  };
+
+  const handleGhostSync = async () => {
+    if (post.post_type !== 'workout' || !post.sets) return;
+    
+    selectionHaptic();
+    
+    // Parse workout data
+    const workoutData = {
+      routine_name: post.workout_name || post.title,
+      exercises: post.sets || [],
+      source: 'syndicate_sync'
+    };
+    
+    // Store in localStorage for Training tab
+    localStorage.setItem('aureum_ghost_sync', JSON.stringify(workoutData));
+    
+    // Navigate to Workouts
+    navigate('/Workouts');
+    
+    // Show toast notification
+    const toast = document.createElement('div');
+    toast.className = 'fixed top-20 left-1/2 -translate-x-1/2 z-[200] px-6 py-3 rounded-2xl text-sm';
+    toast.style.cssText = `
+      background: linear-gradient(135deg, #D4AF37, #9C7E46);
+      color: #080808;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      box-shadow: 0 0 30px rgba(212,175,55,0.4);
+      backdrop-filter: blur(25px);
+    `;
+    toast.textContent = 'Syndicate Data Synced. Matching performance now.';
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
   };
 
   const handleMute = async () => {
@@ -44,33 +86,39 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
     ? formatDistanceToNow(new Date(post.created_date), { addSuffix: true })
     : '';
 
+  const PULSE_KEYFRAMES = `
+    @keyframes goldPulse {
+      0%, 100% { border-color: #D4AF37; box-shadow: 0 0 20px rgba(212,175,55,0.3); }
+      50% { border-color: #F4D03F; box-shadow: 0 0 40px rgba(244,208,63,0.5); }
+    }
+  `;
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, delay: index * 0.05 }}
-      className="mx-4 mb-4 rounded-2xl overflow-hidden"
-      style={{
-        background: 'rgba(255,255,255,0.03)',
-        backdropFilter: 'blur(20px)',
-        border: '0.5px solid #D4AF37',
-      }}
-    >
+    <>
+      {isPulsing && <style>{PULSE_KEYFRAMES}</style>}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: index * 0.05 }}
+        className="mx-4 mb-4 rounded-2xl overflow-hidden"
+        style={{
+          background: 'rgba(255,255,255,0.03)',
+          backdropFilter: 'blur(25px)',
+          border: isPulsing ? '1px solid #D4AF37' : '0.5px solid #D4AF37',
+          animation: isPulsing ? 'goldPulse 2s ease-in-out infinite' : 'none'
+        }}
+      >
       {/* Header */}
       <div className="flex items-center gap-3 px-4 pt-4 pb-3" style={{ borderBottom: '0.5px solid rgba(212,175,55,0.12)' }}>
-        <div
-          className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold flex-shrink-0"
-          style={{
-            background: post.athlete_avatar
-              ? `url(${post.athlete_avatar}) center/cover`
-              : 'linear-gradient(135deg, rgba(212,175,55,0.3), rgba(178,216,216,0.2))',
-            border: '1px solid rgba(212,175,55,0.3)',
-            color: '#D4AF37',
-            fontFamily: 'Montserrat, sans-serif',
+        <AthleteAvatar 
+          athlete={{
+            avatar_url: post.athlete_avatar,
+            username: post.athlete_name,
+            last_active: post.created_date,
+            is_founder: post.is_founder
           }}
-        >
-          {!post.athlete_avatar && (post.athlete_name?.[0] || '?')}
-        </div>
+          size="md"
+        />
         <div className="flex-1 min-w-0">
           <p className="text-sm truncate" style={{ color: '#D4AF37', fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}>
             {post.athlete_name || 'Athlete'}
@@ -182,9 +230,23 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
         )}
       </div>
 
-      {/* Footer — Voltage */}
+      {/* Footer — Voltage & Ghost Sync */}
       <div className="flex items-center justify-between px-4 pb-4" style={{ borderTop: '0.5px solid rgba(212,175,55,0.08)' }}>
-        <div />
+        {post.post_type === 'workout' && (
+          <button
+            onClick={handleGhostSync}
+            className="flex items-center gap-2 px-3 py-2 rounded-xl mt-3 transition-all active:scale-95"
+            style={{
+              background: 'rgba(189,181,213,0.08)',
+              border: '0.5px solid rgba(189,181,213,0.25)'
+            }}
+          >
+            <Link2 className="w-4 h-4" style={{ color: '#BDB5D5' }} strokeWidth={1.5} />
+            <span className="text-xs" style={{ color: '#BDB5D5', fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>
+              SYNC
+            </span>
+          </button>
+        )}
         <motion.button
           onClick={handleVoltage}
           disabled={hasGivenVoltage}
@@ -210,6 +272,7 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
           </span>
         </motion.button>
       </div>
-    </motion.div>
+      </motion.div>
+    </>
   );
 }

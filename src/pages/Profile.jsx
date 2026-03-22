@@ -104,6 +104,33 @@ export default function Profile() {
     setEditMode(true);
   };
 
+  const handleUpdateUsername = async () => {
+    if (!newUsername.trim() || !athleteIdentity) return;
+    
+    // Global update: Update athlete identity
+    await base44.entities.AthleteIdentity.update(athleteIdentity.id, {
+      username: newUsername.trim(),
+      display_name: newUsername.trim()
+    });
+    
+    // Global sync: Update all historical posts
+    const allPosts = await base44.entities.PerformanceFeed.filter({ 
+      created_by: user.email 
+    });
+    
+    for (const post of allPosts) {
+      await base44.entities.PerformanceFeed.update(post.id, {
+        athlete_name: newUsername.trim()
+      });
+    }
+    
+    // Refresh queries
+    queryClient.invalidateQueries(['athleteIdentity']);
+    queryClient.invalidateQueries(['performanceFeed']);
+    
+    refetchIdentity();
+  };
+
   const handleSaveProfile = async () => {
     // Calculate maintenance calories using Mifflin-St Jeor
     let bmr = 0;
@@ -500,10 +527,27 @@ export default function Profile() {
                     </div>
                   )}
 
-                  <GoldButton onClick={handleSaveProfile} className="w-full flex items-center justify-center gap-2 mt-6">
-                    <Save className="w-4 h-4" />
-                    Save Changes
-                  </GoldButton>
+                  <div className="space-y-3">
+                    {newUsername !== (athleteIdentity?.username || '') && (
+                      <button
+                        onClick={handleUpdateUsername}
+                        className="w-full py-3 rounded-xl text-sm tracking-[0.08em] transition-all active:scale-[0.98]"
+                        style={{
+                          background: 'rgba(178,216,216,0.15)',
+                          border: '0.5px solid rgba(178,216,216,0.4)',
+                          color: '#B2D8D8',
+                          fontFamily: 'Montserrat, sans-serif',
+                          fontWeight: 500
+                        }}
+                      >
+                        Update Username Globally
+                      </button>
+                    )}
+                    <GoldButton onClick={handleSaveProfile} className="w-full flex items-center justify-center gap-2">
+                      <Save className="w-4 h-4" />
+                      Save Changes
+                    </GoldButton>
+                  </div>
                 </div>
               </GlassCard>
             </div>
