@@ -83,7 +83,7 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
             style={{
               background: post.athlete_avatar
                 ? `url(${post.athlete_avatar}) center/cover`
-                : 'linear-gradient(135deg, rgba(212,175,55,0.3), rgba(178,216,216,0.2))',
+                : 'linear-gradient(135deg, rgba(212,175,55,0.3), rgba(152,171,143,0.2))',
               border: '1px solid rgba(212,175,55,0.3)',
               color: '#D4AF37',
               fontFamily: 'Montserrat, sans-serif',
@@ -222,19 +222,19 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
             transition={{ duration: 0.3 }}
             className="flex items-center gap-2 px-4 py-2 rounded-xl mt-3 transition-all active:scale-95"
             style={{
-              background: hasGivenVoltage ? 'rgba(178,216,216,0.12)' : 'rgba(178,216,216,0.06)',
-              border: `0.5px solid ${hasGivenVoltage ? 'rgba(178,216,216,0.4)' : 'rgba(178,216,216,0.2)'}`,
+              background: hasGivenVoltage ? 'rgba(152,171,143,0.12)' : 'rgba(152,171,143,0.06)',
+              border: `0.5px solid ${hasGivenVoltage ? 'rgba(152,171,143,0.4)' : 'rgba(152,171,143,0.2)'}`,
             }}
           >
             <Zap
               className="w-4 h-4"
-              style={{ color: hasGivenVoltage ? '#B2D8D8' : 'rgba(178,216,216,0.4)' }}
+              style={{ color: hasGivenVoltage ? '#98AB8F' : 'rgba(152,171,143,0.4)' }}
               strokeWidth={1.5}
-              fill={hasGivenVoltage ? '#B2D8D8' : 'none'}
+              fill={hasGivenVoltage ? '#98AB8F' : 'none'}
             />
             <span
               className="text-xs"
-              style={{ color: hasGivenVoltage ? '#B2D8D8' : 'rgba(178,216,216,0.4)', fontFamily: 'Montserrat, sans-serif' }}
+              style={{ color: hasGivenVoltage ? '#98AB8F' : 'rgba(152,171,143,0.4)', fontFamily: 'Montserrat, sans-serif' }}
             >
               {voltageCount}
             </span>

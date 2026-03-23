@@ -293,11 +293,11 @@ export default function Profile() {
             onClick={handleShareProfile}
             className="w-full mt-5 py-3 rounded-xl flex items-center justify-center gap-2 text-sm tracking-[0.12em] transition-all active:scale-[0.97]"
             style={{
-              background: 'linear-gradient(135deg, #D4AF37, #9C7E46)',
-              color: '#080808',
+              background: 'linear-gradient(135deg, #98AB8F, #7A9470)',
+              color: '#0a0a0a',
               fontFamily: 'Montserrat, sans-serif',
               fontWeight: 600,
-            }}
+              }}
           >
             <Share2 className="w-4 h-4" />
             SHARE ATHLETE PROFILE
@@ -507,7 +507,7 @@ export default function Profile() {
 
                   {/* Syndicate Visibility */}
                   {athleteIdentity && (
-                    <div className="flex items-center justify-between py-4 px-4 rounded-xl" style={{ background: 'rgba(178,216,216,0.06)', border: '0.5px solid rgba(178,216,216,0.18)' }}>
+                    <div className="flex items-center justify-between py-4 px-4 rounded-xl" style={{ background: 'rgba(152,171,143,0.06)', border: '0.5px solid rgba(152,171,143,0.18)' }}>
                       <div>
                         <p className="text-sm" style={{ color: '#E5E5E7', fontFamily: 'Montserrat, sans-serif' }}>Syndicate Visibility</p>
                         <p className="text-[11px] mt-0.5" style={{ color: 'rgba(229,229,231,0.45)', fontFamily: 'Montserrat, sans-serif' }}>Appear in the community feed</p>
@@ -515,7 +515,7 @@ export default function Profile() {
                       <button
                         onClick={handleSyndicateToggle}
                         className="relative w-12 h-6 rounded-full transition-all"
-                        style={{ background: syndicateVisible ? '#B2D8D8' : 'rgba(255,255,255,0.12)' }}
+                        style={{ background: syndicateVisible ? '#98AB8F' : 'rgba(255,255,255,0.12)' }}
                       >
                         <motion.div
                           animate={{ x: syndicateVisible ? 24 : 2 }}
@@ -533,9 +533,9 @@ export default function Profile() {
                         onClick={handleUpdateUsername}
                         className="w-full py-3 rounded-xl text-sm tracking-[0.08em] transition-all active:scale-[0.98]"
                         style={{
-                          background: 'rgba(178,216,216,0.15)',
-                          border: '0.5px solid rgba(178,216,216,0.4)',
-                          color: '#B2D8D8',
+                          background: 'rgba(152,171,143,0.15)',
+                          border: '0.5px solid rgba(152,171,143,0.4)',
+                          color: '#98AB8F',
                           fontFamily: 'Montserrat, sans-serif',
                           fontWeight: 500
                         }}
