@@ -45,8 +45,8 @@ export default function PulseRow({ athletes }) {
                   background: athlete.avatar_url
                     ? `url(${athlete.avatar_url}) center/cover`
                     : 'linear-gradient(135deg, rgba(212,175,55,0.2), rgba(178,216,216,0.15))',
-                  border: isRecent ? '1.5px solid #B2D8D8' : '1.5px solid rgba(212,175,55,0.25)',
-                  boxShadow: isRecent ? '0 0 12px rgba(178,216,216,0.3)' : 'none',
+                  border: isRecent ? '1.5px solid #98AB8F' : '1.5px solid rgba(212,175,55,0.25)',
+                  boxShadow: isRecent ? '0 0 12px rgba(152,171,143,0.35)' : 'none',
                   color: '#D4AF37',
                   fontFamily: 'Montserrat, sans-serif',
                 }}
@@ -57,7 +57,7 @@ export default function PulseRow({ athletes }) {
               {/* Name */}
               <p
                 className="text-[10px] text-center truncate max-w-[56px]"
-                style={{ color: isRecent ? '#B2D8D8' : '#E5E5E7', fontFamily: 'Montserrat, sans-serif', opacity: isRecent ? 1 : 0.5 }}
+                style={{ color: isRecent ? '#98AB8F' : '#E5E5E7', fontFamily: 'Montserrat, sans-serif', opacity: isRecent ? 1 : 0.5 }}
               >
                 {athlete.username || 'Athlete'}
               </p>
