@@ -8,6 +8,7 @@ import VoidCard from '@/components/ui/VoidCard';
 import VoidBackground from '@/components/dashboard/VoidBackground';
 import GoldButton from '@/components/ui/GoldButton';
 import FoodSearch from '@/components/nutrition/FoodSearch';
+import AuraHero from '@/components/nutrition/AuraHero';
 import BarcodeScanner from '@/components/nutrition/BarcodeScanner';
 import MacroHeatmap from '@/components/nutrition/MacroHeatmap';
 import WaterTracker from '@/components/nutrition/WaterTracker';
@@ -371,24 +372,21 @@ export default function Nutrition() {
         </VoidCard>
         </motion.div>
 
-        {/* Calorie Summary */}
+        {/* Aura Hero — Calorie Orb */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="mb-6"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.1, duration: 0.4 }}
         >
-          <VoidCard className="text-center">
-            <p className="text-5xl text-white" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>
-              {Math.max((profile?.maintenance_calories || 2000) - totalCalories, 0)}
-            </p>
-            <p 
-              className="text-white/40 text-xs uppercase tracking-widest mt-2"
-              style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}
-            >
-              kcal remaining of {profile?.maintenance_calories || 2000}
-            </p>
-          </VoidCard>
+          <AuraHero
+            remaining={Math.max((profile?.maintenance_calories || 2000) - totalCalories, 0)}
+            goal={profile?.maintenance_calories || 2000}
+            consumed={totalCalories}
+            protein={totalProtein}
+            carbs={totalCarbs}
+            fat={totalFat}
+            macroGoals={{ protein: 150, carbs: 250, fat: 70 }}
+          />
         </motion.div>
 
       {/* Recent Meals */}
