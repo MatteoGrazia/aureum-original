@@ -138,6 +138,9 @@ function LayoutInner({ children, currentPageName }) {
         html[data-theme="light"] [class*="text-white/70"] { color: rgba(29,29,31,0.70) !important; }
         html[data-theme="light"] [class*="text-white/80"] { color: rgba(29,29,31,0.80) !important; }
 
+        /* Syndicate Sage token */
+        :root { --syndicate-sage: #98AB8F; }
+
         /* White bg overlays → subtle dark equivalents */
         html[data-theme="light"] [class*="bg-white/5"]  { background-color: rgba(0,0,0,0.03) !important; }
         html[data-theme="light"] [class*="bg-white/10"] { background-color: rgba(0,0,0,0.05) !important; }
