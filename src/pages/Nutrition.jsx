@@ -9,6 +9,7 @@ import VoidBackground from '@/components/dashboard/VoidBackground';
 import GoldButton from '@/components/ui/GoldButton';
 import FoodSearch from '@/components/nutrition/FoodSearch';
 import AuraHero from '@/components/nutrition/AuraHero';
+import MacroMicroBar, { getDominantMacroColor } from '@/components/nutrition/MacroMicroBar';
 import BarcodeScanner from '@/components/nutrition/BarcodeScanner';
 import MacroHeatmap from '@/components/nutrition/MacroHeatmap';
 import WaterTracker from '@/components/nutrition/WaterTracker';
@@ -829,7 +830,8 @@ export default function Nutrition() {
                     >
                       <div className="flex-1 min-w-0">
                         <p className="text-white text-sm truncate">{log.food_name}</p>
-                        <p className="text-xs truncate" style={{ color: '#E5E5E7' }}>
+                        <MacroMicroBar protein={log.protein || 0} carbs={log.carbs || 0} fat={log.fat || 0} className="my-1" />
+                        <p className="text-xs truncate" style={{ color: getDominantMacroColor(log.protein || 0, log.carbs || 0, log.fat || 0) }}>
                           {(() => {
                             const unit = (log.serving_unit || '').toLowerCase().trim();
                             const isGrams = unit === 'g' || unit === 'gram' || unit === 'grams';

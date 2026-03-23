@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Camera, Loader2, CheckCircle, AlertCircle, Edit3 } from 'lucide-react';
+import MacroMicroBar from './MacroMicroBar';
 import { Html5Qrcode } from 'html5-qrcode';
 import { base44 } from '@/api/base44Client';
 
@@ -364,6 +365,12 @@ export default function BarcodeScanner({ isOpen, onClose, onScan }) {
                   </div>
                 ))}
               </div>
+              <MacroMicroBar
+                protein={foundProduct.protein_100g || 0}
+                carbs={foundProduct.carbs_100g || 0}
+                fat={foundProduct.fat_100g || 0}
+                className="mb-1"
+              />
               <p className="text-white/25 text-[10px] text-center mb-4">per 100g</p>
 
               {/* Actions */}
