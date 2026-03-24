@@ -8,6 +8,8 @@ import SyndicateConsentModal from '@/components/syndicate/SyndicateConsentModal'
 import SyndicateCard from '@/components/syndicate/SyndicateCard';
 import PulseRow from '@/components/syndicate/PulseRow';
 import VoidBackground from '@/components/dashboard/VoidBackground';
+import AthleteProfileOverlay from '@/components/syndicate/AthleteProfileOverlay';
+import { AnimatePresence as APulse } from 'framer-motion';
 
 const CONSENT_KEY = 'aureum_syndicate_consent';
 
@@ -18,6 +20,7 @@ export default function Community() {
   const [consentGranted, setConsentGranted] = useState(() => {
     return localStorage.getItem(CONSENT_KEY) === 'true';
   });
+  const [pulseProfile, setPulseProfile] = useState(null);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],

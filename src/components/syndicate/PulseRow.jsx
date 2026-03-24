@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { differenceInHours } from 'date-fns';
 
-export default function PulseRow({ athletes }) {
+export default function PulseRow({ athletes, onAthleteTap }) {
   if (!athletes || athletes.length === 0) return null;
 
   // Deduplicate athletes by created_by/id
@@ -31,12 +31,13 @@ export default function PulseRow({ athletes }) {
             : false;
 
           return (
-            <motion.div
+            <motion.button
               key={athlete.id}
               initial={{ opacity: 0, scale: 0.85 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: i * 0.04, duration: 0.25 }}
-              className="flex flex-col items-center gap-1 flex-shrink-0"
+              className="flex flex-col items-center gap-1 flex-shrink-0 active:scale-90 transition-transform"
+              onClick={() => onAthleteTap?.(athlete)}
             >
               {/* Avatar ring */}
               <div
@@ -61,7 +62,7 @@ export default function PulseRow({ athletes }) {
               >
                 {athlete.username || 'Athlete'}
               </p>
-            </motion.div>
+            </motion.button>
           );
         })}
       </div>
