@@ -144,11 +144,12 @@ function LazyAnatomical({ src, alt, fallback, customSrc, customSrcDark, isDarkMo
     return () => obs.disconnect();
   }, []);
 
+  const isCustomImage = isDarkMode ? !!(customSrcDark || customSrc) : !!customSrc;
   const imageUrl = isDarkMode ? (customSrcDark || customSrc || src) : (customSrc || src);
 
   const darkFilter = 'invert(1) hue-rotate(60deg) saturate(0.6) brightness(1.1)';
   const lightFilter = 'hue-rotate(240deg) saturate(0.45) brightness(1.05)';
-  const imgFilter = isDarkMode ? darkFilter : lightFilter;
+  const imgFilter = isCustomImage ? 'none' : (isDarkMode ? darkFilter : lightFilter);
 
   return (
     <div ref={ref} style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -418,10 +419,12 @@ export default function ExercisePicker({ exercises, onSelect, onClose, mode = 'a
                      width: '100%', 
                      height: '100%', 
                      objectFit: 'cover',
-                      filter: isDarkMode
-                        ? 'invert(1) hue-rotate(60deg) saturate(0.6) brightness(1.1)'
-                        : 'hue-rotate(240deg) saturate(0.45) brightness(1.05)'
-                    }}
+                     filter: (selected.image_url || selected.image_url_dark)
+                       ? 'none'
+                       : (isDarkMode
+                         ? 'invert(1) hue-rotate(60deg) saturate(0.6) brightness(1.1)'
+                         : 'hue-rotate(240deg) saturate(0.45) brightness(1.05)')
+                   }}
                     onError={e => { e.target.style.display = 'none'; e.target.parentNode.querySelector('.fallback-icon') && (e.target.parentNode.querySelector('.fallback-icon').style.display = 'flex'); }}
                    />
                    <div className="fallback-icon" style={{ display: 'none', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', position: 'absolute', top: 0, left: 0 }}>
