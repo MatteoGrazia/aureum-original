@@ -261,6 +261,7 @@ export default function AthleteProfileOverlay({ athleteName, athleteAvatar, athl
             <div className="px-4 py-1 rounded-full text-[10px] uppercase tracking-[0.18em] mb-3" style={{ background: 'rgba(212,175,55,0.08)', border: '0.5px solid rgba(212,175,55,0.25)' }}>
               <span style={{ color: '#D4AF37', fontFamily: 'Montserrat, sans-serif' }}>{ascensionScore.toLocaleString()} AP</span>
               <span style={{ color: 'rgba(212,175,55,0.45)', fontFamily: 'Montserrat, sans-serif' }}> · {ascensionCredits} Credits</span>
+            </div>
 
             {/* Stats Row */}
             <div className="flex gap-8 mt-2 mb-5">
