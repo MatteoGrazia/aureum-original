@@ -1,13 +1,36 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Zap, Dumbbell, Flame, Clock, TrendingUp, MoreVertical, EyeOff, MessageCircle, Send } from 'lucide-react';
+import { Dumbbell, Flame, Clock, TrendingUp, MoreVertical, EyeOff, MessageCircle, Send } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getDominantMacroColor } from '@/components/nutrition/MacroMicroBar';
 import AthleteProfileOverlay from './AthleteProfileOverlay';
 
-const haptic = () => { if (navigator.vibrate) navigator.vibrate(8); };
+// Heavy Thud haptic — simulates the weight of a gold medal
+const haptic = () => { if (navigator.vibrate) navigator.vibrate([40, 10, 60]); };
+
+// Minimalist Laurel Wreath SVG
+function LaurelIcon({ filled, color, size = 18 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {/* Left branch */}
+      <path d="M12 19 C10 17, 6 15, 4 11 C3 8, 4 5, 7 4 C8 6, 8 8, 9 10 C9.5 11.5, 10.5 13, 12 14"
+        stroke={color} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"
+        fill={filled ? color : 'none'} fillOpacity={filled ? 0.25 : 0} />
+      <path d="M7 4 C7.5 6.5, 8.5 8.5, 9 10" stroke={color} strokeWidth="1" strokeLinecap="round" />
+      <path d="M4.5 9.5 C6 9, 7.5 9.5, 9 10" stroke={color} strokeWidth="1" strokeLinecap="round" />
+      {/* Right branch */}
+      <path d="M12 19 C14 17, 18 15, 20 11 C21 8, 20 5, 17 4 C16 6, 16 8, 15 10 C14.5 11.5, 13.5 13, 12 14"
+        stroke={color} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"
+        fill={filled ? color : 'none'} fillOpacity={filled ? 0.25 : 0} />
+      <path d="M17 4 C16.5 6.5, 15.5 8.5, 15 10" stroke={color} strokeWidth="1" strokeLinecap="round" />
+      <path d="M19.5 9.5 C18 9, 16.5 9.5, 15 10" stroke={color} strokeWidth="1" strokeLinecap="round" />
+      {/* Base ribbon */}
+      <path d="M10 19.5 Q12 21 14 19.5" stroke={color} strokeWidth="1.2" strokeLinecap="round" fill="none" />
+    </svg>
+  );
+}
 
 export default function SyndicateCard({ post, currentUserEmail, onVoltage, index = 0 }) {
   const hasGivenVoltage = (post.voltage_by || []).includes(currentUserEmail);
@@ -66,14 +89,14 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
   const isWorkout = post.post_type === 'workout';
   const isNutrition = post.post_type === 'nutrition';
   const voltageCount = post.voltage_count || 0;
-  const isHighVoltage = voltageCount > 50;
+  const isHallOfFame = voltageCount >= 100;
   const commentCount = post.comment_count || 0;
 
   const timeAgo = post.created_date
     ? formatDistanceToNow(new Date(post.created_date), { addSuffix: true })
     : '';
 
-  const cardBorderStyle = isHighVoltage
+  const cardBorderStyle = isHallOfFame
     ? { border: '0.5px solid #D4AF37', animation: 'goldShimmer 2s ease-in-out infinite' }
     : { border: '0.5px solid #D4AF37' };
 
@@ -103,9 +126,19 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, delay: index * 0.05 }}
-        className="mx-4 mb-4 rounded-2xl overflow-hidden"
+        className="mx-4 mb-4 rounded-2xl overflow-hidden relative"
         style={{ background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(25px)', ...cardBorderStyle }}
       >
+        {/* Gold Leaf texture overlay for Hall of Fame posts */}
+        {isHallOfFame && (
+          <div
+            className="absolute inset-0 pointer-events-none rounded-2xl z-0"
+            style={{
+              background: 'repeating-linear-gradient(45deg, rgba(212,175,55,0.04) 0px, rgba(212,175,55,0.04) 1px, transparent 1px, transparent 8px), repeating-linear-gradient(-45deg, rgba(212,175,55,0.03) 0px, rgba(212,175,55,0.03) 1px, transparent 1px, transparent 8px)',
+            }}
+          />
+        )}
+
         {/* Header */}
         <div className="flex items-center gap-3 px-4 pt-4 pb-3" style={{ borderBottom: '0.5px solid rgba(212,175,55,0.12)' }}>
           {/* Tappable Avatar */}
@@ -221,8 +254,8 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
 
         {/* Footer — Voltage + Comments */}
         <div className="flex items-center justify-between px-4 pb-3" style={{ borderTop: '0.5px solid rgba(212,175,55,0.08)' }}>
-          {isHighVoltage ? (
-            <span className="text-[9px] uppercase tracking-[0.2em]" style={{ color: '#D4AF37', fontFamily: 'Montserrat, sans-serif', opacity: 0.6 }}>⚡ High Voltage</span>
+          {isHallOfFame ? (
+            <span className="text-[9px] uppercase tracking-[0.2em]" style={{ color: '#D4AF37', fontFamily: 'Montserrat, sans-serif', opacity: 0.8 }}>🏛 Hall of Fame</span>
           ) : <div />}
           <div className="flex items-center gap-2 mt-3">
             {/* Comment button */}
@@ -237,7 +270,7 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
               </span>
             </button>
 
-            {/* Voltage button */}
+            {/* Laurel Tribute button */}
             <motion.button
               onClick={handleVoltage}
               disabled={hasGivenVoltage}
@@ -245,17 +278,16 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
               transition={{ duration: 0.3 }}
               className="flex items-center gap-2 px-4 py-2 rounded-xl transition-all active:scale-95"
               style={{
-                background: hasGivenVoltage ? 'rgba(152,171,143,0.12)' : 'rgba(152,171,143,0.06)',
-                border: `0.5px solid ${hasGivenVoltage ? 'rgba(152,171,143,0.4)' : 'rgba(152,171,143,0.2)'}`,
+                background: hasGivenVoltage ? 'rgba(212,175,55,0.12)' : 'rgba(212,175,55,0.06)',
+                border: `0.5px solid ${hasGivenVoltage ? 'rgba(212,175,55,0.5)' : 'rgba(212,175,55,0.2)'}`,
               }}
             >
-              <Zap
-                className="w-4 h-4"
-                style={{ color: hasGivenVoltage ? '#98AB8F' : 'rgba(152,171,143,0.4)' }}
-                strokeWidth={1.5}
-                fill={hasGivenVoltage ? '#98AB8F' : 'none'}
+              <LaurelIcon
+                filled={hasGivenVoltage}
+                color={hasGivenVoltage ? '#D4AF37' : 'rgba(212,175,55,0.35)'}
+                size={18}
               />
-              <span className="text-xs" style={{ color: hasGivenVoltage ? '#98AB8F' : 'rgba(152,171,143,0.4)', fontFamily: 'Montserrat, sans-serif' }}>
+              <span className="text-xs" style={{ color: hasGivenVoltage ? '#D4AF37' : 'rgba(212,175,55,0.4)', fontFamily: 'Montserrat, sans-serif' }}>
                 {voltageCount}
               </span>
             </motion.button>
