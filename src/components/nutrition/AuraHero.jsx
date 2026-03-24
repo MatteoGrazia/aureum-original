@@ -14,9 +14,9 @@ const PARTICLES = Array.from({ length: 18 }, (_, i) => ({
 }));
 
 const RINGS = [
-  { label: 'protein', r: 124, stroke: 2,   color: MACRO_TONES.protein, animDelay: 0    },
-  { label: 'carbs',   r: 112, stroke: 1.5, color: MACRO_TONES.carbs,   animDelay: 0.3  },
-  { label: 'fat',     r: 100, stroke: 1.5, color: MACRO_TONES.fat,     animDelay: 0.6  },
+  { label: 'protein', r: 122, stroke: 2,   color: MACRO_TONES.protein, animDelay: 0    },
+  { label: 'carbs',   r: 110, stroke: 1.5, color: MACRO_TONES.carbs,   animDelay: 0.3  },
+  { label: 'fat',     r:  98, stroke: 1.5, color: MACRO_TONES.fat,     animDelay: 0.6  },
 ];
 
 function MacroRings({ protein, carbs, fat, macroGoals }) {
@@ -96,7 +96,7 @@ export default function AuraHero({ remaining, goal, consumed, protein, carbs, fa
 
   return (
     <div className="flex flex-col items-center mb-8">
-      <div className="relative flex items-center justify-center" style={{ width: 280, height: 280 }}>
+      <div className="relative flex items-center justify-center" style={{ width: 280, height: 280, overflow: 'hidden' }}>
         {/* Three concentric macro rings */}
         <MacroRings protein={protein} carbs={carbs} fat={fat} macroGoals={macroGoals} />
 

@@ -233,7 +233,7 @@ export default function Profile() {
             backgroundClip: 'text'
           }}
         >
-          {user?.full_name?.toUpperCase() || 'PROFILE'}
+          PROFILE
         </h1>
         <p
           className="text-white text-[11px] uppercase tracking-[0.25em] mt-3"
