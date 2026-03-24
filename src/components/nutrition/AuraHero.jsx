@@ -73,7 +73,7 @@ function MacroRings({ protein, carbs, fat, macroGoals }) {
 function MacroBarBack({ label, value, goal, color }) {
   const pct = Math.min((value / (goal || 1)) * 100, 100);
   return (
-    <div className="mb-4">
+    <div className="mb-2.5">
       <div className="flex justify-between mb-1.5">
         <span className="text-[11px] uppercase tracking-[0.2em]" style={{ color, fontFamily: 'Montserrat, sans-serif' }}>{label}</span>
         <span className="text-[11px]" style={{ color, fontFamily: 'Montserrat, sans-serif' }}>{value}g / {goal}g</span>
