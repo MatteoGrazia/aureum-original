@@ -214,6 +214,28 @@ export default function Profile() {
     { label: 'Total Time', value: `${Math.round((workoutStats?.totalDuration || 0) / 60)}h` },
   ];
 
+  // Ascension Score & Credits
+  const { data: myPosts = [] } = useQuery({
+    queryKey: ['myPosts', user?.email],
+    queryFn: () => base44.entities.PerformanceFeed.filter({ created_by: user.email }),
+    enabled: !!user?.email,
+  });
+  const totalTributes = myPosts.reduce((s, p) => s + (p.voltage_count || 0), 0);
+  const myWorkouts = workoutStats?.totalWorkouts || 0;
+  // streak from last 30 days posts
+  const myStreak = (() => {
+    const days = [...new Set(myPosts.map(p => p.created_date?.split('T')[0]).filter(Boolean))].sort().reverse();
+    if (!days.length) return 0;
+    let count = 1;
+    for (let i = 1; i < days.length; i++) {
+      const diff = (new Date(days[i-1]) - new Date(days[i])) / (1000*60*60*24);
+      if (diff <= 1.5) count++; else break;
+    }
+    return count;
+  })();
+  const ascensionScore = (totalTributes * 10) + (myWorkouts * 5) + (myStreak * 2);
+  const ascensionCredits = Math.floor(ascensionScore / 100);
+
   return (
     <div className="min-h-screen p-6 pb-32 overflow-x-hidden">
       {/* Header */}
@@ -227,14 +249,20 @@ export default function Profile() {
           style={{
             fontFamily: 'Montserrat, sans-serif',
             fontWeight: 400,
-            background: 'linear-gradient(135deg, #D4AF37 0%, #D4AF37 50%, #D4AF37 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text'
+            color: '#D4AF37',
           }}
         >
           PROFILE
         </h1>
+        {/* Total Ascension Score */}
+        <div className="flex items-center justify-center gap-3 mt-3">
+          <div className="px-4 py-1.5 rounded-full text-[10px] uppercase tracking-[0.2em]" style={{ background: 'rgba(212,175,55,0.1)', border: '0.5px solid rgba(212,175,55,0.3)' }}>
+            <span style={{ color: '#D4AF37', fontFamily: 'Montserrat, sans-serif' }}>{ascensionScore.toLocaleString()} AP</span>
+          </div>
+          <div className="px-3 py-1.5 rounded-full text-[10px] uppercase tracking-[0.2em]" style={{ background: 'rgba(152,171,143,0.08)', border: '0.5px solid rgba(152,171,143,0.25)' }}>
+            <span style={{ color: '#98AB8F', fontFamily: 'Montserrat, sans-serif' }}>{ascensionCredits} Credits</span>
+          </div>
+        </div>
         <p
           className="text-white text-[11px] uppercase tracking-[0.25em] mt-3"
           style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
