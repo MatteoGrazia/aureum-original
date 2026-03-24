@@ -35,6 +35,22 @@ export default function Community() {
     }
   }, [consentGranted]);
 
+  // Sync profile picture → AthleteIdentity for existing users
+  useEffect(() => {
+    if (!consentGranted || !user) return;
+    const syncAvatar = async () => {
+      const pic = user.profile_picture;
+      if (!pic) return;
+      const identities = await base44.entities.AthleteIdentity.filter({ created_by: user.email });
+      if (identities.length > 0 && identities[0].avatar_url !== pic) {
+        await base44.entities.AthleteIdentity.update(identities[0].id, { avatar_url: pic });
+        queryClient.invalidateQueries(['syndicateAthletes']);
+        queryClient.invalidateQueries(['performanceFeed']);
+      }
+    };
+    syncAvatar();
+  }, [consentGranted, user?.email, user?.profile_picture]);
+
   // Upsert Athlete_Identity on consent
   const ensureAthleteIdentity = async (username) => {
     if (!user) return;
