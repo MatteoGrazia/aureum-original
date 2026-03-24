@@ -101,6 +101,18 @@ export default function WorkoutSummary({ summary, onDone }) {
           last_active: new Date().toISOString(),
         });
       }
+      // Media Mirror: copy workout photos to ProgressPhotoVault
+      if (photos.length > 0) {
+        const today2 = new Date().toISOString().split('T')[0];
+        for (const url of photos) {
+          await base44.entities.ProgressPhoto.create({
+            date: today2,
+            photo_url: url,
+            pose_type: 'front',
+            notes: `${routineName || 'Workout'} · Auto-mirrored`,
+          });
+        }
+      }
     } catch (error) {
       console.error('Failed to post to community:', error);
     }
