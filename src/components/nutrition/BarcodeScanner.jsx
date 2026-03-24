@@ -97,7 +97,7 @@ export default function BarcodeScanner({ isOpen, onClose, onScan }) {
               await html5QrCode.stop();
               scannerRef.current = null;
 
-              // 1. Try Open Food Facts (free, no key)
+              // Open Food Facts — primary & only barcode source (open, no user limit)
               const offResponse = await base44.functions.invoke('openFoodFactsSearch', { barcode: decodedText });
 
               if (offResponse.data?.found && offResponse.data?.product) {
@@ -107,20 +107,7 @@ export default function BarcodeScanner({ isOpen, onClose, onScan }) {
                 return;
               }
 
-              // 2. Fallback: FatSecret
-              try {
-                const fatResponse = await base44.functions.invoke('fatsecretSearch', {
-                  action: 'barcode',
-                  barcode: decodedText
-                });
-                if (fatResponse.data?.food) {
-                  if (navigator.vibrate) navigator.vibrate(200);
-                  onScan({ ...fatResponse.data.food, barcode: decodedText, source: 'fatsecret' });
-                  return;
-                }
-              } catch {}
-
-              // 3. Nothing found → manual entry
+              // Item not found → manual entry
               setStatus('not_found');
 
             } catch (err) {

@@ -209,10 +209,10 @@ export default function FoodSearch({ onSelectFood }) {
                         {food.brand}
                       </p>
                     )}
-                    <div className="flex flex-wrap gap-x-3 gap-y-1 text-[9px]" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400, color: '#E5E5E7' }}>
-                      <span>P: {food.protein}g</span>
-                      <span>C: {food.carbs}g</span>
-                      <span>F: {food.fat}g</span>
+                    <div className="flex flex-wrap gap-x-3 gap-y-1 text-[9px]" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>
+                      <span style={{ color: '#FFDAB9' }}>P: {food.protein}g</span>
+                      <span style={{ color: '#FFE5CC' }}>C: {food.carbs}g</span>
+                      <span style={{ color: '#E1A95F' }}>F: {food.fat}g</span>
                     </div>
                   </div>
                   <div 

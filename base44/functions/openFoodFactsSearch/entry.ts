@@ -1,4 +1,18 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.20';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.21';
+
+const OFF_HEADERS = { 'User-Agent': 'AureumApp/1.0 (contact@aureumapp.com)' };
+
+async function fetchOFF(barcode, attempt = 1) {
+  const url = `https://world.openfoodfacts.org/api/v2/product/${barcode}.json`;
+  const res = await fetch(url, { headers: OFF_HEADERS });
+  const data = await res.json();
+  if (data.status !== 1 && attempt < 3) {
+    // Retry with small delay
+    await new Promise(r => setTimeout(r, 600 * attempt));
+    return fetchOFF(barcode, attempt + 1);
+  }
+  return data;
+}
 
 Deno.serve(async (req) => {
   try {
@@ -9,12 +23,7 @@ Deno.serve(async (req) => {
     const { barcode } = await req.json();
     if (!barcode) return Response.json({ error: 'Barcode required' }, { status: 400 });
 
-    const response = await fetch(
-      `https://world.openfoodfacts.org/api/v2/product/${barcode}.json`,
-      { headers: { 'User-Agent': 'AureumApp/1.0 (contact@aureumapp.com)' } }
-    );
-
-    const data = await response.json();
+    const data = await fetchOFF(barcode);
 
     if (data.status !== 1 || !data.product) {
       return Response.json({ found: false });
@@ -23,9 +32,11 @@ Deno.serve(async (req) => {
     const p = data.product;
     const n = p.nutriments || {};
 
-    const kcal = n['energy-kcal_100g'] ||
+    const kcal =
+      n['energy-kcal_100g'] ||
       (n['energy-kj_100g'] ? Math.round(n['energy-kj_100g'] / 4.184) : 0) ||
-      (n['energy_100g'] ? Math.round(n['energy_100g'] / 4.184) : 0) || 0;
+      (n['energy_100g'] ? Math.round(n['energy_100g'] / 4.184) : 0) ||
+      0;
 
     return Response.json({
       found: true,
@@ -34,10 +45,11 @@ Deno.serve(async (req) => {
         brand: p.brands || '',
         image: p.image_front_url || p.image_url || null,
         calories_100g: Math.round(kcal),
-        protein_100g: Math.round((n['proteins_100g'] || 0) * 10) / 10,
-        carbs_100g: Math.round((n['carbohydrates_100g'] || 0) * 10) / 10,
-        fat_100g: Math.round((n['fat_100g'] || 0) * 10) / 10,
-        fiber_100g: Math.round((n['fiber_100g'] || 0) * 10) / 10,
+        // Monochromatic Apricot palette applied at source
+        protein_100g: Math.round((n['proteins_100g'] || 0) * 10) / 10,   // #FFDAB9
+        carbs_100g:   Math.round((n['carbohydrates_100g'] || 0) * 10) / 10, // #FFE5CC
+        fat_100g:     Math.round((n['fat_100g'] || 0) * 10) / 10,          // #E1A95F
+        fiber_100g:   Math.round((n['fiber_100g'] || 0) * 10) / 10,
       }
     });
   } catch (error) {
