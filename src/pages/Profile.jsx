@@ -208,13 +208,7 @@ export default function Profile() {
     }
   };
 
-  const stats = [
-    { label: 'Workouts', value: workoutStats?.totalWorkouts || 0 },
-    { label: 'Total Volume', value: `${((workoutStats?.totalVolume || 0) / 1000).toFixed(1)}t` },
-    { label: 'Ascensions', value: totalAscensions },
-  ];
-
-  // Ascension Score & Credits
+  // Ascension Score
   const { data: myPosts = [] } = useQuery({
     queryKey: ['myPosts', user?.email],
     queryFn: () => base44.entities.PerformanceFeed.filter({ created_by: user.email }),
@@ -222,7 +216,6 @@ export default function Profile() {
   });
   const totalAscensions = myPosts.reduce((s, p) => s + (p.voltage_count || 0), 0);
   const myWorkouts = workoutStats?.totalWorkouts || 0;
-  // streak from last 30 days posts
   const myStreak = (() => {
     const days = [...new Set(myPosts.map(p => p.created_date?.split('T')[0]).filter(Boolean))].sort().reverse();
     if (!days.length) return 0;
@@ -234,6 +227,12 @@ export default function Profile() {
     return count;
   })();
   const ascensionScore = (totalAscensions * 10) + (myWorkouts * 5) + (myStreak * 2);
+
+  const stats = [
+    { label: 'Workouts', value: workoutStats?.totalWorkouts || 0 },
+    { label: 'Total Volume', value: `${((workoutStats?.totalVolume || 0) / 1000).toFixed(1)}t` },
+    { label: 'Ascensions', value: totalAscensions },
+  ];
 
   return (
     <div className="min-h-screen p-6 pb-32 overflow-x-hidden">
