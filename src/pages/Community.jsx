@@ -51,6 +51,16 @@ export default function Community() {
     syncAvatar();
   }, [consentGranted, user?.email, user?.profile_picture]);
 
+  const { data: currentIdentity } = useQuery({
+    queryKey: ['myIdentity', user?.email],
+    queryFn: async () => {
+      const records = await base44.entities.AthleteIdentity.filter({ created_by: user.email });
+      return records[0] || null;
+    },
+    enabled: !!user?.email && consentGranted,
+    staleTime: 5 * 60 * 1000,
+  });
+
   // Upsert Athlete_Identity on consent
   const ensureAthleteIdentity = async (username) => {
     if (!user) return;
@@ -208,6 +218,7 @@ export default function Community() {
                   currentUserEmail={user?.email}
                   onVoltage={handleTribute}
                   index={i}
+                  currentUserIsFounder={currentIdentity?.is_founder === true}
                 />
               ))}
             </div>
