@@ -1,23 +1,9 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Dumbbell, Clock, Users, ChevronRight, Lock } from 'lucide-react';
+import { X, Dumbbell, Clock, Users, ChevronRight, Lock, Feather } from 'lucide-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { formatDistanceToNow } from 'date-fns';
 import { base44 } from '@/api/base44Client';
-
-function LaurelIcon({ filled, color, size = 16 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <path d="M12 19 C10 17, 6 15, 4 11 C3 8, 4 5, 7 4 C8 6, 8 8, 9 10 C9.5 11.5, 10.5 13, 12 14"
-        stroke={color} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"
-        fill={filled ? color : 'none'} fillOpacity={filled ? 0.2 : 0} />
-      <path d="M12 19 C14 17, 18 15, 20 11 C21 8, 20 5, 17 4 C16 6, 16 8, 15 10 C14.5 11.5, 13.5 13, 12 14"
-        stroke={color} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"
-        fill={filled ? color : 'none'} fillOpacity={filled ? 0.2 : 0} />
-      <path d="M10 19.5 Q12 21 14 19.5" stroke={color} strokeWidth="1.2" strokeLinecap="round" fill="none" />
-    </svg>
-  );
-}
 
 function FollowersModal({ title, athleteIdentityId, onClose, onSelectAthlete }) {
   const { data: identity } = useQuery({
@@ -269,10 +255,10 @@ export default function AthleteProfileOverlay({ athleteName, athleteAvatar, athl
                 { label: 'Followers', value: followStats.followers, action: () => setFollowModal('Followers') },
                 { label: 'Following', value: followStats.following, action: () => setFollowModal('Following') },
                 { label: 'Tributes', value: totalTributes, icon: true },
-              ].map(({ label, value, action, icon }) => (
+                ].map(({ label, value, action, icon }) => (
                 <button key={label} onClick={action} className="flex flex-col items-center gap-0.5">
                   <div className="flex items-center gap-1">
-                    {icon && <LaurelIcon filled color="#D4AF37" size={14} />}
+                    {icon && <Feather className="w-3.5 h-3.5" strokeWidth={1.3} style={{ color: '#D4AF37' }} />}
                     <p className="text-xl" style={{ color: '#E5E5E7', fontFamily: 'Montserrat, sans-serif', fontWeight: 300 }}>{value}</p>
                   </div>
                   <p className="text-[9px] uppercase tracking-[0.18em]" style={{ color: 'rgba(229,229,231,0.4)', fontFamily: 'Montserrat, sans-serif' }}>{label}</p>
@@ -368,7 +354,7 @@ export default function AthleteProfileOverlay({ athleteName, athleteAvatar, athl
                         </p>
                       </div>
                       <div className="flex items-center gap-1 flex-shrink-0">
-                        <LaurelIcon filled={false} color="rgba(212,175,55,0.4)" size={13} />
+                        <Feather className="w-3 h-3" strokeWidth={1.3} style={{ color: 'rgba(212,175,55,0.5)' }} />
                         <span className="text-xs" style={{ color: 'rgba(212,175,55,0.5)', fontFamily: 'Montserrat, sans-serif' }}>{post.voltage_count || 0}</span>
                       </div>
                     </div>
