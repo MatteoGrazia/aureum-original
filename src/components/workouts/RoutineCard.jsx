@@ -128,7 +128,7 @@ export default function RoutineCard({ routine, isExpanded, onToggle, onStart, on
                       <img
                         src={imgUrl}
                         alt={ex.muscle_group}
-                        style={{ width: '100%', height: '100%', objectFit: 'contain', filter: isDarkMode ? darkFilter : lightFilter }}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', filter: isDarkMode ? darkFilter : lightFilter }}
                         onError={e => { e.target.style.display = 'none'; }}
                       />
                     </div>

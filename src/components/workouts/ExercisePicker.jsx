@@ -146,13 +146,8 @@ function LazyAnatomical({ src, alt, fallback, customSrc, customSrcDark, isDarkMo
 
   const imageUrl = isDarkMode ? (customSrcDark || customSrc || src) : (customSrc || src);
 
-  // wger anatomy images: white background, black sketch lines, red highlighted muscle.
-  // Target highlight color: #BDB5D5 (light purple, matching app workout elements).
-  // Dark mode: invert → black bg, white sketch, cyan highlight → hue-rotate+saturate → light purple
-  // Light mode: keep white bg + black sketch, shift red → light purple via hue-rotate
   const darkFilter = 'invert(1) hue-rotate(60deg) saturate(0.6) brightness(1.1)';
   const lightFilter = 'hue-rotate(240deg) saturate(0.45) brightness(1.05)';
-
   const imgFilter = isDarkMode ? darkFilter : lightFilter;
 
   return (
@@ -162,7 +157,7 @@ function LazyAnatomical({ src, alt, fallback, customSrc, customSrcDark, isDarkMo
             style={{ 
               width: '100%', 
               height: '100%', 
-              objectFit: 'contain', 
+              objectFit: 'cover', 
               objectPosition: 'center',
               filter: imgFilter
             }} />
@@ -416,13 +411,13 @@ export default function ExercisePicker({ exercises, onSelect, onClose, mode = 'a
                 background: 'rgba(255,255,255,0.03)'
               }}>
                 <img
-                    src={isDarkMode ? (selected.image_url_dark || selected.image_url || getWgerAnatomyUrl(selected.muscle_group)) : (selected.image_url || getWgerAnatomyUrl(selected.muscle_group))}
-                    alt={selected.name}
-                    loading="lazy"
-                    style={{ 
-                      width: '100%', 
-                      height: '100%', 
-                      objectFit: 'contain',
+                   src={isDarkMode ? (selected.image_url_dark || selected.image_url || getWgerAnatomyUrl(selected.muscle_group)) : (selected.image_url || getWgerAnatomyUrl(selected.muscle_group))}
+                   alt={selected.name}
+                   loading="lazy"
+                   style={{ 
+                     width: '100%', 
+                     height: '100%', 
+                     objectFit: 'cover',
                       filter: isDarkMode
                         ? 'invert(1) hue-rotate(60deg) saturate(0.6) brightness(1.1)'
                         : 'hue-rotate(240deg) saturate(0.45) brightness(1.05)'
