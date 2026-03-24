@@ -11,7 +11,7 @@ import AthleteProfileOverlay from './AthleteProfileOverlay';
 // Heavy Thud haptic — simulates the weight of a gold medal
 const haptic = () => { if (navigator.vibrate) navigator.vibrate([40, 10, 60]); };
 
-export default function SyndicateCard({ post, currentUserEmail, onVoltage, index = 0 }) {
+export default function SyndicateCard({ post, currentUserEmail, onVoltage, index = 0, currentUserIsFounder = false }) {
   const hasGivenVoltage = (post.voltage_by || []).includes(currentUserEmail);
   const [voltageFlash, setVoltageFlash] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
@@ -251,6 +251,7 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
               count={voltageCount}
               hasGiven={hasGivenVoltage}
               onAscend={handleVoltage}
+              isFounder={currentUserIsFounder}
             />
           </div>
         </div>
