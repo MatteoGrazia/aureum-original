@@ -113,6 +113,15 @@ export default function AthleteProfileOverlay({ athleteName, athleteAvatar, athl
     enabled: !!athleteId,
   });
 
+  const { data: workoutCount = 0 } = useQuery({
+    queryKey: ['workoutCount', createdBy],
+    queryFn: async () => {
+      const logs = await base44.entities.WorkoutLog.filter({ created_by: createdBy });
+      return logs.length;
+    },
+    enabled: !!createdBy,
+  });
+
   const { data: followStats = { followers: 0, following: 0 } } = useQuery({
     queryKey: ['followStats', createdBy],
     queryFn: async () => {
@@ -153,6 +162,10 @@ export default function AthleteProfileOverlay({ athleteName, athleteAvatar, athl
   const isPrivate = identity?.is_private && !isFollowing && createdBy !== currentUser?.email;
   const totalTributes = posts.reduce((s, p) => s + (p.voltage_count || 0), 0);
   const isFounder = identity?.is_founder;
+
+  // Ascension Score: (Tributes * 10) + (Workouts * 5) + (Streak * 2)
+  const ascensionScore = (totalTributes * 10) + (workoutCount * 5) + (streak * 2);
+  const ascensionCredits = Math.floor(ascensionScore / 100);
 
   const workoutPosts = posts.filter(p => p.post_type === 'workout');
   const bestVolume = workoutPosts.reduce((max, p) => Math.max(max, p.volume_kg || 0), 0);
@@ -240,10 +253,14 @@ export default function AthleteProfileOverlay({ athleteName, athleteAvatar, athl
               <p className="text-sm text-center mb-2" style={{ color: 'rgba(229,229,231,0.55)', fontFamily: 'Montserrat, sans-serif', maxWidth: 260 }}>{identity.bio}</p>
             )}
             {isFounder && (
-              <div className="px-3 py-0.5 rounded-full text-[9px] uppercase tracking-[0.2em] mb-3" style={{ background: 'rgba(212,175,55,0.15)', color: '#D4AF37', border: '0.5px solid rgba(212,175,55,0.4)' }}>
+              <div className="px-3 py-0.5 rounded-full text-[9px] uppercase tracking-[0.2em] mb-1" style={{ background: 'rgba(212,175,55,0.15)', color: '#D4AF37', border: '0.5px solid rgba(212,175,55,0.4)' }}>
                 ★ Founder
               </div>
             )}
+            {/* Total Ascension Score */}
+            <div className="px-4 py-1 rounded-full text-[10px] uppercase tracking-[0.18em] mb-3" style={{ background: 'rgba(212,175,55,0.08)', border: '0.5px solid rgba(212,175,55,0.25)' }}>
+              <span style={{ color: '#D4AF37', fontFamily: 'Montserrat, sans-serif' }}>{ascensionScore.toLocaleString()} AP</span>
+              <span style={{ color: 'rgba(212,175,55,0.45)', fontFamily: 'Montserrat, sans-serif' }}> · {ascensionCredits} Credits</span>
 
             {/* Stats Row */}
             <div className="flex gap-8 mt-2 mb-5">
@@ -275,7 +292,7 @@ export default function AthleteProfileOverlay({ athleteName, athleteAvatar, athl
                   fontWeight: 600,
                 }}
               >
-                {isFollowing ? 'SYNC PERFORMANCE' : 'JOIN SYNDICATE'}
+                {isFollowing ? 'SYNDICATE SYNCED' : 'JOIN SYNDICATE'}
               </button>
             )}
           </div>
@@ -316,8 +333,11 @@ export default function AthleteProfileOverlay({ athleteName, athleteAvatar, athl
               style={{ background: 'rgba(212,175,55,0.04)', border: '0.5px solid rgba(212,175,55,0.2)', backdropFilter: 'blur(20px)' }}
             >
               <Lock className="w-8 h-8 mb-3" style={{ color: 'rgba(212,175,55,0.4)' }} />
-              <p className="text-[10px] uppercase tracking-[0.22em] leading-relaxed" style={{ color: 'rgba(229,229,231,0.5)', fontFamily: 'Montserrat, sans-serif' }}>
-                SYNDICATE ACCESS RESTRICTED.<br />SEND REQUEST TO VIEW PERFORMANCE.
+              <p className="text-[10px] uppercase tracking-[0.22em] leading-relaxed mb-2" style={{ color: 'rgba(229,229,231,0.5)', fontFamily: 'Montserrat, sans-serif' }}>
+                ASCENSION DATA RESTRICTED.
+              </p>
+              <p className="text-[10px] tracking-[0.12em] leading-relaxed" style={{ color: 'rgba(229,229,231,0.35)', fontFamily: 'Montserrat, sans-serif' }}>
+                Join Syndicate to view performance.
               </p>
             </div>
           ) : posts.length === 0 ? (
