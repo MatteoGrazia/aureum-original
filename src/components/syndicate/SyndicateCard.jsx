@@ -68,14 +68,14 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
   const isWorkout = post.post_type === 'workout';
   const isNutrition = post.post_type === 'nutrition';
   const voltageCount = post.voltage_count || 0;
-  const isHallOfFame = voltageCount >= 100;
+  const isElite = voltageCount >= 500;
   const commentCount = post.comment_count || 0;
 
   const timeAgo = post.created_date
     ? formatDistanceToNow(new Date(post.created_date), { addSuffix: true })
     : '';
 
-  const cardBorderStyle = isHallOfFame
+  const cardBorderStyle = isElite
     ? { border: '0.5px solid #D4AF37', animation: 'goldShimmer 2s ease-in-out infinite' }
     : { border: '0.5px solid #D4AF37' };
 
@@ -108,8 +108,8 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
         className="mx-4 mb-4 rounded-2xl overflow-hidden relative"
         style={{ background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(25px)', ...cardBorderStyle }}
       >
-        {/* Gold Leaf texture overlay for Hall of Fame posts */}
-        {isHallOfFame && (
+        {/* Gold Leaf texture overlay for Elite posts */}
+        {isElite && (
           <div
             className="absolute inset-0 pointer-events-none rounded-2xl z-0"
             style={{
@@ -233,8 +233,8 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
 
         {/* Footer — Ascension + Comments */}
         <div className="flex items-center justify-between px-4 pb-3" style={{ borderTop: '0.5px solid rgba(212,175,55,0.08)' }}>
-          {isHallOfFame ? (
-            <span className="text-[9px] uppercase tracking-[0.2em]" style={{ color: '#D4AF37', fontFamily: 'Montserrat, sans-serif', opacity: 0.8 }}>🏛 Hall of Fame</span>
+          {isElite ? (
+            <span className="text-[9px] uppercase tracking-[0.2em]" style={{ color: '#D4AF37', fontFamily: 'Montserrat, sans-serif', opacity: 0.8 }}>✦ Elite</span>
           ) : <div />}
           <div className="flex items-center gap-2 mt-3">
             <button

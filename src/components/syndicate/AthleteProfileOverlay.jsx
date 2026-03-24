@@ -146,7 +146,7 @@ export default function AthleteProfileOverlay({ athleteName, athleteAvatar, athl
   };
 
   const isPrivate = identity?.is_private && !isFollowing && createdBy !== currentUser?.email;
-  const totalTributes = posts.reduce((s, p) => s + (p.voltage_count || 0), 0);
+  const totalAscensions = posts.reduce((s, p) => s + (p.voltage_count || 0), 0);
   const isFounder = identity?.is_founder;
 
   const workoutPosts = posts.filter(p => p.post_type === 'workout');
@@ -170,9 +170,8 @@ export default function AthleteProfileOverlay({ athleteName, athleteAvatar, athl
     return count;
   })();
 
-  // Ascension Score: (Tributes * 10) + (Workouts * 5) + (Streak * 2)
-  const ascensionScore = (totalTributes * 10) + (workoutCount * 5) + (streak * 2);
-  const ascensionCredits = Math.floor(ascensionScore / 100);
+  // Ascension Score: (Ascensions * 10) + (Workouts * 5) + (Streak * 2)
+  const ascensionScore = (totalAscensions * 10) + (workoutCount * 5) + (streak * 2);
 
   const coverUrl = posts.find(p => p.photos?.length > 0)?.photos?.[0] || athleteAvatar;
 
@@ -245,8 +244,7 @@ export default function AthleteProfileOverlay({ athleteName, athleteAvatar, athl
             )}
             {/* Total Ascension Score */}
             <div className="px-4 py-1 rounded-full text-[10px] uppercase tracking-[0.18em] mb-3" style={{ background: 'rgba(212,175,55,0.08)', border: '0.5px solid rgba(212,175,55,0.25)' }}>
-              <span style={{ color: '#D4AF37', fontFamily: 'Montserrat, sans-serif' }}>{ascensionScore.toLocaleString()} AP</span>
-              <span style={{ color: 'rgba(212,175,55,0.45)', fontFamily: 'Montserrat, sans-serif' }}> · {ascensionCredits} Credits</span>
+              <span style={{ color: '#D4AF37', fontFamily: 'Montserrat, sans-serif' }}>{ascensionScore.toLocaleString()} AP · Syndicate Rank</span>
             </div>
 
             {/* Stats Row */}
@@ -254,7 +252,7 @@ export default function AthleteProfileOverlay({ athleteName, athleteAvatar, athl
               {[
                 { label: 'Followers', value: followStats.followers, action: () => setFollowModal('Followers') },
                 { label: 'Following', value: followStats.following, action: () => setFollowModal('Following') },
-                { label: 'Tributes', value: totalTributes, icon: true },
+                { label: 'Ascensions', value: totalAscensions, icon: true },
                 ].map(({ label, value, action, icon }) => (
                 <button key={label} onClick={action} className="flex flex-col items-center gap-0.5">
                   <div className="flex items-center gap-1">
