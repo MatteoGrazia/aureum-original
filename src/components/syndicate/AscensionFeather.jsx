@@ -61,7 +61,16 @@ export default function AscensionFeather({ count = 0, hasGiven = false, onAscend
         transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
         style={{ marginBottom: 2 }}
       >
-        <AureumFeatherSVG filled={isActive} size={28} />
+        <Feather
+          className="w-5 h-5"
+          strokeWidth={1.3}
+          style={{
+            color: isActive ? '#D4AF37' : '#E5E5E7',
+            opacity: isActive ? 1 : 0.4,
+            fill: isActive ? 'rgba(212,175,55,0.2)' : 'none',
+            filter: isActive && isFounder ? 'drop-shadow(0 0 6px rgba(212,175,55,0.7))' : 'none',
+          }}
+        />
       </motion.div>
 
       {/* Counter — always Signature Gold */}
