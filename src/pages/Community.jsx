@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import SyndicateConsentModal from '@/components/syndicate/SyndicateConsentModal';
+import SyndicateLeaderboard from '@/components/syndicate/SyndicateLeaderboard';
 import SyndicateCard from '@/components/syndicate/SyndicateCard';
 import PulseRow from '@/components/syndicate/PulseRow';
 import VoidBackground from '@/components/dashboard/VoidBackground';
@@ -21,12 +23,37 @@ export default function Community() {
     return localStorage.getItem(CONSENT_KEY) === 'true';
   });
   const [pulseProfile, setPulseProfile] = useState(null);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const myPostAPRef = useRef({});
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
     queryFn: () => base44.auth.me(),
     staleTime: 10 * 60 * 1000,
   });
+
+  // Global Prestige Listener
+  useEffect(() => {
+    if (!user?.email) return;
+    const unsubscribe = base44.entities.PerformanceFeed.subscribe((event) => {
+      if (event.type === 'update' && event.data?.created_by === user.email) {
+        const postId = event.id;
+        const newCount = event.data?.voltage_count || 0;
+        const prev = myPostAPRef.current[postId] ?? null;
+        if (prev !== null && newCount > prev) {
+          toast('Your Ascension count has risen.', {
+            style: { background: 'rgba(12,12,12,0.97)', border: '0.5px solid #98AB8F', color: '#98AB8F', fontFamily: 'Montserrat, sans-serif' },
+            icon: '🪶',
+          });
+        }
+        myPostAPRef.current[postId] = newCount;
+        queryClient.invalidateQueries(['performanceFeed']);
+      } else if (event.type === 'update') {
+        queryClient.invalidateQueries(['performanceFeed']);
+      }
+    });
+    return unsubscribe;
+  }, [user?.email]);
 
   // Check consent on mount
   useEffect(() => {
@@ -185,6 +212,34 @@ export default function Community() {
             )}
           </AnimatePresence>
 
+          {/* Leaderboard Toggle */}
+          <div className="flex items-center justify-center gap-3 mb-4 px-4">
+            <button
+              onClick={() => setShowLeaderboard(false)}
+              className="px-4 py-1.5 rounded-full text-[10px] uppercase tracking-[0.2em] transition-all"
+              style={{
+                background: !showLeaderboard ? 'rgba(152,171,143,0.15)' : 'transparent',
+                border: `0.5px solid ${!showLeaderboard ? '#98AB8F' : 'rgba(152,171,143,0.2)'}`,
+                color: !showLeaderboard ? '#98AB8F' : 'rgba(152,171,143,0.4)',
+                fontFamily: 'Montserrat, sans-serif',
+              }}
+            >Feed</button>
+            <button
+              onClick={() => setShowLeaderboard(true)}
+              className="px-4 py-1.5 rounded-full text-[10px] uppercase tracking-[0.2em] transition-all"
+              style={{
+                background: showLeaderboard ? 'rgba(152,171,143,0.15)' : 'transparent',
+                border: `0.5px solid ${showLeaderboard ? '#98AB8F' : 'rgba(152,171,143,0.2)'}`,
+                color: showLeaderboard ? '#98AB8F' : 'rgba(152,171,143,0.4)',
+                fontFamily: 'Montserrat, sans-serif',
+              }}
+            >Leaderboard</button>
+          </div>
+
+          {showLeaderboard ? (
+            <SyndicateLeaderboard />
+          ) : (
+          <>
           {/* Feed */}
           {feedLoading ? (
             <div className="flex justify-center py-20">
@@ -222,6 +277,8 @@ export default function Community() {
                 />
               ))}
             </div>
+          )}
+          </>
           )}
         </div>
       )}

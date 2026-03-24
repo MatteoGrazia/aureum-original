@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import { 
   User, Settings, Scale, Target, Ruler, Calendar,
-  LogOut, ChevronRight, Edit3, Save, Droplets, Share2, Zap
+  LogOut, ChevronRight, Edit3, Save, Droplets, Share2, Zap, Feather
 } from 'lucide-react';
 import ProfilePictureUpload from '@/components/profile/ProfilePictureUpload';
 import GlassCard from '@/components/ui/GlassCard';
@@ -228,10 +229,33 @@ export default function Profile() {
   })();
   const ascensionScore = (totalAscensions * 10) + (myWorkouts * 5) + (myStreak * 2);
 
+  // Real-time AP listener
+  const prevAPRef = useRef(null);
+  useEffect(() => {
+    if (!user?.email) return;
+    const unsubscribe = base44.entities.PerformanceFeed.subscribe((event) => {
+      if (event.type === 'update' && event.data?.created_by === user.email) {
+        queryClient.invalidateQueries(['myPosts', user.email]);
+      }
+    });
+    return unsubscribe;
+  }, [user?.email]);
+
+  // Notify when AP rises
+  useEffect(() => {
+    if (prevAPRef.current !== null && totalAscensions > prevAPRef.current) {
+      toast('Your Ascension count has risen.', {
+        style: { background: 'rgba(12,12,12,0.97)', border: '0.5px solid #98AB8F', color: '#98AB8F', fontFamily: 'Montserrat, sans-serif' },
+        icon: '🪶',
+      });
+    }
+    prevAPRef.current = totalAscensions;
+  }, [totalAscensions]);
+
   const stats = [
     { label: 'Workouts', value: workoutStats?.totalWorkouts || 0 },
     { label: 'Total Volume', value: `${((workoutStats?.totalVolume || 0) / 1000).toFixed(1)}t` },
-    { label: 'Ascensions', value: totalAscensions },
+    { label: 'Ascensions', value: totalAscensions, sage: true },
   ];
 
   return (
@@ -305,8 +329,15 @@ export default function Profile() {
                 onClick={() => i < 2 ? setFollowModal({ open: true, type: i === 0 ? 'followers' : 'following' }) : null}
                 className={`text-center ${i < 2 ? 'active:scale-95 transition-transform' : ''}`}
               >
-                <p className="text-xl text-white" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 300 }}>{stat.value}</p>
-                <p className="text-[10px] uppercase tracking-wider mt-1" style={{ color: '#E5E5E7', fontFamily: 'Montserrat, sans-serif', fontWeight: 400, opacity: 0.4 }}>{stat.label}</p>
+                {stat.sage ? (
+                  <div className="flex items-center justify-center gap-1">
+                    <Feather className="w-4 h-4" strokeWidth={1.3} style={{ color: '#98AB8F' }} />
+                    <p className="text-xl" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 300, color: '#98AB8F' }}>{stat.value}</p>
+                  </div>
+                ) : (
+                  <p className="text-xl text-white" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 300 }}>{stat.value}</p>
+                )}
+                <p className="text-[10px] uppercase tracking-wider mt-1" style={{ color: stat.sage ? '#98AB8F' : '#E5E5E7', fontFamily: 'Montserrat, sans-serif', fontWeight: 400, opacity: stat.sage ? 0.7 : 0.4 }}>{stat.label}</p>
               </button>
             ))}
           </div>

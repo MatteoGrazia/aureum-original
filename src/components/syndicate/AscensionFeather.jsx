@@ -73,7 +73,7 @@ export default function AscensionFeather({ count = 0, hasGiven = false, onAscend
         />
       </motion.div>
 
-      {/* Counter — always Signature Gold */}
+      {/* Counter — Syndicate Sage */}
       <AnimatePresence mode="popLayout">
         <motion.span
           key={displayCount}
@@ -84,10 +84,10 @@ export default function AscensionFeather({ count = 0, hasGiven = false, onAscend
           style={{
             fontFamily: 'Georgia, serif',
             fontSize: 11,
-            color: '#D4AF37',
+            color: '#98AB8F',
             letterSpacing: '0.04em',
             lineHeight: 1,
-            textShadow: flicker ? '0 0 10px rgba(212,175,55,0.9)' : (isActive ? '0 0 6px rgba(212,175,55,0.4)' : 'none'),
+            textShadow: flicker ? '0 0 10px rgba(152,171,143,0.9)' : (isActive ? '0 0 6px rgba(152,171,143,0.4)' : 'none'),
             display: 'block',
           }}
         >

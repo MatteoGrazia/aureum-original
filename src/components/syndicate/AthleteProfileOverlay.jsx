@@ -242,9 +242,13 @@ export default function AthleteProfileOverlay({ athleteName, athleteAvatar, athl
                 ★ Founder
               </div>
             )}
-            {/* Total Ascension Score */}
-            <div className="px-4 py-1 rounded-full text-[10px] uppercase tracking-[0.18em] mb-3" style={{ background: 'rgba(212,175,55,0.08)', border: '0.5px solid rgba(212,175,55,0.25)' }}>
-              <span style={{ color: '#D4AF37', fontFamily: 'Montserrat, sans-serif' }}>{ascensionScore.toLocaleString()} AP · Syndicate Rank</span>
+            {/* Total AP — most prominent, Syndicate Sage */}
+            <div className="flex flex-col items-center mb-3">
+              <div className="flex items-center gap-2 mb-1">
+                <Feather className="w-5 h-5" strokeWidth={1.3} style={{ color: '#98AB8F' }} />
+                <span className="text-3xl" style={{ color: '#98AB8F', fontFamily: 'Montserrat, sans-serif', fontWeight: 300 }}>{totalAscensions.toLocaleString()}</span>
+              </div>
+              <span className="text-[9px] uppercase tracking-[0.28em]" style={{ color: 'rgba(152,171,143,0.6)', fontFamily: 'Montserrat, sans-serif' }}>Ascension Points</span>
             </div>
 
             {/* Stats Row */}
@@ -252,7 +256,6 @@ export default function AthleteProfileOverlay({ athleteName, athleteAvatar, athl
               {[
                 { label: 'Followers', value: followStats.followers, action: () => setFollowModal('Followers') },
                 { label: 'Following', value: followStats.following, action: () => setFollowModal('Following') },
-                { label: 'Ascensions', value: totalAscensions, icon: true },
                 ].map(({ label, value, action, icon }) => (
                 <button key={label} onClick={action} className="flex flex-col items-center gap-0.5">
                   <div className="flex items-center gap-1">
