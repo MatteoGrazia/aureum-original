@@ -145,7 +145,19 @@ export default function Community() {
           </motion.div>
 
           {/* Pulse Row */}
-          <PulseRow athletes={athletes} />
+          <PulseRow athletes={athletes} onAthleteTap={(a) => setPulseProfile({ name: a.username, avatar: a.avatar_url, id: a.id })} />
+
+          {/* Full-screen Athlete Profile from Pulse Row */}
+          <AnimatePresence>
+            {pulseProfile && (
+              <AthleteProfileOverlay
+                athleteName={pulseProfile.name}
+                athleteAvatar={pulseProfile.avatar}
+                athleteId={pulseProfile.id}
+                onClose={() => setPulseProfile(null)}
+              />
+            )}
+          </AnimatePresence>
 
           {/* Feed */}
           {feedLoading ? (
