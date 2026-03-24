@@ -1,82 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Feather } from 'lucide-react';
 
 // Light-snap haptic
 const softSnap = () => { if (navigator.vibrate) navigator.vibrate(8); };
-
-// Official Aureum Feather Logo — diagonal quill, solid fill with highlight cuts
-function AureumFeatherSVG({ filled, size = 28 }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 100 100"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      style={{ overflow: 'visible' }}
-    >
-      <defs>
-        <linearGradient id="goldFill" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#F5E17A" />
-          <stop offset="45%" stopColor="#D4AF37" />
-          <stop offset="100%" stopColor="#9A7B10" />
-        </linearGradient>
-        <linearGradient id="sheenSweep" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#FFF8C0" stopOpacity="0" />
-          <stop offset="50%" stopColor="#FFF8C0" stopOpacity="0.55" />
-          <stop offset="100%" stopColor="#FFF8C0" stopOpacity="0" />
-        </linearGradient>
-      </defs>
-
-      {/* Main feather body — diagonal, top-right to bottom-left */}
-      <path
-        d="M72 8 C88 18, 95 38, 85 56 C78 68, 62 74, 50 78 C42 82, 30 88, 22 94
-           C24 86, 28 80, 32 74 C20 70, 10 58, 12 44 C14 28, 30 12, 50 10 C57 9, 65 7, 72 8 Z"
-        fill={filled ? 'url(#goldFill)' : 'none'}
-        stroke={filled ? 'url(#goldFill)' : '#E5E5E7'}
-        strokeWidth={filled ? 0 : 1.5}
-        strokeLinejoin="round"
-      />
-
-      {/* Central quill highlight — white cut through middle */}
-      <path
-        d="M68 14 C60 28, 46 52, 28 82"
-        stroke="white"
-        strokeWidth={filled ? 2.5 : 0}
-        strokeLinecap="round"
-        opacity={filled ? 0.85 : 0}
-      />
-
-      {/* Upper highlight barb cut */}
-      <path
-        d="M74 28 C66 30, 58 34, 52 42"
-        stroke="white"
-        strokeWidth={filled ? 1.8 : 0}
-        strokeLinecap="round"
-        opacity={filled ? 0.7 : 0}
-      />
-
-      {/* Lower barb split */}
-      <path
-        d="M56 58 C50 62, 44 68, 38 76"
-        stroke="white"
-        strokeWidth={filled ? 1.5 : 0}
-        strokeLinecap="round"
-        opacity={filled ? 0.6 : 0}
-      />
-
-      {/* Quill tip tuft — bottom-left curling barbs */}
-      <path
-        d="M22 94 C18 90, 16 84, 20 80 C17 78, 14 74, 18 70"
-        stroke={filled ? 'url(#goldFill)' : '#E5E5E7'}
-        strokeWidth={1.4}
-        strokeLinecap="round"
-        fill="none"
-        opacity={filled ? 0.9 : 0.6}
-      />
-    </svg>
-  );
-}
 
 export default function AscensionFeather({ count = 0, hasGiven = false, onAscend, disabled = false, isFounder = false }) {
   const [animating, setAnimating] = useState(false);
