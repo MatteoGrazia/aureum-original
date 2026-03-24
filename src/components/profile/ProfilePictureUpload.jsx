@@ -13,7 +13,13 @@ export default function ProfilePictureUpload({ user, onUpdate }) {
     setUploading(true);
     try {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      // Update auth record
       await base44.auth.updateMe({ profile_picture: file_url });
+      // Sync to AthleteIdentity so feed cards, PulseRow & comments show the new picture
+      const identities = await base44.entities.AthleteIdentity.filter({});
+      if (identities.length > 0) {
+        await base44.entities.AthleteIdentity.update(identities[0].id, { avatar_url: file_url });
+      }
       onUpdate?.();
     } catch (error) {
       console.error('Upload error:', error);
