@@ -239,11 +239,17 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
           <div className="flex items-center gap-2 mt-3">
             <button
               onClick={() => setShowComments(s => !s)}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl transition-all"
-              style={{ background: 'rgba(255,255,255,0.04)', border: '0.5px solid rgba(255,255,255,0.08)' }}
+              className="flex flex-col items-center justify-center transition-all active:scale-90"
+              style={{
+                width: 52,
+                height: 60,
+                background: showComments ? 'rgba(229,229,231,0.06)' : 'rgba(229,229,231,0.04)',
+                border: `0.5px solid ${showComments ? 'rgba(229,229,231,0.3)' : 'rgba(229,229,231,0.12)'}`,
+                borderRadius: 14,
+              }}
             >
-              <MessageCircle className="w-4 h-4" style={{ color: showComments ? '#D4AF37' : 'rgba(255,255,255,0.3)' }} strokeWidth={1.5} />
-              <span className="text-xs" style={{ color: showComments ? '#D4AF37' : 'rgba(255,255,255,0.3)', fontFamily: 'Montserrat, sans-serif' }}>
+              <MessageCircle className="w-5 h-5" style={{ color: '#E5E5E7', opacity: showComments ? 0.9 : 0.4 }} strokeWidth={1.3} />
+              <span className="mt-1" style={{ fontFamily: 'Georgia, serif', fontSize: 11, color: '#E5E5E7', opacity: showComments ? 0.9 : 0.45, lineHeight: 1 }}>
                 {commentCount}
               </span>
             </button>
