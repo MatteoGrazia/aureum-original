@@ -163,10 +163,6 @@ export default function AthleteProfileOverlay({ athleteName, athleteAvatar, athl
   const totalTributes = posts.reduce((s, p) => s + (p.voltage_count || 0), 0);
   const isFounder = identity?.is_founder;
 
-  // Ascension Score: (Tributes * 10) + (Workouts * 5) + (Streak * 2)
-  const ascensionScore = (totalTributes * 10) + (workoutCount * 5) + (streak * 2);
-  const ascensionCredits = Math.floor(ascensionScore / 100);
-
   const workoutPosts = posts.filter(p => p.post_type === 'workout');
   const bestVolume = workoutPosts.reduce((max, p) => Math.max(max, p.volume_kg || 0), 0);
   const avgCalories = posts.filter(p => p.post_type === 'nutrition').length > 0
@@ -187,6 +183,10 @@ export default function AthleteProfileOverlay({ athleteName, athleteAvatar, athl
     }
     return count;
   })();
+
+  // Ascension Score: (Tributes * 10) + (Workouts * 5) + (Streak * 2)
+  const ascensionScore = (totalTributes * 10) + (workoutCount * 5) + (streak * 2);
+  const ascensionCredits = Math.floor(ascensionScore / 100);
 
   const coverUrl = posts.find(p => p.photos?.length > 0)?.photos?.[0] || athleteAvatar;
 
