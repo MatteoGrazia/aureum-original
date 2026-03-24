@@ -144,7 +144,7 @@ export default function AuraHero({ remaining, goal, consumed, protein, carbs, fa
 
           {/* ── BACK ── */}
           <div
-            className="absolute inset-0 rounded-full flex flex-col items-center justify-center px-7"
+            className="absolute inset-0 rounded-full flex flex-col items-center justify-center"
             style={{
               backfaceVisibility: 'hidden',
               transform: 'rotateY(180deg)',
@@ -152,16 +152,17 @@ export default function AuraHero({ remaining, goal, consumed, protein, carbs, fa
               border: '1px solid #D4AF37',
               boxShadow: '0 0 20px rgba(212,175,55,0.3), inset 0 1px 0 rgba(255,255,255,0.06)',
               backdropFilter: 'blur(25px)',
+              padding: '18px 20px',
             }}
           >
-            <p className="text-[8px] uppercase tracking-[0.28em] mb-4"
+            <p className="text-[7px] uppercase tracking-[0.28em] mb-3"
               style={{ color: 'rgba(212,175,55,0.6)', fontFamily: 'Montserrat, sans-serif' }}>Macros Today</p>
             <div className="w-full">
               <MacroBarBack label="Pro"  value={protein} goal={macroGoals.protein || 150} color={MACRO_TONES.protein} />
               <MacroBarBack label="Carb" value={carbs}   goal={macroGoals.carbs   || 250} color={MACRO_TONES.carbs}   />
               <MacroBarBack label="Fat"  value={fat}     goal={macroGoals.fat     || 70}  color={MACRO_TONES.fat}     />
             </div>
-            <p className="text-[7px] uppercase tracking-[0.18em] mt-2"
+            <p className="text-[6px] uppercase tracking-[0.18em] mt-2"
               style={{ color: 'rgba(212,175,55,0.3)', fontFamily: 'Montserrat, sans-serif' }}>tap to go back</p>
           </div>
         </motion.div>
