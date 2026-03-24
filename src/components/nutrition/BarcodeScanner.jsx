@@ -125,9 +125,8 @@ export default function BarcodeScanner({ isOpen, onClose, onScan }) {
 
             } catch (err) {
               console.error('Barcode lookup error:', err);
-              setError('Lookup failed. Please try again.');
               isProcessingRef.current = false;
-              setStatus('scanning');
+              setStatus('not_found');
             }
           },
           () => {}
@@ -292,6 +291,37 @@ export default function BarcodeScanner({ isOpen, onClose, onScan }) {
               Point your camera at a product barcode to automatically look up nutrition info
             </p>
           </div>
+        </div>
+      )}
+
+      {/* Unknown item — styled Amber Glass modal */}
+      {error && (
+        <div
+          className="absolute inset-x-4 bottom-8 p-5 rounded-2xl"
+          style={{
+            background: 'rgba(14,10,4,0.92)',
+            backdropFilter: 'blur(30px)',
+            WebkitBackdropFilter: 'blur(30px)',
+            border: '0.5px solid rgba(212,175,55,0.4)',
+            boxShadow: '0 0 40px rgba(212,175,55,0.1)',
+          }}
+        >
+          <p className="text-center text-sm mb-4" style={{ color: '#E5E5E7', fontFamily: 'Montserrat, sans-serif', fontWeight: 300, lineHeight: 1.7 }}>
+            Item unknown to the Syndicate.{' '}
+            <span style={{ color: '#D4AF37' }}>Manual entry required.</span>
+          </p>
+          <button
+            onClick={() => { setError(null); setStatus('not_found'); }}
+            className="w-full py-3 rounded-xl text-sm tracking-[0.15em] uppercase"
+            style={{
+              background: 'linear-gradient(135deg, #D4AF37, #C9A227)',
+              color: '#080808',
+              fontFamily: 'Montserrat, sans-serif',
+              fontWeight: 600,
+            }}
+          >
+            Enter Manually
+          </button>
         </div>
       )}
 
