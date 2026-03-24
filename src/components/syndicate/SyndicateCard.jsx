@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Dumbbell, Flame, Clock, TrendingUp, MoreVertical, EyeOff, MessageCircle, Send } from 'lucide-react';
+import AscensionFeather from './AscensionFeather';
 import { formatDistanceToNow } from 'date-fns';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -9,28 +10,6 @@ import AthleteProfileOverlay from './AthleteProfileOverlay';
 
 // Heavy Thud haptic — simulates the weight of a gold medal
 const haptic = () => { if (navigator.vibrate) navigator.vibrate([40, 10, 60]); };
-
-// Minimalist Laurel Wreath SVG
-function LaurelIcon({ filled, color, size = 18 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {/* Left branch */}
-      <path d="M12 19 C10 17, 6 15, 4 11 C3 8, 4 5, 7 4 C8 6, 8 8, 9 10 C9.5 11.5, 10.5 13, 12 14"
-        stroke={color} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"
-        fill={filled ? color : 'none'} fillOpacity={filled ? 0.25 : 0} />
-      <path d="M7 4 C7.5 6.5, 8.5 8.5, 9 10" stroke={color} strokeWidth="1" strokeLinecap="round" />
-      <path d="M4.5 9.5 C6 9, 7.5 9.5, 9 10" stroke={color} strokeWidth="1" strokeLinecap="round" />
-      {/* Right branch */}
-      <path d="M12 19 C14 17, 18 15, 20 11 C21 8, 20 5, 17 4 C16 6, 16 8, 15 10 C14.5 11.5, 13.5 13, 12 14"
-        stroke={color} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"
-        fill={filled ? color : 'none'} fillOpacity={filled ? 0.25 : 0} />
-      <path d="M17 4 C16.5 6.5, 15.5 8.5, 15 10" stroke={color} strokeWidth="1" strokeLinecap="round" />
-      <path d="M19.5 9.5 C18 9, 16.5 9.5, 15 10" stroke={color} strokeWidth="1" strokeLinecap="round" />
-      {/* Base ribbon */}
-      <path d="M10 19.5 Q12 21 14 19.5" stroke={color} strokeWidth="1.2" strokeLinecap="round" fill="none" />
-    </svg>
-  );
-}
 
 export default function SyndicateCard({ post, currentUserEmail, onVoltage, index = 0 }) {
   const hasGivenVoltage = (post.voltage_by || []).includes(currentUserEmail);
@@ -252,13 +231,12 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
           )}
         </div>
 
-        {/* Footer — Voltage + Comments */}
+        {/* Footer — Ascension + Comments */}
         <div className="flex items-center justify-between px-4 pb-3" style={{ borderTop: '0.5px solid rgba(212,175,55,0.08)' }}>
           {isHallOfFame ? (
             <span className="text-[9px] uppercase tracking-[0.2em]" style={{ color: '#D4AF37', fontFamily: 'Montserrat, sans-serif', opacity: 0.8 }}>🏛 Hall of Fame</span>
           ) : <div />}
           <div className="flex items-center gap-2 mt-3">
-            {/* Comment button */}
             <button
               onClick={() => setShowComments(s => !s)}
               className="flex items-center gap-1.5 px-3 py-2 rounded-xl transition-all"
@@ -269,28 +247,11 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
                 {commentCount}
               </span>
             </button>
-
-            {/* Laurel Tribute button */}
-            <motion.button
-              onClick={handleVoltage}
-              disabled={hasGivenVoltage}
-              animate={voltageFlash ? { scale: [1, 1.35, 1] } : { scale: 1 }}
-              transition={{ duration: 0.3 }}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl transition-all active:scale-95"
-              style={{
-                background: hasGivenVoltage ? 'rgba(212,175,55,0.12)' : 'rgba(212,175,55,0.06)',
-                border: `0.5px solid ${hasGivenVoltage ? 'rgba(212,175,55,0.5)' : 'rgba(212,175,55,0.2)'}`,
-              }}
-            >
-              <LaurelIcon
-                filled={hasGivenVoltage}
-                color={hasGivenVoltage ? '#D4AF37' : 'rgba(212,175,55,0.35)'}
-                size={18}
-              />
-              <span className="text-xs" style={{ color: hasGivenVoltage ? '#D4AF37' : 'rgba(212,175,55,0.4)', fontFamily: 'Montserrat, sans-serif' }}>
-                {voltageCount}
-              </span>
-            </motion.button>
+            <AscensionFeather
+              count={voltageCount}
+              hasGiven={hasGivenVoltage}
+              onAscend={handleVoltage}
+            />
           </div>
         </div>
 
@@ -313,7 +274,9 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
                         className="w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-[10px]"
                         style={{
                           background: c.commenter_avatar ? `url(${c.commenter_avatar}) center/cover` : 'rgba(152,171,143,0.2)',
-                          border: '0.5px solid rgba(152,171,143,0.3)',
+                          backgroundSize: 'cover', backgroundPosition: 'center',
+                          border: c.is_founder ? '1.5px solid #D4AF37' : '1px solid #98AB8F',
+                          boxShadow: c.is_founder ? '0 0 6px rgba(212,175,55,0.4)' : '0 0 4px rgba(152,171,143,0.25)',
                           color: '#98AB8F',
                           fontFamily: 'Montserrat, sans-serif',
                         }}
