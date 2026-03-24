@@ -78,13 +78,26 @@ export default function Community() {
     staleTime: 2 * 60 * 1000,
   });
 
-  const handleVoltage = async (post) => {
+  const handleTribute = async (post) => {
     if (!user) return;
     const newBy = [...(post.voltage_by || []), user.email];
     await base44.entities.PerformanceFeed.update(post.id, {
       voltage_count: (post.voltage_count || 0) + 1,
       voltage_by: newBy,
     });
+    // Legacy Sync — notify the post author
+    if (post.created_by && post.created_by !== user.email) {
+      const identities = await base44.entities.AthleteIdentity.filter({ created_by: user.email });
+      const senderName = identities[0]?.username || user.full_name || 'An Athlete';
+      await base44.entities.SyndicateNotification.create({
+        recipient_id: post.created_by,
+        sender_id: user.email,
+        sender_name: senderName,
+        type: 'voltage',
+        message: `Athlete ${senderName} has bestowed a Laurel on your performance`,
+        read: false,
+      });
+    }
     queryClient.invalidateQueries(['performanceFeed']);
   };
 
@@ -162,7 +175,7 @@ export default function Community() {
                   key={post.id}
                   post={post}
                   currentUserEmail={user?.email}
-                  onVoltage={handleVoltage}
+                  onVoltage={handleTribute}
                   index={i}
                 />
               ))}
