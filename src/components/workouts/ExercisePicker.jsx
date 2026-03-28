@@ -169,7 +169,6 @@ function LazyAnatomical({ src, alt, fallback, customSrc, customSrcDark, isDarkMo
               objectFit: 'cover', 
               objectPosition: 'center',
               filter: imgFilter,
-              mixBlendMode: imgBlendMode,
             }} />
         : err ? fallback : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{fallback}</div>}
     </div>
