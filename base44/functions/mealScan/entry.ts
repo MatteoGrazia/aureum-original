@@ -7,19 +7,24 @@ Deno.serve(async (req) => {
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
     const body = await req.json();
-    const { action, image_url, voice_text } = body;
+    const { action, image_url, user_context, voice_text } = body;
 
     if (action === 'scan_meal') {
-      // Use AI vision to identify foods in the image
+      const contextNote = user_context
+        ? `\n\nThe user also provided these details about the meal: "${user_context}". Take these into account when identifying items, portion sizes, and calculating nutrition.`
+        : '';
+
       const result = await base44.asServiceRole.integrations.Core.InvokeLLM({
-        prompt: `You are a nutrition expert AI. Analyze this meal photo and identify ALL food items visible.
+        prompt: `You are a precision nutrition expert AI. Analyze this meal photo and identify ALL food items visible.
 For each food item, provide realistic nutritional estimates based on typical portion sizes visible in the image.
-Be thorough and include all visible components (sauces, garnishes, drinks, sides).
+Be thorough and include all visible components (sauces, garnishes, drinks, sides).${contextNote}
+Also generate a short descriptive meal name (e.g. "Chicken Tikka Masala with Naan").
 Return ONLY a JSON object with no markdown.`,
         file_urls: [image_url],
         response_json_schema: {
           type: 'object',
           properties: {
+            meal_name: { type: 'string' },
             foods: {
               type: 'array',
               items: {
@@ -39,7 +44,7 @@ Return ONLY a JSON object with no markdown.`,
           }
         }
       });
-      return Response.json({ foods: result.foods || [] });
+      return Response.json({ foods: result.foods || [], meal_name: result.meal_name || 'Scanned Meal' });
     }
 
     if (action === 'voice_log') {

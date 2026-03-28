@@ -20,6 +20,7 @@ import VoiceLogModal from '@/components/nutrition/VoiceLogModal';
 import QuickAddModal from '@/components/nutrition/QuickAddModal';
 import CreateFoodModal from '@/components/nutrition/CreateFoodModal';
 import NutritionToolbar from '@/components/nutrition/NutritionToolbar';
+import SavedMealsSection from '@/components/nutrition/SavedMealsSection';
 
 const mealIcons = {
   breakfast: Coffee,
@@ -392,6 +393,9 @@ export default function Nutrition() {
 
       {/* Recent Meals */}
       <RecentMeals onSelectFood={handleSelectFood} selectedDate={selectedDate} />
+
+      {/* Saved Scanned Meals */}
+      <SavedMealsSection onLogMeal={handleLogMultipleFoods} selectedMeal={selectedMeal} />
 
       {/* Search */}
       <motion.div

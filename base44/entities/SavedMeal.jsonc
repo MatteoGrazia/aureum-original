@@ -1,0 +1,73 @@
+{
+  "name": "SavedMeal",
+  "type": "object",
+  "properties": {
+    "meal_name": {
+      "type": "string",
+      "description": "Auto-generated or user-given meal name"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Photo of the meal"
+    },
+    "user_context": {
+      "type": "string",
+      "description": "User-provided details/notes about the meal"
+    },
+    "foods": {
+      "type": "array",
+      "description": "Array of detected food items with macros",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "serving_description": {
+            "type": "string"
+          },
+          "calories": {
+            "type": "number"
+          },
+          "protein": {
+            "type": "number"
+          },
+          "carbs": {
+            "type": "number"
+          },
+          "fat": {
+            "type": "number"
+          },
+          "fiber": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "total_calories": {
+      "type": "number"
+    },
+    "total_protein": {
+      "type": "number"
+    },
+    "total_carbs": {
+      "type": "number"
+    },
+    "total_fat": {
+      "type": "number"
+    },
+    "meal_type": {
+      "type": "string",
+      "enum": [
+        "breakfast",
+        "lunch",
+        "dinner",
+        "snack"
+      ]
+    }
+  },
+  "required": [
+    "meal_name",
+    "foods"
+  ]
+}
