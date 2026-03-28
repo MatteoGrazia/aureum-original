@@ -15,6 +15,7 @@ import ExercisePicker from '@/components/workouts/ExercisePicker';
 import WorkoutLogDetail from '@/components/workouts/WorkoutLogDetail';
 import RoutineCard from '@/components/workouts/RoutineCard';
 import WorkoutHero from '@/components/workouts/WorkoutHero';
+import CreateExerciseModal from '@/components/workouts/CreateExerciseModal';
 import WeeklyMuscleVolume from '@/components/workouts/WeeklyMuscleVolume';
 import { Input } from '@/components/ui/input';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
@@ -85,6 +86,7 @@ export default function Workouts() {
   const [newRoutine, setNewRoutine] = useState({ name: '', exercises: [] });
   const [editingRoutineId, setEditingRoutineId] = useState(null);
   const [showExercisePicker, setShowExercisePicker] = useState(false);
+  const [showCreateExercise, setShowCreateExercise] = useState(false);
 
   const queryClient = useQueryClient();
   const today = format(new Date(), 'yyyy-MM-dd');
@@ -372,6 +374,12 @@ export default function Workouts() {
     setShowExercisePicker(false);
   };
 
+  const handleExerciseCreated = (ex) => {
+    queryClient.invalidateQueries(['exercises']);
+    setShowCreateExercise(false);
+    addExerciseToRoutine(ex);
+  };
+
   const handleEditRoutine = (routine) => {
     setNewRoutine({ name: routine.name, exercises: routine.exercises || [] });
     setEditingRoutineId(routine.id);
@@ -443,6 +451,15 @@ export default function Workouts() {
       {view === 'logDetail' && selectedLog && (
         <WorkoutLogDetail log={selectedLog} onBack={() => { setSelectedLog(null); setView('routines'); }} />
       )}
+
+      <AnimatePresence>
+        {showCreateExercise && (
+          <CreateExerciseModal
+            onClose={() => setShowCreateExercise(false)}
+            onCreated={handleExerciseCreated}
+          />
+        )}
+      </AnimatePresence>
 
       <AnimatePresence>
         {showExercisePicker && (
@@ -660,14 +677,24 @@ export default function Workouts() {
                 </Droppable>
               </DragDropContext>
 
-              <button
-                onClick={() => setShowExercisePicker(true)}
-                className="w-full py-4 rounded-2xl text-white/30 text-sm flex items-center justify-center gap-2"
-                style={{ border: '1.5px dashed rgba(255,255,255,0.15)' }}
-              >
-                <Plus className="w-4 h-4" />
-                Add Exercise
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setShowExercisePicker(true)}
+                  className="flex-1 py-4 rounded-2xl text-white/30 text-sm flex items-center justify-center gap-2"
+                  style={{ border: '1.5px dashed rgba(255,255,255,0.15)' }}
+                >
+                  <Plus className="w-4 h-4" />
+                  Add Exercise
+                </button>
+                <button
+                  onClick={() => setShowCreateExercise(true)}
+                  className="py-4 px-4 rounded-2xl text-sm flex items-center justify-center gap-2"
+                  style={{ border: '1.5px dashed rgba(212,175,55,0.35)', color: 'rgba(212,175,55,0.6)' }}
+                >
+                  <Plus className="w-4 h-4" />
+                  New
+                </button>
+              </div>
 
               <GoldButton
                 onClick={saveRoutine}
