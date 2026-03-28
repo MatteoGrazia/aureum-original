@@ -151,6 +151,14 @@ function LazyAnatomical({ src, alt, fallback, customSrc, customSrcDark, isDarkMo
   const lightFilter = 'hue-rotate(240deg) saturate(0.45) brightness(1.05)';
   const imgFilter = isCustomImage ? 'none' : (isDarkMode ? darkFilter : lightFilter);
 
+  // If no custom image, show SVG fallback directly (skip inconsistent wger images)
+  if (!isCustomImage && !shouldLoad) {
+    return <div ref={ref} style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{fallback}</div>;
+  }
+  if (!isCustomImage) {
+    return <div ref={ref} style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{fallback}</div>;
+  }
+
   return (
     <div ref={ref} style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       {shouldLoad && !err
@@ -160,7 +168,8 @@ function LazyAnatomical({ src, alt, fallback, customSrc, customSrcDark, isDarkMo
               height: '100%', 
               objectFit: 'cover', 
               objectPosition: 'center',
-              filter: imgFilter
+              filter: imgFilter,
+              mixBlendMode: imgBlendMode,
             }} />
         : err ? fallback : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{fallback}</div>}
     </div>
@@ -409,7 +418,7 @@ export default function ExercisePicker({ exercises, onSelect, onClose, mode = 'a
                 overflow: 'hidden', 
                 flexShrink: 0,
                 border: `0.5px solid ${isDarkMode ? 'rgba(212,175,55,0.25)' : 'rgba(156,126,70,0.25)'}`,
-                background: 'rgba(255,255,255,0.03)'
+                background: (selected.image_url || selected.image_url_dark) && isDarkMode ? '#ffffff' : 'rgba(255,255,255,0.03)'
               }}>
                 <img
                    src={isDarkMode ? (selected.image_url_dark || selected.image_url || getWgerAnatomyUrl(selected.muscle_group)) : (selected.image_url || getWgerAnatomyUrl(selected.muscle_group))}
@@ -423,7 +432,8 @@ export default function ExercisePicker({ exercises, onSelect, onClose, mode = 'a
                        ? 'none'
                        : (isDarkMode
                          ? 'invert(1) hue-rotate(60deg) saturate(0.6) brightness(1.1)'
-                         : 'hue-rotate(240deg) saturate(0.45) brightness(1.05)')
+                         : 'hue-rotate(240deg) saturate(0.45) brightness(1.05)'),
+                     mixBlendMode: (selected.image_url || selected.image_url_dark) && isDarkMode ? 'multiply' : 'normal',
                    }}
                     onError={e => { e.target.style.display = 'none'; e.target.parentNode.querySelector('.fallback-icon') && (e.target.parentNode.querySelector('.fallback-icon').style.display = 'flex'); }}
                    />
