@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Camera, Check, Loader2, Plus, ScanLine, MessageSquare, Send } from 'lucide-react';
+import { X, Camera, Check, Loader2, ScanLine, MessageSquare, Send, ChevronRight } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useTheme } from '@/components/shared/ThemeContext';
 
@@ -8,9 +8,28 @@ const PEACH = '#FFDAB9';
 const PEACH_DIM = 'rgba(255,218,185,0.12)';
 const PEACH_BORDER = 'rgba(255,218,185,0.28)';
 
+const TUTORIAL_SLIDES = [
+  {
+    icon: Camera,
+    title: 'Photograph Your Meal',
+    desc: 'Take a clear photo of your plate. The AI sees everything — sauces, sides, drinks.'
+  },
+  {
+    icon: MessageSquare,
+    title: 'Describe the Details',
+    desc: 'Tell the AI about ingredients, portion size, restaurant, or cooking method for maximum accuracy.'
+  },
+  {
+    icon: ScanLine,
+    title: 'Log in One Tap',
+    desc: 'Review the AI breakdown, select what applies, and log the whole meal instantly.'
+  }
+];
+
 export default function MealScanModal({ isOpen, onClose, onFoodsSelected, selectedMeal }) {
   const { isDarkMode } = useTheme();
-  const [step, setStep] = useState('capture'); // capture | context | scanning | review
+  const [step, setStep] = useState('tutorial');
+  const [tutorialPage, setTutorialPage] = useState(0); // capture | context | scanning | review
   const [capturedImage, setCapturedImage] = useState(null);
   const [capturedFile, setCapturedFile] = useState(null);
   const [context, setContext] = useState('');
@@ -28,7 +47,8 @@ export default function MealScanModal({ isOpen, onClose, onFoodsSelected, select
 
   useEffect(() => {
     if (!isOpen) {
-      setStep('capture');
+      setStep('tutorial');
+      setTutorialPage(0);
       setCapturedImage(null);
       setCapturedFile(null);
       setContext('');
@@ -125,6 +145,49 @@ export default function MealScanModal({ isOpen, onClose, onFoodsSelected, select
         <div className="w-5" />
       </div>
 
+      {/* TUTORIAL STEP */}
+      {step === 'tutorial' && (
+        <div className="flex-1 flex flex-col px-6 pb-10">
+          <div className="flex-1 flex flex-col items-center justify-center">
+            <motion.div
+              key={tutorialPage}
+              initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }}
+              className="w-24 h-24 rounded-3xl flex items-center justify-center mb-8"
+              style={{ background: PEACH_DIM, border: `0.5px solid ${PEACH_BORDER}` }}
+            >
+              {React.createElement(TUTORIAL_SLIDES[tutorialPage].icon, { className: 'w-10 h-10', style: { color: PEACH }, strokeWidth: 1.5 })}
+            </motion.div>
+            <div className="flex gap-2 mb-6">
+              {TUTORIAL_SLIDES.map((_, i) => (
+                <div key={i} className="rounded-full transition-all duration-300"
+                  style={{ width: i === tutorialPage ? 20 : 6, height: 6, background: i === tutorialPage ? PEACH : 'rgba(255,218,185,0.25)' }} />
+              ))}
+            </div>
+            <motion.h2 key={`t-${tutorialPage}`} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+              className="text-2xl text-center mb-3" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400, color: textPrimary }}>
+              {TUTORIAL_SLIDES[tutorialPage].title}
+            </motion.h2>
+            <motion.p key={`d-${tutorialPage}`} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}
+              className="text-sm text-center leading-relaxed" style={{ color: textMuted, fontFamily: 'Montserrat, sans-serif' }}>
+              {TUTORIAL_SLIDES[tutorialPage].desc}
+            </motion.p>
+          </div>
+          {tutorialPage < TUTORIAL_SLIDES.length - 1 ? (
+            <button onClick={() => setTutorialPage(p => p + 1)}
+              className="w-full py-4 rounded-2xl flex items-center justify-center gap-2"
+              style={{ background: PEACH_DIM, border: `0.5px solid ${PEACH_BORDER}`, color: PEACH, fontFamily: 'Montserrat, sans-serif', fontSize: 13, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+              Next <ChevronRight className="w-4 h-4" />
+            </button>
+          ) : (
+            <button onClick={() => { setStep('capture'); setTimeout(() => fileInputRef.current?.click(), 100); }}
+              className="w-full py-4 rounded-2xl"
+              style={{ background: `linear-gradient(135deg, ${PEACH} 0%, #FFB888 100%)`, color: '#1D1D1F', fontFamily: 'Montserrat, sans-serif', fontSize: 13, letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: 500 }}>
+              Start Scanning
+            </button>
+          )}
+        </div>
+      )}
+
       {/* CAPTURE STEP */}
       {step === 'capture' && (
         <div className="flex-1 flex flex-col items-center justify-center px-6 gap-6">
@@ -132,17 +195,10 @@ export default function MealScanModal({ isOpen, onClose, onFoodsSelected, select
             style={{ background: PEACH_DIM, border: `0.5px solid ${PEACH_BORDER}` }}>
             <Camera className="w-12 h-12" style={{ color: PEACH }} strokeWidth={1.2} />
           </div>
-          <div className="text-center">
-            <h2 className="text-xl mb-2" style={{ color: textPrimary, fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>Photograph Your Meal</h2>
-            <p className="text-sm leading-relaxed" style={{ color: textMuted, fontFamily: 'Montserrat, sans-serif' }}>
-              Take a photo of your plate. You'll then add some context so the AI can give you the most accurate nutritional breakdown.
-            </p>
-          </div>
-          <button
-            onClick={() => fileInputRef.current?.click()}
+          <p className="text-sm text-center" style={{ color: textMuted, fontFamily: 'Montserrat, sans-serif' }}>Choose a photo from your gallery or take a new one</p>
+          <button onClick={() => fileInputRef.current?.click()}
             className="w-full py-4 rounded-2xl text-sm uppercase tracking-[0.12em]"
-            style={{ background: PEACH_DIM, border: `0.5px solid ${PEACH_BORDER}`, color: PEACH, fontFamily: 'Montserrat, sans-serif' }}
-          >
+            style={{ background: `linear-gradient(135deg, ${PEACH} 0%, #FFB888 100%)`, color: '#1D1D1F', fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}>
             Take / Choose Photo
           </button>
         </div>

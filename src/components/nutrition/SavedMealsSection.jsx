@@ -13,7 +13,17 @@ export default function SavedMealsSection({ onLogMeal, selectedMeal }) {
 
   const { data: savedMeals = [] } = useQuery({
     queryKey: ['savedMeals'],
-    queryFn: () => base44.entities.SavedMeal.list('-created_date', 30),
+    queryFn: async () => {
+      const all = await base44.entities.SavedMeal.list('-created_date', 50);
+      // Deduplicate by meal_name — keep only the most recent per name
+      const seen = new Set();
+      return all.filter(m => {
+        const key = m.meal_name?.toLowerCase().trim() || m.id;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+    },
   });
 
   const textPrimary = isDarkMode ? '#FFFFFF' : '#1D1D1F';

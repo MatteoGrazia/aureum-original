@@ -28,17 +28,17 @@ function SelectDrawer({ title, options, value, onSelect, onClose, multi = false,
         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
         className="w-full rounded-t-3xl overflow-hidden"
         style={{
-          background: isDarkMode ? 'rgba(14,11,4,0.98)' : 'rgba(252,250,244,0.98)',
-          border: isDarkMode ? '0.5px solid rgba(180,160,100,0.18)' : '0.5px solid rgba(180,150,80,0.22)',
+          background: isDarkMode ? 'rgba(12,12,12,0.98)' : 'rgba(248,248,246,0.98)',
+          border: isDarkMode ? '0.5px solid rgba(212,175,55,0.15)' : '0.5px solid rgba(225,193,110,0.3)',
           borderBottom: 'none',
           backdropFilter: 'blur(30px)',
           paddingBottom: 'calc(1.5rem + env(safe-area-inset-bottom, 0px))',
         }}
         onClick={e => e.stopPropagation()}
       >
-        <div className="w-8 h-0.5 rounded-full mx-auto mt-4 mb-4" style={{ background: isDarkMode ? 'rgba(200,180,120,0.2)' : 'rgba(150,120,60,0.25)' }} />
+        <div className="w-8 h-0.5 rounded-full mx-auto mt-4 mb-4" style={{ background: isDarkMode ? 'rgba(212,175,55,0.15)' : 'rgba(212,175,55,0.2)' }} />
         <div className="flex items-center justify-between px-6 pb-4" style={{ borderBottom: `0.5px solid ${isDarkMode ? 'rgba(180,160,100,0.1)' : 'rgba(180,150,80,0.15)'}` }}>
-          <p className="text-[10px] uppercase tracking-[0.3em]" style={{ color: isDarkMode ? 'rgba(200,180,120,0.6)' : 'rgba(130,100,40,0.7)', fontFamily: 'Montserrat, sans-serif' }}>{title}</p>
+          <p className="text-[10px] uppercase tracking-[0.3em]" style={{ color: isDarkMode ? 'rgba(212,175,55,0.5)' : 'rgba(156,126,70,0.6)', fontFamily: 'Montserrat, sans-serif' }}>{title}</p>
           <button onClick={onClose}><X className="w-4 h-4" style={{ color: textMuted }} /></button>
         </div>
         <div className="overflow-y-auto" style={{ maxHeight: '55vh' }}>
@@ -51,11 +51,11 @@ function SelectDrawer({ title, options, value, onSelect, onClose, multi = false,
                 className="w-full flex items-center justify-between px-6 py-4 transition-all capitalize"
                 style={{
                   borderBottom: i < options.length - 1 ? `0.5px solid ${isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)'}` : 'none',
-                  background: isActive ? (isDarkMode ? 'rgba(200,180,120,0.07)' : 'rgba(180,150,80,0.06)') : 'transparent',
+                  background: isActive ? 'rgba(212,175,55,0.07)' : 'transparent',
                 }}
               >
-                <span className="text-sm" style={{ color: isActive ? (isDarkMode ? 'rgba(220,200,140,0.95)' : 'rgba(110,85,30,0.9)') : textPrimary, fontFamily: 'Montserrat, sans-serif' }}>{opt}</span>
-                {isActive && <Check className="w-4 h-4" style={{ color: isDarkMode ? 'rgba(200,180,120,0.7)' : 'rgba(130,100,40,0.7)' }} strokeWidth={1.5} />}
+                <span className="text-sm capitalize" style={{ color: isActive ? '#D4AF37' : textPrimary, fontFamily: 'Montserrat, sans-serif' }}>{opt}</span>
+                {isActive && <Check className="w-4 h-4" style={{ color: '#D4AF37' }} strokeWidth={1.5} />}
               </button>
             );
           })}
@@ -65,7 +65,7 @@ function SelectDrawer({ title, options, value, onSelect, onClose, multi = false,
             <button
               onClick={onClose}
               className="w-full py-3.5 rounded-2xl text-sm"
-              style={{ background: isDarkMode ? 'rgba(200,180,120,0.1)' : 'rgba(180,150,80,0.1)', border: `0.5px solid ${isDarkMode ? 'rgba(200,180,120,0.2)' : 'rgba(180,150,80,0.25)'}`, color: isDarkMode ? 'rgba(220,200,140,0.8)' : 'rgba(110,85,30,0.8)', fontFamily: 'Montserrat, sans-serif' }}
+              style={{ background: 'rgba(212,175,55,0.08)', border: '0.5px solid rgba(212,175,55,0.2)', color: '#D4AF37', fontFamily: 'Montserrat, sans-serif' }}
             >
               Done
             </button>
@@ -87,12 +87,11 @@ export default function CreateExerciseModal({ onClose, onCreated }) {
 
   const textPrimary = isDarkMode ? '#FFFFFF' : '#1D1D1F';
   const textMuted = isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(29,29,31,0.45)';
-  const cardBg = isDarkMode ? 'rgba(14,11,4,0.99)' : 'rgba(252,250,244,0.99)';
-  const inputBg = isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.7)';
-  const borderColor = isDarkMode ? 'rgba(180,160,100,0.15)' : 'rgba(180,150,80,0.2)';
-  const labelColor = isDarkMode ? 'rgba(200,180,120,0.55)' : 'rgba(130,100,40,0.65)';
-  const rowBg = isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.55)';
-  const valueColor = isDarkMode ? 'rgba(220,200,140,0.85)' : 'rgba(100,75,25,0.85)';
+  const cardBg = isDarkMode ? 'rgba(12,12,12,0.98)' : 'rgba(248,248,246,0.98)';
+  const borderColor = isDarkMode ? 'rgba(212,175,55,0.15)' : 'rgba(225,193,110,0.35)';
+  const labelColor = isDarkMode ? 'rgba(255,255,255,0.35)' : 'rgba(29,29,31,0.4)';
+  const rowBg = isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.7)';
+  const valueColor = isDarkMode ? 'rgba(255,255,255,0.75)' : 'rgba(29,29,31,0.75)';
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -165,7 +164,7 @@ export default function CreateExerciseModal({ onClose, onCreated }) {
           }}
           onClick={e => e.stopPropagation()}
         >
-          <div className="w-8 h-0.5 rounded-full mx-auto mt-4 mb-5" style={{ background: isDarkMode ? 'rgba(200,180,120,0.2)' : 'rgba(150,120,60,0.25)' }} />
+          <div className="w-8 h-0.5 rounded-full mx-auto mt-4 mb-5" style={{ background: isDarkMode ? 'rgba(212,175,55,0.15)' : 'rgba(212,175,55,0.2)' }} />
 
           <div className="flex items-center justify-between px-6 mb-6">
             <h2 style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400, color: textPrimary, fontSize: 17, letterSpacing: '0.08em' }}>
@@ -243,10 +242,10 @@ export default function CreateExerciseModal({ onClose, onCreated }) {
               className="w-full py-4 rounded-2xl text-sm flex items-center justify-center gap-2 mt-2"
               style={{
                 background: isValid
-                  ? (isDarkMode ? 'rgba(200,180,120,0.14)' : 'rgba(180,150,80,0.12)')
+                  ? 'linear-gradient(135deg, #D4AF37 0%, #D4AF37 100%)'
                   : (isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)'),
-                border: `0.5px solid ${isValid ? (isDarkMode ? 'rgba(200,180,120,0.35)' : 'rgba(180,150,80,0.4)') : borderColor}`,
-                color: isValid ? (isDarkMode ? 'rgba(220,200,140,0.9)' : 'rgba(100,75,25,0.85)') : textMuted,
+                border: `0.5px solid ${isValid ? 'rgba(212,175,55,0.6)' : borderColor}`,
+                color: isValid ? '#0a0a0a' : textMuted,
                 fontFamily: 'Montserrat, sans-serif',
                 letterSpacing: '0.12em',
                 cursor: isValid ? 'pointer' : 'not-allowed',
