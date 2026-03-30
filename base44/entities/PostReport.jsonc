@@ -1,0 +1,22 @@
+{
+  "name": "PostReport",
+  "type": "object",
+  "properties": {
+    "post_id": {
+      "type": "string",
+      "description": "Reference to PerformanceFeed record"
+    },
+    "reporter_email": {
+      "type": "string",
+      "description": "Email of the user who reported"
+    },
+    "reason": {
+      "type": "string",
+      "description": "Optional reason for report"
+    }
+  },
+  "required": [
+    "post_id",
+    "reporter_email"
+  ]
+}

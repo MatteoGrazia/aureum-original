@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Trophy, Zap, Target, Camera, X } from 'lucide-react';
+import { toast } from 'sonner';
 import GoldButton from '@/components/ui/GoldButton';
 import VoidCard from '@/components/ui/VoidCard';
 import { base44 } from '@/api/base44Client';
@@ -79,7 +80,7 @@ export default function WorkoutSummary({ summary, onDone }) {
         .slice(0, 3)
         .join(', ');
       
-      await base44.entities.PerformanceFeed.create({
+      const newPost = await base44.entities.PerformanceFeed.create({
         athlete_id: athleteIdentity?.id || user.id,
         athlete_name: athleteIdentity?.username || user.full_name || user.email?.split('@')[0],
         athlete_avatar: athleteIdentity?.avatar_url || profile?.avatar_url || '',
@@ -93,7 +94,27 @@ export default function WorkoutSummary({ summary, onDone }) {
         voltage_by: [],
         photos: photos,
         comment_count: 0,
+        is_hidden: false,
+        report_count: 0,
+        reported_by: [],
       });
+
+      // Run content moderation on each uploaded photo
+      if (photos.length > 0) {
+        for (const photoUrl of photos) {
+          const result = await base44.functions.invoke('moderateContent', {
+            post_id: newPost.id,
+            image_url: photoUrl,
+          });
+          if (result?.data?.approved === false) {
+            toast('Content does not meet Syndicate standards. Please maintain professional performance imagery.', {
+              style: { background: 'rgba(12,12,12,0.97)', border: '0.5px solid rgba(212,175,55,0.4)', color: '#E5E5E7', fontFamily: 'Montserrat, sans-serif' },
+              duration: 6000,
+            });
+            break;
+          }
+        }
+      }
       
       // Update last_active for athlete
       if (athleteIdentity) {

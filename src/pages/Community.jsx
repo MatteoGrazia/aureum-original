@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
@@ -24,6 +24,7 @@ export default function Community() {
   });
   const [pulseProfile, setPulseProfile] = useState(null);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [feedTab, setFeedTab] = useState('discover'); // 'discover' | 'following'
   const myPostAPRef = useRef({});
 
   const { data: user } = useQuery({
@@ -119,12 +120,51 @@ export default function Community() {
   };
 
   // Feed data
-  const { data: feed = [], isLoading: feedLoading } = useQuery({
+  const { data: rawFeed = [], isLoading: feedLoading } = useQuery({
     queryKey: ['performanceFeed'],
-    queryFn: () => base44.entities.PerformanceFeed.list('-created_date', 40),
+    queryFn: () => base44.entities.PerformanceFeed.list('-created_date', 60),
     enabled: consentGranted,
     staleTime: 60 * 1000,
   });
+
+  // Following list
+  const { data: following = [] } = useQuery({
+    queryKey: ['myFollowing', user?.email],
+    queryFn: () => base44.entities.Follow.filter({ follower_id: user.email, status: 'accepted' }),
+    enabled: !!user?.email && consentGranted,
+    staleTime: 2 * 60 * 1000,
+  });
+
+  // Muted users
+  const { data: mutedUsers = [] } = useQuery({
+    queryKey: ['mutedUsers'],
+    queryFn: () => base44.entities.MutedUser.list(),
+    enabled: consentGranted,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const mutedIds = useMemo(() => new Set(mutedUsers.map(m => m.muted_user_id)), [mutedUsers]);
+  const followingIds = useMemo(() => new Set(following.map(f => f.following_id)), [following]);
+
+  // Engagement decay: posts older than 12h with 0 voltage drop in ranking
+  const feed = useMemo(() => {
+    const now = Date.now();
+    const filtered = rawFeed.filter(p => {
+      if (p.is_hidden) return false;
+      if (mutedIds.has(p.created_by)) return false;
+      if (feedTab === 'following') return followingIds.has(p.created_by) || p.created_by === user?.email;
+      return true;
+    });
+    return [...filtered].sort((a, b) => {
+      const ageA = (now - new Date(a.created_date).getTime()) / (1000 * 60 * 60);
+      const ageB = (now - new Date(b.created_date).getTime()) / (1000 * 60 * 60);
+      const decayA = ageA > 12 && (a.voltage_count || 0) === 0 ? -1000000 : 0;
+      const decayB = ageB > 12 && (b.voltage_count || 0) === 0 ? -1000000 : 0;
+      const scoreA = (a.voltage_count || 0) * 100 - ageA * 10 + decayA;
+      const scoreB = (b.voltage_count || 0) * 100 - ageB * 10 + decayB;
+      return scoreB - scoreA;
+    });
+  }, [rawFeed, feedTab, mutedIds, followingIds, user?.email]);
 
   // Athletes for Pulse Row
   const { data: athletes = [] } = useQuery({
@@ -212,28 +252,41 @@ export default function Community() {
             )}
           </AnimatePresence>
 
-          {/* Leaderboard Toggle */}
-          <div className="flex items-center justify-center gap-3 mb-4 px-4">
-            <button
-              onClick={() => setShowLeaderboard(false)}
-              className="px-4 py-1.5 rounded-full text-[10px] uppercase tracking-[0.2em] transition-all"
-              style={{
-                background: !showLeaderboard ? 'rgba(152,171,143,0.15)' : 'transparent',
-                border: `0.5px solid ${!showLeaderboard ? '#98AB8F' : 'rgba(152,171,143,0.2)'}`,
-                color: !showLeaderboard ? '#98AB8F' : 'rgba(152,171,143,0.4)',
-                fontFamily: 'Montserrat, sans-serif',
-              }}
-            >Feed</button>
-            <button
-              onClick={() => setShowLeaderboard(true)}
-              className="px-4 py-1.5 rounded-full text-[10px] uppercase tracking-[0.2em] transition-all"
-              style={{
-                background: showLeaderboard ? 'rgba(152,171,143,0.15)' : 'transparent',
-                border: `0.5px solid ${showLeaderboard ? '#98AB8F' : 'rgba(152,171,143,0.2)'}`,
-                color: showLeaderboard ? '#98AB8F' : 'rgba(152,171,143,0.4)',
-                fontFamily: 'Montserrat, sans-serif',
-              }}
-            >Leaderboard</button>
+          {/* Dual Feed Toggle */}
+          <div className="flex items-center justify-center mb-5 px-4">
+            <div className="flex rounded-xl overflow-hidden" style={{ background: 'rgba(255,255,255,0.04)', border: '0.5px solid rgba(212,175,55,0.15)' }}>
+              {[{ key: 'discover', label: 'DISCOVER' }, { key: 'following', label: 'FOLLOWING' }].map(tab => (
+                <button
+                  key={tab.key}
+                  onClick={() => { setFeedTab(tab.key); setShowLeaderboard(false); }}
+                  className="relative px-6 py-2.5 text-[10px] tracking-[0.22em] transition-all"
+                  style={{
+                    fontFamily: 'Montserrat, sans-serif',
+                    color: feedTab === tab.key && !showLeaderboard ? '#E5E5E7' : 'rgba(229,229,231,0.35)',
+                    background: feedTab === tab.key && !showLeaderboard ? 'rgba(212,175,55,0.08)' : 'transparent',
+                  }}
+                >
+                  {tab.label}
+                  {feedTab === tab.key && !showLeaderboard && (
+                    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 w-8 rounded-full" style={{ background: '#D4AF37', boxShadow: '0 0 8px rgba(212,175,55,0.6)' }} />
+                  )}
+                </button>
+              ))}
+              <button
+                onClick={() => setShowLeaderboard(true)}
+                className="relative px-6 py-2.5 text-[10px] tracking-[0.22em] transition-all"
+                style={{
+                  fontFamily: 'Montserrat, sans-serif',
+                  color: showLeaderboard ? '#E5E5E7' : 'rgba(229,229,231,0.35)',
+                  background: showLeaderboard ? 'rgba(212,175,55,0.08)' : 'transparent',
+                }}
+              >
+                RANKS
+                {showLeaderboard && (
+                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 w-8 rounded-full" style={{ background: '#D4AF37', boxShadow: '0 0 8px rgba(212,175,55,0.6)' }} />
+                )}
+              </button>
+            </div>
           </div>
 
           {showLeaderboard ? (
@@ -251,17 +304,11 @@ export default function Community() {
               animate={{ opacity: 1 }}
               className="text-center py-20 px-8"
             >
-              <p
-                className="text-2xl mb-3 tracking-[0.2em]"
-                style={{ color: '#D4AF37', fontFamily: 'Montserrat, sans-serif', fontWeight: 300 }}
-              >
-                NO ACTIVITY YET
+              <p className="text-2xl mb-3 tracking-[0.2em]" style={{ color: '#D4AF37', fontFamily: 'Montserrat, sans-serif', fontWeight: 300 }}>
+                {feedTab === 'following' ? 'INNER CIRCLE EMPTY' : 'NO ACTIVITY YET'}
               </p>
-              <p
-                className="text-sm leading-relaxed"
-                style={{ color: '#E5E5E7', fontFamily: 'Montserrat, sans-serif', fontWeight: 300, opacity: 0.5 }}
-              >
-                No one has completed a workout yet.
+              <p className="text-sm leading-relaxed" style={{ color: '#E5E5E7', fontFamily: 'Montserrat, sans-serif', fontWeight: 300, opacity: 0.5 }}>
+                {feedTab === 'following' ? 'Join athletes from the Discover feed to see their performance here.' : 'No one has completed a workout yet.'}
               </p>
             </motion.div>
           ) : (

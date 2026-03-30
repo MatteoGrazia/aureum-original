@@ -1,0 +1,89 @@
+{
+  "name": "PerformanceFeed",
+  "type": "object",
+  "properties": {
+    "athlete_id": {
+      "type": "string",
+      "description": "Reference to AthleteIdentity record"
+    },
+    "athlete_name": {
+      "type": "string"
+    },
+    "athlete_avatar": {
+      "type": "string"
+    },
+    "post_type": {
+      "type": "string",
+      "enum": [
+        "workout",
+        "nutrition",
+        "milestone",
+        "weight"
+      ],
+      "description": "Type of performance post"
+    },
+    "title": {
+      "type": "string",
+      "description": "Post headline"
+    },
+    "workout_name": {
+      "type": "string"
+    },
+    "volume_kg": {
+      "type": "number"
+    },
+    "duration_minutes": {
+      "type": "number"
+    },
+    "calories": {
+      "type": "number"
+    },
+    "protein_g": {
+      "type": "number"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "voltage_count": {
+      "type": "number",
+      "default": 0
+    },
+    "voltage_by": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "photos": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "comment_count": {
+      "type": "number",
+      "default": 0
+    },
+    "is_hidden": {
+      "type": "boolean",
+      "default": false,
+      "description": "Hidden by content moderation"
+    },
+    "report_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of user reports"
+    },
+    "reported_by": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Emails who reported"
+    }
+  },
+  "required": [
+    "post_type",
+    "title"
+  ]
+}

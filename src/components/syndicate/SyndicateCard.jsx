@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Dumbbell, Flame, Clock, TrendingUp, MoreVertical, EyeOff, MessageCircle, Send } from 'lucide-react';
+import { Dumbbell, Flame, Clock, TrendingUp, MoreVertical, EyeOff, MessageCircle, Send, Flag } from 'lucide-react';
 import AscensionFeather from './AscensionFeather';
 import { formatDistanceToNow } from 'date-fns';
 import { base44 } from '@/api/base44Client';
@@ -19,6 +19,7 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
   const [commentText, setCommentText] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [showAthleteProfile, setShowAthleteProfile] = useState(false);
+  const [reported, setReported] = useState(false);
   const queryClient = useQueryClient();
 
   const { data: comments = [], refetch: refetchComments } = useQuery({
@@ -33,6 +34,24 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
     setVoltageFlash(true);
     setTimeout(() => setVoltageFlash(false), 600);
     onVoltage?.(post);
+  };
+
+  const handleReport = async () => {
+    if (reported || post.created_by === currentUserEmail) return;
+    const currentReports = post.reported_by || [];
+    if (currentReports.includes(currentUserEmail)) return;
+    const newReported = [...currentReports, currentUserEmail];
+    const newCount = newReported.length;
+    await base44.entities.PerformanceFeed.update(post.id, {
+      report_count: newCount,
+      reported_by: newReported,
+    });
+    setReported(true);
+    toast('Report submitted to the Syndicate.', {
+      style: { background: 'rgba(12,12,12,0.97)', border: '0.5px solid #98AB8F', color: '#98AB8F', fontFamily: 'Montserrat, sans-serif' },
+      icon: '🪶',
+    });
+    setShowMenu(false);
   };
 
   const handleMute = async () => {
@@ -68,6 +87,7 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
   const isWorkout = post.post_type === 'workout';
   const isNutrition = post.post_type === 'nutrition';
   const voltageCount = post.voltage_count || 0;
+
   const isElite = voltageCount >= 500;
   const commentCount = post.comment_count || 0;
 
@@ -148,33 +168,45 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
             </button>
           </div>
 
-          {post.created_by !== currentUserEmail && (
-            <div className="relative">
+            <div className="flex items-center gap-1.5">
+            {/* Flag report button — always visible for others' posts */}
+            {post.created_by !== currentUserEmail && (
               <button
-                onClick={() => setShowMenu(!showMenu)}
-                className="w-8 h-8 rounded-full flex items-center justify-center"
-                style={{ background: 'rgba(255,255,255,0.04)' }}
+                onClick={handleReport}
+                className="w-7 h-7 rounded-lg flex items-center justify-center transition-all"
+                style={{ opacity: reported ? 0.3 : 0.5 }}
               >
-                <MoreVertical className="w-4 h-4" style={{ color: 'rgba(255,255,255,0.3)' }} />
+                <Flag className="w-3.5 h-3.5" style={{ color: reported ? '#98AB8F' : 'rgba(152,171,143,0.7)' }} strokeWidth={1.5} />
               </button>
-              {showMenu && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="absolute top-10 right-0 rounded-xl overflow-hidden"
-                  style={{ background: 'rgba(18,12,4,0.95)', border: '0.5px solid rgba(212,175,55,0.3)', minWidth: 160, backdropFilter: 'blur(25px)', zIndex: 10 }}
+            )}
+            {post.created_by !== currentUserEmail && (
+              <div className="relative">
+                <button
+                  onClick={() => setShowMenu(!showMenu)}
+                  className="w-8 h-8 rounded-full flex items-center justify-center"
+                  style={{ background: 'rgba(255,255,255,0.04)' }}
                 >
-                  <button
-                    onClick={handleMute}
-                    className="w-full flex items-center gap-2 px-4 py-3 text-left transition-all hover:bg-white/5"
+                  <MoreVertical className="w-4 h-4" style={{ color: 'rgba(255,255,255,0.3)' }} />
+                </button>
+                {showMenu && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="absolute top-10 right-0 rounded-xl overflow-hidden"
+                    style={{ background: 'rgba(18,12,4,0.95)', border: '0.5px solid rgba(212,175,55,0.3)', minWidth: 160, backdropFilter: 'blur(25px)', zIndex: 10 }}
                   >
-                    <EyeOff className="w-4 h-4" style={{ color: 'rgba(255,255,255,0.4)' }} />
-                    <span className="text-sm" style={{ color: 'rgba(255,255,255,0.7)', fontFamily: 'Montserrat, sans-serif' }}>Hide posts</span>
-                  </button>
-                </motion.div>
-              )}
-            </div>
-          )}
+                    <button
+                      onClick={handleMute}
+                      className="w-full flex items-center gap-2 px-4 py-3 text-left transition-all hover:bg-white/5"
+                    >
+                      <EyeOff className="w-4 h-4" style={{ color: 'rgba(255,255,255,0.4)' }} />
+                      <span className="text-sm" style={{ color: 'rgba(255,255,255,0.7)', fontFamily: 'Montserrat, sans-serif' }}>Hide posts</span>
+                    </button>
+                  </motion.div>
+                )}
+              </div>
+            )}
+          </div>
 
           {/* Post type badge */}
           <div
@@ -188,6 +220,19 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
             {post.post_type}
           </div>
         </div>
+
+        {/* Under Review Blur Overlay */}
+        {isUnderReview && (
+          <div
+            className="absolute inset-0 z-10 flex items-center justify-center rounded-2xl"
+            style={{ background: 'rgba(8,8,8,0.75)', backdropFilter: 'blur(12px)' }}
+          >
+            <div className="text-center px-6">
+              <p className="text-xs uppercase tracking-[0.25em] mb-1" style={{ color: '#98AB8F', fontFamily: 'Montserrat, sans-serif' }}>Post Under Review</p>
+              <p className="text-[10px]" style={{ color: 'rgba(152,171,143,0.55)', fontFamily: 'Montserrat, sans-serif' }}>by the Syndicate</p>
+            </div>
+          </div>
+        )}
 
         {/* Body */}
         <div className="px-4 py-4">
