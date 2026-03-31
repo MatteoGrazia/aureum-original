@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'sonner';
 import { Dumbbell, Flame, Clock, TrendingUp, MoreVertical, EyeOff, MessageCircle, Send, Flag } from 'lucide-react';
 import AscensionFeather from './AscensionFeather';
 import { formatDistanceToNow } from 'date-fns';
@@ -87,7 +89,8 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
   const isWorkout = post.post_type === 'workout';
   const isNutrition = post.post_type === 'nutrition';
   const voltageCount = post.voltage_count || 0;
-
+  const reportCount = post.report_count || 0;
+  const isUnderReview = reportCount >= 3;
   const isElite = voltageCount >= 500;
   const commentCount = post.comment_count || 0;
 

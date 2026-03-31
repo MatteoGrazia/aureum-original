@@ -3,10 +3,9 @@ import { motion } from 'framer-motion';
 import { differenceInHours } from 'date-fns';
 
 export default function PulseRow({ athletes, onAthleteTap }) {
-  if (!athletes || athletes.length === 0) return null;
-
   // Deduplicate athletes by created_by/id
-  const uniqueAthletes = React.useMemo(() => {
+  const uniqueAthletes = useMemo(() => {
+    if (!athletes || athletes.length === 0) return [];
     const seen = new Set();
     return athletes.filter(a => {
       const key = a.created_by || a.id;
@@ -15,6 +14,8 @@ export default function PulseRow({ athletes, onAthleteTap }) {
       return true;
     });
   }, [athletes]);
+
+  if (!uniqueAthletes.length) return null;
 
   return (
     <div className="px-4 mb-6">
