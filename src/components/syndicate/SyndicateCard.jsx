@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { Dumbbell, Flame, Clock, TrendingUp, MoreVertical, EyeOff, MessageCircle, Send, Flag } from 'lucide-react';
