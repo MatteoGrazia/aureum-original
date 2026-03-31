@@ -110,8 +110,8 @@ export default function Workouts() {
   });
 
   const exercises = useMemo(() => {
-    return allExercises.filter(ex => !ex.created_by || ex.created_by === currentUser?.email);
-  }, [allExercises, currentUser?.email]);
+    return allExercises;
+  }, [allExercises]);
 
   const { data: recentWorkouts = [] } = useQuery({
     queryKey: ['recentWorkouts'],
