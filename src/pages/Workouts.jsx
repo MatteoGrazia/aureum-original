@@ -98,10 +98,20 @@ export default function Workouts() {
     queryFn: () => base44.entities.Routine.list(),
   });
 
-  const { data: exercises = [] } = useQuery({
-    queryKey: ['exercises'],
-    queryFn: () => base44.entities.Exercise.list(),
+  const { data: currentUser } = useQuery({
+    queryKey: ['currentUser'],
+    queryFn: () => base44.auth.me(),
+    staleTime: 10 * 60 * 1000,
   });
+
+  const { data: allExercises = [] } = useQuery({
+    queryKey: ['exercises'],
+    queryFn: () => base44.entities.Exercise.list('-created_date', 500),
+  });
+
+  const exercises = useMemo(() => {
+    return allExercises.filter(ex => !ex.created_by || ex.created_by === currentUser?.email);
+  }, [allExercises, currentUser?.email]);
 
   const { data: recentWorkouts = [] } = useQuery({
     queryKey: ['recentWorkouts'],
