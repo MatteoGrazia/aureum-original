@@ -1,6 +1,7 @@
 import React from 'react';
 import { Plus, RefreshCw } from 'lucide-react';
 import SetRow from './SetRow';
+import { useTheme } from '@/components/shared/ThemeContext';
 
 const playSetBell = () => {
   try {
@@ -38,6 +39,7 @@ const epley1RM = (weight, reps) => {
 };
 
 export default function ExerciseBlock({ exercise, onUpdate, onStructuralUpdate, onReplace, onTimerStart, previousSets = [] }) {
+  const { isDarkMode } = useTheme();
 
   const addSet = (type = 'normal') => {
     const last = exercise.sets[exercise.sets.length - 1];
@@ -75,6 +77,8 @@ export default function ExerciseBlock({ exercise, onUpdate, onStructuralUpdate, 
     return rm > max ? rm : max;
   }, 0);
 
+  const imgSrc = isDarkMode ? (exercise.image_url_dark || exercise.image_url) : exercise.image_url;
+
   return (
     <div
       className="rounded-2xl overflow-hidden"
@@ -85,7 +89,13 @@ export default function ExerciseBlock({ exercise, onUpdate, onStructuralUpdate, 
     >
       {/* Header */}
       <div className="flex items-start justify-between px-4 pt-4 pb-1">
-        <div className="flex-1 min-w-0 mr-3">
+        <div className="flex items-center gap-3 flex-1 min-w-0 mr-3">
+          {imgSrc && (
+            <div style={{ width: 44, height: 44, borderRadius: '50%', overflow: 'hidden', flexShrink: 0, border: '0.5px solid rgba(212,175,55,0.2)', background: isDarkMode ? '#ffffff' : 'rgba(255,255,255,0.7)' }}>
+              <img src={imgSrc} alt={exercise.exercise_name} style={{ width: '100%', height: '100%', objectFit: 'cover', mixBlendMode: isDarkMode ? 'multiply' : 'normal' }} loading="lazy" />
+            </div>
+          )}
+          <div className="flex-1 min-w-0">
           <h3 className="text-white text-base truncate" style={{ fontFamily: 'Montserrat, sans-serif' }}>
             {exercise.exercise_name}
           </h3>
@@ -96,6 +106,7 @@ export default function ExerciseBlock({ exercise, onUpdate, onStructuralUpdate, 
               <span className="text-[#9C7E46]/70 ml-1">· {exercise.default_rest}s rest</span>
             )}
           </p>
+          </div>
         </div>
         <button
           onClick={onReplace}

@@ -1,4 +1,27 @@
 import React, { useState, useEffect, useRef } from 'react';
+
+const playRestBell = () => {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    // Tibetan bowl resonance — fundamental + harmonics with long decay
+    [
+      { freq: 396, delay: 0,    vol: 0.30, dur: 3.5 },
+      { freq: 594, delay: 0.04, vol: 0.18, dur: 3.0 },
+      { freq: 792, delay: 0.10, vol: 0.10, dur: 2.5 },
+      { freq: 990, delay: 0.18, vol: 0.06, dur: 2.0 },
+    ].forEach(({ freq, delay, vol, dur }) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.type = 'sine'; osc.frequency.value = freq;
+      const t = ctx.currentTime + delay;
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(vol, t + 0.012);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+      osc.start(t); osc.stop(t + dur + 0.05);
+    });
+  } catch (_) {}
+};
 import { motion } from 'framer-motion';
 import { X, Plus, Minus } from 'lucide-react';
 
@@ -12,7 +35,8 @@ export default function RestTimerBar({ duration = 90, onComplete, onDismiss }) {
       setTime(prev => {
         if (prev <= 1) {
           clearInterval(intervalRef.current);
-          if ('vibrate' in navigator) navigator.vibrate([200, 100, 200]);
+          if ('vibrate' in navigator) navigator.vibrate([200, 100, 200, 100, 200]);
+          playRestBell();
           onComplete?.();
           return 0;
         }

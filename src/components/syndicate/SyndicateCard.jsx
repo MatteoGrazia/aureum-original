@@ -145,17 +145,20 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
           {/* Tappable Avatar */}
           <button
             onClick={() => setShowAthleteProfile(true)}
-            className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold flex-shrink-0 active:scale-90 transition-transform"
-            style={{
-              background: post.athlete_avatar
-                ? `url(${post.athlete_avatar}) center/cover`
-                : 'linear-gradient(135deg, rgba(212,175,55,0.3), rgba(152,171,143,0.2))',
-              border: '1px solid rgba(152,171,143,0.4)',
-              color: '#D4AF37',
-              fontFamily: 'Montserrat, sans-serif',
-            }}
-          >
-            {!post.athlete_avatar && (post.athlete_name?.[0] || '?')}
+            className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold flex-shrink-0 active:scale-90 transition-transform overflow-hidden"
+          style={{
+            backgroundImage: post.athlete_avatar ? `url(${post.athlete_avatar})` : undefined,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            background: post.athlete_avatar
+              ? undefined
+              : 'linear-gradient(135deg, rgba(212,175,55,0.3), rgba(152,171,143,0.2))',
+            border: '1px solid rgba(152,171,143,0.4)',
+            color: '#D4AF37',
+            fontFamily: 'Montserrat, sans-serif',
+          }}
+        >
+          {!post.athlete_avatar && (post.athlete_name?.[0] || '?')}
           </button>
 
           {/* Tappable Name */}
@@ -286,17 +289,16 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
           <div className="flex items-center gap-2 mt-3">
             <button
               onClick={() => setShowComments(s => !s)}
-              className="flex flex-col items-center justify-center transition-all active:scale-90"
+              className="flex items-center gap-1.5 px-3 transition-all active:scale-90"
               style={{
-                width: 52,
-                height: 60,
+                height: 36,
                 background: showComments ? 'rgba(229,229,231,0.06)' : 'rgba(229,229,231,0.04)',
                 border: `0.5px solid ${showComments ? 'rgba(229,229,231,0.3)' : 'rgba(229,229,231,0.12)'}`,
-                borderRadius: 14,
+                borderRadius: 10,
               }}
             >
-              <MessageCircle className="w-5 h-5" style={{ color: '#E5E5E7', opacity: showComments ? 0.9 : 0.4 }} strokeWidth={1.3} />
-              <span className="mt-1" style={{ fontFamily: 'Georgia, serif', fontSize: 11, color: '#E5E5E7', opacity: showComments ? 0.9 : 0.45, lineHeight: 1 }}>
+              <MessageCircle className="w-4 h-4" style={{ color: '#E5E5E7', opacity: showComments ? 0.9 : 0.4 }} strokeWidth={1.3} />
+              <span style={{ fontFamily: 'Montserrat, sans-serif', fontSize: 12, color: '#E5E5E7', opacity: showComments ? 0.9 : 0.45, lineHeight: 1 }}>
                 {commentCount}
               </span>
             </button>

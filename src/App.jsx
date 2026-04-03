@@ -1,4 +1,11 @@
 import { Toaster } from "@/components/ui/toaster"
+// Set base background early to prevent flash
+if (typeof document !== 'undefined') {
+  const savedTheme = localStorage.getItem('aureum_theme');
+  const isDark = savedTheme !== 'light';
+  document.documentElement.style.background = isDark ? '#080808' : '#F5F5F7';
+  document.body.style.background = isDark ? '#080808' : '#F5F5F7';
+}
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
 import NavigationTracker from '@/lib/NavigationTracker'

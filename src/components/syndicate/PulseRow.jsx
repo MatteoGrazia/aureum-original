@@ -42,10 +42,10 @@ export default function PulseRow({ athletes, onAthleteTap }) {
             >
               {/* Avatar ring */}
               <div
-                className="w-14 h-14 rounded-full flex items-center justify-center text-lg font-semibold"
+                className="w-14 h-14 rounded-full flex items-center justify-center text-lg font-semibold overflow-hidden"
                 style={{
                   background: athlete.avatar_url
-                    ? `url(${athlete.avatar_url}) center/cover`
+                    ? undefined
                     : 'linear-gradient(135deg, rgba(212,175,55,0.2), rgba(178,216,216,0.15))',
                   border: isRecent ? '1.5px solid #98AB8F' : '1.5px solid rgba(212,175,55,0.25)',
                   boxShadow: isRecent ? '0 0 12px rgba(152,171,143,0.35)' : 'none',
@@ -53,7 +53,10 @@ export default function PulseRow({ athletes, onAthleteTap }) {
                   fontFamily: 'Montserrat, sans-serif',
                 }}
               >
-                {!athlete.avatar_url && (athlete.username?.[0]?.toUpperCase() || '?')}
+                {athlete.avatar_url
+                  ? <img src={athlete.avatar_url} alt={athlete.username} className="w-full h-full object-cover" loading="lazy" />
+                  : (athlete.username?.[0]?.toUpperCase() || '?')
+                }
               </div>
 
               {/* Name */}

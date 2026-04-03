@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTheme } from '@/components/shared/ThemeContext';
 
 // Stable deterministic values - no Math.random() on render
@@ -33,6 +33,11 @@ const CSS_ANIMATIONS = `
 
 export default function VoidBackground() {
   const { isDarkMode } = useTheme();
+  // Prevent background from causing flicker by always having a base
+  React.useEffect(() => {
+    document.body.style.background = isDarkMode ? '#080808' : '#F5F5F7';
+    document.documentElement.style.background = isDarkMode ? '#080808' : '#F5F5F7';
+  }, [isDarkMode]);
 
   if (!isDarkMode) {
     return (

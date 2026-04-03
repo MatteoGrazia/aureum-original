@@ -1,4 +1,21 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
+
+const playGoalSound = () => {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [[659, 0, 0.12, 1.2], [784, 0.10, 0.10, 1.0], [1047, 0.22, 0.08, 0.9]].forEach(([freq, delay, vol, dur]) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.type = 'sine'; osc.frequency.value = freq;
+      const t = ctx.currentTime + delay;
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(vol, t + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+      osc.start(t); osc.stop(t + dur + 0.05);
+    });
+  } catch (_) {}
+};
 import { motion } from 'framer-motion';
 import { Flame, Footprints, Dumbbell, Droplets } from 'lucide-react';
 import { useTheme } from '@/components/shared/ThemeContext';
@@ -6,6 +23,17 @@ import { useTheme } from '@/components/shared/ThemeContext';
 export default function AureumPulse({ label, value, goal, unit, index = 0, icon, iconColor = '#D4AF37' }) {
   const { isDarkMode } = useTheme();
   const progress = Math.min((value / goal) * 100, 100);
+  const prevProgressRef = useRef(progress);
+  const soundPlayedRef = useRef(false);
+
+  useEffect(() => {
+    if (progress >= 100 && prevProgressRef.current < 100 && !soundPlayedRef.current) {
+      soundPlayedRef.current = true;
+      playGoalSound();
+    }
+    if (progress < 90) soundPlayedRef.current = false;
+    prevProgressRef.current = progress;
+  }, [progress]);
   const isNearGoal = progress > 80;
 
   const iconMap = {

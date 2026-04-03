@@ -41,34 +41,31 @@ const buildWorkoutExercises = (routine) => {
 const playGoldenChime = () => {
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    // Majestic 5-note ascending arpeggio with rich harmonics
+    // Cathedral choir + harmonic overtones — majestic, premium finish
     const sequence = [
-      { freq: 523.25, delay: 0,    vol: 0.28, dur: 1.2 },  // C5
-      { freq: 659.25, delay: 0.16, vol: 0.26, dur: 1.1 },  // E5
-      { freq: 783.99, delay: 0.32, vol: 0.24, dur: 1.0 },  // G5
-      { freq: 1046.5, delay: 0.48, vol: 0.22, dur: 1.4 },  // C6
-      { freq: 1318.5, delay: 0.70, vol: 0.18, dur: 1.6 },  // E6 – crown note
+      { freq: 261.63, delay: 0,    vol: 0.20, dur: 3.0 },  // C4 — foundation
+      { freq: 329.63, delay: 0.12, vol: 0.18, dur: 2.8 },  // E4
+      { freq: 392.00, delay: 0.26, vol: 0.16, dur: 2.6 },  // G4
+      { freq: 523.25, delay: 0.42, vol: 0.22, dur: 3.2 },  // C5 — lift
+      { freq: 659.25, delay: 0.62, vol: 0.20, dur: 3.0 },  // E5
+      { freq: 783.99, delay: 0.84, vol: 0.17, dur: 2.8 },  // G5
+      { freq: 1046.5, delay: 1.10, vol: 0.19, dur: 3.5 },  // C6 — crown
+      { freq: 1318.5, delay: 1.42, vol: 0.12, dur: 3.8 },  // E6 — ethereal
     ];
     sequence.forEach(({ freq, delay, vol, dur }) => {
-      // Fundamental
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain); gain.connect(ctx.destination);
-      osc.type = 'sine'; osc.frequency.value = freq;
-      const t = ctx.currentTime + delay;
-      gain.gain.setValueAtTime(0, t);
-      gain.gain.linearRampToValueAtTime(vol, t + 0.015);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
-      osc.start(t); osc.stop(t + dur);
-      // Gentle harmonic at 2x (adds warmth)
-      const osc2 = ctx.createOscillator();
-      const gain2 = ctx.createGain();
-      osc2.connect(gain2); gain2.connect(ctx.destination);
-      osc2.type = 'sine'; osc2.frequency.value = freq * 2;
-      gain2.gain.setValueAtTime(0, t);
-      gain2.gain.linearRampToValueAtTime(vol * 0.18, t + 0.015);
-      gain2.gain.exponentialRampToValueAtTime(0.001, t + dur * 0.7);
-      osc2.start(t); osc2.stop(t + dur);
+      [1, 2, 3].forEach((harmonic, hi) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.type = hi === 0 ? 'sine' : 'sine';
+        osc.frequency.value = freq * harmonic;
+        const t = ctx.currentTime + delay;
+        const v = hi === 0 ? vol : vol / (harmonic * 2.5);
+        gain.gain.setValueAtTime(0, t);
+        gain.gain.linearRampToValueAtTime(v, t + 0.018);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+        osc.start(t); osc.stop(t + dur + 0.05);
+      });
     });
   } catch (_) {}
 };

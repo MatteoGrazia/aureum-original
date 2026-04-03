@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Trophy, Zap, Target, Camera, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Zap, Target, Camera, X } from 'lucide-react';
 import { toast } from 'sonner';
 import GoldButton from '@/components/ui/GoldButton';
 import VoidCard from '@/components/ui/VoidCard';
@@ -27,6 +27,7 @@ const MUSCLE_DATA = {
 export default function WorkoutSummary({ summary, onDone }) {
   const { routineName, duration, totalVolume, exercises } = summary;
   const [photos, setPhotos] = useState([]);
+  const [photoFiles, setPhotoFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [posting, setPosting] = useState(false);
 
@@ -42,19 +43,10 @@ export default function WorkoutSummary({ summary, onDone }) {
   const handlePhotoUpload = async (e) => {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
-    
-    setUploading(true);
-    try {
-      const uploadedUrls = [];
-      for (const file of files) {
-        const { data } = await base44.integrations.Core.UploadFile({ file });
-        uploadedUrls.push(data.file_url);
-      }
-      setPhotos(prev => [...prev, ...uploadedUrls]);
-    } catch (error) {
-      console.error('Photo upload failed:', error);
-    }
-    setUploading(false);
+    // Show local previews immediately
+    const previews = files.map(f => URL.createObjectURL(f));
+    setPhotos(prev => [...prev, ...previews]);
+    setPhotoFiles(prev => [...prev, ...files]);
   };
 
   const handleRemovePhoto = (idx) => {
@@ -64,6 +56,12 @@ export default function WorkoutSummary({ summary, onDone }) {
   const handleFinish = async () => {
     setPosting(true);
     try {
+      // Upload pending files now
+      const uploadedUrls = [];
+      for (const file of photoFiles) {
+        const result = await base44.integrations.Core.UploadFile({ file });
+        uploadedUrls.push(result.file_url);
+      }
       // Get user data
       const user = await base44.auth.me();
       const profiles = await base44.entities.UserProfile.filter({});
@@ -72,6 +70,8 @@ export default function WorkoutSummary({ summary, onDone }) {
       // Get athlete identity
       const identities = await base44.entities.AthleteIdentity.filter({ created_by: user.email });
       let athleteIdentity = identities[0];
+      // Replace blob URLs with real upload URLs
+      const finalPhotos = uploadedUrls.length > 0 ? uploadedUrls : photos;
       
       // Create post in PerformanceFeed
       const exercisesList = exercises
@@ -92,7 +92,7 @@ export default function WorkoutSummary({ summary, onDone }) {
         notes: `${exercisesList}${exercises.length > 3 ? ` + ${exercises.length - 3} more` : ''}`,
         voltage_count: 0,
         voltage_by: [],
-        photos: photos,
+        photos: finalPhotos,
         comment_count: 0,
         is_hidden: false,
         report_count: 0,
@@ -100,8 +100,8 @@ export default function WorkoutSummary({ summary, onDone }) {
       });
 
       // Run content moderation on each uploaded photo
-      if (photos.length > 0) {
-        for (const photoUrl of photos) {
+      if (finalPhotos.length > 0) {
+        for (const photoUrl of finalPhotos) {
           const result = await base44.functions.invoke('moderateContent', {
             post_id: newPost.id,
             image_url: photoUrl,
@@ -123,9 +123,9 @@ export default function WorkoutSummary({ summary, onDone }) {
         });
       }
       // Media Mirror: copy workout photos to ProgressPhotoVault
-      if (photos.length > 0) {
+      if (finalPhotos.length > 0) {
         const today2 = new Date().toISOString().split('T')[0];
-        for (const url of photos) {
+        for (const url of finalPhotos) {
           await base44.entities.ProgressPhoto.create({
             date: today2,
             photo_url: url,
@@ -155,10 +155,48 @@ export default function WorkoutSummary({ summary, onDone }) {
             initial={{ scale: 0, rotate: -20 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={{ type: 'spring', delay: 0.1 }}
-            className="w-20 h-20 rounded-full bg-[#D4AF37]/15 flex items-center justify-center mx-auto mb-5"
-            style={{ border: '1px solid rgba(212,175,55,0.3)' }}
-          >
-            <Trophy className="w-10 h-10 text-[#D4AF37]" strokeWidth={1.5} />
+            className="w-24 h-24 flex items-center justify-center mx-auto mb-5 relative"
+            >
+            {/* Wing left */}
+            <motion.div
+              initial={{ opacity: 0, x: 8, rotate: 20 }}
+              animate={{ opacity: 1, x: 0, rotate: 0 }}
+              transition={{ delay: 0.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              className="absolute"
+              style={{ left: -2, top: 8 }}
+            >
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
+                <path d="M12 12 Q6 8 2 10 Q5 6 12 8" fill="rgba(212,175,55,0.55)" />
+                <path d="M12 12 Q5 12 1 15 Q4 11 12 12" fill="rgba(212,175,55,0.35)" />
+                <path d="M12 12 Q6 16 3 20 Q6 15 12 14" fill="rgba(212,175,55,0.2)" />
+              </svg>
+            </motion.div>
+            {/* Wing right (mirrored) */}
+            <motion.div
+              initial={{ opacity: 0, x: -8, rotate: -20 }}
+              animate={{ opacity: 1, x: 0, rotate: 0 }}
+              transition={{ delay: 0.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              className="absolute"
+              style={{ right: -2, top: 8, transform: 'scaleX(-1)' }}
+            >
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
+                <path d="M12 12 Q6 8 2 10 Q5 6 12 8" fill="rgba(212,175,55,0.55)" />
+                <path d="M12 12 Q5 12 1 15 Q4 11 12 12" fill="rgba(212,175,55,0.35)" />
+                <path d="M12 12 Q6 16 3 20 Q6 15 12 14" fill="rgba(212,175,55,0.2)" />
+              </svg>
+            </motion.div>
+            {/* Center orb */}
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: 'spring', delay: 0.1, stiffness: 300, damping: 20 }}
+              className="w-14 h-14 rounded-full bg-[#D4AF37]/15 flex items-center justify-center relative z-10"
+              style={{ border: '1px solid rgba(212,175,55,0.4)', boxShadow: '0 0 24px rgba(212,175,55,0.25)' }}
+            >
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="rgba(212,175,55,0.2)" />
+              </svg>
+            </motion.div>
           </motion.div>
           <h1
             className="text-2xl tracking-[0.4em]"

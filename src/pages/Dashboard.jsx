@@ -124,7 +124,8 @@ export default function Dashboard() {
     queryClient.invalidateQueries(['weightHistory']);
   };
 
-  const isLoading = profileLoading || activityLoading || foodLoading || workoutLoading || weightLoading;
+  // Don't block render on weight/workout loading — they're secondary
+  const isLoading = profileLoading || activityLoading || foodLoading;
 
   if (isLoading || !isMounted) {
     return (
@@ -148,7 +149,7 @@ export default function Dashboard() {
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
+      transition={{ duration: 0.2 }}
       className="min-h-screen relative overflow-x-hidden bg-[#080808]">
       <VoidBackground />
       {showWelcome && <OnboardingModal onComplete={handleWelcomeComplete} />}
