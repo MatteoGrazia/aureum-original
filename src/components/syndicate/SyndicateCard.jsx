@@ -130,7 +130,6 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
         className="mx-4 mb-4 rounded-2xl overflow-hidden relative"
         style={{ background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(25px)', ...cardBorderStyle }}
       >
-        {/* Gold Leaf texture overlay for Elite posts */}
         {isElite && (
           <div
             className="absolute inset-0 pointer-events-none rounded-2xl z-0"
@@ -142,26 +141,22 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
 
         {/* Header */}
         <div className="flex items-center gap-3 px-4 pt-4 pb-3" style={{ borderBottom: '0.5px solid rgba(212,175,55,0.12)' }}>
-          {/* Tappable Avatar */}
           <button
             onClick={() => setShowAthleteProfile(true)}
             className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold flex-shrink-0 active:scale-90 transition-transform overflow-hidden"
-          style={{
-            backgroundImage: post.athlete_avatar ? `url(${post.athlete_avatar})` : undefined,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            background: post.athlete_avatar
-              ? undefined
-              : 'linear-gradient(135deg, rgba(212,175,55,0.3), rgba(152,171,143,0.2))',
-            border: '1px solid rgba(152,171,143,0.4)',
-            color: '#D4AF37',
-            fontFamily: 'Montserrat, sans-serif',
-          }}
-        >
-          {!post.athlete_avatar && (post.athlete_name?.[0] || '?')}
+            style={{
+              background: post.athlete_avatar ? undefined : 'linear-gradient(135deg, rgba(212,175,55,0.3), rgba(152,171,143,0.2))',
+              border: '1px solid rgba(152,171,143,0.4)',
+              color: '#D4AF37',
+              fontFamily: 'Montserrat, sans-serif',
+            }}
+          >
+            {post.athlete_avatar
+              ? <img src={post.athlete_avatar} alt="" className="w-full h-full object-cover" />
+              : (post.athlete_name?.[0] || '?')
+            }
           </button>
 
-          {/* Tappable Name */}
           <div className="flex-1 min-w-0">
             <button onClick={() => setShowAthleteProfile(true)} className="text-left w-full">
               <p className="text-sm truncate" style={{ color: '#D4AF37', fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}>
@@ -173,8 +168,7 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
             </button>
           </div>
 
-            <div className="flex items-center gap-1.5">
-            {/* Flag report button — always visible for others' posts */}
+          <div className="flex items-center gap-1.5">
             {post.created_by !== currentUserEmail && (
               <button
                 onClick={handleReport}
@@ -213,7 +207,6 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
             )}
           </div>
 
-          {/* Post type badge */}
           <div
             className="px-2 py-1 rounded-lg text-[9px] uppercase tracking-[0.15em]"
             style={{
@@ -226,7 +219,6 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
           </div>
         </div>
 
-        {/* Under Review Blur Overlay */}
         {isUnderReview && (
           <div
             className="absolute inset-0 z-10 flex items-center justify-center rounded-2xl"
@@ -281,7 +273,7 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
           )}
         </div>
 
-        {/* Footer — Ascension + Comments */}
+        {/* Footer */}
         <div className="flex items-center justify-between px-4 pb-3" style={{ borderTop: '0.5px solid rgba(212,175,55,0.08)' }}>
           {isElite ? (
             <span className="text-[9px] uppercase tracking-[0.2em]" style={{ color: '#D4AF37', fontFamily: 'Montserrat, sans-serif', opacity: 0.8 }}>✦ Elite</span>
@@ -322,7 +314,6 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
               className="overflow-hidden"
             >
               <div className="px-4 pb-4" style={{ borderTop: '0.5px solid rgba(212,175,55,0.06)' }}>
-                {/* Existing comments */}
                 <div className="space-y-3 pt-3 mb-3">
                   {comments.map(c => (
                     <div key={c.id} className="flex gap-2">
@@ -331,8 +322,7 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
                         style={{
                           background: c.commenter_avatar ? `url(${c.commenter_avatar}) center/cover` : 'rgba(152,171,143,0.2)',
                           backgroundSize: 'cover', backgroundPosition: 'center',
-                          border: c.is_founder ? '1.5px solid #D4AF37' : '1px solid #98AB8F',
-                          boxShadow: c.is_founder ? '0 0 6px rgba(212,175,55,0.4)' : '0 0 4px rgba(152,171,143,0.25)',
+                          border: '1px solid #98AB8F',
                           color: '#98AB8F',
                           fontFamily: 'Montserrat, sans-serif',
                         }}
@@ -349,7 +339,6 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
                     <p className="text-center text-xs py-1" style={{ color: 'rgba(255,255,255,0.2)', fontFamily: 'Montserrat, sans-serif' }}>No discussions yet. Be first.</p>
                   )}
                 </div>
-                {/* Input */}
                 <div className="flex gap-2 items-center">
                   <input
                     type="text"
