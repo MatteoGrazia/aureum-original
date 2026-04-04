@@ -85,6 +85,7 @@ export default function Workouts() {
   const [editingRoutineId, setEditingRoutineId] = useState(null);
   const [showExercisePicker, setShowExercisePicker] = useState(false);
   const [showCreateExercise, setShowCreateExercise] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
 
   const queryClient = useQueryClient();
   const today = format(new Date(), 'yyyy-MM-dd');
@@ -569,47 +570,62 @@ export default function Workouts() {
               {/* Weekly Muscle Volume */}
               <WeeklyMuscleVolume logs={recentWorkouts} />
 
-              {/* Train Like Them */}
-              <TrainLikeThem onAdopt={(routine) => {
-                startWorkout(routine);
-              }} />
-
-              {/* History */}
+              {/* History — retractable */}
               {recentWorkouts.length > 0 && (
-                <div className="space-y-3 mb-8">
-                  <div className="flex items-center justify-between">
+                <div className="space-y-3 mb-2">
+                  <button
+                    onClick={() => setShowHistory(p => !p)}
+                    className="flex items-center justify-between w-full"
+                  >
                     <p className="text-[10px] uppercase tracking-[0.3em] text-white" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                       History
                     </p>
-                    <p className="text-white/20 text-[10px]">{recentWorkouts.length} sessions</p>
-                  </div>
-                  {recentWorkouts.map(w => (
-                    <motion.div key={w.id} whileTap={{ scale: 0.98 }}>
-                      <VoidCard
-                        className="cursor-pointer"
-                        onClick={() => { setSelectedLog(w); setView('logDetail'); }}
+                    <div className="flex items-center gap-2">
+                      <p className="text-white/20 text-[10px]">{recentWorkouts.length} sessions</p>
+                      <History className="w-3.5 h-3.5 text-white/20" />
+                    </div>
+                  </button>
+                  <AnimatePresence>
+                    {showHistory && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.25 }}
+                        className="overflow-hidden space-y-3"
                       >
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <h3 className="text-white text-sm" style={{ fontFamily: 'Montserrat, sans-serif' }}>{w.routine_name || 'Workout'}</h3>
-                            <p className="text-white/35 text-xs mt-0.5">
-                              {format(new Date(w.date), 'MMM d, yyyy')}
-                              {w.duration_minutes ? ` · ${w.duration_minutes} min` : ''}
-                            </p>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <div className="text-right">
-                              <p className="text-[#D4AF37] text-sm">{w.total_volume ? `${(w.total_volume / 1000).toFixed(1)}k` : '—'}</p>
-                              <p className="text-white/25 text-[10px]">kg vol</p>
-                            </div>
-                            <History className="w-4 h-4 text-white/15" />
-                          </div>
-                        </div>
-                      </VoidCard>
-                    </motion.div>
-                  ))}
+                        {recentWorkouts.map(w => (
+                          <motion.div key={w.id} whileTap={{ scale: 0.98 }}>
+                            <VoidCard
+                              className="cursor-pointer"
+                              onClick={() => { setSelectedLog(w); setView('logDetail'); }}
+                            >
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <h3 className="text-white text-sm" style={{ fontFamily: 'Montserrat, sans-serif' }}>{w.routine_name || 'Workout'}</h3>
+                                  <p className="text-white/35 text-xs mt-0.5">
+                                    {format(new Date(w.date), 'MMM d, yyyy')}
+                                    {w.duration_minutes ? ` · ${w.duration_minutes} min` : ''}
+                                  </p>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                  <div className="text-right">
+                                    <p className="text-[#D4AF37] text-sm">{w.total_volume ? `${(w.total_volume / 1000).toFixed(1)}k` : '—'}</p>
+                                    <p className="text-white/25 text-[10px]">kg vol</p>
+                                  </div>
+                                </div>
+                              </div>
+                            </VoidCard>
+                          </motion.div>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               )}
+
+              {/* Train Like Them */}
+              <TrainLikeThem onAdopt={(routine) => { startWorkout(routine); }} />
             </motion.div>
           )}
 

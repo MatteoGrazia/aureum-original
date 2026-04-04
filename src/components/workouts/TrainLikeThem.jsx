@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Zap, ChevronRight } from 'lucide-react';
+import { X, Zap } from 'lucide-react';
 import { toast } from 'sonner';
 import { base44 } from '@/api/base44Client';
 import { useQueryClient } from '@tanstack/react-query';
@@ -144,11 +144,6 @@ const ICONS = [
   },
 ];
 
-const MUSCLE_COLORS = {
-  chest: '#BDB5D5', back: '#BDB5D5', shoulders: '#D4AF37', biceps: '#D4AF37',
-  triceps: '#FFDAB9', legs: '#98AB8F', core: '#E5E5E7', glutes: '#98AB8F', forearms: '#FFDAB9',
-};
-
 export default function TrainLikeThem({ onAdopt }) {
   const [selected, setSelected] = useState(null);
   const [adopting, setAdopting] = useState(false);
@@ -197,71 +192,100 @@ export default function TrainLikeThem({ onAdopt }) {
   return (
     <div className="mb-8">
       {/* Section Header */}
-      <div className="mb-5">
-        <h2
-          className="text-2xl tracking-[0.35em] mb-1"
-          style={{
-            fontFamily: 'Georgia, "Times New Roman", serif',
-            fontWeight: 700,
-            color: '#D4AF37',
-            letterSpacing: '0.35em',
-          }}
-        >
-          TRAIN LIKE THEM
-        </h2>
-        <p
-          className="text-xs leading-relaxed"
-          style={{ color: '#E5E5E7', fontFamily: 'Montserrat, sans-serif', fontWeight: 300, opacity: 0.65 }}
-        >
+      <div className="mb-4">
+        <p className="text-[10px] uppercase tracking-[0.3em] text-white mb-1" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+          Train Like Them
+        </p>
+        <p className="text-white/35 text-xs" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 300 }}>
           Step into the iron footsteps of the Syndicate's founding icons.
         </p>
       </div>
 
-      {/* Cards grid — horizontal scroll */}
-      <div className="flex gap-3 overflow-x-auto pb-3" style={{ scrollbarWidth: 'none' }}>
+      {/* Snap carousel — one card at a time */}
+      <div
+        className="flex overflow-x-auto gap-4"
+        style={{
+          scrollSnapType: 'x mandatory',
+          scrollbarWidth: 'none',
+          WebkitOverflowScrolling: 'touch',
+          paddingBottom: 4,
+          marginLeft: -20,
+          marginRight: -20,
+          paddingLeft: 20,
+          paddingRight: 20,
+        }}
+      >
         {ICONS.map((icon, i) => (
           <motion.button
             key={icon.name}
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.04 }}
+            transition={{ delay: i * 0.03 }}
             onClick={() => setSelected(icon)}
-            className="flex-shrink-0 relative rounded-2xl overflow-hidden active:scale-95 transition-transform"
+            className="flex-shrink-0 relative rounded-2xl overflow-hidden active:scale-[0.97] transition-transform"
             style={{
-              width: 148,
-              height: 200,
+              scrollSnapAlign: 'center',
+              width: 'calc(100vw - 40px)',
+              height: 280,
               background: 'rgba(255,255,255,0.03)',
               border: '0.5px solid rgba(212,175,55,0.25)',
-              backdropFilter: 'blur(20px)',
             }}
           >
             <img
               src={icon.photo}
               alt={icon.name}
               className="absolute inset-0 w-full h-full object-cover object-top"
-              style={{ filter: 'grayscale(20%) brightness(0.75)', mixBlendMode: 'luminosity' }}
+              style={{ filter: 'brightness(0.7)' }}
             />
             <div
               className="absolute inset-0"
-              style={{ background: 'linear-gradient(180deg, transparent 35%, rgba(8,8,8,0.95) 100%)' }}
+              style={{ background: 'linear-gradient(180deg, transparent 20%, rgba(8,8,8,0.97) 100%)' }}
             />
-            <div className="absolute bottom-0 left-0 right-0 p-3 text-left">
-              <p className="text-[9px] uppercase tracking-[0.2em] mb-0.5" style={{ color: '#D4AF37', fontFamily: 'Montserrat, sans-serif' }}>
+            {/* Top-right era badge */}
+            <div
+              className="absolute top-3 right-3 px-2 py-1 rounded-lg text-[9px] uppercase tracking-widest"
+              style={{ background: 'rgba(212,175,55,0.15)', border: '0.5px solid rgba(212,175,55,0.35)', color: '#D4AF37', fontFamily: 'Montserrat' }}
+            >
+              {icon.era}
+            </div>
+            {/* Bottom info */}
+            <div className="absolute bottom-0 left-0 right-0 p-5 text-left">
+              <p className="text-[10px] uppercase tracking-[0.25em] mb-1" style={{ color: '#D4AF37', fontFamily: 'Montserrat' }}>
                 {icon.split}
               </p>
-              <p className="text-xs font-medium leading-tight" style={{ color: '#E5E5E7', fontFamily: 'Montserrat, sans-serif' }}>
-                {icon.name.split(' ')[0]}
-                {'\n'}
-                <span style={{ opacity: 0.6 }}>{icon.name.split(' ').slice(1).join(' ')}</span>
+              <p className="text-xl mb-3" style={{ color: '#FFFFFF', fontFamily: 'Montserrat, sans-serif', fontWeight: 400, letterSpacing: '0.05em' }}>
+                {icon.name}
               </p>
-              <div className="flex items-center gap-1 mt-1.5">
-                <ChevronRight className="w-3 h-3" style={{ color: 'rgba(212,175,55,0.6)' }} />
-                <span className="text-[8px] uppercase tracking-wider" style={{ color: 'rgba(212,175,55,0.6)', fontFamily: 'Montserrat' }}>
-                  View Dossier
-                </span>
+              {/* Preview exercises */}
+              <div className="flex flex-wrap gap-1.5">
+                {icon.exercises.slice(0, 3).map((ex, idx) => (
+                  <span
+                    key={idx}
+                    className="text-[9px] px-2 py-0.5 rounded-full"
+                    style={{ background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.5)', fontFamily: 'Montserrat' }}
+                  >
+                    {ex.exercise_name}
+                  </span>
+                ))}
+                {icon.exercises.length > 3 && (
+                  <span className="text-[9px] px-2 py-0.5 rounded-full" style={{ background: 'rgba(212,175,55,0.1)', color: 'rgba(212,175,55,0.6)', fontFamily: 'Montserrat' }}>
+                    +{icon.exercises.length - 3} more
+                  </span>
+                )}
               </div>
             </div>
           </motion.button>
+        ))}
+      </div>
+
+      {/* Dot indicators */}
+      <div className="flex justify-center gap-1.5 mt-3">
+        {ICONS.map((_, i) => (
+          <div
+            key={i}
+            className="rounded-full"
+            style={{ width: 4, height: 4, background: 'rgba(212,175,55,0.25)' }}
+          />
         ))}
       </div>
 
@@ -272,47 +296,44 @@ export default function TrainLikeThem({ onAdopt }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[200] flex flex-col"
-            style={{ background: 'rgba(4,4,4,0.92)', backdropFilter: 'blur(20px)' }}
+            className="fixed inset-0 z-[200] flex flex-col overflow-y-auto"
+            style={{ background: 'rgba(4,4,4,0.96)', backdropFilter: 'blur(20px)' }}
           >
             {/* Hero photo */}
-            <div className="relative flex-shrink-0" style={{ height: '38vh' }}>
+            <div className="relative flex-shrink-0" style={{ height: '40vh' }}>
               <img
                 src={selected.photo}
                 alt={selected.name}
                 className="w-full h-full object-cover object-top"
-                style={{ filter: 'grayscale(30%) brightness(0.65)' }}
+                style={{ filter: 'brightness(0.6)' }}
               />
               <div
                 className="absolute inset-0"
-                style={{ background: 'linear-gradient(180deg, rgba(8,8,8,0.3) 0%, rgba(4,4,4,0.98) 100%)' }}
+                style={{ background: 'linear-gradient(180deg, rgba(4,4,4,0.2) 0%, rgba(4,4,4,1) 100%)' }}
               />
               <button
                 onClick={() => setSelected(null)}
                 className="absolute top-12 right-5 w-10 h-10 rounded-full flex items-center justify-center"
-                style={{ background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(12px)' }}
+                style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)', border: '0.5px solid rgba(255,255,255,0.15)' }}
               >
                 <X className="w-5 h-5 text-white" />
               </button>
               <div className="absolute bottom-5 left-5 right-5">
-                <p className="text-[10px] uppercase tracking-[0.35em] mb-1" style={{ color: '#D4AF37', fontFamily: 'Montserrat' }}>
+                <p className="text-[9px] uppercase tracking-[0.35em] mb-1" style={{ color: '#D4AF37', fontFamily: 'Montserrat' }}>
                   {selected.era}
                 </p>
-                <h2
-                  className="text-3xl mb-1"
-                  style={{ fontFamily: 'Georgia, serif', fontWeight: 700, color: '#FFFFFF', lineHeight: 1.1 }}
-                >
+                <h2 className="text-3xl mb-0.5" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400, color: '#FFFFFF', letterSpacing: '0.04em' }}>
                   {selected.name}
                 </h2>
-                <p className="text-sm" style={{ color: 'rgba(212,175,55,0.8)', fontFamily: 'Montserrat', fontWeight: 300 }}>
+                <p className="text-sm" style={{ color: 'rgba(212,175,55,0.75)', fontFamily: 'Montserrat', fontWeight: 300 }}>
                   {selected.split}
                 </p>
               </div>
             </div>
 
             {/* Muscle Focus Tags */}
-            <div className="px-5 pt-4 pb-3 flex-shrink-0">
-              <p className="text-[9px] uppercase tracking-[0.3em] mb-2" style={{ color: 'rgba(255,255,255,0.3)', fontFamily: 'Montserrat' }}>
+            <div className="px-5 pt-5 pb-3">
+              <p className="text-[9px] uppercase tracking-[0.3em] mb-2.5" style={{ color: 'rgba(255,255,255,0.3)', fontFamily: 'Montserrat' }}>
                 Anatomical Focus
               </p>
               <div className="flex flex-wrap gap-2">
@@ -320,12 +341,7 @@ export default function TrainLikeThem({ onAdopt }) {
                   <span
                     key={m}
                     className="px-3 py-1 rounded-full text-[10px] uppercase tracking-wider"
-                    style={{
-                      background: 'rgba(189,181,213,0.1)',
-                      border: '0.5px solid rgba(189,181,213,0.35)',
-                      color: '#BDB5D5',
-                      fontFamily: 'Montserrat',
-                    }}
+                    style={{ background: 'rgba(189,181,213,0.1)', border: '0.5px solid rgba(189,181,213,0.35)', color: '#BDB5D5', fontFamily: 'Montserrat' }}
                   >
                     {m}
                   </span>
@@ -334,7 +350,7 @@ export default function TrainLikeThem({ onAdopt }) {
             </div>
 
             {/* Exercise List */}
-            <div className="flex-1 overflow-y-auto px-5 pb-32">
+            <div className="px-5 pb-6">
               <p className="text-[9px] uppercase tracking-[0.3em] mb-3" style={{ color: 'rgba(255,255,255,0.3)', fontFamily: 'Montserrat' }}>
                 The Protocol
               </p>
@@ -344,12 +360,9 @@ export default function TrainLikeThem({ onAdopt }) {
                     key={i}
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.06 }}
+                    transition={{ delay: i * 0.05 }}
                     className="flex items-center justify-between px-4 py-3 rounded-xl"
-                    style={{
-                      background: 'rgba(255,255,255,0.04)',
-                      border: '0.5px solid rgba(212,175,55,0.12)',
-                    }}
+                    style={{ background: 'rgba(255,255,255,0.04)', border: '0.5px solid rgba(212,175,55,0.1)' }}
                   >
                     <div className="flex items-center gap-3">
                       <span
@@ -362,20 +375,21 @@ export default function TrainLikeThem({ onAdopt }) {
                         {ex.exercise_name}
                       </p>
                     </div>
-                    <div className="text-right flex-shrink-0 ml-3">
-                      <span className="text-xs" style={{ color: '#D4AF37', fontFamily: 'Montserrat' }}>
-                        {ex.sets} × {ex.reps}
-                      </span>
-                    </div>
+                    <span className="text-xs ml-3 flex-shrink-0" style={{ color: '#D4AF37', fontFamily: 'Montserrat' }}>
+                      {ex.sets} × {ex.reps}
+                    </span>
                   </motion.div>
                 ))}
               </div>
             </div>
 
-            {/* Adopt Button */}
+            {/* Adopt Button — fixed above nav */}
             <div
-              className="absolute bottom-0 left-0 right-0 px-5 pb-10 pt-4"
-              style={{ background: 'linear-gradient(180deg, transparent 0%, rgba(4,4,4,0.98) 40%)' }}
+              className="sticky bottom-0 px-5 pt-4"
+              style={{
+                paddingBottom: 'calc(90px + env(safe-area-inset-bottom, 16px))',
+                background: 'linear-gradient(180deg, transparent 0%, rgba(4,4,4,1) 30%)',
+              }}
             >
               <motion.button
                 whileTap={{ scale: 0.97 }}
