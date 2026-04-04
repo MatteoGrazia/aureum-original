@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Dumbbell, Clock, Users, ChevronRight, Lock, Feather } from 'lucide-react';
+import { X, Dumbbell, Clock, Users, ChevronRight, Lock } from 'lucide-react';
+
+const ASCENSION_ICON = 'https://media.base44.com/images/public/698347d058d3014d6271ccff/4158e2305_AscensionIcon.png';
+function AscensionImg({ size = 20 }) {
+  return <img src={ASCENSION_ICON} alt="AP" style={{ width: size, height: size, objectFit: 'contain' }} />;
+}
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { formatDistanceToNow } from 'date-fns';
 import { base44 } from '@/api/base44Client';
@@ -245,7 +250,7 @@ export default function AthleteProfileOverlay({ athleteName, athleteAvatar, athl
             {/* Total AP — most prominent, Syndicate Sage */}
             <div className="flex flex-col items-center mb-3">
               <div className="flex items-center gap-2 mb-1">
-                <Feather className="w-5 h-5" strokeWidth={1.3} style={{ color: '#98AB8F' }} />
+                <AscensionImg size={24} />
                 <span className="text-3xl" style={{ color: '#98AB8F', fontFamily: 'Montserrat, sans-serif', fontWeight: 300 }}>{totalAscensions.toLocaleString()}</span>
               </div>
               <span className="text-[9px] uppercase tracking-[0.28em]" style={{ color: 'rgba(152,171,143,0.6)', fontFamily: 'Montserrat, sans-serif' }}>Ascension Points</span>
@@ -259,7 +264,7 @@ export default function AthleteProfileOverlay({ athleteName, athleteAvatar, athl
                 ].map(({ label, value, action, icon }) => (
                 <button key={label} onClick={action} className="flex flex-col items-center gap-0.5">
                   <div className="flex items-center gap-1">
-                    {icon && <Feather className="w-3.5 h-3.5" strokeWidth={1.3} style={{ color: '#D4AF37' }} />}
+                    {icon && <AscensionImg size={14} />}
                     <p className="text-xl" style={{ color: '#E5E5E7', fontFamily: 'Montserrat, sans-serif', fontWeight: 300 }}>{value}</p>
                   </div>
                   <p className="text-[9px] uppercase tracking-[0.18em]" style={{ color: 'rgba(229,229,231,0.4)', fontFamily: 'Montserrat, sans-serif' }}>{label}</p>
@@ -355,7 +360,7 @@ export default function AthleteProfileOverlay({ athleteName, athleteAvatar, athl
                         </p>
                       </div>
                       <div className="flex items-center gap-1 flex-shrink-0">
-                        <Feather className="w-3 h-3" strokeWidth={1.3} style={{ color: 'rgba(212,175,55,0.5)' }} />
+                        <AscensionImg size={14} />
                         <span className="text-xs" style={{ color: 'rgba(212,175,55,0.5)', fontFamily: 'Montserrat, sans-serif' }}>{post.voltage_count || 0}</span>
                       </div>
                     </div>

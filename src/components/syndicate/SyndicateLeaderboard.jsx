@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Feather } from 'lucide-react';
+const ASCENSION_ICON = 'https://media.base44.com/images/public/698347d058d3014d6271ccff/4158e2305_AscensionIcon.png';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 
@@ -100,7 +100,7 @@ export default function SyndicateLeaderboard() {
 
             {/* AP */}
             <div className="flex items-center gap-1.5 flex-shrink-0">
-              <Feather className="w-3.5 h-3.5" strokeWidth={1.3} style={{ color: '#98AB8F' }} />
+              <img src={ASCENSION_ICON} alt="AP" style={{ width: 16, height: 16, objectFit: 'contain' }} />
               <span style={{ fontFamily: 'Georgia, serif', fontSize: 15, color: '#98AB8F', fontWeight: 300 }}>
                 {athlete.totalAP.toLocaleString()}
               </span>
