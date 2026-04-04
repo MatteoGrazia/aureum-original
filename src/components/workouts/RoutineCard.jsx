@@ -33,7 +33,12 @@ function MuscleIcon({ muscle, size = 18, color = '#D4AF37' }) {
   );
 }
 
-export default function RoutineCard({ routine, isExpanded, onToggle, onStart, onDelete, onEdit, allLogs = [] }) {
+export default function RoutineCard({ routine, isExpanded, onToggle, onStart, onDelete, onEdit, allLogs = [], allExercises = [] }) {
+  const exerciseImageMap = React.useMemo(() => {
+    const map = {};
+    allExercises.forEach(ex => { if (ex.name && ex.image_url) map[ex.name] = ex.image_url; });
+    return map;
+  }, [allExercises]);
   const { isDarkMode } = useTheme();
   const routineLogs = allLogs.filter(l =>
     l.routine_id === routine.id || l.routine_name === routine.name
@@ -139,12 +144,11 @@ export default function RoutineCard({ routine, isExpanded, onToggle, onStart, on
                     style={{ background: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)' }}>
                     {/* Anatomy image */}
                     <div style={{ width: 36, height: 36, borderRadius: '50%', overflow: 'hidden', flexShrink: 0, border: '0.5px solid rgba(212,175,55,0.2)', background: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      {ex.image_url ? (
+                      {exerciseImageMap[ex.exercise_name] ? (
                         <img
-                          src={isDarkMode ? (ex.image_url_dark || ex.image_url) : ex.image_url}
+                          src={exerciseImageMap[ex.exercise_name]}
                           alt={ex.exercise_name}
                           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                          onError={e => { e.target.style.display = 'none'; }}
                         />
                       ) : (
                         <MuscleIcon muscle={ex.muscle_group} size={18} color={isDarkMode ? '#D4AF37' : '#9C7E46'} />

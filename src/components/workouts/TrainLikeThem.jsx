@@ -177,6 +177,7 @@ export default function TrainLikeThem({ onAdopt, exercises = [] }) {
     return map;
   }, [exercises]);
 
+  // Adopt: just save the routine, no navigation
   const scrollTo = (idx) => {
     if (!scrollRef.current) return;
     const clamped = Math.max(0, Math.min(idx, ICONS.length - 1));
@@ -228,7 +229,6 @@ export default function TrainLikeThem({ onAdopt, exercises = [] }) {
       });
 
       closeDossier();
-      onAdopt?.(routine, icon);
     } catch (e) {
       toast('Failed to adopt routine.', { icon: '✗' });
     }
@@ -250,8 +250,8 @@ export default function TrainLikeThem({ onAdopt, exercises = [] }) {
         </p>
       </div>
 
-      {/* Carousel wrapper — card is self-contained, arrows/dots overlaid inside */}
-      <div className="relative" style={{ marginLeft: -20, marginRight: -20 }}>
+      {/* Carousel wrapper */}
+      <div className="relative">
         {/* Snap scroll container */}
         <div
           ref={scrollRef}
@@ -260,7 +260,10 @@ export default function TrainLikeThem({ onAdopt, exercises = [] }) {
             scrollSnapType: 'x mandatory',
             scrollbarWidth: 'none',
             WebkitOverflowScrolling: 'touch',
-            gap: 0,
+            gap: 12,
+            paddingLeft: 4,
+            paddingRight: 4,
+            paddingBottom: 4,
           }}
           onScroll={(e) => {
             const idx = Math.round(e.target.scrollLeft / e.target.clientWidth);
@@ -274,38 +277,36 @@ export default function TrainLikeThem({ onAdopt, exercises = [] }) {
               animate={{ opacity: 1 }}
               transition={{ delay: i * 0.03 }}
               onClick={() => openDossier(icon)}
-              className="flex-shrink-0 relative overflow-hidden active:scale-[0.97] transition-transform"
+              className="flex-shrink-0 relative rounded-2xl overflow-hidden active:scale-[0.97] transition-transform"
               style={{
-                scrollSnapAlign: 'start',
-                width: '100vw',
-                height: 320,
+                scrollSnapAlign: 'center',
+                width: 'calc(100vw - 60px)',
+                height: 300,
+                border: '0.5px solid rgba(212,175,55,0.25)',
               }}
             >
-              {/* Full bleed image — cover so no black bars */}
+              {/* Full image — cover, shifted down so face shows */}
               <img
                 src={icon.photo}
                 alt={icon.name}
                 className="absolute inset-0 w-full h-full"
-                style={{ objectFit: 'cover', objectPosition: 'center top' }}
+                style={{ objectFit: 'cover', objectPosition: 'center 15%' }}
               />
-              {/* Side vignettes to hide any edge artifacts */}
-              <div className="absolute inset-y-0 left-0 w-6 pointer-events-none" style={{ background: 'linear-gradient(90deg, rgba(8,8,8,0.6), transparent)' }} />
-              <div className="absolute inset-y-0 right-0 w-6 pointer-events-none" style={{ background: 'linear-gradient(270deg, rgba(8,8,8,0.6), transparent)' }} />
               {/* Bottom gradient */}
-              <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(180deg, transparent 30%, rgba(8,8,8,0.98) 100%)' }} />
+              <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(180deg, transparent 40%, rgba(8,8,8,0.98) 100%)' }} />
               {/* Era badge */}
               <div
-                className="absolute top-3 right-4 px-2 py-1 rounded-lg text-[9px] uppercase tracking-widest"
+                className="absolute top-3 right-3 px-2 py-1 rounded-lg text-[9px] uppercase tracking-widest"
                 style={{ background: 'rgba(212,175,55,0.15)', border: '0.5px solid rgba(212,175,55,0.35)', color: '#D4AF37', fontFamily: 'Montserrat' }}
               >
                 {icon.era}
               </div>
               {/* Bottom info */}
-              <div className="absolute bottom-14 left-5 right-5 text-left">
+              <div className="absolute bottom-10 left-4 right-4 text-left">
                 <p className="text-[10px] uppercase tracking-[0.25em] mb-1" style={{ color: '#D4AF37', fontFamily: 'Montserrat' }}>
                   {icon.split}
                 </p>
-                <p className="text-xl mb-3" style={{ color: '#FFFFFF', fontFamily: 'Montserrat, sans-serif', fontWeight: 400, letterSpacing: '0.05em' }}>
+                <p className="text-xl mb-2" style={{ color: '#FFFFFF', fontFamily: 'Montserrat, sans-serif', fontWeight: 400, letterSpacing: '0.05em' }}>
                   {icon.name}
                 </p>
                 <div className="flex flex-wrap gap-1.5">
@@ -325,8 +326,8 @@ export default function TrainLikeThem({ onAdopt, exercises = [] }) {
                   )}
                 </div>
               </div>
-              {/* Dots + arrows — overlaid at bottom of card */}
-              <div className="absolute bottom-3 left-0 right-0 flex items-center justify-between px-4 pointer-events-none">
+              {/* Dots + arrows — overlaid at bottom */}
+              <div className="absolute bottom-2 left-0 right-0 flex items-center justify-between px-3 pointer-events-none">
                 <div style={{ pointerEvents: 'all' }} onClick={e => { e.stopPropagation(); scrollTo(activeIndex - 1); }}>
                   <div style={{ opacity: activeIndex === 0 ? 0.2 : 1 }}><ArrowLeft /></div>
                 </div>
@@ -336,7 +337,7 @@ export default function TrainLikeThem({ onAdopt, exercises = [] }) {
                       key={di}
                       className="rounded-full transition-all duration-200"
                       style={{
-                        width: di === activeIndex ? 16 : 4,
+                        width: di === activeIndex ? 14 : 4,
                         height: 4,
                         background: di === activeIndex ? '#D4AF37' : 'rgba(212,175,55,0.3)',
                       }}

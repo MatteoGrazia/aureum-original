@@ -562,6 +562,7 @@ export default function Workouts() {
                       onDelete={deleteRoutine}
                       onEdit={handleEditRoutine}
                       allLogs={recentWorkouts}
+                      allExercises={exercises}
                     />
                   ))
                 )}
@@ -627,7 +628,7 @@ export default function Workouts() {
               )}
 
               {/* Train Like Them */}
-              <TrainLikeThem onAdopt={(routine) => { startWorkout(routine); }} exercises={exercises} />
+              <TrainLikeThem onAdopt={() => {}} exercises={exercises} />
             </motion.div>
           )}
 
