@@ -9,13 +9,15 @@ import {
   LogOut, ChevronRight, Edit3, Save, Droplets, Share2, Zap, Sun, Moon
 } from 'lucide-react';
 
-function WingIcon({ size = 16, color = '#98AB8F' }) {
+const ASCENSION_ICON = 'https://media.base44.com/images/public/698347d058d3014d6271ccff/4158e2305_AscensionIcon.png';
+
+function WingIcon({ size = 16 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <path d="M12 18 Q8 14 4 15 Q6 10 10 9 Q8 6 12 4" stroke={color} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M12 18 Q16 14 20 15 Q18 10 14 9 Q16 6 12 4" stroke={color} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
-      <line x1="12" y1="4" x2="12" y2="18" stroke={color} strokeWidth="1.1" strokeLinecap="round" opacity="0.6"/>
-    </svg>
+    <img
+      src={ASCENSION_ICON}
+      alt="Ascension"
+      style={{ width: size, height: size, objectFit: 'contain' }}
+    />
   );
 }
 import { useTheme } from '@/components/shared/ThemeContext';
