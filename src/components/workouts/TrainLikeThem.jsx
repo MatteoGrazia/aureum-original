@@ -219,7 +219,7 @@ export default function TrainLikeThem({ onAdopt, exercises = [] }) {
       }));
 
       const routine = await base44.entities.Routine.create({
-        name: `${icon.name} — ${icon.split}`,
+        name: `${icon.name} - ${icon.split}`,
         description: `Heritage routine from ${icon.name} (${icon.era})`,
         exercises: routineExercises,
         target_muscles: targetMuscles,
@@ -246,7 +246,7 @@ export default function TrainLikeThem({ onAdopt, exercises = [] }) {
   };
 
   return (
-  <div className="mb-20">
+  <div className="mb-40" style={{ paddingBottom: 'calc(80px + env(safe-area-inset-bottom, 0px))' }}>
       {/* Section Header */}
       <div className="mb-4">
         <p

@@ -613,7 +613,7 @@ export default function Workouts() {
                                 </div>
                                 <div className="flex items-center gap-3">
                                   <div className="text-right">
-                                    <p className="text-[#D4AF37] text-sm">{w.total_volume ? `${(w.total_volume / 1000).toFixed(1)}k` : '—'}</p>
+                                    <p className="text-[#D4AF37] text-sm">{w.total_volume ? `${(w.total_volume / 1000).toFixed(1)}k` : '-'}</p>
                                     <p className="text-white/25 text-[10px]">kg vol</p>
                                   </div>
                                 </div>

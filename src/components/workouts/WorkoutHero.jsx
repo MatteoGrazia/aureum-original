@@ -89,7 +89,7 @@ export default function WorkoutHero({ logs = [], bodyweight = 80 }) {
                 style={{ width: 48, height: 48, objectFit: 'contain', mixBlendMode: 'screen' }}
               />
               <p className="text-white text-base" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 300 }}>
-                {best[lift] || '—'}
+                {best[lift] || '-'}
               </p>
               <p className="text-white/20 text-[9px] uppercase tracking-[0.15em] mt-0.5">{lift}</p>
             </div>

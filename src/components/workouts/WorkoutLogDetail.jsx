@@ -52,9 +52,9 @@ export default function WorkoutLogDetail({ log, onBack }) {
       {/* Stats row */}
       <div className="grid grid-cols-3 gap-3 mb-6">
         {[
-          { icon: Clock, label: 'Duration', value: log.duration_minutes ? `${log.duration_minutes}m` : '—' },
+          { icon: Clock, label: 'Duration', value: log.duration_minutes ? `${log.duration_minutes}m` : '-' },
           { icon: Dumbbell, label: 'Sets', value: totalSets },
-          { icon: Flame, label: 'Volume', value: log.total_volume ? `${Math.round(log.total_volume / 1000)}k` : '—' },
+          { icon: Flame, label: 'Volume', value: log.total_volume ? `${Math.round(log.total_volume / 1000)}k` : '-' },
         ].map(({ icon: Icon, label, value }) => (
           <div
             key={label}
