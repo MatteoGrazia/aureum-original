@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Zap } from 'lucide-react';
 import { toast } from 'sonner';
@@ -144,10 +144,49 @@ const ICONS = [
   },
 ];
 
+// Minimal abstract SVG arrow
+function ArrowLeft() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+      <line x1="14" y1="9" x2="4" y2="9" stroke="#D4AF37" strokeWidth="1.2" strokeLinecap="round"/>
+      <polyline points="8,5 4,9 8,13" stroke="#D4AF37" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+    </svg>
+  );
+}
+function ArrowRight() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+      <line x1="4" y1="9" x2="14" y2="9" stroke="#D4AF37" strokeWidth="1.2" strokeLinecap="round"/>
+      <polyline points="10,5 14,9 10,13" stroke="#D4AF37" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+    </svg>
+  );
+}
+
 export default function TrainLikeThem({ onAdopt }) {
   const [selected, setSelected] = useState(null);
   const [adopting, setAdopting] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const scrollRef = useRef(null);
   const queryClient = useQueryClient();
+
+  const scrollTo = (idx) => {
+    if (!scrollRef.current) return;
+    const clamped = Math.max(0, Math.min(idx, ICONS.length - 1));
+    setActiveIndex(clamped);
+    const cardWidth = scrollRef.current.clientWidth;
+    scrollRef.current.scrollTo({ left: clamped * cardWidth, behavior: 'smooth' });
+  };
+
+  const openDossier = (icon) => {
+    setSelected(icon);
+    // Hide nav bar
+    document.documentElement.style.setProperty('--hide-nav', 'none');
+  };
+
+  const closeDossier = () => {
+    setSelected(null);
+    document.documentElement.style.setProperty('--hide-nav', 'block');
+  };
 
   const handleAdopt = async (icon) => {
     setAdopting(true);
@@ -181,7 +220,7 @@ export default function TrainLikeThem({ onAdopt }) {
         duration: 3000,
       });
 
-      setSelected(null);
+      closeDossier();
       onAdopt?.(routine, icon);
     } catch (e) {
       toast('Failed to adopt routine.', { icon: '✗' });
@@ -193,7 +232,10 @@ export default function TrainLikeThem({ onAdopt }) {
     <div className="mb-8">
       {/* Section Header */}
       <div className="mb-4">
-        <p className="text-[10px] uppercase tracking-[0.3em] text-white mb-1" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+        <p
+          className="text-base uppercase tracking-[0.3em] mb-1"
+          style={{ fontFamily: 'Montserrat, sans-serif', color: '#D4AF37', fontWeight: 500 }}
+        >
           Train Like Them
         </p>
         <p className="text-white/35 text-xs" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 300 }}>
@@ -201,92 +243,129 @@ export default function TrainLikeThem({ onAdopt }) {
         </p>
       </div>
 
-      {/* Snap carousel — one card at a time */}
-      <div
-        className="flex overflow-x-auto gap-4"
-        style={{
-          scrollSnapType: 'x mandatory',
-          scrollbarWidth: 'none',
-          WebkitOverflowScrolling: 'touch',
-          paddingBottom: 4,
-          marginLeft: -20,
-          marginRight: -20,
-          paddingLeft: 20,
-          paddingRight: 20,
-        }}
-      >
-        {ICONS.map((icon, i) => (
-          <motion.button
-            key={icon.name}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.03 }}
-            onClick={() => setSelected(icon)}
-            className="flex-shrink-0 relative rounded-2xl overflow-hidden active:scale-[0.97] transition-transform"
-            style={{
-              scrollSnapAlign: 'center',
-              width: 'calc(100vw - 40px)',
-              height: 280,
-              background: 'rgba(255,255,255,0.03)',
-              border: '0.5px solid rgba(212,175,55,0.25)',
-            }}
-          >
-            <img
-              src={icon.photo}
-              alt={icon.name}
-              className="absolute inset-0 w-full h-full object-cover object-top"
-              style={{ filter: 'brightness(0.7)' }}
-            />
-            <div
-              className="absolute inset-0"
-              style={{ background: 'linear-gradient(180deg, transparent 20%, rgba(8,8,8,0.97) 100%)' }}
-            />
-            {/* Top-right era badge */}
-            <div
-              className="absolute top-3 right-3 px-2 py-1 rounded-lg text-[9px] uppercase tracking-widest"
-              style={{ background: 'rgba(212,175,55,0.15)', border: '0.5px solid rgba(212,175,55,0.35)', color: '#D4AF37', fontFamily: 'Montserrat' }}
+      {/* Carousel wrapper */}
+      <div className="relative">
+        {/* Snap carousel */}
+        <div
+          ref={scrollRef}
+          className="flex overflow-x-auto"
+          style={{
+            scrollSnapType: 'x mandatory',
+            scrollbarWidth: 'none',
+            WebkitOverflowScrolling: 'touch',
+            marginLeft: -20,
+            marginRight: -20,
+            paddingLeft: 20,
+            paddingRight: 20,
+            gap: 16,
+          }}
+          onScroll={(e) => {
+            const idx = Math.round(e.target.scrollLeft / e.target.clientWidth);
+            setActiveIndex(idx);
+          }}
+        >
+          {ICONS.map((icon, i) => (
+            <motion.button
+              key={icon.name}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.03 }}
+              onClick={() => openDossier(icon)}
+              className="flex-shrink-0 relative rounded-2xl overflow-hidden active:scale-[0.97] transition-transform"
+              style={{
+                scrollSnapAlign: 'center',
+                width: 'calc(100vw - 40px)',
+                height: 320,
+                background: '#0a0a0a',
+                border: '0.5px solid rgba(212,175,55,0.25)',
+              }}
             >
-              {icon.era}
-            </div>
-            {/* Bottom info */}
-            <div className="absolute bottom-0 left-0 right-0 p-5 text-left">
-              <p className="text-[10px] uppercase tracking-[0.25em] mb-1" style={{ color: '#D4AF37', fontFamily: 'Montserrat' }}>
-                {icon.split}
-              </p>
-              <p className="text-xl mb-3" style={{ color: '#FFFFFF', fontFamily: 'Montserrat, sans-serif', fontWeight: 400, letterSpacing: '0.05em' }}>
-                {icon.name}
-              </p>
-              {/* Preview exercises */}
-              <div className="flex flex-wrap gap-1.5">
-                {icon.exercises.slice(0, 3).map((ex, idx) => (
-                  <span
-                    key={idx}
-                    className="text-[9px] px-2 py-0.5 rounded-full"
-                    style={{ background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.5)', fontFamily: 'Montserrat' }}
-                  >
-                    {ex.exercise_name}
-                  </span>
-                ))}
-                {icon.exercises.length > 3 && (
-                  <span className="text-[9px] px-2 py-0.5 rounded-full" style={{ background: 'rgba(212,175,55,0.1)', color: 'rgba(212,175,55,0.6)', fontFamily: 'Montserrat' }}>
-                    +{icon.exercises.length - 3} more
-                  </span>
-                )}
+              {/* Full image — contain so nothing is cropped */}
+              <img
+                src={icon.photo}
+                alt={icon.name}
+                className="absolute inset-0 w-full h-full"
+                style={{ objectFit: 'contain', objectPosition: 'center top', filter: 'brightness(0.85)' }}
+              />
+              {/* Bottom gradient overlay */}
+              <div
+                className="absolute inset-0"
+                style={{ background: 'linear-gradient(180deg, transparent 30%, rgba(8,8,8,0.98) 100%)' }}
+              />
+              {/* Era badge */}
+              <div
+                className="absolute top-3 right-3 px-2 py-1 rounded-lg text-[9px] uppercase tracking-widest"
+                style={{ background: 'rgba(212,175,55,0.15)', border: '0.5px solid rgba(212,175,55,0.35)', color: '#D4AF37', fontFamily: 'Montserrat' }}
+              >
+                {icon.era}
               </div>
-            </div>
-          </motion.button>
-        ))}
-      </div>
+              {/* Bottom info */}
+              <div className="absolute bottom-0 left-0 right-0 p-5 text-left">
+                <p className="text-[10px] uppercase tracking-[0.25em] mb-1" style={{ color: '#D4AF37', fontFamily: 'Montserrat' }}>
+                  {icon.split}
+                </p>
+                <p className="text-xl mb-3" style={{ color: '#FFFFFF', fontFamily: 'Montserrat, sans-serif', fontWeight: 400, letterSpacing: '0.05em' }}>
+                  {icon.name}
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {icon.exercises.slice(0, 3).map((ex, idx) => (
+                    <span
+                      key={idx}
+                      className="text-[9px] px-2 py-0.5 rounded-full"
+                      style={{ background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.5)', fontFamily: 'Montserrat' }}
+                    >
+                      {ex.exercise_name}
+                    </span>
+                  ))}
+                  {icon.exercises.length > 3 && (
+                    <span className="text-[9px] px-2 py-0.5 rounded-full" style={{ background: 'rgba(212,175,55,0.1)', color: 'rgba(212,175,55,0.6)', fontFamily: 'Montserrat' }}>
+                      +{icon.exercises.length - 3} more
+                    </span>
+                  )}
+                </div>
+              </div>
+            </motion.button>
+          ))}
+        </div>
 
-      {/* Dot indicators */}
-      <div className="flex justify-center gap-1.5 mt-3">
-        {ICONS.map((_, i) => (
-          <div
-            key={i}
-            className="rounded-full"
-            style={{ width: 4, height: 4, background: 'rgba(212,175,55,0.25)' }}
-          />
-        ))}
+        {/* Arrow controls */}
+        <div className="flex items-center justify-between mt-3 px-1">
+          <button
+            onClick={() => scrollTo(activeIndex - 1)}
+            disabled={activeIndex === 0}
+            className="flex items-center gap-1.5 transition-opacity"
+            style={{ opacity: activeIndex === 0 ? 0.2 : 1 }}
+          >
+            <ArrowLeft />
+            <span className="text-[9px] uppercase tracking-widest" style={{ color: '#D4AF37', fontFamily: 'Montserrat' }}>Prev</span>
+          </button>
+
+          {/* Dot indicators */}
+          <div className="flex gap-1.5">
+            {ICONS.map((_, i) => (
+              <button key={i} onClick={() => scrollTo(i)}>
+                <div
+                  className="rounded-full transition-all duration-200"
+                  style={{
+                    width: i === activeIndex ? 16 : 4,
+                    height: 4,
+                    background: i === activeIndex ? '#D4AF37' : 'rgba(212,175,55,0.25)',
+                  }}
+                />
+              </button>
+            ))}
+          </div>
+
+          <button
+            onClick={() => scrollTo(activeIndex + 1)}
+            disabled={activeIndex === ICONS.length - 1}
+            className="flex items-center gap-1.5 transition-opacity"
+            style={{ opacity: activeIndex === ICONS.length - 1 ? 0.2 : 1 }}
+          >
+            <span className="text-[9px] uppercase tracking-widest" style={{ color: '#D4AF37', fontFamily: 'Montserrat' }}>Next</span>
+            <ArrowRight />
+          </button>
+        </div>
       </div>
 
       {/* Dossier Overlay */}
@@ -297,22 +376,22 @@ export default function TrainLikeThem({ onAdopt }) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[200] flex flex-col overflow-y-auto"
-            style={{ background: 'rgba(4,4,4,0.96)', backdropFilter: 'blur(20px)' }}
+            style={{ background: 'rgba(4,4,4,0.98)', backdropFilter: 'blur(20px)' }}
           >
-            {/* Hero photo */}
-            <div className="relative flex-shrink-0" style={{ height: '40vh' }}>
+            {/* Hero photo — full image visible */}
+            <div className="relative flex-shrink-0" style={{ height: '45vh', background: '#080808' }}>
               <img
                 src={selected.photo}
                 alt={selected.name}
-                className="w-full h-full object-cover object-top"
-                style={{ filter: 'brightness(0.6)' }}
+                className="w-full h-full"
+                style={{ objectFit: 'contain', objectPosition: 'center', filter: 'brightness(0.85)' }}
               />
               <div
                 className="absolute inset-0"
-                style={{ background: 'linear-gradient(180deg, rgba(4,4,4,0.2) 0%, rgba(4,4,4,1) 100%)' }}
+                style={{ background: 'linear-gradient(180deg, rgba(4,4,4,0.1) 0%, rgba(4,4,4,1) 100%)' }}
               />
               <button
-                onClick={() => setSelected(null)}
+                onClick={closeDossier}
                 className="absolute top-12 right-5 w-10 h-10 rounded-full flex items-center justify-center"
                 style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)', border: '0.5px solid rgba(255,255,255,0.15)' }}
               >
@@ -331,7 +410,7 @@ export default function TrainLikeThem({ onAdopt }) {
               </div>
             </div>
 
-            {/* Muscle Focus Tags */}
+            {/* Muscle Focus */}
             <div className="px-5 pt-5 pb-3">
               <p className="text-[9px] uppercase tracking-[0.3em] mb-2.5" style={{ color: 'rgba(255,255,255,0.3)', fontFamily: 'Montserrat' }}>
                 Anatomical Focus
@@ -383,7 +462,7 @@ export default function TrainLikeThem({ onAdopt }) {
               </div>
             </div>
 
-            {/* Adopt Button — fixed above nav */}
+            {/* Adopt Button — above nav */}
             <div
               className="sticky bottom-0 px-5 pt-4"
               style={{
@@ -395,7 +474,7 @@ export default function TrainLikeThem({ onAdopt }) {
                 whileTap={{ scale: 0.97 }}
                 onClick={() => handleAdopt(selected)}
                 disabled={adopting}
-                className="w-full py-4 rounded-2xl flex items-center justify-center gap-3"
+                className="w-full py-4 rounded-2xl"
                 style={{
                   background: adopting ? 'rgba(212,175,55,0.4)' : 'linear-gradient(135deg, #D4AF37 0%, #BFA030 100%)',
                   color: '#080808',
@@ -406,7 +485,6 @@ export default function TrainLikeThem({ onAdopt }) {
                   boxShadow: adopting ? 'none' : '0 0 30px rgba(212,175,55,0.35)',
                 }}
               >
-                <Zap className="w-4 h-4" />
                 {adopting ? 'ACQUIRING...' : 'ADOPT ROUTINE'}
               </motion.button>
             </div>

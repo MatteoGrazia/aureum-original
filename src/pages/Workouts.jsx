@@ -582,7 +582,9 @@ export default function Workouts() {
                     </p>
                     <div className="flex items-center gap-2">
                       <p className="text-white/20 text-[10px]">{recentWorkouts.length} sessions</p>
-                      <History className="w-3.5 h-3.5 text-white/20" />
+                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ transform: showHistory ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.25s ease', flexShrink: 0 }}>
+                        <polyline points="3,5 7,9 11,5" stroke="rgba(255,255,255,0.3)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
                     </div>
                   </button>
                   <AnimatePresence>
