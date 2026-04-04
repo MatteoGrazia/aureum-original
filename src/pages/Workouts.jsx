@@ -627,7 +627,7 @@ export default function Workouts() {
               )}
 
               {/* Train Like Them */}
-              <TrainLikeThem onAdopt={(routine) => { startWorkout(routine); }} />
+              <TrainLikeThem onAdopt={(routine) => { startWorkout(routine); }} exercises={exercises} />
             </motion.div>
           )}
 

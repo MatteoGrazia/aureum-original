@@ -1,6 +1,6 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Zap } from 'lucide-react';
+import { X } from 'lucide-react';
 import { toast } from 'sonner';
 import { base44 } from '@/api/base44Client';
 import { useQueryClient } from '@tanstack/react-query';
@@ -144,7 +144,6 @@ const ICONS = [
   },
 ];
 
-// Minimal abstract SVG arrow
 function ArrowLeft() {
   return (
     <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
@@ -162,12 +161,21 @@ function ArrowRight() {
   );
 }
 
-export default function TrainLikeThem({ onAdopt }) {
+export default function TrainLikeThem({ onAdopt, exercises = [] }) {
   const [selected, setSelected] = useState(null);
   const [adopting, setAdopting] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const scrollRef = useRef(null);
   const queryClient = useQueryClient();
+
+  // Build a name->image_url map from the exercises prop
+  const exerciseImageMap = React.useMemo(() => {
+    const map = {};
+    exercises.forEach(ex => {
+      if (ex.name && ex.image_url) map[ex.name] = ex.image_url;
+    });
+    return map;
+  }, [exercises]);
 
   const scrollTo = (idx) => {
     if (!scrollRef.current) return;
@@ -179,7 +187,6 @@ export default function TrainLikeThem({ onAdopt }) {
 
   const openDossier = (icon) => {
     setSelected(icon);
-    // Hide nav bar
     document.documentElement.style.setProperty('--hide-nav', 'none');
   };
 
@@ -192,7 +199,7 @@ export default function TrainLikeThem({ onAdopt }) {
     setAdopting(true);
     try {
       const targetMuscles = [...new Set(icon.focus)];
-      const exercises = icon.exercises.map(ex => ({
+      const routineExercises = icon.exercises.map(ex => ({
         exercise_name: ex.exercise_name,
         exercise_id: '',
         muscle_group: icon.focus[0],
@@ -203,7 +210,7 @@ export default function TrainLikeThem({ onAdopt }) {
       const routine = await base44.entities.Routine.create({
         name: `${icon.name} — ${icon.split}`,
         description: `Heritage routine from ${icon.name} (${icon.era})`,
-        exercises,
+        exercises: routineExercises,
         target_muscles: targetMuscles,
       });
 
@@ -243,9 +250,9 @@ export default function TrainLikeThem({ onAdopt }) {
         </p>
       </div>
 
-      {/* Carousel wrapper */}
-      <div className="relative">
-        {/* Snap carousel */}
+      {/* Carousel wrapper — card is self-contained, arrows/dots overlaid inside */}
+      <div className="relative" style={{ marginLeft: -20, marginRight: -20 }}>
+        {/* Snap scroll container */}
         <div
           ref={scrollRef}
           className="flex overflow-x-auto"
@@ -253,11 +260,7 @@ export default function TrainLikeThem({ onAdopt }) {
             scrollSnapType: 'x mandatory',
             scrollbarWidth: 'none',
             WebkitOverflowScrolling: 'touch',
-            marginLeft: -20,
-            marginRight: -20,
-            paddingLeft: 20,
-            paddingRight: 20,
-            gap: 16,
+            gap: 0,
           }}
           onScroll={(e) => {
             const idx = Math.round(e.target.scrollLeft / e.target.clientWidth);
@@ -267,40 +270,38 @@ export default function TrainLikeThem({ onAdopt }) {
           {ICONS.map((icon, i) => (
             <motion.button
               key={icon.name}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
               transition={{ delay: i * 0.03 }}
               onClick={() => openDossier(icon)}
-              className="flex-shrink-0 relative rounded-2xl overflow-hidden active:scale-[0.97] transition-transform"
+              className="flex-shrink-0 relative overflow-hidden active:scale-[0.97] transition-transform"
               style={{
-                scrollSnapAlign: 'center',
-                width: 'calc(100vw - 40px)',
+                scrollSnapAlign: 'start',
+                width: '100vw',
                 height: 320,
-                background: '#0a0a0a',
-                border: '0.5px solid rgba(212,175,55,0.25)',
               }}
             >
-              {/* Full image — contain so nothing is cropped */}
+              {/* Full bleed image — cover so no black bars */}
               <img
                 src={icon.photo}
                 alt={icon.name}
                 className="absolute inset-0 w-full h-full"
-                style={{ objectFit: 'contain', objectPosition: 'center top', filter: 'brightness(0.85)' }}
+                style={{ objectFit: 'cover', objectPosition: 'center top' }}
               />
-              {/* Bottom gradient overlay */}
-              <div
-                className="absolute inset-0"
-                style={{ background: 'linear-gradient(180deg, transparent 30%, rgba(8,8,8,0.98) 100%)' }}
-              />
+              {/* Side vignettes to hide any edge artifacts */}
+              <div className="absolute inset-y-0 left-0 w-6 pointer-events-none" style={{ background: 'linear-gradient(90deg, rgba(8,8,8,0.6), transparent)' }} />
+              <div className="absolute inset-y-0 right-0 w-6 pointer-events-none" style={{ background: 'linear-gradient(270deg, rgba(8,8,8,0.6), transparent)' }} />
+              {/* Bottom gradient */}
+              <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(180deg, transparent 30%, rgba(8,8,8,0.98) 100%)' }} />
               {/* Era badge */}
               <div
-                className="absolute top-3 right-3 px-2 py-1 rounded-lg text-[9px] uppercase tracking-widest"
+                className="absolute top-3 right-4 px-2 py-1 rounded-lg text-[9px] uppercase tracking-widest"
                 style={{ background: 'rgba(212,175,55,0.15)', border: '0.5px solid rgba(212,175,55,0.35)', color: '#D4AF37', fontFamily: 'Montserrat' }}
               >
                 {icon.era}
               </div>
               {/* Bottom info */}
-              <div className="absolute bottom-0 left-0 right-0 p-5 text-left">
+              <div className="absolute bottom-14 left-5 right-5 text-left">
                 <p className="text-[10px] uppercase tracking-[0.25em] mb-1" style={{ color: '#D4AF37', fontFamily: 'Montserrat' }}>
                   {icon.split}
                 </p>
@@ -324,47 +325,30 @@ export default function TrainLikeThem({ onAdopt }) {
                   )}
                 </div>
               </div>
+              {/* Dots + arrows — overlaid at bottom of card */}
+              <div className="absolute bottom-3 left-0 right-0 flex items-center justify-between px-4 pointer-events-none">
+                <div style={{ pointerEvents: 'all' }} onClick={e => { e.stopPropagation(); scrollTo(activeIndex - 1); }}>
+                  <div style={{ opacity: activeIndex === 0 ? 0.2 : 1 }}><ArrowLeft /></div>
+                </div>
+                <div className="flex gap-1.5">
+                  {ICONS.map((_, di) => (
+                    <div
+                      key={di}
+                      className="rounded-full transition-all duration-200"
+                      style={{
+                        width: di === activeIndex ? 16 : 4,
+                        height: 4,
+                        background: di === activeIndex ? '#D4AF37' : 'rgba(212,175,55,0.3)',
+                      }}
+                    />
+                  ))}
+                </div>
+                <div style={{ pointerEvents: 'all' }} onClick={e => { e.stopPropagation(); scrollTo(activeIndex + 1); }}>
+                  <div style={{ opacity: activeIndex === ICONS.length - 1 ? 0.2 : 1 }}><ArrowRight /></div>
+                </div>
+              </div>
             </motion.button>
           ))}
-        </div>
-
-        {/* Arrow controls */}
-        <div className="flex items-center justify-between mt-3 px-1">
-          <button
-            onClick={() => scrollTo(activeIndex - 1)}
-            disabled={activeIndex === 0}
-            className="flex items-center gap-1.5 transition-opacity"
-            style={{ opacity: activeIndex === 0 ? 0.2 : 1 }}
-          >
-            <ArrowLeft />
-            <span className="text-[9px] uppercase tracking-widest" style={{ color: '#D4AF37', fontFamily: 'Montserrat' }}>Prev</span>
-          </button>
-
-          {/* Dot indicators */}
-          <div className="flex gap-1.5">
-            {ICONS.map((_, i) => (
-              <button key={i} onClick={() => scrollTo(i)}>
-                <div
-                  className="rounded-full transition-all duration-200"
-                  style={{
-                    width: i === activeIndex ? 16 : 4,
-                    height: 4,
-                    background: i === activeIndex ? '#D4AF37' : 'rgba(212,175,55,0.25)',
-                  }}
-                />
-              </button>
-            ))}
-          </div>
-
-          <button
-            onClick={() => scrollTo(activeIndex + 1)}
-            disabled={activeIndex === ICONS.length - 1}
-            className="flex items-center gap-1.5 transition-opacity"
-            style={{ opacity: activeIndex === ICONS.length - 1 ? 0.2 : 1 }}
-          >
-            <span className="text-[9px] uppercase tracking-widest" style={{ color: '#D4AF37', fontFamily: 'Montserrat' }}>Next</span>
-            <ArrowRight />
-          </button>
         </div>
       </div>
 
@@ -372,19 +356,20 @@ export default function TrainLikeThem({ onAdopt }) {
       <AnimatePresence>
         {selected && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[200] flex flex-col overflow-y-auto"
-            style={{ background: 'rgba(4,4,4,0.98)', backdropFilter: 'blur(20px)' }}
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 40 }}
+            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+            className="fixed inset-0 z-[200] overflow-y-auto"
+            style={{ background: 'rgba(4,4,4,0.99)' }}
           >
-            {/* Hero photo — full image visible */}
-            <div className="relative flex-shrink-0" style={{ height: '45vh', background: '#080808' }}>
+            {/* Hero photo — full bleed, cover, no black bg */}
+            <div className="relative flex-shrink-0" style={{ height: '45vh' }}>
               <img
                 src={selected.photo}
                 alt={selected.name}
                 className="w-full h-full"
-                style={{ objectFit: 'contain', objectPosition: 'center', filter: 'brightness(0.85)' }}
+                style={{ objectFit: 'cover', objectPosition: 'center top' }}
               />
               <div
                 className="absolute inset-0"
@@ -428,41 +413,47 @@ export default function TrainLikeThem({ onAdopt }) {
               </div>
             </div>
 
-            {/* Exercise List */}
+            {/* Exercise List with images */}
             <div className="px-5 pb-6">
               <p className="text-[9px] uppercase tracking-[0.3em] mb-3" style={{ color: 'rgba(255,255,255,0.3)', fontFamily: 'Montserrat' }}>
                 The Protocol
               </p>
               <div className="space-y-2">
-                {selected.exercises.map((ex, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.05 }}
-                    className="flex items-center justify-between px-4 py-3 rounded-xl"
-                    style={{ background: 'rgba(255,255,255,0.04)', border: '0.5px solid rgba(212,175,55,0.1)' }}
-                  >
-                    <div className="flex items-center gap-3">
-                      <span
-                        className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] flex-shrink-0"
-                        style={{ background: 'rgba(212,175,55,0.15)', color: '#D4AF37', fontFamily: 'Montserrat' }}
+                {selected.exercises.map((ex, i) => {
+                  const imgUrl = exerciseImageMap[ex.exercise_name];
+                  return (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.05 }}
+                      className="flex items-center gap-3 px-3 py-3 rounded-xl"
+                      style={{ background: 'rgba(255,255,255,0.04)', border: '0.5px solid rgba(212,175,55,0.1)' }}
+                    >
+                      {/* Exercise image thumbnail */}
+                      <div
+                        className="flex-shrink-0 rounded-lg overflow-hidden flex items-center justify-center"
+                        style={{ width: 44, height: 44, background: 'rgba(255,255,255,0.06)', border: '0.5px solid rgba(212,175,55,0.15)' }}
                       >
-                        {i + 1}
-                      </span>
-                      <p className="text-sm" style={{ color: '#E5E5E7', fontFamily: 'Montserrat', fontWeight: 300 }}>
+                        {imgUrl ? (
+                          <img src={imgUrl} alt={ex.exercise_name} className="w-full h-full object-cover" />
+                        ) : (
+                          <span style={{ color: '#D4AF37', fontFamily: 'Montserrat', fontSize: 13 }}>{i + 1}</span>
+                        )}
+                      </div>
+                      <p className="flex-1 text-sm" style={{ color: '#E5E5E7', fontFamily: 'Montserrat', fontWeight: 300 }}>
                         {ex.exercise_name}
                       </p>
-                    </div>
-                    <span className="text-xs ml-3 flex-shrink-0" style={{ color: '#D4AF37', fontFamily: 'Montserrat' }}>
-                      {ex.sets} × {ex.reps}
-                    </span>
-                  </motion.div>
-                ))}
+                      <span className="text-xs flex-shrink-0" style={{ color: '#D4AF37', fontFamily: 'Montserrat' }}>
+                        {ex.sets} × {ex.reps}
+                      </span>
+                    </motion.div>
+                  );
+                })}
               </div>
             </div>
 
-            {/* Adopt Button — above nav */}
+            {/* Adopt Button */}
             <div
               className="sticky bottom-0 px-5 pt-4"
               style={{
