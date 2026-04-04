@@ -6,8 +6,18 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { 
   User, Settings, Scale, Target, Ruler, Calendar,
-  LogOut, ChevronRight, Edit3, Save, Droplets, Share2, Zap, Feather, Sun, Moon
+  LogOut, ChevronRight, Edit3, Save, Droplets, Share2, Zap, Sun, Moon
 } from 'lucide-react';
+
+function WingIcon({ size = 16, color = '#98AB8F' }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <path d="M12 18 Q8 14 4 15 Q6 10 10 9 Q8 6 12 4" stroke={color} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M12 18 Q16 14 20 15 Q18 10 14 9 Q16 6 12 4" stroke={color} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+      <line x1="12" y1="4" x2="12" y2="18" stroke={color} strokeWidth="1.1" strokeLinecap="round" opacity="0.6"/>
+    </svg>
+  );
+}
 import { useTheme } from '@/components/shared/ThemeContext';
 import ProfilePictureUpload from '@/components/profile/ProfilePictureUpload';
 import GlassCard from '@/components/ui/GlassCard';
@@ -328,7 +338,7 @@ export default function Profile() {
               >
                 {stat.sage ? (
                   <div className="flex items-center justify-center gap-1">
-                    <Feather className="w-4 h-4" strokeWidth={1.3} style={{ color: '#98AB8F' }} />
+                    <WingIcon size={16} color="#98AB8F" />
                     <p className="text-xl" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 300, color: '#98AB8F' }}>{stat.value}</p>
                   </div>
                 ) : (

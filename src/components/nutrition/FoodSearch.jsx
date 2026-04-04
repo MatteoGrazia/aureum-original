@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Plus, Loader2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
@@ -51,6 +51,20 @@ export default function FoodSearch({ onSelectFood }) {
     }
   };
 
+  const translateIfNeeded = async (text) => {
+    // Detect if text is non-English (simple heuristic: contains non-ASCII or known patterns)
+    const isLikelyNonEnglish = /[^\x00-\x7F]/.test(text) || /^[a-z]{1,3}$/i.test(text) === false && !/^[a-zA-Z\s\-']+$/.test(text);
+    if (!isLikelyNonEnglish) return text;
+    try {
+      const result = await base44.integrations.Core.InvokeLLM({
+        prompt: `Translate this food search term to English. Return ONLY the English translation, nothing else: "${text}"`,
+      });
+      return (typeof result === 'string' ? result : result?.text || text).trim().replace(/["']/g, '');
+    } catch {
+      return text;
+    }
+  };
+
   const searchFood = async (searchQuery) => {
     if (!searchQuery || searchQuery.length < 2) {
       setResults([]);
@@ -61,8 +75,11 @@ export default function FoodSearch({ onSelectFood }) {
     setLoading(true);
     setShowEmptyState(false);
 
+    // Translate non-English queries to English
+    const translatedQuery = await translateIfNeeded(searchQuery);
+
     try {
-      const usdaResponse = await base44.functions.invoke('usdaFoodSearch', { query: searchQuery });
+      const usdaResponse = await base44.functions.invoke('usdaFoodSearch', { query: translatedQuery });
       let foods = usdaResponse.data.foods || [];
 
       if (foods.length > 0) {
@@ -72,7 +89,7 @@ export default function FoodSearch({ onSelectFood }) {
         return;
       }
 
-      const fsResponse = await base44.functions.invoke('fatsecretSearch', { action: 'search', query: searchQuery });
+      const fsResponse = await base44.functions.invoke('fatsecretSearch', { action: 'search', query: translatedQuery });
       foods = (fsResponse.data.foods || []).map(food => ({
         id: food.id,
         name: food.name,

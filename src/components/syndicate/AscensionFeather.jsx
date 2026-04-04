@@ -1,6 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Zap } from 'lucide-react';
+
+function WingIcon({ size = 16, color = '#E5E5E7', opacity = 1, glowing = false }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+      style={{ opacity, filter: glowing ? 'drop-shadow(0 0 5px rgba(212,175,55,0.7))' : 'none' }}>
+      {/* Left wing */}
+      <path d="M12 18 Q8 14 4 15 Q6 10 10 9 Q8 6 12 4" stroke={color} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" fill={glowing ? 'rgba(212,175,55,0.15)' : 'none'}/>
+      {/* Right wing */}
+      <path d="M12 18 Q16 14 20 15 Q18 10 14 9 Q16 6 12 4" stroke={color} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" fill={glowing ? 'rgba(212,175,55,0.15)' : 'none'}/>
+      {/* Center spine */}
+      <line x1="12" y1="4" x2="12" y2="18" stroke={color} strokeWidth="1.1" strokeLinecap="round" opacity="0.6"/>
+    </svg>
+  );
+}
 
 // Light-snap haptic
 const softSnap = () => { if (navigator.vibrate) navigator.vibrate(8); };
@@ -54,20 +67,16 @@ export default function AscensionFeather({ count = 0, hasGiven = false, onAscend
         )}
       </AnimatePresence>
 
-      {/* Zap icon */}
+      {/* Wing icon */}
       <motion.div
-        animate={animating ? { scale: [1, 1.25, 1], y: [0, -2, 0] } : { scale: 1, y: 0 }}
+        animate={animating ? { scale: [1, 1.25, 1], y: [0, -3, 0] } : { scale: 1, y: 0 }}
         transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
       >
-        <Zap
-          className="w-4 h-4"
-          strokeWidth={1.4}
-          style={{
-            color: isActive ? '#D4AF37' : '#E5E5E7',
-            opacity: isActive ? 1 : 0.4,
-            fill: isActive ? 'rgba(212,175,55,0.25)' : 'none',
-            filter: isActive && isFounder ? 'drop-shadow(0 0 5px rgba(212,175,55,0.6))' : 'none',
-          }}
+        <WingIcon
+          size={16}
+          color={isActive ? '#D4AF37' : '#E5E5E7'}
+          opacity={isActive ? 1 : 0.4}
+          glowing={isActive}
         />
       </motion.div>
 

@@ -151,6 +151,82 @@ const ICONS = [
       { exercise_name: 'Leg Curl', sets: 6, reps: '10-15' },
     ],
   },
+  // ── Female Icons ────────────────────────────────────────────────────────────
+  {
+    name: 'Rachel McLish',
+    split: 'The First Queen',
+    era: 'Ms. Olympia 1980-1982',
+    focus: ['chest', 'biceps', 'core'],
+    focusColor: '#BDB5D5',
+    photo: BASE + 'd1becbd92_13.png',
+    bio: 'The inaugural Ms. Olympia who defined the "Aesthetic" standard before mass became the primary goal. Her journey was about grace and variety, proving that women could be muscular and elegant simultaneously. She famously used a "non-routine" style to keep the body in a constant state of adaptation.',
+    exercises: [
+      { exercise_name: 'Cable Fly', sets: 3, reps: '15' },
+      { exercise_name: 'Incline Dumbbell Curl', sets: 3, reps: '12' },
+      { exercise_name: 'Hanging Leg Raise', sets: 4, reps: '25' },
+      { exercise_name: 'Dumbbell Chest Press', sets: 3, reps: '12' },
+    ],
+  },
+  {
+    name: 'Cory Everson',
+    split: 'The Six-Time Standard',
+    era: '6x Ms. Olympia',
+    focus: ['legs', 'chest', 'back', 'shoulders'],
+    focusColor: '#BDB5D5',
+    photo: BASE + 'c8f06f192_12.png',
+    bio: 'A high-level track athlete who brought "Functional Mass" to the stage, Cory never lost a contest she entered. Her six consecutive titles were built on a foundation of heavy basic lifts and explosive movements, bridging the gap between raw athleticism and high-end bodybuilding.',
+    exercises: [
+      { exercise_name: 'Squat', sets: 8, reps: '15-8' },
+      { exercise_name: 'Bench Press', sets: 5, reps: '8-12' },
+      { exercise_name: 'Lat Pulldown', sets: 4, reps: '10' },
+      { exercise_name: 'Barbell Overhead Press', sets: 4, reps: '10' },
+    ],
+  },
+  {
+    name: 'Lenda Murray',
+    split: 'The Eight-Time Legend',
+    era: '8x Ms. Olympia',
+    focus: ['legs', 'back', 'glutes'],
+    focusColor: '#BDB5D5',
+    photo: BASE + '521f1b4c3_14.png',
+    bio: 'The most dominant force of the 90s, Lenda redefined the female silhouette with 8 Ms. Olympia titles. Her journey is a masterclass in "Lower Body Logic" and longevity, focusing on intelligent loading to maintain an elite, dense physique for over two decades.',
+    exercises: [
+      { exercise_name: 'Squat', sets: 4, reps: '10' },
+      { exercise_name: 'Walking Lunge', sets: 4, reps: '12' },
+      { exercise_name: 'Romanian Deadlift', sets: 4, reps: '10' },
+      { exercise_name: 'T-Bar Row', sets: 4, reps: '10' },
+    ],
+  },
+  {
+    name: 'Iris Kyle',
+    split: 'The G.O.A.T.',
+    era: '10x Ms. Olympia',
+    focus: ['legs', 'back', 'shoulders', 'core'],
+    focusColor: '#BDB5D5',
+    photo: BASE + '4c8bfec9a_11.png',
+    bio: 'The most successful professional bodybuilder in history with 10 Ms. Olympia titles. Her journey is the definition of the "Unyielding Spirit." Moving from basketball to the iron, she built a physique so conditioned and separated it remained untouched for a decade.',
+    exercises: [
+      { exercise_name: 'Leg Press', sets: 4, reps: '15' },
+      { exercise_name: 'Seated Cable Row', sets: 4, reps: '12' },
+      { exercise_name: 'Machine Shoulder Press', sets: 4, reps: '10' },
+      { exercise_name: 'Leg Extension', sets: 4, reps: '20' },
+    ],
+  },
+  {
+    name: 'Dana Linn Bailey',
+    split: 'The Modern Pioneer',
+    era: '1st Women\'s Physique Olympia',
+    focus: ['shoulders', 'back', 'legs'],
+    focusColor: '#BDB5D5',
+    photo: BASE + 'a07b479f1_15.png',
+    bio: 'The first-ever Women\'s Physique Olympia champion, DLB bridged the gap between old-school training and the modern era. Her "Flag Nor Fail" mentality is the heartbeat of the Syndicate, combining powerlifting and hypertrophy for a truly functional frame.',
+    exercises: [
+      { exercise_name: 'Cable Lateral Raise', sets: 4, reps: '20' },
+      { exercise_name: 'Barbell Row', sets: 4, reps: '8-12' },
+      { exercise_name: 'Lateral Raise', sets: 5, reps: '15' },
+      { exercise_name: 'Walking Lunge', sets: 4, reps: '20' },
+    ],
+  },
 ];
 
 function ArrowLeft() {
@@ -404,15 +480,20 @@ export default function TrainLikeThem({ onAdopt, exercises = [] }) {
                 Anatomical Focus
               </p>
               <div className="flex flex-wrap gap-2">
-                {selected.focus.map(m => (
-                  <span
-                    key={m}
-                    className="px-3 py-1 rounded-full text-[10px] uppercase tracking-wider"
-                    style={{ background: 'rgba(189,181,213,0.1)', border: '0.5px solid rgba(189,181,213,0.35)', color: '#BDB5D5', fontFamily: 'Montserrat' }}
-                  >
-                    {m}
-                  </span>
-                ))}
+                {selected.focus.map(m => {
+                  const fc = selected.focusColor || '#BDB5D5';
+                  const fcBg = fc === '#BDB5D5' ? 'rgba(189,181,213,0.1)' : 'rgba(212,175,55,0.1)';
+                  const fcBorder = fc === '#BDB5D5' ? 'rgba(189,181,213,0.35)' : 'rgba(212,175,55,0.3)';
+                  return (
+                    <span
+                      key={m}
+                      className="px-3 py-1 rounded-full text-[10px] uppercase tracking-wider"
+                      style={{ background: fcBg, border: `0.5px solid ${fcBorder}`, color: fc, fontFamily: 'Montserrat' }}
+                    >
+                      {m}
+                    </span>
+                  );
+                })}
               </div>
 
               {/* Learn the Legacy — retractable bio */}
