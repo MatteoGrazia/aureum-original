@@ -14,7 +14,7 @@ const ICONS = [
     era: '7× Mr. Olympia',
     focus: ['chest', 'back', 'shoulders', 'biceps', 'core', 'legs'],
     photo: BASE + '236289ad6_1.png',
-    bio: 'Starting in a small Austrian village with nothing but a vision, Arnold revolutionized bodybuilding by combining raw powerlifting strength with a sculptor\'s eye for symmetry. From 7-time Mr. Olympia to global icon, his legacy is built on "The Pump"—the belief that blood flow and mental connection are the keys to ascending beyond physical limits.',
+    bio: 'Starting in a small Austrian village with nothing but a vision, Arnold revolutionized bodybuilding by combining raw powerlifting strength with a sculptor\'s eye for symmetry. From 7-time Mr. Olympia to global icon, his legacy is built on "The Pump" - the belief that blood flow and mental connection are the keys to ascending beyond physical limits.',
     exercises: [
       { exercise_name: 'Squat', sets: 4, reps: '10' },
       { exercise_name: 'Bench Press', sets: 3, reps: '10' },
@@ -30,7 +30,7 @@ const ICONS = [
     era: '5× Classic Physique Olympia',
     focus: ['chest', 'biceps', 'legs'],
     photo: BASE + '429680946_6.png',
-    bio: 'Representing the new guard of the Syndicate, "Cbum" reclaimed the Golden Era silhouette for the modern age. Battling through health adversity and the pressure of a digital era, he dominated the Classic Physique stage with a focus on vacuum poses and leg density. His journey is one of "Intentionality"—proving that a legendary physique is built rep-by-rep with a calm, stoic discipline.',
+    bio: 'Representing the new guard of the Syndicate, "Cbum" reclaimed the Golden Era silhouette for the modern age. Battling through health adversity and the pressure of a digital era, he dominated the Classic Physique stage with a focus on vacuum poses and leg density. His journey is one of "Intentionality" - proving that a legendary physique is built rep-by-rep with a calm, stoic discipline.',
     exercises: [
       { exercise_name: 'Incline Dumbbell Press', sets: 5, reps: '15-10' },
       { exercise_name: 'Bench Press', sets: 4, reps: '12-8' },
@@ -42,7 +42,7 @@ const ICONS = [
   {
     name: 'Ronnie Coleman',
     split: "King's Power",
-    era: '8× Mr. Olympia',
+    era: '8x Mr. Olympia',
     focus: ['back', 'legs', 'shoulders'],
     photo: BASE + 'e59d17c1d_5.png',
     bio: 'A former police officer from Texas, Ronnie redefined what was humanly possible in terms of muscle mass. Known for moving "Lightweight" (800lb squats and deadlifts), his journey was one of sheer, brutal force. He climbed to a record-breaking 8 Mr. Olympia titles by outworking every human on the planet, leaving a legacy that remains the high-water mark for the Juggernaut archetype.',
@@ -60,7 +60,7 @@ const ICONS = [
     era: '4× Mr. Olympia',
     focus: ['chest', 'shoulders'],
     photo: BASE + '7e547372c_3.png',
-    bio: 'The personification of resilience, Jay Cutler spent years in the shadow of Ronnie Coleman before finally stomping his way to the throne. His journey is a masterclass in business-like consistency and FST-7 volume. Jay didn\'t just train; he engineered his body with a 24/7 dedication to nutrition and recovery, proving that persistence is the fastest way to the top.',
+    bio: 'The personification of resilience, Jay Cutler spent years in the shadow of Ronnie Coleman before finally stomping his way to the throne. His journey is a masterclass in business-like consistency and FST-7 volume. Jay didn\'t just train - he engineered his body with a 24/7 dedication to nutrition and recovery, proving that persistence is the fastest way to the top.',
     exercises: [
       { exercise_name: 'Incline Bench Press', sets: 5, reps: '12' },
       { exercise_name: 'Bench Press', sets: 3, reps: '10' },
@@ -71,10 +71,10 @@ const ICONS = [
   {
     name: 'Frank Zane',
     split: 'Aesthetic Pull',
-    era: '3× Mr. Olympia',
+    era: '3x Mr. Olympia',
     focus: ['back', 'biceps'],
     photo: BASE + '7cf33f361_4.png',
-    bio: 'While others chased mass, Frank Zane chased perfection. A math and science teacher by trade, he used an analytical mind to build the most aesthetic physique in history. His journey proved that a smaller, more symmetric man could defeat giants. He is the patron saint of the Artist—focusing on the lines, the vacuum, and the mind-muscle connection over raw poundage.',
+    bio: 'While others chased mass, Frank Zane chased perfection. A math and science teacher by trade, he used an analytical mind to build the most aesthetic physique in history. His journey proved that a smaller, more symmetric man could defeat giants. He is the patron saint of the Artist - focusing on the lines, the vacuum, and the mind-muscle connection over raw poundage.',
     exercises: [
       { exercise_name: 'Deadlift', sets: 6, reps: '15-8' },
       { exercise_name: 'T-Bar Row', sets: 3, reps: '12-8' },
@@ -85,10 +85,10 @@ const ICONS = [
   {
     name: 'Dorian Yates',
     split: 'Blood & Guts',
-    era: '6× Mr. Olympia',
+    era: '6x Mr. Olympia',
     focus: ['chest', 'back', 'legs'],
     photo: BASE + 'dd524978b_2.png',
-    bio: 'Emerging from a grim industrial background in England, Dorian Yates changed the sport forever with High-Intensity Training (HIT). He operated in "The Shadow," staying away from cameras only to emerge once a year looking like a marble statue. His journey is about "Quality over Quantity"—short, brutal sessions that take the muscle to absolute failure.',
+    bio: 'Emerging from a grim industrial background in England, Dorian Yates changed the sport forever with High-Intensity Training (HIT). He operated in "The Shadow," staying away from cameras only to emerge once a year looking like a marble statue. His journey is about "Quality over Quantity" - short, brutal sessions that take the muscle to absolute failure.',
     exercises: [
       { exercise_name: 'Incline Bench Press', sets: 2, reps: 'To Failure' },
       { exercise_name: 'Machine Row', sets: 1, reps: 'To Failure' },
@@ -98,7 +98,7 @@ const ICONS = [
   {
     name: 'Sergio Oliva',
     split: 'The Myth Volume',
-    era: '3× Mr. Olympia',
+    era: '3x Mr. Olympia',
     focus: ['chest', 'back', 'shoulders'],
     photo: BASE + '8dfd4885e_9.png',
     bio: 'A defecting weightlifter from Cuba, Sergio possessed a physique so gifted it was deemed "The Myth." He was the only man to ever beat Arnold in his prime. He famously worked 12-hour shifts in a foundry before hitting the gym for high-volume supersets, embodying the Worker-Warrior spirit of the Syndicate.',
@@ -113,10 +113,10 @@ const ICONS = [
   {
     name: 'Franco Columbu',
     split: 'Sardinian Strength',
-    era: '2× Mr. Olympia',
+    era: '2x Mr. Olympia',
     focus: ['chest', 'back'],
     photo: BASE + '476e4095f_10.png',
-    bio: 'A world-class boxer and powerlifter before he ever touched a bodybuilding stage, Franco was the definition of Dense Power. As Arnold\'s greatest training partner, he proved that being shorter didn\'t mean being smaller. His journey is one of functional dominance—lifting cars and bursting hot water bottles with his breath—reminding us that true Syndicate members are as strong as they look.',
+    bio: 'A world-class boxer and powerlifter before he ever touched a bodybuilding stage, Franco was the definition of Dense Power. As Arnold\'s greatest training partner, he proved that being shorter didn\'t mean being smaller. His journey is one of functional dominance - lifting cars and bursting hot water bottles with his breath - reminding us that true Syndicate members are as strong as they look.',
     exercises: [
       { exercise_name: 'Bench Press', sets: 3, reps: '15-4' },
       { exercise_name: 'Cable Fly', sets: 3, reps: '20' },
@@ -129,7 +129,7 @@ const ICONS = [
     era: 'Mr. Universe Champion',
     focus: ['legs', 'chest'],
     photo: BASE + 'b7c0b29f2_8.png',
-    bio: 'The most controversial and intellectual figure in bodybuilding history, Mentzer viewed the gym as a laboratory for logic. His journey was a crusade against "More is Better." He advocated for Heavy Duty training—extreme weights with massive recovery periods. His legacy is for the Thinking Athlete—those who believe that the mind is the primary tool for physical growth.',
+    bio: 'The most controversial and intellectual figure in bodybuilding history, Mentzer viewed the gym as a laboratory for logic. His journey was a crusade against "More is Better." He advocated for Heavy Duty training - extreme weights with massive recovery periods. His legacy is for the Thinking Athlete - those who believe that the mind is the primary tool for physical growth.',
     exercises: [
       { exercise_name: 'Leg Extension', sets: 1, reps: '12-20 to failure' },
       { exercise_name: 'Leg Press', sets: 1, reps: '12-20 to failure' },
@@ -143,7 +143,7 @@ const ICONS = [
     era: 'IFBB Pro Legend',
     focus: ['legs'],
     photo: BASE + 'd0ba2e3b7_7.png',
-    bio: 'Tom Platz didn\'t just train legs; he turned them into a religion. Despite being told he had "poor genetics" for squats, he obsessively mastered the movement until he had the most legendary lower body in history. His journey is about "The Dark Place"—the mental ability to push through 20+ reps of heavy squats when the body is screaming for mercy.',
+    bio: 'Tom Platz didn\'t just train legs; he turned them into a religion. Despite being told he had "poor genetics" for squats, he obsessively mastered the movement until he had the most legendary lower body in history. His journey is about "The Dark Place" - the mental ability to push through 20+ reps of heavy squats when the body is screaming for mercy.',
     exercises: [
       { exercise_name: 'Squat', sets: 10, reps: '5-20' },
       { exercise_name: 'Hack Squat', sets: 5, reps: '10-15' },
@@ -246,7 +246,7 @@ export default function TrainLikeThem({ onAdopt, exercises = [] }) {
   };
 
   return (
-  <div className="mb-40" style={{ paddingBottom: 'calc(80px + env(safe-area-inset-bottom, 0px))' }}>
+  <div style={{ paddingBottom: 'calc(160px + env(safe-area-inset-bottom, 0px))' }}>
       {/* Section Header */}
       <div className="mb-4">
         <p
