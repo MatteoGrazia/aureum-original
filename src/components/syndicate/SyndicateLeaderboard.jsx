@@ -100,7 +100,7 @@ export default function SyndicateLeaderboard() {
 
             {/* AP */}
             <div className="flex items-center gap-1.5 flex-shrink-0">
-              <img src={ASCENSION_ICON} alt="AP" style={{ width: 16, height: 16, objectFit: 'contain' }} />
+              <img src={ASCENSION_ICON} alt="AP" style={{ width: 16, height: 16, objectFit: 'contain', filter: 'brightness(0) saturate(100%) invert(68%) sepia(13%) saturate(500%) hue-rotate(95deg) brightness(95%)' }} />
               <span style={{ fontFamily: 'Georgia, serif', fontSize: 15, color: '#98AB8F', fontWeight: 300 }}>
                 {athlete.totalAP.toLocaleString()}
               </span>

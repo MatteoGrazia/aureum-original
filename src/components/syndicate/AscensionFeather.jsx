@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const ASCENSION_ICON = 'https://media.base44.com/images/public/698347d058d3014d6271ccff/4158e2305_AscensionIcon.png';
 
+const SAGE_FILTER = 'brightness(0) saturate(100%) invert(68%) sepia(13%) saturate(500%) hue-rotate(95deg) brightness(95%)';
 function WingIcon({ size = 16, opacity = 1, glowing = false }) {
   return (
     <img
@@ -13,8 +14,8 @@ function WingIcon({ size = 16, opacity = 1, glowing = false }) {
         height: size,
         opacity,
         filter: glowing
-          ? 'drop-shadow(0 0 5px rgba(212,175,55,0.8))'
-          : 'opacity(0.4) grayscale(1)',
+          ? `${SAGE_FILTER} drop-shadow(0 0 5px rgba(152,171,143,0.8))`
+          : SAGE_FILTER,
         objectFit: 'contain',
       }}
     />

@@ -16,7 +16,7 @@ function WingIcon({ size = 16 }) {
     <img
       src={ASCENSION_ICON}
       alt="Ascension"
-      style={{ width: size, height: size, objectFit: 'contain' }}
+      style={{ width: size, height: size, objectFit: 'contain', filter: 'brightness(0) saturate(100%) invert(68%) sepia(13%) saturate(500%) hue-rotate(95deg) brightness(95%)' }}
     />
   );
 }
