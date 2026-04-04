@@ -202,38 +202,39 @@ function LayoutInner({ children, currentPageName }) {
         html[data-theme="light"] [style*="color: rgba(255,255,255,0.35)"] { color: rgba(29,29,31,0.35) !important; }
         html[data-theme="light"] [style*="color: rgba(255,255,255,0.5)"] { color: rgba(29,29,31,0.5) !important; }
         html[data-theme="light"] [style*="color: rgba(255,255,255,0.6)"] { color: rgba(29,29,31,0.6) !important; }
+
+        /* Placeholder text */
+        html[data-theme="light"] input::placeholder,
+        html[data-theme="light"] textarea::placeholder { color: rgba(29,29,31,0.35) !important; }
+
+        /* VoidCard sub-text opacities */
+        html[data-theme="light"] .text-white\/35 { color: rgba(29,29,31,0.45) !important; }
+        html[data-theme="light"] .text-white\/25 { color: rgba(29,29,31,0.30) !important; }
+        html[data-theme="light"] .text-white\/20 { color: rgba(29,29,31,0.25) !important; }
+
+        /* Card backgrounds that use dark rgba in style props */
+        html[data-theme="light"] [style*="background: rgba(8,8,8"] { background: rgba(248,248,246,0.98) !important; }
+        html[data-theme="light"] [style*="background: rgba(12,12,12"] { background: rgba(248,248,246,0.98) !important; }
+        html[data-theme="light"] [style*="background: rgba(4,4,4"] { background: rgba(248,248,246,0.98) !important; }
+
+        /* Progress bar backgrounds */
+        html[data-theme="light"] [class*="bg-white\/5"] { background-color: rgba(0,0,0,0.05) !important; }
+        html[data-theme="light"] [class*="bg-white\/10"] { background-color: rgba(0,0,0,0.07) !important; }
+
+        /* Status colors - keep vivid */
+        html[data-theme="light"] .text-red-400 { color: #dc2626 !important; }
+        html[data-theme="light"] .text-green-400 { color: #16a34a !important; }
+        html[data-theme="light"] .text-blue-400 { color: #2563eb !important; }
+
+        /* Profile/stat card text sizes */
+        html[data-theme="light"] .text-white.text-xl { color: #1D1D1F !important; }
+        html[data-theme="light"] .text-white.text-lg { color: #1D1D1F !important; }
+        html[data-theme="light"] .text-white.text-base { color: #1D1D1F !important; }
+        html[data-theme="light"] .text-white.text-sm { color: #1D1D1F !important; }
+        html[data-theme="light"] .text-white.text-xs { color: #1D1D1F !important; }
       `}</style>
 
-      {/* ── Theme Toggle: fixed top-right, 48×48 tap target ── */}
-      <motion.button
-        onClick={toggleTheme}
-        className="fixed top-5 right-5 z-50 flex items-center justify-center rounded-full"
-        style={{
-          width: 48,
-          height: 48,
-          background: isDarkMode ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0.78)',
-          border: `0.5px solid ${isDarkMode ? 'rgba(212,175,55,0.3)' : 'rgba(225,193,110,0.55)'}`,
-          backdropFilter: 'blur(16px)',
-          boxShadow: isDarkMode
-            ? '0 4px 20px rgba(0,0,0,0.5)'
-            : '0 4px 20px rgba(0,0,0,0.1), 0 0 0 1px rgba(225,193,110,0.15)',
-          transition: 'background 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease',
-        }}
-        whileTap={{ scale: 0.88 }}
-      >
-        <motion.div
-          animate={{ rotate: isDarkMode ? 0 : 180 }}
-          transition={{ duration: 0.4, ease: 'easeInOut' }}
-        >
-          {isDarkMode ? (
-            /* In dark mode: show Moon icon → tap to go light */
-            <Moon className="w-[18px] h-[18px]" style={{ color: '#D4AF37' }} strokeWidth={1.5} />
-          ) : (
-            /* In light mode: show Sun icon (gold) → tap to go dark */
-            <Sun className="w-[18px] h-[18px]" style={{ color: '#D4AF37' }} strokeWidth={1.5} />
-          )}
-        </motion.div>
-      </motion.button>
+
 
       <main
         className="pb-24 min-h-screen"

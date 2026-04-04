@@ -107,7 +107,8 @@ const buildServingUnits = (food) => {
 };
 
 const searchUSDA = async (query) => {
-  const url = `${USDA_BASE_URL}/foods/search?query=${encodeURIComponent(query)}&pageSize=50&dataType=SR%20Legacy,Foundation&api_key=${USDA_API_KEY}`;
+  // Include Foundation + SR Legacy + Survey for best whole-food coverage
+  const url = `${USDA_BASE_URL}/foods/search?query=${encodeURIComponent(query)}&pageSize=80&dataType=SR%20Legacy,Foundation,Survey%20(FNDDS)&api_key=${USDA_API_KEY}`;
   const response = await fetch(url);
 
   if (!response.ok) {
@@ -117,30 +118,47 @@ const searchUSDA = async (query) => {
 
   const data = await response.json();
   const lowerQuery = query.toLowerCase().trim();
+  const queryWords = lowerQuery.split(/\s+/);
 
-  const scoreFood = (desc) => {
+  const scoreFood = (desc, dataType) => {
     const name = desc.toLowerCase();
-    const firstToken = name.split(/[\s,]/)[0];
-    const firstQueryWord = lowerQuery.split(/\s+/)[0];
+    const tokens = name.split(/[\s,]+/);
+    const firstQueryWord = queryWords[0];
 
-    // Exact match on first word (e.g. "egg" matches "egg, whole" but not "egg substitute")
-    if (firstToken === firstQueryWord) {
-      // Prefer "whole" entries higher
-      if (name.includes('whole')) return 0;
-      return 1;
+    // Exact full match
+    if (name === lowerQuery) return 0;
+    // First token exact match
+    if (tokens[0] === firstQueryWord) {
+      // Prefer raw/whole simple entries
+      if (name.includes('raw') || name.includes('whole')) return 1;
+      if (!name.includes('dish') && !name.includes('recipe') && !name.includes('soup') && !name.includes('salad') && !name.includes('sandwich')) return 2;
+      return 3;
     }
-    // Starts with full query
-    if (name.startsWith(lowerQuery)) return 2;
-    // Contains query word
-    if (name.includes(lowerQuery)) return 3;
-    return 4;
+    // All query words present
+    if (queryWords.every(w => name.includes(w))) return 4;
+    // Starts with query
+    if (name.startsWith(lowerQuery)) return 5;
+    // Contains query as substring
+    if (name.includes(lowerQuery)) return 6;
+    return 10;
   };
 
-  const sorted = (data.foods || []).sort((a, b) =>
-    scoreFood(a.description) - scoreFood(b.description)
-  );
+  const sorted = (data.foods || [])
+    .filter(f => {
+      // Filter out multi-ingredient dishes when query is a single simple food
+      if (queryWords.length === 1) {
+        const name = (f.description || '').toLowerCase();
+        // Allow if the food name starts with the query word
+        const startsWithQuery = name.split(/[\s,]+/)[0] === lowerQuery;
+        if (!startsWithQuery && /\b(with|and|sauce|soup|stew|casserole|pie|cake|dish|recipe|salad|sandwich|burger|pizza|pasta|noodle|fried rice|stir.fry)\b/i.test(name)) {
+          return false;
+        }
+      }
+      return true;
+    })
+    .sort((a, b) => scoreFood(a.description, a.dataType) - scoreFood(b.description, b.dataType));
 
-  const foods = sorted.slice(0, 8);
+  const foods = sorted.slice(0, 10);
 
   // Fetch details for each food to get portions
   const detailed = await Promise.all(

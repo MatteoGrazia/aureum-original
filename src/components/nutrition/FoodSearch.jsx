@@ -9,7 +9,22 @@ export default function FoodSearch({ onSelectFood }) {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showEmptyState, setShowEmptyState] = useState(false);
+  const [focused, setFocused] = useState(false);
   const debounceRef = useRef(null);
+  const containerRef = useRef(null);
+
+  // Dismiss results on outside click
+  React.useEffect(() => {
+    const handler = (e) => {
+      if (containerRef.current && !containerRef.current.contains(e.target)) {
+        setResults([]);
+        setShowEmptyState(false);
+        setFocused(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
 
   const searchOpenFoodFactsFallback = async (searchQuery) => {
     try {
@@ -107,7 +122,7 @@ export default function FoodSearch({ onSelectFood }) {
   };
 
   return (
-    <div className="space-y-4 w-full max-w-full overflow-visible">
+    <div ref={containerRef} className="space-y-4 w-full max-w-full overflow-visible">
       <div className="relative h-12">
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: '#D4AF37' }} />
         <Input
@@ -115,11 +130,11 @@ export default function FoodSearch({ onSelectFood }) {
           placeholder="Search foods..."
           value={query}
           onChange={handleSearch}
+          onFocus={() => setFocused(true)}
           className="pl-11 h-12 rounded-xl"
           style={{
             background: 'rgba(255,255,255,0.05)',
             border: '0.5px solid rgba(255, 218, 185, 0.2)',
-            color: '#FFFFFF'
           }}
         />
         {loading && (

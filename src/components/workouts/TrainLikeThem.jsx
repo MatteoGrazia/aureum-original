@@ -175,6 +175,8 @@ export default function TrainLikeThem({ onAdopt, exercises = [] }) {
   const [bioExpanded, setBioExpanded] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const [adopting, setAdopting] = useState(false);
+  const [adoptedRoutineId, setAdoptedRoutineId] = useState(null);
+  const [showAdoptSuccess, setShowAdoptSuccess] = useState(false);
   const scrollRef = useRef(null);
   const queryClient = useQueryClient();
 
@@ -218,7 +220,7 @@ export default function TrainLikeThem({ onAdopt, exercises = [] }) {
         reps: ex.reps,
       }));
 
-      const routine = await base44.entities.Routine.create({
+      await base44.entities.Routine.create({
         name: `${icon.name} - ${icon.split}`,
         description: `Heritage routine from ${icon.name} (${icon.era})`,
         exercises: routineExercises,
@@ -226,19 +228,7 @@ export default function TrainLikeThem({ onAdopt, exercises = [] }) {
       });
 
       queryClient.invalidateQueries(['routines']);
-
-      toast('Heritage Acquired. Routine added to your Vault.', {
-        style: {
-          background: 'rgba(12,12,12,0.97)',
-          border: '0.5px solid rgba(212,175,55,0.5)',
-          color: '#D4AF37',
-          fontFamily: 'Montserrat, sans-serif',
-        },
-        icon: '⚡',
-        duration: 3000,
-      });
-
-      closeDossier();
+      setShowAdoptSuccess(true);
     } catch (e) {
       toast('Failed to adopt routine.', { icon: '✗' });
     }
@@ -246,7 +236,7 @@ export default function TrainLikeThem({ onAdopt, exercises = [] }) {
   };
 
   return (
-  <div style={{ paddingBottom: 'calc(160px + env(safe-area-inset-bottom, 0px))' }}>
+  <div style={{ paddingBottom: 'calc(90px + env(safe-area-inset-bottom, 0px))' }}>
       {/* Section Header */}
       <div className="mb-4">
         <p
@@ -274,6 +264,7 @@ export default function TrainLikeThem({ onAdopt, exercises = [] }) {
             paddingLeft: 4,
             paddingRight: 4,
             paddingBottom: 4,
+            scrollBehavior: 'smooth',
           }}
           onScroll={(e) => {
             const idx = Math.round(e.target.scrollLeft / e.target.clientWidth);
@@ -290,6 +281,7 @@ export default function TrainLikeThem({ onAdopt, exercises = [] }) {
               className="flex-shrink-0 relative rounded-2xl overflow-hidden active:scale-[0.97] transition-transform"
               style={{
                 scrollSnapAlign: 'center',
+                scrollSnapStop: 'always',
                 width: 'calc(100vw - 60px)',
                 height: 300,
                 border: '0.5px solid rgba(212,175,55,0.25)',
@@ -533,6 +525,53 @@ export default function TrainLikeThem({ onAdopt, exercises = [] }) {
                 {adopting ? 'ACQUIRING...' : 'ADOPT ROUTINE'}
               </motion.button>
             </div>
+
+            {/* Adopt Success Popup */}
+            <AnimatePresence>
+              {showAdoptSuccess && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="fixed inset-0 z-[300] flex items-center justify-center px-6"
+                  style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(10px)' }}
+                >
+                  <motion.div
+                    initial={{ scale: 0.85, y: 20 }}
+                    animate={{ scale: 1, y: 0 }}
+                    exit={{ scale: 0.85, y: 20 }}
+                    transition={{ type: 'spring', damping: 28, stiffness: 300 }}
+                    className="w-full max-w-sm rounded-3xl p-6 text-center"
+                    style={{ background: 'rgba(14,12,6,0.98)', border: '0.5px solid rgba(212,175,55,0.4)', boxShadow: '0 0 60px rgba(212,175,55,0.15)' }}
+                  >
+                    <div className="w-14 h-14 rounded-full mx-auto mb-4 flex items-center justify-center" style={{ background: 'rgba(212,175,55,0.12)', border: '1px solid rgba(212,175,55,0.4)' }}>
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    </div>
+                    <p className="text-[10px] uppercase tracking-[0.3em] mb-2" style={{ color: '#D4AF37', fontFamily: 'Montserrat' }}>Routine Acquired</p>
+                    <p className="text-lg mb-1" style={{ color: '#FFFFFF', fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>{selected?.name}</p>
+                    <p className="text-xs mb-6" style={{ color: 'rgba(255,255,255,0.4)', fontFamily: 'Montserrat' }}>Successfully added to your routines vault.</p>
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => { setShowAdoptSuccess(false); closeDossier(); }}
+                        className="flex-1 py-3 rounded-2xl text-sm"
+                        style={{ background: 'rgba(255,255,255,0.06)', border: '0.5px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.6)', fontFamily: 'Montserrat' }}
+                      >
+                        Keep for Later
+                      </button>
+                      <button
+                        onClick={() => { setShowAdoptSuccess(false); closeDossier(); window.location.href = '/Workouts'; }}
+                        className="flex-1 py-3 rounded-2xl text-sm"
+                        style={{ background: 'linear-gradient(135deg, #D4AF37 0%, #BFA030 100%)', color: '#080808', fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
+                      >
+                        Log Now
+                      </button>
+                    </div>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
         )}
       </AnimatePresence>

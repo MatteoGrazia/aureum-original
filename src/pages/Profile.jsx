@@ -6,8 +6,9 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { 
   User, Settings, Scale, Target, Ruler, Calendar,
-  LogOut, ChevronRight, Edit3, Save, Droplets, Share2, Zap, Feather
+  LogOut, ChevronRight, Edit3, Save, Droplets, Share2, Zap, Feather, Sun, Moon
 } from 'lucide-react';
+import { useTheme } from '@/components/shared/ThemeContext';
 import ProfilePictureUpload from '@/components/profile/ProfilePictureUpload';
 import GlassCard from '@/components/ui/GlassCard';
 import GoldButton from '@/components/ui/GoldButton';
@@ -18,6 +19,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function Profile() {
+  const { isDarkMode, toggleTheme } = useTheme();
   const [editMode, setEditMode] = useState(false);
   const [editData, setEditData] = useState({});
   const [newUsername, setNewUsername] = useState('');
@@ -276,12 +278,7 @@ export default function Profile() {
         >
           PROFILE
         </h1>
-        {/* Total Ascension Score */}
-        <div className="flex items-center justify-center gap-3 mt-3">
-          <div className="px-4 py-1.5 rounded-full text-[10px] uppercase tracking-[0.2em]" style={{ background: 'rgba(212,175,55,0.1)', border: '0.5px solid rgba(212,175,55,0.3)' }}>
-            <span style={{ color: '#D4AF37', fontFamily: 'Montserrat, sans-serif' }}>{ascensionScore.toLocaleString()} AP · Syndicate Rank</span>
-          </div>
-        </div>
+
         <p
           className="text-white text-[11px] uppercase tracking-[0.25em] mt-3"
           style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
@@ -502,6 +499,28 @@ export default function Profile() {
                     <h3 className="text-[10px] uppercase tracking-[0.3em] text-white mb-4" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}>Settings</h3>
                     
                     <div className="space-y-4">
+                      {/* Theme toggle */}
+                      <div className="flex items-center justify-between py-3 px-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.04)', border: '0.5px solid rgba(212,175,55,0.15)' }}>
+                        <div className="flex items-center gap-3">
+                          {isDarkMode ? <Moon className="w-4 h-4" style={{ color: '#D4AF37' }} strokeWidth={1.5} /> : <Sun className="w-4 h-4" style={{ color: '#D4AF37' }} strokeWidth={1.5} />}
+                          <div>
+                            <p className="text-sm" style={{ color: '#E5E5E7', fontFamily: 'Montserrat, sans-serif' }}>Theme</p>
+                            <p className="text-[10px]" style={{ color: 'rgba(229,229,231,0.4)', fontFamily: 'Montserrat, sans-serif' }}>{isDarkMode ? 'Dark Mode' : 'Light Mode'}</p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={toggleTheme}
+                          className="relative w-12 h-6 rounded-full transition-all"
+                          style={{ background: isDarkMode ? 'rgba(212,175,55,0.4)' : 'rgba(255,255,255,0.3)' }}
+                        >
+                          <motion.div
+                            animate={{ x: isDarkMode ? 24 : 2 }}
+                            transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                            className="absolute top-1 w-4 h-4 rounded-full"
+                            style={{ background: isDarkMode ? '#D4AF37' : '#1D1D1F' }}
+                          />
+                        </button>
+                      </div>
                       <div>
                         <label className="text-white/40 text-xs uppercase tracking-wider mb-2 block">Measurement System</label>
                         <Select
