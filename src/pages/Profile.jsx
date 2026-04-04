@@ -340,7 +340,7 @@ export default function Profile() {
               >
                 {stat.sage ? (
                   <div className="flex items-center justify-center gap-1">
-                    <WingIcon size={16} color="#98AB8F" />
+                    <WingIcon size={22} />
                     <p className="text-xl" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 300, color: '#98AB8F' }}>{stat.value}</p>
                   </div>
                 ) : (

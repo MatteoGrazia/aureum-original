@@ -79,8 +79,8 @@ export default function AscensionFeather({ count = 0, hasGiven = false, onAscend
         transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
       >
         <WingIcon
-          size={16}
-          opacity={isActive ? 1 : 0.4}
+          size={24}
+          opacity={isActive ? 1 : 0.5}
           glowing={isActive}
         />
       </motion.div>
