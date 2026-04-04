@@ -17,6 +17,7 @@ import RoutineCard from '@/components/workouts/RoutineCard';
 import WorkoutHero from '@/components/workouts/WorkoutHero';
 import CreateExerciseModal from '@/components/workouts/CreateExerciseModal';
 import WeeklyMuscleVolume from '@/components/workouts/WeeklyMuscleVolume';
+import TrainLikeThem from '@/components/workouts/TrainLikeThem';
 import { Input } from '@/components/ui/input';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
@@ -567,6 +568,11 @@ export default function Workouts() {
 
               {/* Weekly Muscle Volume */}
               <WeeklyMuscleVolume logs={recentWorkouts} />
+
+              {/* Train Like Them */}
+              <TrainLikeThem onAdopt={(routine) => {
+                startWorkout(routine);
+              }} />
 
               {/* History */}
               {recentWorkouts.length > 0 && (
