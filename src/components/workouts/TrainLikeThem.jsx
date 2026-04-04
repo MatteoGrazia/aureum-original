@@ -69,7 +69,7 @@ const ICONS = [
     split: 'Aesthetic Pull',
     era: '3× Mr. Olympia',
     focus: ['back', 'biceps'],
-    photo: BASE + 'd0ba2e3b7_7.png',
+    photo: BASE + '7cf33f361_4.png',
     exercises: [
       { exercise_name: 'Deadlift', sets: 6, reps: '15-8' },
       { exercise_name: 'T-Bar Row', sets: 3, reps: '12-8' },
@@ -82,7 +82,7 @@ const ICONS = [
     split: 'Blood & Guts',
     era: '6× Mr. Olympia',
     focus: ['chest', 'back', 'legs'],
-    photo: BASE + 'b7c0b29f2_8.png',
+    photo: BASE + 'dd524978b_2.png',
     exercises: [
       { exercise_name: 'Incline Bench Press', sets: 2, reps: 'To Failure' },
       { exercise_name: 'Machine Row', sets: 1, reps: 'To Failure' },
@@ -94,7 +94,7 @@ const ICONS = [
     split: 'The Myth Volume',
     era: '3× Mr. Olympia',
     focus: ['chest', 'back', 'shoulders'],
-    photo: BASE + '7cf33f361_4.png',
+    photo: BASE + '8dfd4885e_9.png',
     exercises: [
       { exercise_name: 'Bench Press', sets: 5, reps: '8' },
       { exercise_name: 'Pull-ups', sets: 5, reps: '15' },
@@ -108,7 +108,7 @@ const ICONS = [
     split: 'Sardinian Strength',
     era: '2× Mr. Olympia',
     focus: ['chest', 'back'],
-    photo: BASE + 'dd524978b_2.png',
+    photo: BASE + '476e4095f_10.png',
     exercises: [
       { exercise_name: 'Bench Press', sets: 3, reps: '15-4' },
       { exercise_name: 'Cable Fly', sets: 3, reps: '20' },
@@ -121,7 +121,7 @@ const ICONS = [
     split: 'Heavy Duty',
     era: 'Mr. Universe Champion',
     focus: ['legs', 'chest'],
-    photo: BASE + '8dfd4885e_9.png',
+    photo: BASE + 'b7c0b29f2_8.png',
     exercises: [
       { exercise_name: 'Leg Extension', sets: 1, reps: '12-20 to failure' },
       { exercise_name: 'Leg Press', sets: 1, reps: '12-20 to failure' },
@@ -134,7 +134,7 @@ const ICONS = [
     split: 'Quadfather Legs',
     era: 'IFBB Pro Legend',
     focus: ['legs'],
-    photo: BASE + '476e4095f_10.png',
+    photo: BASE + 'd0ba2e3b7_7.png',
     exercises: [
       { exercise_name: 'Squat', sets: 10, reps: '5-20' },
       { exercise_name: 'Hack Squat', sets: 5, reps: '10-15' },
