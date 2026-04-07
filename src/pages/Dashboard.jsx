@@ -19,15 +19,9 @@ import PowerliftingTotals from '@/components/dashboard/PowerliftingTotals';
 export default function Dashboard() {
   const [showWelcome, setShowWelcome] = useState(false);
   const [showDatePill, setShowDatePill] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
   const queryClient = useQueryClient();
   const today = format(new Date(), 'yyyy-MM-dd');
   const { scrollY } = useScroll();
-
-  useEffect(() => {
-    const timer = setTimeout(() => setIsMounted(true), 100);
-    return () => clearTimeout(timer);
-  }, []);
 
   const { data: dailyActivity, refetch: refetchActivity, isLoading: activityLoading } = useQuery({
     queryKey: ['dailyActivity', today],
@@ -127,11 +121,9 @@ export default function Dashboard() {
   // Don't block render on weight/workout loading — they're secondary
   const isLoading = profileLoading || activityLoading || foodLoading;
 
-  if (isLoading || !isMounted) {
+  if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{
-        background: 'linear-gradient(to bottom, #ffffff 0%, #888888 40%, #080808 100%)'
-      }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#080808' }}>
         <div className="text-center">
           <img
             src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698347d058d3014d6271ccff/f764a7a57_2.png"
@@ -146,7 +138,7 @@ export default function Dashboard() {
   }
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.2 }}
@@ -163,21 +155,16 @@ export default function Dashboard() {
           transition={{ duration: 0.3 }}
           className="mb-10 text-center pt-6">
 
-          {/* Golden Feather Icon */}
           <img 
             src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698347d058d3014d6271ccff/f764a7a57_2.png"
             alt="Aureum"
             className="w-16 h-16 mx-auto mb-4 opacity-90"
           />
-          
-          {/* AUREUM Logo */}
           <img 
             src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698347d058d3014d6271ccff/161ef6a6d_Untitleddesign1.png"
             alt="AUREUM"
             className="w-64 h-auto mx-auto mb-3"
           />
-          
-          {/* Muted Bronze Date */}
           <p 
             className="text-white text-[11px] uppercase tracking-[0.25em]"
             style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
@@ -186,22 +173,11 @@ export default function Dashboard() {
           </p>
         </motion.div>
 
-        {/* Chronos Orbital Progress System */}
         <motion.div
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.3 }}
           className="relative">
-          
-          {/* Ambient light glow behind orbital */}
-          <div 
-            className="absolute inset-0 -z-10"
-            style={{
-              background: 'radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.02) 0%, transparent 70%)',
-              filter: 'blur(60px)'
-            }}
-          />
-
           <VoidCard className="mb-6 p-6">
             <ChronosOrbital
               calories={consumedCalories}
@@ -214,173 +190,56 @@ export default function Dashboard() {
           </VoidCard>
         </motion.div>
 
-        {/* Aureum Pulse Horizontal Visualizations */}
         <div className="space-y-3 mb-6">
-          <AureumPulse
-            label="Calories Consumed"
-            value={consumedCalories}
-            goal={maintenanceCalories + activityCalories}
-            unit="kcal"
-            icon={Flame}
-            iconColor="#FFDAB9"
-            index={0}
-          />
-          <AureumPulse
-            label="Steps"
-            value={dailyActivity?.steps || 0}
-            goal={stepsGoal}
-            unit="steps"
-            icon={Footprints}
-            iconColor="#B2D8D8"
-            index={1}
-          />
-          <AureumPulse
-            label="Training Volume"
-            value={workoutVolume}
-            goal={5000}
-            unit="kg"
-            icon={Dumbbell}
-            iconColor="#BDB5D5"
-            index={2}
-          />
-          <AureumPulse
-            label="Hydration"
-            value={dailyActivity?.water_liters || 0}
-            goal={waterGoal}
-            unit={waterUnit === 'glasses' ? 'glasses' : 'L'}
-            icon={Droplets}
-            iconColor="#9BB7D4"
-            index={3}
-          />
+          <AureumPulse label="Calories Consumed" value={consumedCalories} goal={maintenanceCalories + activityCalories} unit="kcal" icon={Flame} iconColor="#FFDAB9" index={0} />
+          <AureumPulse label="Steps" value={dailyActivity?.steps || 0} goal={stepsGoal} unit="steps" icon={Footprints} iconColor="#B2D8D8" index={1} />
+          <AureumPulse label="Training Volume" value={workoutVolume} goal={5000} unit="kg" icon={Dumbbell} iconColor="#BDB5D5" index={2} />
+          <AureumPulse label="Hydration" value={dailyActivity?.water_liters || 0} goal={waterGoal} unit={waterUnit === 'glasses' ? 'glasses' : 'L'} icon={Droplets} iconColor="#9BB7D4" index={3} />
         </div>
 
-        {/* AI Insight */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-          className="mb-6">
-
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="mb-6">
           <VoidCard>
-            <AIInsight
-              stats={{
-                caloriesConsumed: consumedCalories,
-                caloriesGoal: maintenanceCalories,
-                steps: dailyActivity?.steps || 0,
-                stepsGoal: stepsGoal,
-                waterGlasses: dailyActivity?.water_liters || 0,
-                workedOut: !!todaysWorkout
-              }}
-            />
+            <AIInsight stats={{ caloriesConsumed: consumedCalories, caloriesGoal: maintenanceCalories, steps: dailyActivity?.steps || 0, stepsGoal, waterGlasses: dailyActivity?.water_liters || 0, workedOut: !!todaysWorkout }} />
           </VoidCard>
         </motion.div>
 
-        {/* Powerlifting Totals */}
         <PowerliftingTotals bodyweight={profile?.current_weight || 80} />
 
-        {/* 90-Day Weight Trend */}
         {weightHistory.length >= 2 && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-            className="mb-6">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="mb-6">
             <VoidCard>
-              <h3 
-                className="text-[10px] uppercase tracking-[0.3em] text-white mb-4"
-                style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
-              >
-                90-Day Weight Evolution
-              </h3>
+              <h3 className="text-[10px] uppercase tracking-[0.3em] text-white mb-4" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}>90-Day Weight Evolution</h3>
               <WeightTrendMini weightHistory={weightHistory} />
             </VoidCard>
           </motion.div>
         )}
 
-        {/* Supplement Streak */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-          className="mb-6">
-          <VoidCard>
-            <SupplementStreak />
-          </VoidCard>
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="mb-6">
+          <VoidCard><SupplementStreak /></VoidCard>
         </motion.div>
 
-        {/* Energy Balance */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-          className="mb-24">
-
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="mb-24">
           <VoidCard>
-            <h3 
-              className="text-[10px] uppercase tracking-[0.3em] text-white mb-4"
-              style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
-            >
-              Energy Balance
-            </h3>
+            <h3 className="text-[10px] uppercase tracking-[0.3em] text-white mb-4" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}>Energy Balance</h3>
             <div className="flex items-baseline justify-between text-center">
               <div>
-                <p 
-                  className="text-xl text-white"
-                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
-                >
-                  {maintenanceCalories}
-                </p>
-                <p 
-                  className="text-[10px] uppercase tracking-wider mt-1"
-                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400, color: 'rgba(255,255,255,0.4)' }}
-                >
-                  Base
-                </p>
+                <p className="text-xl text-white" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}>{maintenanceCalories}</p>
+                <p className="text-[10px] uppercase tracking-wider mt-1" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400, color: 'rgba(255,255,255,0.4)' }}>Base</p>
               </div>
               <span className="text-[#D4AF37]/60 text-base">+</span>
               <div>
-                <p 
-                className="text-xl"
-                style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500, color: '#B2D8D8' }}
-                >
-                {activityCalories}
-                </p>
-                <p 
-                  className="text-[10px] uppercase tracking-wider mt-1"
-                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400, color: 'rgba(255,255,255,0.4)' }}
-                >
-                  Active
-                </p>
+                <p className="text-xl" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500, color: '#B2D8D8' }}>{activityCalories}</p>
+                <p className="text-[10px] uppercase tracking-wider mt-1" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400, color: 'rgba(255,255,255,0.4)' }}>Active</p>
               </div>
               <span className="text-[#D4AF37]/60 text-base">−</span>
               <div>
-                <p 
-                  className="text-xl"
-                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500, color: '#FFDAB9' }}
-                >
-                  {consumedCalories}
-                </p>
-                <p 
-                  className="text-[10px] text-white/40 uppercase tracking-wider mt-1"
-                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}
-                >
-                  Eaten
-                </p>
+                <p className="text-xl" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500, color: '#FFDAB9' }}>{consumedCalories}</p>
+                <p className="text-[10px] text-white/40 uppercase tracking-wider mt-1" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>Eaten</p>
               </div>
               <span className="text-[#D4AF37]/60 text-base">=</span>
               <div>
-                <p 
-                  className="text-xl text-white"
-                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}
-                >
-                  {remainingCalories}
-                </p>
-                <p 
-                  className="text-[10px] text-white/40 uppercase tracking-wider mt-1"
-                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}
-                >
-                  Left
-                </p>
+                <p className="text-xl text-white" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 500 }}>{remainingCalories}</p>
+                <p className="text-[10px] text-white/40 uppercase tracking-wider mt-1" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>Left</p>
               </div>
             </div>
           </VoidCard>
