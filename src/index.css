@@ -82,6 +82,9 @@
     background: #080808;
     overscroll-behavior: none;
   }
+  html[data-theme="light"] {
+    background: #F5F5F7;
+  }
 
   * {
     @apply border-border outline-ring/50;
@@ -92,4 +95,17 @@
     background: #080808;
     overscroll-behavior: none;
   }
+  html[data-theme="light"] body {
+    background: #F5F5F7;
+  }
+}
+
+/* Global animation keyframes — defined once, never re-injected */
+@keyframes voidFloat {
+  0%, 100% { transform: translateY(0px); opacity: 0.3; }
+  50% { transform: translateY(-18px); opacity: 0.85; }
+}
+@keyframes voidPulse {
+  0%, 100% { opacity: 0.35; transform: translate(-50%, -50%) scale(0.92); }
+  50% { opacity: 0.7; transform: translate(-50%, -50%) scale(1.08); }
 }

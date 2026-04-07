@@ -20,17 +20,6 @@ const LIGHT_PARTICLES = Array.from({ length: 10 }, (_, i) => ({
   duration: (i % 4) * 3 + 12,
 }));
 
-const CSS_ANIMATIONS = `
-  @keyframes voidFloat {
-    0%, 100% { transform: translateY(0px); opacity: 0.3; }
-    50% { transform: translateY(-18px); opacity: 0.85; }
-  }
-  @keyframes voidPulse {
-    0%, 100% { opacity: 0.35; transform: translate(-50%, -50%) scale(0.92); }
-    50% { opacity: 0.7; transform: translate(-50%, -50%) scale(1.08); }
-  }
-`;
-
 export default function VoidBackground() {
   const { isDarkMode } = useTheme();
   // Prevent background from causing flicker by always having a base
@@ -42,7 +31,6 @@ export default function VoidBackground() {
   if (!isDarkMode) {
     return (
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <style>{CSS_ANIMATIONS}</style>
         {/* Ambient gold blobs — pure CSS, GPU-friendly */}
         {[
           { x: 20, y: 15, size: 320, delay: 0, duration: 14 },
@@ -87,7 +75,6 @@ export default function VoidBackground() {
 
   return (
     <div className="fixed inset-0 overflow-hidden pointer-events-none void-bg-container">
-      <style>{CSS_ANIMATIONS}</style>
       {/* Base void gradient */}
       <div
         className="absolute inset-0"
