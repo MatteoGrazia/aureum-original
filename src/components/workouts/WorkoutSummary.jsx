@@ -157,51 +157,17 @@ export default function WorkoutSummary({ summary, onDone }) {
         {/* Trophy header */}
         <div className="text-center mb-8">
           <motion.div
-            initial={{ scale: 0, rotate: -20 }}
-            animate={{ scale: 1, rotate: 0 }}
-            transition={{ type: 'spring', delay: 0.1 }}
-            className="w-24 h-24 flex items-center justify-center mx-auto mb-5 relative"
-            >
-            {/* Wing left */}
-            <motion.div
-              initial={{ opacity: 0, x: 8, rotate: 20 }}
-              animate={{ opacity: 1, x: 0, rotate: 0 }}
-              transition={{ delay: 0.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-              className="absolute"
-              style={{ left: -2, top: 8 }}
-            >
-              <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
-                <path d="M12 12 Q6 8 2 10 Q5 6 12 8" fill="rgba(212,175,55,0.55)" />
-                <path d="M12 12 Q5 12 1 15 Q4 11 12 12" fill="rgba(212,175,55,0.35)" />
-                <path d="M12 12 Q6 16 3 20 Q6 15 12 14" fill="rgba(212,175,55,0.2)" />
-              </svg>
-            </motion.div>
-            {/* Wing right (mirrored) */}
-            <motion.div
-              initial={{ opacity: 0, x: -8, rotate: -20 }}
-              animate={{ opacity: 1, x: 0, rotate: 0 }}
-              transition={{ delay: 0.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-              className="absolute"
-              style={{ right: -2, top: 8, transform: 'scaleX(-1)' }}
-            >
-              <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
-                <path d="M12 12 Q6 8 2 10 Q5 6 12 8" fill="rgba(212,175,55,0.55)" />
-                <path d="M12 12 Q5 12 1 15 Q4 11 12 12" fill="rgba(212,175,55,0.35)" />
-                <path d="M12 12 Q6 16 3 20 Q6 15 12 14" fill="rgba(212,175,55,0.2)" />
-              </svg>
-            </motion.div>
-            {/* Center orb */}
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ type: 'spring', delay: 0.1, stiffness: 300, damping: 20 }}
-              className="w-14 h-14 rounded-full bg-[#D4AF37]/15 flex items-center justify-center relative z-10"
-              style={{ border: '1px solid rgba(212,175,55,0.4)', boxShadow: '0 0 24px rgba(212,175,55,0.25)' }}
-            >
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
-                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="rgba(212,175,55,0.2)" />
-              </svg>
-            </motion.div>
+            initial={{ scale: 0.6, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: 'spring', delay: 0.1, stiffness: 260, damping: 20 }}
+            className="mx-auto mb-4"
+            style={{ width: 120, height: 120 }}
+          >
+            <img
+              src="https://media.base44.com/images/public/698347d058d3014d6271ccff/63ca71033_Untitleddesign.png"
+              alt="Workout Complete"
+              style={{ width: '100%', height: '100%', objectFit: 'contain', filter: 'drop-shadow(0 0 18px rgba(212,175,55,0.45))' }}
+            />
           </motion.div>
           <h1
             className="text-2xl tracking-[0.4em]"
@@ -213,7 +179,10 @@ export default function WorkoutSummary({ summary, onDone }) {
           >
             COMPLETE
           </h1>
-          <p className="text-white/40 text-sm mt-2">{routineName}</p>
+          <p className="text-white/40 text-sm mt-1">{routineName}</p>
+          <p className="text-[10px] uppercase tracking-[0.25em] mt-2" style={{ color: 'rgba(212,175,55,0.55)', fontFamily: 'Montserrat, sans-serif' }}>
+            one step closer to ascension
+          </p>
         </div>
 
         {/* Stats grid */}
