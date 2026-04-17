@@ -53,7 +53,7 @@ export default function WorkoutSummary({ summary, onDone }) {
     setPhotos(prev => prev.filter((_, i) => i !== idx));
   };
 
-  const handleFinish = async () => {
+  const handleFinish = async (skipShare = false) => {
     setPosting(true);
     try {
       // Upload pending files now
@@ -72,7 +72,11 @@ export default function WorkoutSummary({ summary, onDone }) {
       let athleteIdentity = identities[0];
       // Replace blob URLs with real upload URLs
       const finalPhotos = uploadedUrls.length > 0 ? uploadedUrls : photos;
-      
+
+      // Only post to community if sharing is enabled (syndicate_visible not explicitly false) and not skipped
+      const sharingEnabled = !skipShare && (athleteIdentity?.syndicate_visible !== false);
+
+      if (sharingEnabled) {
       // Create post in PerformanceFeed
       const exercisesList = exercises
         .filter(ex => ex.sets.some(s => s.completed))
@@ -134,6 +138,7 @@ export default function WorkoutSummary({ summary, onDone }) {
           });
         }
       }
+      } // end if (sharingEnabled)
     } catch (error) {
       console.error('Failed to post to community:', error);
     }
@@ -344,9 +349,17 @@ export default function WorkoutSummary({ summary, onDone }) {
           )}
         </VoidCard>
 
-        <GoldButton onClick={handleFinish} disabled={posting} className="w-full py-4">
+        <GoldButton onClick={() => handleFinish(false)} disabled={posting} className="w-full py-4">
           {posting ? 'Posting...' : 'Finish & Share'}
         </GoldButton>
+        <button
+          onClick={() => handleFinish(true)}
+          disabled={posting}
+          className="w-full mt-3 py-3 text-sm tracking-[0.1em]"
+          style={{ color: 'rgba(255,255,255,0.3)', fontFamily: 'Montserrat, sans-serif' }}
+        >
+          Skip & Finish (don't share)
+        </button>
       </div>
     </motion.div>
   );

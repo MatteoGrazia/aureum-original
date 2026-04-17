@@ -346,7 +346,7 @@ export default function TrainLikeThem({ onAdopt, exercises = [] }) {
         {/* Snap scroll container */}
         <div
           ref={scrollRef}
-          className="flex overflow-x-auto"
+          className="flex overflow-x-auto mb-3"
           style={{
             scrollSnapType: 'x mandatory',
             scrollbarWidth: 'none',
@@ -395,7 +395,7 @@ export default function TrainLikeThem({ onAdopt, exercises = [] }) {
                 {icon.era}
               </div>
               {/* Bottom info */}
-              <div className="absolute bottom-10 left-4 right-4 text-left">
+              <div className="absolute bottom-4 left-4 right-4 text-left">
                 <p className="text-[10px] uppercase tracking-[0.25em] mb-1" style={{ color: '#D4AF37', fontFamily: 'Montserrat' }}>
                   {icon.split}
                 </p>
@@ -419,31 +419,31 @@ export default function TrainLikeThem({ onAdopt, exercises = [] }) {
                   )}
                 </div>
               </div>
-              {/* Dots + arrows — overlaid at bottom */}
-              <div className="absolute bottom-2 left-0 right-0 flex items-center justify-between px-3 pointer-events-none">
-                <div style={{ pointerEvents: 'all' }} onClick={e => { e.stopPropagation(); scrollTo(activeIndex - 1); }}>
-                  <div style={{ opacity: activeIndex === 0 ? 0.2 : 1 }}><ArrowLeft /></div>
-                </div>
-                <div className="flex gap-1.5">
-                  {ICONS.map((_, di) => (
-                    <div
-                      key={di}
-                      className="rounded-full transition-all duration-200"
-                      style={{
-                        width: di === activeIndex ? 14 : 4,
-                        height: 4,
-                        background: di === activeIndex ? '#D4AF37' : 'rgba(212,175,55,0.3)',
-                      }}
-                    />
-                  ))}
-                </div>
-                <div style={{ pointerEvents: 'all' }} onClick={e => { e.stopPropagation(); scrollTo(activeIndex + 1); }}>
-                  <div style={{ opacity: activeIndex === ICONS.length - 1 ? 0.2 : 1 }}><ArrowRight /></div>
-                </div>
-              </div>
             </motion.button>
           ))}
         </div>
+      {/* Dots + arrows — below the cards */}
+      <div className="flex items-center justify-between px-3 mt-1">
+        <button onClick={() => scrollTo(activeIndex - 1)} style={{ opacity: activeIndex === 0 ? 0.2 : 1 }}>
+          <ArrowLeft />
+        </button>
+        <div className="flex gap-1.5">
+          {ICONS.map((_, di) => (
+            <div
+              key={di}
+              className="rounded-full transition-all duration-200"
+              style={{
+                width: di === activeIndex ? 14 : 4,
+                height: 4,
+                background: di === activeIndex ? '#D4AF37' : 'rgba(212,175,55,0.3)',
+              }}
+            />
+          ))}
+        </div>
+        <button onClick={() => scrollTo(activeIndex + 1)} style={{ opacity: activeIndex === ICONS.length - 1 ? 0.2 : 1 }}>
+          <ArrowRight />
+        </button>
+      </div>
       </div>
 
       {/* Dossier Overlay */}
