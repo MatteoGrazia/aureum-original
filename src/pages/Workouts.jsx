@@ -32,11 +32,17 @@ const createSetDefault = () => ({
   completed: false,
 });
 
-const buildWorkoutExercises = (routine) => {
-  return (routine.exercises || []).map(ex => ({
-    ...ex,
-    sets: Array.from({ length: ex.sets || 3 }, createSetDefault),
-  }));
+const buildWorkoutExercises = (routine, userWeight = 70) => {
+  return (routine.exercises || []).map(ex => {
+    const isBodyweight = ex.equipment === 'bodyweight';
+    return {
+      ...ex,
+      sets: Array.from({ length: ex.sets || 3 }, () => ({
+        ...createSetDefault(),
+        weight: isBodyweight ? userWeight : 0,
+      })),
+    };
+  });
 };
 
 const playGoldenChime = () => {
@@ -78,6 +84,7 @@ export default function Workouts() {
   const [selectedRoutine, setSelectedRoutine] = useState(null);
   const [activeWorkout, setActiveWorkout] = useState(null);
   const [workoutStartTime, setWorkoutStartTime] = useState(null);
+  const [workoutMinimized, setWorkoutMinimized] = useState(false);
   const [showSmartSave, setShowSmartSave] = useState(false);
   const [pendingSave, setPendingSave] = useState(null);
   const [workoutSummary, setWorkoutSummary] = useState(null);
@@ -102,6 +109,27 @@ export default function Workouts() {
     queryFn: () => base44.auth.me(),
     staleTime: 10 * 60 * 1000,
   });
+
+  const { data: userProfile } = useQuery({
+    queryKey: ['userProfileWorkouts'],
+    queryFn: async () => {
+      const profiles = await base44.entities.UserProfile.filter({});
+      return profiles[0] || null;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
+  // Get latest weight from daily weigh-ins or profile
+  const { data: latestWeight } = useQuery({
+    queryKey: ['latestWeightWorkout'],
+    queryFn: async () => {
+      const wh = await base44.entities.WeightHistory.filter({}, '-date', 1);
+      return wh[0]?.weight || null;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const userWeight = latestWeight || userProfile?.current_weight || 70;
 
   const { data: allExercises = [] } = useQuery({
     queryKey: ['exercises'],
@@ -274,7 +302,7 @@ export default function Workouts() {
     const built = {
       routine_id: routine.id,
       routine_name: routine.name,
-      exercises: buildWorkoutExercises(routine),
+      exercises: buildWorkoutExercises(routine, userWeight),
       is_modified: false,
     };
     setActiveWorkout(built);
@@ -359,6 +387,7 @@ export default function Workouts() {
     setWorkoutSummary(null);
     setActiveWorkout(null);
     setWorkoutStartTime(null);
+    setWorkoutMinimized(false);
     setView('routines');
   };
 
@@ -366,6 +395,7 @@ export default function Workouts() {
     if (!window.confirm('Cancel workout? Progress will be lost.')) return;
     localStorage.removeItem(STORAGE_KEY);
     setActiveWorkout(null);
+    setWorkoutMinimized(false);
     setView('routines');
   };
 
@@ -429,7 +459,7 @@ export default function Workouts() {
       <VoidBackground />
       <PlateCalculator isOpen={showCalculator} onClose={() => setShowCalculator(false)} />
 
-      {view === 'active' && activeWorkout && (
+      {activeWorkout && (view === 'active' || workoutMinimized) && (
         <AureumLogger
           activeWorkout={activeWorkout}
           allExercises={exercises}
@@ -437,6 +467,11 @@ export default function Workouts() {
           onFinish={handleFinishWorkout}
           onCancel={cancelWorkout}
           previousWorkoutSets={previousWorkoutSets}
+          workoutStartTime={workoutStartTime}
+          isMinimized={workoutMinimized}
+          onMinimize={() => { setWorkoutMinimized(true); setView('routines'); }}
+          onRestore={() => { setWorkoutMinimized(false); setView('active'); }}
+          userWeight={userWeight}
         />
       )}
 

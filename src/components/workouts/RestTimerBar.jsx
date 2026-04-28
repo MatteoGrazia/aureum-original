@@ -92,10 +92,10 @@ export default function RestTimerBar({ duration = 90, onComplete, onDismiss }) {
           </div>
         </div>
 
-        <button onClick={() => adjust(-30)} className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
+        <button onClick={() => adjust(-15)} className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
           <Minus className="w-3 h-3 text-white/50" />
         </button>
-        <button onClick={() => adjust(30)} className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
+        <button onClick={() => adjust(15)} className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
           <Plus className="w-3 h-3 text-white/50" />
         </button>
         <button onClick={onDismiss} className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">

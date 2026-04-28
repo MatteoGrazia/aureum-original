@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Check, Trash2 } from 'lucide-react';
+import { Check, Trash2, MessageSquare, X } from 'lucide-react';
 
 const SET_TYPES = [
   { key: 'normal', label: 'N', className: 'text-white/50 bg-white/10' },
@@ -14,8 +14,8 @@ const epley1RM = (weight, reps) => {
   return Math.round(weight * (1 + reps / 30));
 };
 
-export default function SetRow({ set, index, onUpdate, onDelete, onComplete, previousSet, peak1RM }) {
-  const [rirMode, setRirMode] = useState(false);
+export default function SetRow({ set, index, onUpdate, onDelete, onComplete, previousSet, peak1RM, isBodyweight = false }) {
+  const [showComment, setShowComment] = useState(false);
 
   const typeIndex = SET_TYPES.findIndex(t => t.key === set.type);
   const typeInfo = SET_TYPES[typeIndex === -1 ? 0 : typeIndex];
@@ -27,10 +27,7 @@ export default function SetRow({ set, index, onUpdate, onDelete, onComplete, pre
 
   const current1RM = epley1RM(set.weight, set.reps);
   const isPR = !set.completed && current1RM > 0 && peak1RM > 0 && current1RM > peak1RM;
-  const show1RM = set.weight > 0 && set.reps > 0;
-
-  const rpeValue = set.rpe || 7;
-  const rirValue = Math.max(0, 10 - rpeValue);
+  const show1RM = set.weight > 0 && set.reps > 0 && !isBodyweight;
 
   const ghostWeight = previousSet?.weight ? String(previousSet.weight) : '—';
   const ghostReps = previousSet?.reps ? String(previousSet.reps) : '—';
@@ -48,7 +45,7 @@ export default function SetRow({ set, index, onUpdate, onDelete, onComplete, pre
           background: set.completed ? 'rgba(156, 126, 70, 0.12)' : 'rgba(255,255,255,0.04)',
           opacity: set.completed ? 0.72 : 1,
           border: isPR ? '0.5px solid rgba(212,175,55,0.4)' : '0.5px solid transparent',
-          borderRadius: show1RM ? '12px 12px 0 0' : 12,
+          borderRadius: (show1RM || showComment || set.comment) ? '12px 12px 0 0' : 12,
         }}
       >
         {/* Type badge */}
@@ -63,23 +60,37 @@ export default function SetRow({ set, index, onUpdate, onDelete, onComplete, pre
         {/* Set index */}
         <span className="text-white/25 text-xs w-4 text-center flex-shrink-0">{index + 1}</span>
 
-        {/* Weight */}
-        <input
-          type="number"
-          inputMode="decimal"
-          step="0.5"
-          value={set.weight || ''}
-          onChange={e => onUpdate({ ...set, weight: parseFloat(e.target.value) || 0 })}
-          placeholder={ghostWeight}
-          disabled={set.completed}
-          className="flex-1 min-w-0 rounded-lg text-center text-white text-lg py-2.5 disabled:opacity-50 outline-none ghost-input"
-          style={{
-            background: 'rgba(0,0,0,0.25)',
-            border: '1px solid rgba(255,255,255,0.1)',
-            fontFamily: 'Montserrat, sans-serif',
-          }}
-        />
-        <span className="text-white/25 text-[10px] flex-shrink-0">kg</span>
+        {/* Weight — locked to bodyweight if bodyweight exercise */}
+        {isBodyweight ? (
+          <div
+            className="flex-1 min-w-0 rounded-lg text-center text-[#D4AF37]/70 text-lg py-2.5"
+            style={{
+              background: 'rgba(212,175,55,0.05)',
+              border: '1px solid rgba(212,175,55,0.15)',
+              fontFamily: 'Montserrat, sans-serif',
+              fontSize: 13,
+            }}
+          >
+            BW
+          </div>
+        ) : (
+          <input
+            type="number"
+            inputMode="decimal"
+            step="0.5"
+            value={set.weight || ''}
+            onChange={e => onUpdate({ ...set, weight: parseFloat(e.target.value) || 0 })}
+            placeholder={ghostWeight}
+            disabled={set.completed}
+            className="flex-1 min-w-0 rounded-lg text-center text-white text-lg py-2.5 disabled:opacity-50 outline-none"
+            style={{
+              background: 'rgba(0,0,0,0.25)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              fontFamily: 'Montserrat, sans-serif',
+            }}
+          />
+        )}
+        <span className="text-white/25 text-[10px] flex-shrink-0">{isBodyweight ? '' : 'kg'}</span>
 
         {/* Reps */}
         <input
@@ -89,7 +100,7 @@ export default function SetRow({ set, index, onUpdate, onDelete, onComplete, pre
           onChange={e => onUpdate({ ...set, reps: parseInt(e.target.value) || 0 })}
           placeholder={ghostReps}
           disabled={set.completed}
-          className="flex-1 min-w-0 rounded-lg text-center text-white text-lg py-2.5 disabled:opacity-50 outline-none ghost-input"
+          className="flex-1 min-w-0 rounded-lg text-center text-white text-lg py-2.5 disabled:opacity-50 outline-none"
           style={{
             background: 'rgba(0,0,0,0.25)',
             border: '1px solid rgba(255,255,255,0.1)',
@@ -97,6 +108,15 @@ export default function SetRow({ set, index, onUpdate, onDelete, onComplete, pre
           }}
         />
         <span className="text-white/25 text-[10px] flex-shrink-0">rps</span>
+
+        {/* Comment toggle */}
+        <button
+          onClick={() => setShowComment(p => !p)}
+          className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors"
+          style={{ background: (showComment || set.comment) ? 'rgba(212,175,55,0.12)' : 'rgba(255,255,255,0.05)' }}
+        >
+          <MessageSquare className="w-3 h-3" style={{ color: set.comment ? '#D4AF37' : 'rgba(255,255,255,0.3)' }} />
+        </button>
 
         {/* Complete toggle */}
         <button
@@ -121,7 +141,32 @@ export default function SetRow({ set, index, onUpdate, onDelete, onComplete, pre
         )}
       </div>
 
-      {/* Info strip – 1RM + RPE/RIR toggle */}
+      {/* Comment field */}
+      {(showComment || set.comment) && (
+        <div
+          className="px-3 py-2 flex items-center gap-2"
+          style={{
+            background: 'rgba(212,175,55,0.04)',
+            borderTop: '0.5px solid rgba(212,175,55,0.1)',
+          }}
+        >
+          <input
+            type="text"
+            value={set.comment || ''}
+            onChange={e => onUpdate({ ...set, comment: e.target.value })}
+            placeholder="Note for this set..."
+            className="flex-1 text-xs outline-none bg-transparent"
+            style={{ color: 'rgba(229,229,231,0.7)', fontFamily: 'Montserrat, sans-serif' }}
+          />
+          {set.comment && (
+            <button onClick={() => { onUpdate({ ...set, comment: '' }); setShowComment(false); }}>
+              <X className="w-3 h-3 text-white/20" />
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Info strip – 1RM */}
       {show1RM && (
         <div
           className="flex items-center justify-between px-3 py-1"
@@ -145,17 +190,6 @@ export default function SetRow({ set, index, onUpdate, onDelete, onComplete, pre
               1RM ~{current1RM}kg
             </span>
           )}
-
-          <button
-            onClick={() => setRirMode(m => !m)}
-            className="text-[9px] uppercase tracking-[0.1em] transition-colors"
-            style={{
-              color: rirMode ? '#9C7E46' : 'rgba(255,255,255,0.2)',
-              fontFamily: 'Montserrat, sans-serif',
-            }}
-          >
-            {rirMode ? `RIR ${rirValue}` : `RPE ${rpeValue}`}
-          </button>
         </div>
       )}
     </motion.div>

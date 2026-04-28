@@ -38,12 +38,16 @@ const epley1RM = (weight, reps) => {
   return Math.round(weight * (1 + reps / 30));
 };
 
-export default function ExerciseBlock({ exercise, onUpdate, onStructuralUpdate, onReplace, onTimerStart, previousSets = [] }) {
+const BODYWEIGHT_EQUIPMENT = ['bodyweight'];
+
+export default function ExerciseBlock({ exercise, onUpdate, onStructuralUpdate, onReplace, onTimerStart, previousSets = [], userWeight = 70 }) {
+  const isBodyweight = BODYWEIGHT_EQUIPMENT.includes(exercise.equipment);
   const { isDarkMode } = useTheme();
 
   const addSet = (type = 'normal') => {
     const last = exercise.sets[exercise.sets.length - 1];
-    const newSet = createSet(type, last?.weight || 0, last?.reps || 0);
+    const weight = isBodyweight ? userWeight : (last?.weight || 0);
+    const newSet = createSet(type, weight, last?.reps || 0);
     onStructuralUpdate({ ...exercise, sets: [...exercise.sets, newSet] });
   };
 
@@ -149,6 +153,7 @@ export default function ExerciseBlock({ exercise, onUpdate, onStructuralUpdate, 
             onComplete={updated => completeSet(i, updated)}
             previousSet={previousSets[i] || previousSets[0] || null}
             peak1RM={peak1RM}
+            isBodyweight={isBodyweight}
           />
         ))}
       </div>
