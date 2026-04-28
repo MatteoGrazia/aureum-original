@@ -296,13 +296,17 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
               className="flex items-center gap-1.5 px-3 transition-all active:scale-90"
               style={{
                 height: 36,
-                background: showComments ? 'rgba(229,229,231,0.06)' : 'rgba(229,229,231,0.04)',
-                border: `0.5px solid ${showComments ? 'rgba(229,229,231,0.3)' : 'rgba(229,229,231,0.12)'}`,
+                background: showComments
+                  ? (isDarkMode ? 'rgba(229,229,231,0.06)' : 'rgba(30,28,24,0.07)')
+                  : (isDarkMode ? 'rgba(229,229,231,0.04)' : 'rgba(30,28,24,0.04)'),
+                border: `0.5px solid ${showComments
+                  ? (isDarkMode ? 'rgba(229,229,231,0.3)' : 'rgba(30,28,24,0.25)')
+                  : (isDarkMode ? 'rgba(229,229,231,0.12)' : 'rgba(30,28,24,0.14)')}`,
                 borderRadius: 10,
               }}
             >
-              <MessageCircle className="w-4 h-4" style={{ color: '#E5E5E7', opacity: showComments ? 0.9 : 0.4 }} strokeWidth={1.3} />
-              <span style={{ fontFamily: 'Montserrat, sans-serif', fontSize: 12, color: '#E5E5E7', opacity: showComments ? 0.9 : 0.45, lineHeight: 1 }}>
+              <MessageCircle className="w-4 h-4" style={{ color: isDarkMode ? '#E5E5E7' : '#1E1C18', opacity: showComments ? 0.9 : 0.45 }} strokeWidth={1.3} />
+              <span style={{ fontFamily: 'Montserrat, sans-serif', fontSize: 12, color: isDarkMode ? '#E5E5E7' : '#1E1C18', opacity: showComments ? 0.9 : 0.45, lineHeight: 1 }}>
                 {commentCount}
               </span>
             </button>

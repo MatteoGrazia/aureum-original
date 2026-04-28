@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import GoldButton from '@/components/ui/GoldButton';
 import VoidCard from '@/components/ui/VoidCard';
 import { base44 } from '@/api/base44Client';
+import { useTheme } from '@/components/shared/ThemeContext';
 
 const MUSCLE_DATA = {
   'Bench Press': { primary: ['Chest'], secondary: ['Front Deltoids', 'Triceps'] },
@@ -30,6 +31,15 @@ export default function WorkoutSummary({ summary, onDone }) {
   const [photoFiles, setPhotoFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [posting, setPosting] = useState(false);
+  const { isDarkMode } = useTheme();
+  const bg = isDarkMode ? '#080808' : '#F2EFE9';
+  const textPrimary = isDarkMode ? 'text-white' : 'text-[#1E1C18]';
+  const textMuted = isDarkMode ? 'text-white/40' : 'text-[#1E1C18]/50';
+  const textDim = isDarkMode ? 'text-white/35' : 'text-[#1E1C18]/45';
+  const textDim2 = isDarkMode ? 'text-white/25' : 'text-[#1E1C18]/35';
+  const textDim3 = isDarkMode ? 'text-white/50' : 'text-[#1E1C18]/60';
+  const borderFaint = isDarkMode ? 'border-white/5' : 'border-[#1E1C18]/8';
+  const skipBtnColor = isDarkMode ? 'rgba(255,255,255,0.3)' : 'rgba(30,28,24,0.45)';
 
   const primaryMuscles = new Set();
   const secondaryMuscles = new Set();
@@ -151,7 +161,7 @@ export default function WorkoutSummary({ summary, onDone }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className="fixed inset-0 z-50 overflow-y-auto"
-      style={{ background: '#080808' }}
+      style={{ background: bg }}
     >
       <div className="p-5 pt-16 pb-32">
         {/* Trophy header */}
@@ -179,7 +189,7 @@ export default function WorkoutSummary({ summary, onDone }) {
           >
             COMPLETE
           </h1>
-          <p className="text-white/40 text-sm mt-1">{routineName}</p>
+          <p className={`${textMuted} text-sm mt-1`}>{routineName}</p>
           <p className="text-[10px] uppercase tracking-[0.25em] mt-2" style={{ color: 'rgba(212,175,55,0.55)', fontFamily: 'Montserrat, sans-serif' }}>
             one step closer to ascension
           </p>
@@ -188,17 +198,17 @@ export default function WorkoutSummary({ summary, onDone }) {
         {/* Stats grid */}
         <div className="grid grid-cols-2 gap-3 mb-5">
           <VoidCard>
-            <p className="text-white/35 text-[10px] uppercase tracking-wider">Duration</p>
+            <p className={`${textDim} text-[10px] uppercase tracking-wider`}>Duration</p>
             <p className="text-[#D4AF37] text-2xl mt-1.5" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               {duration}m
             </p>
           </VoidCard>
           <VoidCard>
-            <p className="text-white/35 text-[10px] uppercase tracking-wider">Total Volume</p>
+            <p className={`${textDim} text-[10px] uppercase tracking-wider`}>Total Volume</p>
             <p className="text-[#D4AF37] text-2xl mt-1.5" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               {totalVolume.toLocaleString()}
             </p>
-            <p className="text-white/25 text-xs">kg lifted</p>
+            <p className={`${textDim2} text-xs`}>kg lifted</p>
           </VoidCard>
         </div>
 
@@ -214,20 +224,20 @@ export default function WorkoutSummary({ summary, onDone }) {
               <VoidCard key={i}>
                 <div className="flex items-start justify-between">
                   <div>
-                    <p className="text-white text-sm" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                    <p className={`${textPrimary} text-sm`} style={{ fontFamily: 'Montserrat, sans-serif' }}>
                       {ex.exercise_name}
                     </p>
-                    <p className="text-white/35 text-xs mt-0.5">{done.length} sets completed</p>
+                    <p className={`${textDim} text-xs mt-0.5`}>{done.length} sets completed</p>
                   </div>
                   <div className="text-right">
                     <p className="text-[#D4AF37] text-sm">{vol.toLocaleString()} kg</p>
-                    <p className="text-white/25 text-xs">volume</p>
+                    <p className={`${textDim2} text-xs`}>volume</p>
                   </div>
                 </div>
                 {topSet && topSet.weight > 0 && (
-                  <div className="mt-2 pt-2 border-t border-white/5 flex items-center gap-2">
+                  <div className={`mt-2 pt-2 border-t ${borderFaint} flex items-center gap-2`}>
                     <Zap className="w-3 h-3 text-[#D4AF37]/70" />
-                    <span className="text-white/50 text-xs">
+                    <span className={`${textDim3} text-xs`}>
                       Top set: {topSet.weight}kg × {topSet.reps} reps
                     </span>
                   </div>
@@ -241,7 +251,7 @@ export default function WorkoutSummary({ summary, onDone }) {
         <VoidCard className="mb-6">
           <div className="flex items-center gap-2 mb-4">
             <Target className="w-4 h-4 text-[#D4AF37]" />
-            <h3 className="text-white text-sm" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            <h3 className={`${textPrimary} text-sm`} style={{ fontFamily: 'Montserrat, sans-serif' }}>
               Muscles Trained
             </h3>
           </div>
@@ -263,10 +273,10 @@ export default function WorkoutSummary({ summary, onDone }) {
           )}
           {secondaryMuscles.size > 0 && (
             <div>
-              <p className="text-[9px] uppercase tracking-widest text-white/25 mb-2">Secondary</p>
+              <p className={`text-[9px] uppercase tracking-widest ${textDim2} mb-2`}>Secondary</p>
               <div className="flex flex-wrap gap-2">
                 {[...secondaryMuscles].map(m => (
-                  <span key={m} className="px-3 py-1 rounded-full bg-white/5 text-white/40 text-xs">
+                  <span key={m} className={`px-3 py-1 rounded-full text-xs ${isDarkMode ? 'bg-white/5 text-white/40' : 'bg-[#1E1C18]/5 text-[#1E1C18]/50'}`}>
                     {m}
                   </span>
                 ))}
@@ -278,7 +288,7 @@ export default function WorkoutSummary({ summary, onDone }) {
         {/* Photo Upload */}
         <VoidCard className="mb-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-white text-sm" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            <h3 className={`${textPrimary} text-sm`} style={{ fontFamily: 'Montserrat, sans-serif' }}>
               Add Photos (Optional)
             </h3>
             <label className="cursor-pointer">
@@ -314,7 +324,7 @@ export default function WorkoutSummary({ summary, onDone }) {
           )}
           
           {photos.length === 0 && (
-            <p className="text-white/40 text-xs text-center py-4">Share your progress with the community</p>
+            <p className={`${textMuted} text-xs text-center py-4`}>Share your progress with the community</p>
           )}
         </VoidCard>
 
@@ -325,7 +335,7 @@ export default function WorkoutSummary({ summary, onDone }) {
           onClick={() => handleFinish(true)}
           disabled={posting}
           className="w-full mt-3 py-3 text-sm tracking-[0.1em]"
-          style={{ color: 'rgba(255,255,255,0.3)', fontFamily: 'Montserrat, sans-serif' }}
+          style={{ color: skipBtnColor, fontFamily: 'Montserrat, sans-serif' }}
         >
           Skip & Finish (don't share)
         </button>

@@ -4,10 +4,10 @@ import { Check, Trash2, MessageSquare, X } from 'lucide-react';
 import { useTheme } from '@/components/shared/ThemeContext';
 
 const SET_TYPES = [
-  { key: 'normal', label: 'N', className: 'text-white/50 bg-white/10' },
-  { key: 'warmup', label: 'W', className: 'text-orange-400 bg-orange-500/20' },
-  { key: 'dropset', label: 'D', className: 'text-blue-400 bg-blue-500/20' },
-  { key: 'failure', label: 'F', className: 'text-red-400 bg-red-500/20' },
+  { key: 'normal', label: 'N', darkClass: 'text-white/50 bg-white/10', lightClass: 'text-[#1E1C18]/50 bg-[#1E1C18]/08' },
+  { key: 'warmup', label: 'W', darkClass: 'text-orange-400 bg-orange-500/20', lightClass: 'text-orange-600 bg-orange-500/15' },
+  { key: 'dropset', label: 'D', darkClass: 'text-blue-400 bg-blue-500/20', lightClass: 'text-blue-700 bg-blue-500/15' },
+  { key: 'failure', label: 'F', darkClass: 'text-red-400 bg-red-500/20', lightClass: 'text-red-700 bg-red-500/15' },
 ];
 
 const epley1RM = (weight, reps) => {
@@ -62,7 +62,7 @@ export default function SetRow({ set, index, onUpdate, onDelete, onComplete, pre
         <button
           onClick={cycleType}
           disabled={set.completed}
-          className={`w-7 h-7 rounded-lg text-xs font-medium flex items-center justify-center flex-shrink-0 transition-colors ${typeInfo.className}`}
+          className={`w-7 h-7 rounded-lg text-xs font-medium flex items-center justify-center flex-shrink-0 transition-colors ${isDarkMode ? typeInfo.darkClass : typeInfo.lightClass}`}
         >
           {typeInfo.label}
         </button>
@@ -133,14 +133,13 @@ export default function SetRow({ set, index, onUpdate, onDelete, onComplete, pre
         {/* Complete toggle */}
         <button
           onClick={() => onComplete({ ...set, completed: !set.completed })}
-          className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-all ${
-            set.completed
-              ? 'border border-[#9C7E46]'
-              : 'bg-white/5 border border-white/15 hover:border-[#D4AF37]/40'
-          }`}
-          style={set.completed ? { background: 'rgba(156, 126, 70, 0.25)' } : {}}
+          className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-all`}
+          style={set.completed
+            ? { background: 'rgba(156,126,70,0.25)', border: '1px solid #9C7E46' }
+            : { background: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(30,28,24,0.06)', border: isDarkMode ? '1px solid rgba(255,255,255,0.15)' : '1px solid rgba(30,28,24,0.18)' }
+          }
         >
-          <Check className={`w-4 h-4 transition-colors ${set.completed ? 'text-[#D4AF37]' : 'text-white/25'}`} />
+          <Check className="w-4 h-4 transition-colors" style={{ color: set.completed ? '#D4AF37' : (isDarkMode ? 'rgba(255,255,255,0.25)' : 'rgba(30,28,24,0.30)') }} />
         </button>
 
         {/* Delete */}
