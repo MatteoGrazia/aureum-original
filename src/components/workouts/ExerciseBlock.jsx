@@ -83,48 +83,57 @@ export default function ExerciseBlock({ exercise, onUpdate, onStructuralUpdate, 
 
   const imgSrc = isDarkMode ? (exercise.image_url_dark || exercise.image_url) : exercise.image_url;
 
+  const cardBg = isDarkMode ? 'rgba(255,255,255,0.025)' : 'rgba(255,255,255,0.88)';
+  const cardBorder = isDarkMode ? '0.5px solid rgba(212,175,55,0.12)' : '0.5px solid rgba(184,148,31,0.18)';
+  const gold = isDarkMode ? '#9C7E46' : '#7A6318';
+  const textPrimary = isDarkMode ? '#FFFFFF' : '#1E1C18';
+  const textMuted = isDarkMode ? 'rgba(255,255,255,0.35)' : 'rgba(30,28,24,0.50)';
+  const colHeaderColor = isDarkMode ? 'rgba(255,255,255,0.20)' : 'rgba(30,28,24,0.35)';
+  const addBtnBg = isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(30,28,24,0.05)';
+  const addBtnColor = isDarkMode ? 'rgba(255,255,255,0.35)' : 'rgba(30,28,24,0.50)';
+  const replaceBtnBg = isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(30,28,24,0.06)';
+  const replaceBtnBorder = isDarkMode ? '1px solid rgba(255,255,255,0.10)' : '1px solid rgba(30,28,24,0.15)';
+
   return (
     <div
       className="rounded-2xl overflow-hidden"
-      style={{
-        background: 'rgba(255,255,255,0.025)',
-        border: '0.5px solid rgba(212,175,55,0.12)',
-      }}
+      style={{ background: cardBg, border: cardBorder, boxShadow: isDarkMode ? 'none' : '0 1px 8px rgba(0,0,0,0.05)' }}
     >
       {/* Header */}
       <div className="flex items-start justify-between px-4 pt-4 pb-1">
         <div className="flex items-center gap-3 flex-1 min-w-0 mr-3">
           {imgSrc && (
-            <div style={{ width: 44, height: 44, borderRadius: '50%', overflow: 'hidden', flexShrink: 0, border: '0.5px solid rgba(212,175,55,0.2)', background: isDarkMode ? '#ffffff' : 'rgba(255,255,255,0.7)' }}>
-              <img src={imgSrc} alt={exercise.exercise_name} style={{ width: '100%', height: '100%', objectFit: 'cover', mixBlendMode: isDarkMode ? 'multiply' : 'normal' }} loading="lazy" />
+            <div style={{ width: 44, height: 44, borderRadius: '50%', overflow: 'hidden', flexShrink: 0, border: `0.5px solid ${isDarkMode ? 'rgba(212,175,55,0.2)' : 'rgba(184,148,31,0.25)'}`, background: '#ffffff' }}>
+              <img src={imgSrc} alt={exercise.exercise_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
             </div>
           )}
           <div className="flex-1 min-w-0">
-          <h3 className="text-white text-base truncate" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-            {exercise.exercise_name}
-          </h3>
-          <p className="text-white/35 text-xs capitalize mt-0.5">
-            {exercise.muscle_group && `${exercise.muscle_group} · `}
-            {completedCount}/{exercise.sets.length} sets
-            {exercise.default_rest && (
-              <span className="text-[#9C7E46]/70 ml-1">· {exercise.default_rest}s rest</span>
-            )}
-          </p>
+            <h3 className="text-base truncate" style={{ color: textPrimary, fontFamily: 'Montserrat, sans-serif' }}>
+              {exercise.exercise_name}
+            </h3>
+            <p className="text-xs capitalize mt-0.5" style={{ color: textMuted }}>
+              {exercise.muscle_group && `${exercise.muscle_group} · `}
+              {completedCount}/{exercise.sets.length} sets
+              {exercise.default_rest && (
+                <span style={{ color: gold, opacity: 0.8 }} className="ml-1">· {exercise.default_rest}s rest</span>
+              )}
+            </p>
           </div>
         </div>
         <button
           onClick={onReplace}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors flex-shrink-0"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-colors flex-shrink-0"
+          style={{ background: replaceBtnBg, border: replaceBtnBorder }}
         >
-          <RefreshCw className="w-3 h-3 text-white/40" />
-          <span className="text-white/40 text-xs">Replace</span>
+          <RefreshCw className="w-3 h-3" style={{ color: textMuted }} />
+          <span className="text-xs" style={{ color: textMuted }}>Replace</span>
         </button>
       </div>
 
       {/* Previous session ghost label */}
       {previousSets.length > 0 && (
         <div className="px-4 pb-1">
-          <p className="text-[9px] uppercase tracking-[0.15em]" style={{ color: '#9C7E46', fontFamily: 'Montserrat, sans-serif' }}>
+          <p className="text-[9px] uppercase tracking-[0.15em]" style={{ color: gold, fontFamily: 'Montserrat, sans-serif' }}>
             Last session · {previousSets[0]?.weight}kg × {previousSets[0]?.reps}
           </p>
         </div>
@@ -134,9 +143,9 @@ export default function ExerciseBlock({ exercise, onUpdate, onStructuralUpdate, 
       <div className="flex items-center gap-2 px-4 pt-1 pb-0.5">
         <div className="w-7" />
         <div className="w-4" />
-        <div className="flex-1 text-center text-[9px] uppercase tracking-widest text-white/20">Weight</div>
+        <div className="flex-1 text-center text-[9px] uppercase tracking-widest" style={{ color: colHeaderColor }}>Weight</div>
         <div className="w-4" />
-        <div className="flex-1 text-center text-[9px] uppercase tracking-widest text-white/20">Reps</div>
+        <div className="flex-1 text-center text-[9px] uppercase tracking-widest" style={{ color: colHeaderColor }}>Reps</div>
         <div className="w-9" />
         <div className="w-7" />
       </div>
@@ -162,20 +171,23 @@ export default function ExerciseBlock({ exercise, onUpdate, onStructuralUpdate, 
       <div className="flex gap-2 px-3 pb-4">
         <button
           onClick={() => addSet('normal')}
-          className="flex-1 py-2.5 rounded-xl bg-white/5 text-white/35 text-xs flex items-center justify-center gap-1.5 hover:bg-white/10 transition-colors"
+          className="flex-1 py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 transition-colors"
+          style={{ background: addBtnBg, color: addBtnColor }}
         >
           <Plus className="w-3 h-3" />
           Add Set
         </button>
         <button
           onClick={() => addSet('warmup')}
-          className="px-3 py-2.5 rounded-xl bg-orange-500/10 text-orange-400/80 text-xs hover:bg-orange-500/20 transition-colors"
+          className="px-3 py-2.5 rounded-xl text-xs transition-colors"
+          style={{ background: isDarkMode ? 'rgba(245,158,11,0.10)' : 'rgba(180,83,9,0.08)', color: isDarkMode ? 'rgba(251,191,36,0.85)' : '#b45309' }}
         >
           + Warm-up
         </button>
         <button
           onClick={() => addSet('dropset')}
-          className="px-3 py-2.5 rounded-xl bg-blue-500/10 text-blue-400/80 text-xs hover:bg-blue-500/20 transition-colors"
+          className="px-3 py-2.5 rounded-xl text-xs transition-colors"
+          style={{ background: isDarkMode ? 'rgba(59,130,246,0.10)' : 'rgba(29,78,216,0.08)', color: isDarkMode ? 'rgba(96,165,250,0.85)' : '#1d4ed8' }}
         >
           + Drop
         </button>

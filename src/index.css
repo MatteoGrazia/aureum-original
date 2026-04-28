@@ -171,93 +171,393 @@ input:focus, textarea:focus, select:focus {
 }
 
 /* ============================================================
-   ALABASTER LIGHT MODE — Clean, readable, warm ivory aesthetic
+   ALABASTER LIGHT MODE — Premium clean ivory aesthetic
+   Strategy: override BOTH Tailwind classes AND inline styles
 ============================================================ */
 
-/* Base backgrounds */
-html[data-theme="light"] .glass-card,
-html[data-theme="light"] [class*="glass-card"] {
-  background: rgba(255, 255, 255, 0.85) !important;
-  border: 0.5px solid rgba(200, 172, 90, 0.35) !important;
-  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06) !important;
+/* ── Page backgrounds ── */
+html[data-theme="light"],
+html[data-theme="light"] body {
+  background: #F2EFE9 !important;
+  color: #1E1C18 !important;
 }
 
-/* Dark bg containers → warm ivory */
+/* glass-card → elevated white panel */
+html[data-theme="light"] .glass-card {
+  background: rgba(255,255,255,0.92) !important;
+  border: 0.5px solid rgba(184,148,31,0.25) !important;
+  box-shadow: 0 1px 12px rgba(0,0,0,0.07), 0 0 0 0.5px rgba(184,148,31,0.12) !important;
+  backdrop-filter: blur(12px) saturate(160%) !important;
+}
+
+/* ── Hide dark ambient background particles ── */
+html[data-theme="light"] .void-bg-container { display: none !important; }
+
+/* ── Dark solid backgrounds → ivory ── */
 html[data-theme="light"] [class*="bg-[#080808]"],
 html[data-theme="light"] [style*="background: #080808"],
 html[data-theme="light"] [style*="background-color: #080808"],
 html[data-theme="light"] [style*="background: rgb(8,8,8)"],
 html[data-theme="light"] [style*="background: rgb(8, 8, 8)"],
 html[data-theme="light"] [style*="background: #0a0a0a"],
+html[data-theme="light"] [style*="background: #0F0F0F"],
 html[data-theme="light"] [style*="background: rgba(8,8,8"],
+html[data-theme="light"] [style*="background: rgba(10,10,10"],
 html[data-theme="light"] [style*="background: rgba(12,12,12"],
-html[data-theme="light"] [style*="background: rgba(4,4,4"] {
-  background-color: #F7F4EE !important;
+html[data-theme="light"] [style*="background: rgba(4,4,4"],
+html[data-theme="light"] [style*="background: rgba(14,12,6"] {
+  background: #F2EFE9 !important;
   background-image: none !important;
 }
 
-/* Hide dark particle background */
-html[data-theme="light"] .void-bg-container { display: none !important; }
+/* Sticky headers + fixed panels that use dark rgba backgrounds */
+html[data-theme="light"] [style*="background: rgba(8,8,8,0.9"],
+html[data-theme="light"] [style*="background: rgba(8,8,8,0.95"],
+html[data-theme="light"] [style*="background: rgba(8,8,8,0.97"],
+html[data-theme="light"] [style*="background: rgba(8,8,8,0.98"],
+html[data-theme="light"] [style*="background: rgba(8,8,8,0.99"] {
+  background: rgba(242,239,233,0.97) !important;
+  backdrop-filter: blur(20px) !important;
+  border-bottom: 0.5px solid rgba(184,148,31,0.18) !important;
+}
 
-/* ── Text ── */
-/* white → dark charcoal */
-html[data-theme="light"] [class*="text-white"]:not([class*="text-white/"]) { color: #2C2A26 !important; }
+/* Translucent dark overlays used by cards/modals */
+html[data-theme="light"] [style*="background: rgba(255,255,255,0.03)"],
+html[data-theme="light"] [style*="background: rgba(255,255,255,0.04)"],
+html[data-theme="light"] [style*="background: rgba(255,255,255,0.05)"] {
+  background: rgba(255,255,255,0.72) !important;
+  border-color: rgba(184,148,31,0.2) !important;
+}
 
-/* opacity variants → proportional charcoal */
-html[data-theme="light"] .text-white\/10 { color: rgba(44,42,38,0.10) !important; }
-html[data-theme="light"] .text-white\/15 { color: rgba(44,42,38,0.15) !important; }
-html[data-theme="light"] .text-white\/20 { color: rgba(44,42,38,0.22) !important; }
-html[data-theme="light"] .text-white\/25 { color: rgba(44,42,38,0.30) !important; }
-html[data-theme="light"] .text-white\/30 { color: rgba(44,42,38,0.38) !important; }
-html[data-theme="light"] .text-white\/35 { color: rgba(44,42,38,0.45) !important; }
-html[data-theme="light"] .text-white\/40 { color: rgba(44,42,38,0.52) !important; }
-html[data-theme="light"] .text-white\/50 { color: rgba(44,42,38,0.62) !important; }
-html[data-theme="light"] .text-white\/60 { color: rgba(44,42,38,0.72) !important; }
-html[data-theme="light"] .text-white\/70 { color: rgba(44,42,38,0.80) !important; }
-html[data-theme="light"] .text-white\/80 { color: rgba(44,42,38,0.88) !important; }
+/* Semi-dark overlay panels (modals, dossiers, etc.) */
+html[data-theme="light"] [style*="background: rgba(0,0,0,0.75)"],
+html[data-theme="light"] [style*="background: rgba(0,0,0,0.7)"] {
+  background: rgba(30,28,24,0.55) !important;
+}
 
-/* Inline style white text */
-html[data-theme="light"] [style*="color: #FFFFFF"],
+/* ── TEXT: Tailwind white classes → charcoal ── */
+html[data-theme="light"] [class*="text-white"]:not([class*="text-white/"]) { color: #1E1C18 !important; }
+html[data-theme="light"] .text-white\/5  { color: rgba(30,28,24,0.06) !important; }
+html[data-theme="light"] .text-white\/10 { color: rgba(30,28,24,0.13) !important; }
+html[data-theme="light"] .text-white\/15 { color: rgba(30,28,24,0.18) !important; }
+html[data-theme="light"] .text-white\/20 { color: rgba(30,28,24,0.26) !important; }
+html[data-theme="light"] .text-white\/25 { color: rgba(30,28,24,0.34) !important; }
+html[data-theme="light"] .text-white\/30 { color: rgba(30,28,24,0.42) !important; }
+html[data-theme="light"] .text-white\/35 { color: rgba(30,28,24,0.50) !important; }
+html[data-theme="light"] .text-white\/40 { color: rgba(30,28,24,0.57) !important; }
+html[data-theme="light"] .text-white\/50 { color: rgba(30,28,24,0.65) !important; }
+html[data-theme="light"] .text-white\/60 { color: rgba(30,28,24,0.74) !important; }
+html[data-theme="light"] .text-white\/70 { color: rgba(30,28,24,0.82) !important; }
+html[data-theme="light"] .text-white\/80 { color: rgba(30,28,24,0.90) !important; }
+
+/* ── TEXT: Inline style white → charcoal ── */
 html[data-theme="light"] [style*="color: white"],
+html[data-theme="light"] [style*="color: #FFFFFF"],
+html[data-theme="light"] [style*="color: #ffffff"],
 html[data-theme="light"] [style*="color: rgb(255, 255, 255)"],
 html[data-theme="light"] [style*="color: #E5E5E7"],
-html[data-theme="light"] [style*="color: #e5e5e7"] { color: #2C2A26 !important; }
-html[data-theme="light"] [style*="color: rgba(255,255,255,0.2)"] { color: rgba(44,42,38,0.22) !important; }
-html[data-theme="light"] [style*="color: rgba(255,255,255,0.3)"] { color: rgba(44,42,38,0.38) !important; }
-html[data-theme="light"] [style*="color: rgba(255,255,255,0.35)"] { color: rgba(44,42,38,0.45) !important; }
-html[data-theme="light"] [style*="color: rgba(255,255,255,0.4)"] { color: rgba(44,42,38,0.52) !important; }
-html[data-theme="light"] [style*="color: rgba(255,255,255,0.5)"] { color: rgba(44,42,38,0.62) !important; }
-html[data-theme="light"] [style*="color: rgba(255,255,255,0.6)"] { color: rgba(44,42,38,0.72) !important; }
+html[data-theme="light"] [style*="color: #e5e5e7"],
+html[data-theme="light"] [style*="color: #BDB5D5"] { color: #1E1C18 !important; }
 
-/* ── Backgrounds ── */
-html[data-theme="light"] [class*="bg-white/5"]  { background-color: rgba(44,42,38,0.04) !important; }
-html[data-theme="light"] [class*="bg-white/10"] { background-color: rgba(44,42,38,0.07) !important; }
-html[data-theme="light"] [class*="bg-white/20"] { background-color: rgba(44,42,38,0.10) !important; }
+/* opacity white → scaled charcoal */
+html[data-theme="light"] [style*="color: rgba(255,255,255,0.1)"]  { color: rgba(30,28,24,0.13) !important; }
+html[data-theme="light"] [style*="color: rgba(255,255,255,0.15)"] { color: rgba(30,28,24,0.20) !important; }
+html[data-theme="light"] [style*="color: rgba(255,255,255,0.2)"]  { color: rgba(30,28,24,0.26) !important; }
+html[data-theme="light"] [style*="color: rgba(255,255,255,0.25)"] { color: rgba(30,28,24,0.34) !important; }
+html[data-theme="light"] [style*="color: rgba(255,255,255,0.3)"]  { color: rgba(30,28,24,0.42) !important; }
+html[data-theme="light"] [style*="color: rgba(255,255,255,0.35)"] { color: rgba(30,28,24,0.50) !important; }
+html[data-theme="light"] [style*="color: rgba(255,255,255,0.4)"]  { color: rgba(30,28,24,0.57) !important; }
+html[data-theme="light"] [style*="color: rgba(255,255,255,0.45)"] { color: rgba(30,28,24,0.62) !important; }
+html[data-theme="light"] [style*="color: rgba(255,255,255,0.5)"]  { color: rgba(30,28,24,0.65) !important; }
+html[data-theme="light"] [style*="color: rgba(255,255,255,0.55)"] { color: rgba(30,28,24,0.70) !important; }
+html[data-theme="light"] [style*="color: rgba(255,255,255,0.6)"]  { color: rgba(30,28,24,0.74) !important; }
+html[data-theme="light"] [style*="color: rgba(255,255,255,0.65)"] { color: rgba(30,28,24,0.78) !important; }
+html[data-theme="light"] [style*="color: rgba(255,255,255,0.7)"]  { color: rgba(30,28,24,0.82) !important; }
+html[data-theme="light"] [style*="color: rgba(255,255,255,0.8)"]  { color: rgba(30,28,24,0.88) !important; }
+html[data-theme="light"] [style*="color: rgba(229,229,231,0."]    { color: rgba(30,28,24,0.60) !important; }
 
-/* ── Borders ── */
-html[data-theme="light"] [class*="border-white/"] { border-color: rgba(180,152,80,0.25) !important; }
+/* ── BACKGROUNDS: Tailwind white/opacity → light tint ── */
+html[data-theme="light"] .bg-white\/5  { background-color: rgba(30,28,24,0.04) !important; }
+html[data-theme="light"] .bg-white\/10 { background-color: rgba(30,28,24,0.07) !important; }
+html[data-theme="light"] .bg-white\/20 { background-color: rgba(30,28,24,0.10) !important; }
+html[data-theme="light"] [class*="bg-white/5"]  { background-color: rgba(30,28,24,0.04) !important; }
+html[data-theme="light"] [class*="bg-white/10"] { background-color: rgba(30,28,24,0.07) !important; }
+html[data-theme="light"] [class*="bg-white/20"] { background-color: rgba(30,28,24,0.10) !important; }
 
-/* ── Inputs ── */
+/* Inline bg whites */
+html[data-theme="light"] [style*="background: rgba(255,255,255,0.06)"],
+html[data-theme="light"] [style*="background: rgba(255,255,255,0.07)"],
+html[data-theme="light"] [style*="background: rgba(255,255,255,0.08)"] {
+  background: rgba(30,28,24,0.06) !important;
+}
+html[data-theme="light"] [style*="background: rgba(255,255,255,0.1)"]  { background: rgba(30,28,24,0.07) !important; }
+html[data-theme="light"] [style*="background: rgba(255,255,255,0.12)"] { background: rgba(30,28,24,0.08) !important; }
+html[data-theme="light"] [style*="background: rgba(255,255,255,0.15)"] { background: rgba(30,28,24,0.09) !important; }
+
+/* Input/field dark bg → clean white */
+html[data-theme="light"] [style*="background: rgba(0,0,0,0.25)"],
+html[data-theme="light"] [style*="background: rgba(0,0,0,0.3)"],
+html[data-theme="light"] [style*="background: rgba(0,0,0,0.4)"] {
+  background: rgba(255,255,255,0.95) !important;
+  border-color: rgba(184,148,31,0.28) !important;
+}
+
+/* ── BORDERS: white opacity → warm tan ── */
+html[data-theme="light"] [class*="border-white/"]  { border-color: rgba(184,148,31,0.22) !important; }
+html[data-theme="light"] [style*="border: 0.5px solid rgba(255,255,255,0.1)"]  { border-color: rgba(184,148,31,0.18) !important; }
+html[data-theme="light"] [style*="border: 0.5px solid rgba(255,255,255,0.12)"] { border-color: rgba(184,148,31,0.20) !important; }
+html[data-theme="light"] [style*="border: 0.5px solid rgba(255,255,255,0.15)"] { border-color: rgba(184,148,31,0.22) !important; }
+html[data-theme="light"] [style*="border: 1px solid rgba(255,255,255,0.1)"]    { border-color: rgba(184,148,31,0.20) !important; }
+html[data-theme="light"] [style*="border: 1px solid rgba(255,255,255,0.15)"]   { border-color: rgba(184,148,31,0.25) !important; }
+html[data-theme="light"] [style*="borderColor: rgba(255,255,255"]               { border-color: rgba(184,148,31,0.22) !important; }
+
+/* ── INPUTS — all forms ── */
 html[data-theme="light"] input,
 html[data-theme="light"] textarea,
 html[data-theme="light"] select {
-  color: #2C2A26 !important;
-  background: rgba(255, 255, 255, 0.9) !important;
-  border-color: rgba(200, 172, 90, 0.35) !important;
+  color: #1E1C18 !important;
+  background: rgba(255,255,255,0.95) !important;
+  border-color: rgba(184,148,31,0.30) !important;
 }
 html[data-theme="light"] input::placeholder,
-html[data-theme="light"] textarea::placeholder { color: rgba(44,42,38,0.35) !important; }
+html[data-theme="light"] textarea::placeholder { color: rgba(30,28,24,0.38) !important; }
+html[data-theme="light"] input:focus,
+html[data-theme="light"] textarea:focus { border-color: #B8941F !important; }
 
-/* ── Scrollbar ── */
-html[data-theme="light"] ::-webkit-scrollbar-thumb { background: rgba(200,172,90,0.4) !important; }
+/* ── GOLD — richer on light bg ── */
+html[data-theme="light"] [class*="text-[#D4AF37]"],
+html[data-theme="light"] [style*="color: #D4AF37"] { color: #9A7A14 !important; }
+html[data-theme="light"] [style*="color: rgba(212,175,55,0.5)"]  { color: rgba(154,122,20,0.65) !important; }
+html[data-theme="light"] [style*="color: rgba(212,175,55,0.6)"]  { color: rgba(154,122,20,0.75) !important; }
+html[data-theme="light"] [style*="color: rgba(212,175,55,0.7)"]  { color: rgba(154,122,20,0.82) !important; }
+html[data-theme="light"] [style*="color: rgba(212,175,55,0.75)"] { color: rgba(154,122,20,0.85) !important; }
+html[data-theme="light"] [style*="color: rgba(212,175,55,0.8)"]  { color: rgba(154,122,20,0.90) !important; }
+html[data-theme="light"] [style*="color: #9C7E46"],
+html[data-theme="light"] [style*="color: #BFA68F"] { color: #7A6318 !important; }
 
-/* ── Status colors — keep them vivid ── */
-html[data-theme="light"] .text-red-400 { color: #c0392b !important; }
-html[data-theme="light"] .text-green-400 { color: #1a7f4e !important; }
-html[data-theme="light"] .text-blue-400 { color: #1a6bb5 !important; }
-html[data-theme="light"] .text-orange-400 { color: #c0621a !important; }
+/* Gold text gradient — keep it, just enrich */
+html[data-theme="light"] .gold-gradient {
+  background: linear-gradient(135deg, #9A7A14 0%, #C4A020 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+}
+/* Headings that use inline style gold gradient */
+html[data-theme="light"] [style*="-webkit-text-fill-color: transparent"] {
+  -webkit-text-fill-color: transparent !important;
+}
 
-/* ── Gold accent stays gold, slightly richer ── */
-html[data-theme="light"] [class*="text-[#D4AF37]"] { color: #B8941F !important; }
-html[data-theme="light"] [style*="color: #D4AF37"] { color: #B8941F !important; }
-html[data-theme="light"] [style*="color: rgba(212,175,55"] { opacity: 1; }
+/* ── SYNDICATE SAGE (#98AB8F) — stays readable ── */
+html[data-theme="light"] [style*="color: #98AB8F"] { color: #4A6B41 !important; }
+html[data-theme="light"] [style*="color: rgba(152,171,143"] { color: rgba(74,107,65,0.85) !important; }
+
+/* ── STATUS COLOURS — vivid on light ── */
+html[data-theme="light"] .text-red-400   { color: #b91c1c !important; }
+html[data-theme="light"] .text-red-400\/70 { color: rgba(185,28,28,0.7) !important; }
+html[data-theme="light"] .text-green-400 { color: #166534 !important; }
+html[data-theme="light"] .text-blue-400  { color: #1d4ed8 !important; }
+html[data-theme="light"] .text-orange-400 { color: #b45309 !important; }
+html[data-theme="light"] .text-orange-400\/80 { color: rgba(180,83,9,0.85) !important; }
+html[data-theme="light"] .text-blue-400\/80   { color: rgba(29,78,216,0.85) !important; }
+
+/* Background colors that need to stay vivid */
+html[data-theme="light"] .bg-red-500\/10  { background-color: rgba(185,28,28,0.08) !important; }
+html[data-theme="light"] .bg-orange-500\/10 { background-color: rgba(180,83,9,0.08) !important; }
+html[data-theme="light"] .bg-orange-500\/20 { background-color: rgba(180,83,9,0.15) !important; }
+html[data-theme="light"] .bg-blue-500\/10 { background-color: rgba(29,78,216,0.08) !important; }
+html[data-theme="light"] .bg-blue-500\/20 { background-color: rgba(29,78,216,0.15) !important; }
+
+/* ── NAV BAR — bottom navigation ── */
+html[data-theme="light"] nav .glass-card { box-shadow: 0 -2px 20px rgba(0,0,0,0.08) !important; }
+
+/* ── SCROLLBAR ── */
+html[data-theme="light"] ::-webkit-scrollbar-thumb { background: rgba(184,148,31,0.35) !important; }
+
+/* ── Dividers / separators ── */
+html[data-theme="light"] [style*="borderBottom: '0.5px solid rgba(212,175,55,0.12)"],
+html[data-theme="light"] [style*="borderBottom: 0.5px solid rgba(212,175,55,0.12)"],
+html[data-theme="light"] [style*="border-bottom: 0.5px solid rgba(212,175,55,0.12)"] {
+  border-bottom-color: rgba(184,148,31,0.18) !important;
+}
+
+/* Exercise logger sticky bar — make it stand out */
+html[data-theme="light"] [style*="background: rgba(8,8,8,0.98)"] {
+  background: rgba(242,239,233,0.98) !important;
+  border-bottom: 0.5px solid rgba(184,148,31,0.22) !important;
+}
+
+/* Minimized logger pill */
+html[data-theme="light"] [style*="background: rgba(8,8,8,0.97)"] {
+  background: rgba(255,255,255,0.97) !important;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.12) !important;
+}
+
+/* ── Workout log / exercise blocks ── */
+html[data-theme="light"] [style*="background: rgba(255,255,255,0.025)"],
+html[data-theme="light"] [style*="background: rgba(255,255,255,0.02)"] {
+  background: rgba(255,255,255,0.88) !important;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.05) !important;
+}
+
+/* Set row completed state */
+html[data-theme="light"] [style*="background: rgba(156, 126, 70, 0.12)"] {
+  background: rgba(184,148,31,0.10) !important;
+}
+
+/* dashed add-exercise button */
+html[data-theme="light"] [style*="border: 1.5px dashed rgba(255,255,255,0.12)"],
+html[data-theme="light"] [style*="border: 1.5px dashed rgba(255,255,255,0.15)"] {
+  border-color: rgba(184,148,31,0.30) !important;
+}
+html[data-theme="light"] [style*="border: 1.5px dashed rgba(212,175,55,0.35)"] {
+  border-color: rgba(154,122,20,0.45) !important;
+}
+
+/* Progress bar track */
+html[data-theme="light"] .bg-white\/5 { background-color: rgba(30,28,24,0.08) !important; }
+
+/* ── Community cards ── */
+html[data-theme="light"] [style*="background: rgba(255,255,255,0.03)"] {
+  background: rgba(255,255,255,0.85) !important;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.06) !important;
+}
+html[data-theme="light"] [style*="background: rgba(189,181,213,0.0"],
+html[data-theme="light"] [style*="background: rgba(189,181,213,0.1"] {
+  background: rgba(120,110,160,0.08) !important;
+}
+html[data-theme="light"] [style*="background: rgba(255,218,185,0.0"],
+html[data-theme="light"] [style*="background: rgba(255,218,185,0.1"] {
+  background: rgba(180,90,30,0.07) !important;
+}
+
+/* BDB5D5 (lavender) text on light bg */
+html[data-theme="light"] [style*="color: #BDB5D5"],
+html[data-theme="light"] [style*="color: rgba(189,181,213"] { color: #4A3F80 !important; }
+
+/* FFDAB9 (peach) text on light bg */
+html[data-theme="light"] [style*="color: #FFDAB9"],
+html[data-theme="light"] [style*="color: rgba(255,218,185"] { color: #8B4513 !important; }
+
+/* ── Dropdown / context menus ── */
+html[data-theme="light"] [style*="background: rgba(18,12,4,0.95)"] {
+  background: rgba(255,255,255,0.98) !important;
+  border-color: rgba(184,148,31,0.25) !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.12) !important;
+}
+
+/* ── Athlete profile overlay ── */
+html[data-theme="light"] [style*="background: #0F0F0F"] {
+  background: #F2EFE9 !important;
+}
+
+/* ── Consent / modal overlays — keep backdrop dark but panel light ── */
+html[data-theme="light"] [style*="background: rgba(0,0,0,0.8)"],
+html[data-theme="light"] [style*="background: rgba(0,0,0,0.9)"] {
+  background: rgba(30,28,24,0.65) !important;
+}
+
+/* ── Summary / completion screen ── */
+html[data-theme="light"] [style*="background: #080808"] {
+  background: #F2EFE9 !important;
+}
+
+/* ── Gradient finishes on bottom panels ── */
+html[data-theme="light"] [style*="linear-gradient(to top, rgba(8,8,8,1)"],
+html[data-theme="light"] [style*="linear-gradient(180deg, rgba(4,4,4,1)"] {
+  background: linear-gradient(to top, rgba(242,239,233,1) 70%, transparent) !important;
+}
+
+/* Dossier hero gradient */
+html[data-theme="light"] [style*="linear-gradient(180deg, rgba(4,4,4,0.1) 0%, rgba(4,4,4,1) 100%)"] {
+  background: linear-gradient(180deg, rgba(242,239,233,0) 0%, rgba(242,239,233,0.95) 100%) !important;
+}
+
+/* ── Workout summary / progress section ── */
+html[data-theme="light"] [style*="background: rgba(212,175,55,0.12)"] {
+  background: rgba(154,122,20,0.10) !important;
+}
+html[data-theme="light"] [style*="background: rgba(212,175,55,0.07)"],
+html[data-theme="light"] [style*="background: rgba(212,175,55,0.08)"],
+html[data-theme="light"] [style*="background: rgba(212,175,55,0.1)"]  {
+  background: rgba(154,122,20,0.07) !important;
+}
+
+/* ── Borders that use gold inline ── */
+html[data-theme="light"] [style*="border: 0.5px solid rgba(212,175,55,0.2)"]  { border-color: rgba(154,122,20,0.25) !important; }
+html[data-theme="light"] [style*="border: 0.5px solid rgba(212,175,55,0.1)"]  { border-color: rgba(154,122,20,0.18) !important; }
+html[data-theme="light"] [style*="border: 1px solid rgba(212,175,55,0.15)"]   { border-color: rgba(154,122,20,0.22) !important; }
+html[data-theme="light"] [style*="border: 1px solid rgba(152,171,143,0.3)"]   { border-color: rgba(74,107,65,0.30) !important; }
+html[data-theme="light"] [style*="border: 1.5px solid #D4AF37"],
+html[data-theme="light"] [style*="border: 1px solid #D4AF37"]   { border-color: #9A7A14 !important; }
+
+/* ── Fix tab toggle buttons ── */
+html[data-theme="light"] [style*="background: rgba(255,255,255,0.04)"] { background: rgba(30,28,24,0.06) !important; }
+html[data-theme="light"] [style*="background: rgba(212,175,55,0.08)"]  { background: rgba(154,122,20,0.08) !important; }
+html[data-theme="light"] [style*="background: rgba(212,175,55,0.1)"]   { background: rgba(154,122,20,0.10) !important; }
+html[data-theme="light"] [style*="background: rgba(212,175,55,0.15)"]  { background: rgba(154,122,20,0.12) !important; }
+
+/* ── Fix the Syndicate Consent modal ── */
+html[data-theme="light"] [style*="background: rgba(8,8,8,0.9)"] {
+  background: rgba(242,239,233,0.98) !important;
+}
+
+/* ── TrainLikeThem card overlays ── */
+html[data-theme="light"] [style*="background: rgba(4,4,4,0.99)"],
+html[data-theme="light"] [style*="background: rgba(4,4,4,0.98)"] {
+  background: rgba(242,239,233,0.99) !important;
+}
+
+/* ── Era badge in TrainLikeThem ── */
+html[data-theme="light"] [style*="background: rgba(212,175,55,0.15)"] { background: rgba(154,122,20,0.12) !important; }
+
+/* ── Exercise picker / bottom sheets ── */
+html[data-theme="light"] [style*="background: rgba(10,8,4"],
+html[data-theme="light"] [style*="background: rgba(12,10,4"] {
+  background: rgba(242,239,233,0.99) !important;
+}
+
+/* ── Plate calculator ── */
+html[data-theme="light"] [style*="background: #0a0a0a"],
+html[data-theme="light"] [style*="background: #111"] {
+  background: #F2EFE9 !important;
+}
+
+/* ── Weight input in SetRow (dark field) ── */
+html[data-theme="light"] [style*="background: rgba(0,0,0,0.25)"],
+html[data-theme="light"] [style*="background: rgba(0,0,0,0.3)"],
+html[data-theme="light"] [style*="background: rgba(0,0,0,0.35)"],
+html[data-theme="light"] [style*="background: rgba(0,0,0,0.4)"],
+html[data-theme="light"] [style*="background: rgba(0,0,0,0.5)"] {
+  background: rgba(255,255,255,0.95) !important;
+  color: #1E1C18 !important;
+  border-color: rgba(184,148,31,0.28) !important;
+}
+
+/* ── Fix button that has text-white bg-white/5 ── */
+html[data-theme="light"] [class*="bg-white/5"] { background-color: rgba(30,28,24,0.05) !important; }
+html[data-theme="light"] [class*="bg-white/10"] { background-color: rgba(30,28,24,0.08) !important; }
+
+/* ── Rest timer bar ── */
+html[data-theme="light"] .bg-white\/10 { background-color: rgba(30,28,24,0.10) !important; }
+
+/* ── Completion / summary gradient header ── */
+html[data-theme="light"] [style*="linear-gradient(135deg, #F4D03F"],
+html[data-theme="light"] [style*="linear-gradient(135deg, #D4AF37"] {
+  background: linear-gradient(135deg, #9A7A14 0%, #C4A020 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+}
+
+/* Prevent SVG icons from going invisible */
+html[data-theme="light"] svg { color: inherit; }
+
+/* ── Nutrition page ── */
+html[data-theme="light"] [style*="color: rgba(229,229,231,0.55)"],
+html[data-theme="light"] [style*="color: rgba(229,229,231,0.65)"],
+html[data-theme="light"] [style*="color: rgba(229,229,231,0.7)"] { color: rgba(30,28,24,0.65) !important; }
+
+/* Post type badges */
+html[data-theme="light"] [style*="background: rgba(189,181,213,0.12)"] { background: rgba(90,75,140,0.10) !important; }
+html[data-theme="light"] [style*="background: rgba(255,218,185,0.12)"] { background: rgba(160,80,20,0.10) !important; }
+html[data-theme="light"] [style*="background: rgba(212,175,55,0.12)"]  { background: rgba(154,122,20,0.10) !important; }

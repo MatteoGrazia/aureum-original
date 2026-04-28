@@ -8,6 +8,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getDominantMacroColor } from '@/components/nutrition/MacroMicroBar';
 import AthleteProfileOverlay from './AthleteProfileOverlay';
+import { useTheme } from '@/components/shared/ThemeContext';
 
 // Heavy Thud haptic — simulates the weight of a gold medal
 const haptic = () => { if (navigator.vibrate) navigator.vibrate([40, 10, 60]); };
@@ -22,6 +23,17 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
   const [showAthleteProfile, setShowAthleteProfile] = useState(false);
   const [reported, setReported] = useState(false);
   const queryClient = useQueryClient();
+  const { isDarkMode } = useTheme();
+  const cardBg = isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.88)';
+  const headerBorder = isDarkMode ? '0.5px solid rgba(212,175,55,0.12)' : '0.5px solid rgba(184,148,31,0.16)';
+  const footerBorder = isDarkMode ? '0.5px solid rgba(212,175,55,0.08)' : '0.5px solid rgba(184,148,31,0.12)';
+  const bodyTextColor = isDarkMode ? 'rgba(255,255,255,0.85)' : '#1E1C18';
+  const noteColor = isDarkMode ? 'rgba(229,229,231,0.55)' : 'rgba(30,28,24,0.60)';
+  const menuBg = isDarkMode ? 'rgba(18,12,4,0.95)' : 'rgba(255,255,255,0.98)';
+  const menuTextColor = isDarkMode ? 'rgba(255,255,255,0.7)' : '#1E1C18';
+  const commentBg = isDarkMode ? 'rgba(229,229,231,0.06)' : 'rgba(30,28,24,0.05)';
+  const commentBorder = isDarkMode ? '0.5px solid rgba(229,229,231,0.15)' : '0.5px solid rgba(30,28,24,0.15)';
+  const commentTextColor = isDarkMode ? '#E5E5E7' : '#1E1C18';
 
   const { data: comments = [], refetch: refetchComments } = useQuery({
     queryKey: ['comments', post.id],
@@ -103,7 +115,7 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
 
   const titleColor = isNutrition && (post.calories || post.protein_g)
     ? getDominantMacroColor(post.protein_g || 0, post.calories ? post.calories / 4 : 0, 0)
-    : 'rgba(255,255,255,0.85)';
+    : bodyTextColor;
 
   return (
     <>
@@ -128,7 +140,7 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, delay: index * 0.05 }}
         className="mx-4 mb-4 rounded-2xl overflow-hidden relative"
-        style={{ background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(25px)', ...cardBorderStyle }}
+        style={{ background: cardBg, backdropFilter: 'blur(25px)', boxShadow: isDarkMode ? 'none' : '0 1px 10px rgba(0,0,0,0.07)', ...cardBorderStyle }}
       >
         {isElite && (
           <div
@@ -140,7 +152,7 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
         )}
 
         {/* Header */}
-        <div className="flex items-center gap-3 px-4 pt-4 pb-3" style={{ borderBottom: '0.5px solid rgba(212,175,55,0.12)' }}>
+        <div className="flex items-center gap-3 px-4 pt-4 pb-3" style={{ borderBottom: headerBorder }}>
           <button
             onClick={() => setShowAthleteProfile(true)}
             className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold flex-shrink-0 active:scale-90 transition-transform overflow-hidden"
@@ -183,23 +195,23 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
                 <button
                   onClick={() => setShowMenu(!showMenu)}
                   className="w-8 h-8 rounded-full flex items-center justify-center"
-                  style={{ background: 'rgba(255,255,255,0.04)' }}
+                  style={{ background: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(30,28,24,0.05)' }}
                 >
-                  <MoreVertical className="w-4 h-4" style={{ color: 'rgba(255,255,255,0.3)' }} />
+                  <MoreVertical className="w-4 h-4" style={{ color: isDarkMode ? 'rgba(255,255,255,0.3)' : 'rgba(30,28,24,0.45)' }} />
                 </button>
                 {showMenu && (
                   <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     className="absolute top-10 right-0 rounded-xl overflow-hidden"
-                    style={{ background: 'rgba(18,12,4,0.95)', border: '0.5px solid rgba(212,175,55,0.3)', minWidth: 160, backdropFilter: 'blur(25px)', zIndex: 10 }}
+                    style={{ background: menuBg, border: isDarkMode ? '0.5px solid rgba(212,175,55,0.3)' : '0.5px solid rgba(184,148,31,0.28)', minWidth: 160, backdropFilter: 'blur(25px)', zIndex: 10, boxShadow: '0 4px 20px rgba(0,0,0,0.12)' }}
                   >
                     <button
                       onClick={handleMute}
-                      className="w-full flex items-center gap-2 px-4 py-3 text-left transition-all hover:bg-white/5"
+                      className="w-full flex items-center gap-2 px-4 py-3 text-left transition-all hover:bg-black/5"
                     >
-                      <EyeOff className="w-4 h-4" style={{ color: 'rgba(255,255,255,0.4)' }} />
-                      <span className="text-sm" style={{ color: 'rgba(255,255,255,0.7)', fontFamily: 'Montserrat, sans-serif' }}>Hide posts</span>
+                      <EyeOff className="w-4 h-4" style={{ color: menuTextColor, opacity: 0.6 }} />
+                      <span className="text-sm" style={{ color: menuTextColor, fontFamily: 'Montserrat, sans-serif' }}>Hide posts</span>
                     </button>
                   </motion.div>
                 )}
@@ -269,12 +281,12 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
             </div>
           )}
           {post.notes && (
-            <p className="text-xs mt-3 leading-relaxed" style={{ color: '#E5E5E7', fontFamily: 'Montserrat, sans-serif', opacity: 0.55 }}>{post.notes}</p>
+            <p className="text-xs mt-3 leading-relaxed" style={{ color: noteColor, fontFamily: 'Montserrat, sans-serif' }}>{post.notes}</p>
           )}
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-4 pb-3" style={{ borderTop: '0.5px solid rgba(212,175,55,0.08)' }}>
+        <div className="flex items-center justify-between px-4 pb-3" style={{ borderTop: footerBorder }}>
           {isElite ? (
             <span className="text-[9px] uppercase tracking-[0.2em]" style={{ color: '#D4AF37', fontFamily: 'Montserrat, sans-serif', opacity: 0.8 }}>✦ Elite</span>
           ) : <div />}
@@ -313,7 +325,7 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
               transition={{ duration: 0.25 }}
               className="overflow-hidden"
             >
-              <div className="px-4 pb-4" style={{ borderTop: '0.5px solid rgba(212,175,55,0.06)' }}>
+              <div className="px-4 pb-4" style={{ borderTop: `0.5px solid ${isDarkMode ? 'rgba(212,175,55,0.06)' : 'rgba(184,148,31,0.10)'}` }}>
                 <div className="space-y-3 pt-3 mb-3">
                   {comments.map(c => (
                     <div key={c.id} className="flex gap-2">
@@ -322,21 +334,21 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
                         style={{
                           background: c.commenter_avatar ? `url(${c.commenter_avatar}) center/cover` : 'rgba(152,171,143,0.2)',
                           backgroundSize: 'cover', backgroundPosition: 'center',
-                          border: '1px solid #98AB8F',
-                          color: '#98AB8F',
+                          border: isDarkMode ? '1px solid #98AB8F' : '1px solid rgba(74,107,65,0.5)',
+                          color: isDarkMode ? '#98AB8F' : '#4A6B41',
                           fontFamily: 'Montserrat, sans-serif',
                         }}
                       >
                         {!c.commenter_avatar && (c.commenter_name?.[0] || '?')}
                       </div>
                       <div className="flex-1">
-                        <span className="text-[10px]" style={{ color: '#98AB8F', fontFamily: 'Montserrat, sans-serif' }}>{c.commenter_name} </span>
-                        <span className="text-xs" style={{ color: 'rgba(229,229,231,0.65)', fontFamily: 'Montserrat, sans-serif' }}>{c.text}</span>
+                        <span className="text-[10px]" style={{ color: isDarkMode ? '#98AB8F' : '#4A6B41', fontFamily: 'Montserrat, sans-serif' }}>{c.commenter_name} </span>
+                        <span className="text-xs" style={{ color: isDarkMode ? 'rgba(229,229,231,0.65)' : 'rgba(30,28,24,0.70)', fontFamily: 'Montserrat, sans-serif' }}>{c.text}</span>
                       </div>
                     </div>
                   ))}
                   {comments.length === 0 && (
-                    <p className="text-center text-xs py-1" style={{ color: 'rgba(255,255,255,0.2)', fontFamily: 'Montserrat, sans-serif' }}>No discussions yet. Be first.</p>
+                    <p className="text-center text-xs py-1" style={{ color: isDarkMode ? 'rgba(255,255,255,0.2)' : 'rgba(30,28,24,0.35)', fontFamily: 'Montserrat, sans-serif' }}>No discussions yet. Be first.</p>
                   )}
                 </div>
                 <div className="flex gap-2 items-center">
@@ -348,9 +360,9 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
                     onKeyDown={e => e.key === 'Enter' && handleSubmitComment()}
                     className="flex-1 px-3 py-2 rounded-xl text-sm outline-none"
                     style={{
-                      background: 'rgba(229,229,231,0.06)',
-                      border: '0.5px solid rgba(229,229,231,0.15)',
-                      color: '#E5E5E7',
+                      background: commentBg,
+                      border: commentBorder,
+                      color: commentTextColor,
                       fontFamily: 'Montserrat, sans-serif',
                     }}
                   />

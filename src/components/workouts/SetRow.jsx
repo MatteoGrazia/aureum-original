@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Check, Trash2, MessageSquare, X } from 'lucide-react';
+import { useTheme } from '@/components/shared/ThemeContext';
 
 const SET_TYPES = [
   { key: 'normal', label: 'N', className: 'text-white/50 bg-white/10' },
@@ -16,6 +17,15 @@ const epley1RM = (weight, reps) => {
 
 export default function SetRow({ set, index, onUpdate, onDelete, onComplete, previousSet, peak1RM, isBodyweight = false }) {
   const [showComment, setShowComment] = useState(false);
+  const { isDarkMode } = useTheme();
+  const gold = isDarkMode ? '#D4AF37' : '#9A7A14';
+  const fieldBg = isDarkMode ? 'rgba(0,0,0,0.25)' : 'rgba(255,255,255,0.95)';
+  const fieldBorder = isDarkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(184,148,31,0.28)';
+  const fieldColor = isDarkMode ? undefined : '#1E1C18';
+  const dimText = isDarkMode ? 'rgba(255,255,255,0.25)' : 'rgba(30,28,24,0.40)';
+  const rowBg = set.completed
+    ? (isDarkMode ? 'rgba(156,126,70,0.12)' : 'rgba(184,148,31,0.10)')
+    : (isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.80)');
 
   const typeIndex = SET_TYPES.findIndex(t => t.key === set.type);
   const typeInfo = SET_TYPES[typeIndex === -1 ? 0 : typeIndex];
@@ -42,9 +52,9 @@ export default function SetRow({ set, index, onUpdate, onDelete, onComplete, pre
       <div
         className="flex items-center gap-2 py-2 px-2 transition-all duration-300"
         style={{
-          background: set.completed ? 'rgba(156, 126, 70, 0.12)' : 'rgba(255,255,255,0.04)',
-          opacity: set.completed ? 0.72 : 1,
-          border: isPR ? '0.5px solid rgba(212,175,55,0.4)' : '0.5px solid transparent',
+          background: rowBg,
+          opacity: set.completed ? 0.75 : 1,
+          border: isPR ? `0.5px solid ${isDarkMode ? 'rgba(212,175,55,0.4)' : 'rgba(154,122,20,0.45)'}` : '0.5px solid transparent',
           borderRadius: (show1RM || showComment || set.comment) ? '12px 12px 0 0' : 12,
         }}
       >
@@ -58,7 +68,7 @@ export default function SetRow({ set, index, onUpdate, onDelete, onComplete, pre
         </button>
 
         {/* Set index */}
-        <span className="text-white/25 text-xs w-4 text-center flex-shrink-0">{index + 1}</span>
+        <span className="text-xs w-4 text-center flex-shrink-0" style={{ color: dimText }}>{index + 1}</span>
 
         {/* Weight — locked to bodyweight if bodyweight exercise */}
         {isBodyweight ? (
@@ -82,15 +92,16 @@ export default function SetRow({ set, index, onUpdate, onDelete, onComplete, pre
             onChange={e => onUpdate({ ...set, weight: parseFloat(e.target.value) || 0 })}
             placeholder={ghostWeight}
             disabled={set.completed}
-            className="flex-1 min-w-0 rounded-lg text-center text-white text-lg py-2.5 disabled:opacity-50 outline-none"
+            className="flex-1 min-w-0 rounded-lg text-center text-lg py-2.5 disabled:opacity-50 outline-none"
             style={{
-              background: 'rgba(0,0,0,0.25)',
-              border: '1px solid rgba(255,255,255,0.1)',
+              background: fieldBg,
+              border: fieldBorder,
+              color: fieldColor,
               fontFamily: 'Montserrat, sans-serif',
             }}
           />
         )}
-        <span className="text-white/25 text-[10px] flex-shrink-0">{isBodyweight ? '' : 'kg'}</span>
+        <span className="text-[10px] flex-shrink-0" style={{ color: dimText }}>{isBodyweight ? '' : 'kg'}</span>
 
         {/* Reps */}
         <input
@@ -100,22 +111,23 @@ export default function SetRow({ set, index, onUpdate, onDelete, onComplete, pre
           onChange={e => onUpdate({ ...set, reps: parseInt(e.target.value) || 0 })}
           placeholder={ghostReps}
           disabled={set.completed}
-          className="flex-1 min-w-0 rounded-lg text-center text-white text-lg py-2.5 disabled:opacity-50 outline-none"
+          className="flex-1 min-w-0 rounded-lg text-center text-lg py-2.5 disabled:opacity-50 outline-none"
           style={{
-            background: 'rgba(0,0,0,0.25)',
-            border: '1px solid rgba(255,255,255,0.1)',
+            background: fieldBg,
+            border: fieldBorder,
+            color: fieldColor,
             fontFamily: 'Montserrat, sans-serif',
           }}
         />
-        <span className="text-white/25 text-[10px] flex-shrink-0">rps</span>
+        <span className="text-[10px] flex-shrink-0" style={{ color: dimText }}>rps</span>
 
         {/* Comment toggle */}
         <button
           onClick={() => setShowComment(p => !p)}
           className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors"
-          style={{ background: (showComment || set.comment) ? 'rgba(212,175,55,0.12)' : 'rgba(255,255,255,0.05)' }}
+          style={{ background: (showComment || set.comment) ? (isDarkMode ? 'rgba(212,175,55,0.12)' : 'rgba(154,122,20,0.10)') : (isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(30,28,24,0.06)') }}
         >
-          <MessageSquare className="w-3 h-3" style={{ color: set.comment ? '#D4AF37' : 'rgba(255,255,255,0.3)' }} />
+          <MessageSquare className="w-3 h-3" style={{ color: set.comment ? gold : dimText }} />
         </button>
 
         {/* Complete toggle */}
@@ -146,8 +158,8 @@ export default function SetRow({ set, index, onUpdate, onDelete, onComplete, pre
         <div
           className="px-3 py-2 flex items-center gap-2"
           style={{
-            background: 'rgba(212,175,55,0.04)',
-            borderTop: '0.5px solid rgba(212,175,55,0.1)',
+            background: isDarkMode ? 'rgba(212,175,55,0.04)' : 'rgba(154,122,20,0.05)',
+            borderTop: `0.5px solid ${isDarkMode ? 'rgba(212,175,55,0.1)' : 'rgba(154,122,20,0.18)'}`,
           }}
         >
           <input
@@ -156,11 +168,11 @@ export default function SetRow({ set, index, onUpdate, onDelete, onComplete, pre
             onChange={e => onUpdate({ ...set, comment: e.target.value })}
             placeholder="Note for this set..."
             className="flex-1 text-xs outline-none bg-transparent"
-            style={{ color: 'rgba(229,229,231,0.7)', fontFamily: 'Montserrat, sans-serif' }}
+            style={{ color: isDarkMode ? 'rgba(229,229,231,0.7)' : 'rgba(30,28,24,0.70)', fontFamily: 'Montserrat, sans-serif' }}
           />
           {set.comment && (
             <button onClick={() => { onUpdate({ ...set, comment: '' }); setShowComment(false); }}>
-              <X className="w-3 h-3 text-white/20" />
+              <X className="w-3 h-3" style={{ color: dimText }} />
             </button>
           )}
         </div>
@@ -171,8 +183,8 @@ export default function SetRow({ set, index, onUpdate, onDelete, onComplete, pre
         <div
           className="flex items-center justify-between px-3 py-1"
           style={{
-            background: isPR ? 'rgba(212,175,55,0.06)' : 'rgba(255,255,255,0.02)',
-            borderTop: '0.5px solid rgba(255,255,255,0.05)',
+            background: isPR ? (isDarkMode ? 'rgba(212,175,55,0.06)' : 'rgba(154,122,20,0.06)') : (isDarkMode ? 'rgba(255,255,255,0.02)' : 'rgba(30,28,24,0.03)'),
+            borderTop: `0.5px solid ${isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(30,28,24,0.08)'}`,
             borderRadius: '0 0 12px 12px',
           }}
         >
@@ -181,12 +193,12 @@ export default function SetRow({ set, index, onUpdate, onDelete, onComplete, pre
               animate={{ opacity: [0.6, 1, 0.6] }}
               transition={{ duration: 1.5, repeat: Infinity }}
               className="text-[9px] uppercase tracking-[0.15em]"
-              style={{ color: '#D4AF37', fontFamily: 'Montserrat, sans-serif' }}
+              style={{ color: gold, fontFamily: 'Montserrat, sans-serif' }}
             >
               ★ PR — Peak {current1RM}kg
             </motion.span>
           ) : (
-            <span className="text-[9px] text-white/20 tracking-[0.1em]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            <span className="text-[9px] tracking-[0.1em]" style={{ color: dimText, fontFamily: 'Montserrat, sans-serif' }}>
               1RM ~{current1RM}kg
             </span>
           )}
