@@ -742,21 +742,6 @@ export default function Nutrition() {
         </VoidCard>
       </motion.div>
 
-      {/* Water Tracker */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-        className="mb-6"
-      >
-        <WaterTracker
-          glasses={Math.round((dailyActivity?.water_liters || 0) / 0.25)}
-          goal={Math.round((profile?.water_goal || 2.5) / 0.25)}
-          onAdd={handleWaterAdd}
-          onRemove={handleWaterRemove}
-        />
-      </motion.div>
-
       {/* Food Logs by Meal */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -865,6 +850,21 @@ export default function Nutrition() {
           );
         })}
         </motion.div>
+
+      {/* Water Tracker */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
+        className="mt-6"
+      >
+        <WaterTracker
+          glasses={Math.round((dailyActivity?.water_liters || 0) / 0.25)}
+          goal={Math.round((profile?.water_goal || 2.5) / 0.25)}
+          onAdd={handleWaterAdd}
+          onRemove={handleWaterRemove}
+        />
+      </motion.div>
       </div>
     </div>
   );
