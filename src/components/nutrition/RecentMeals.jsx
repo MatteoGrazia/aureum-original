@@ -1,31 +1,34 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Clock, ChevronDown, ChevronUp, Plus } from 'lucide-react';
+import { Clock, ChevronDown, Plus } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
+import { useTheme } from '@/components/shared/ThemeContext';
 
 export default function RecentMeals({ onSelectFood, selectedDate }) {
   const [expanded, setExpanded] = useState(false);
+  const { isDarkMode } = useTheme();
+
+  const textMuted = isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(29,29,31,0.45)';
+  const cardBg = isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.75)';
+  const borderColor = isDarkMode ? 'rgba(212,175,55,0.15)' : 'rgba(212,175,55,0.28)';
+  const GOLD = '#D4AF37';
 
   const { data: recentFoods = [] } = useQuery({
     queryKey: ['recentFoods', selectedDate],
     queryFn: async () => {
       const logs = await base44.entities.FoodLog.filter({});
-
-      // Group by food name+brand and get most recent unique foods
       const foodMap = new Map();
       logs
         .sort((a, b) => new Date(b.date) - new Date(a.date))
         .forEach(log => {
           const key = `${log.food_name}|${log.brand || ''}`;
           if (!foodMap.has(key)) {
-            // Store the exact logged macros and build a proper availableUnits entry
             const servingSize = log.serving_size || 1;
             foodMap.set(key, {
               name: log.food_name,
               brand: log.brand,
               source: 'diary',
-              // top-level macros are the total for the logged serving
               calories: log.calories,
               protein: log.protein,
               carbs: log.carbs,
@@ -36,7 +39,6 @@ export default function RecentMeals({ onSelectFood, selectedDate }) {
                 unit: log.serving_unit || 'serving',
                 amount: servingSize,
                 metricUnit: 'g',
-                // per-unit macros so the modal multiplies correctly
                 calories: (log.calories || 0) / servingSize,
                 protein: (log.protein || 0) / servingSize,
                 carbs: (log.carbs || 0) / servingSize,
@@ -47,7 +49,6 @@ export default function RecentMeals({ onSelectFood, selectedDate }) {
             });
           }
         });
-
       return Array.from(foodMap.values()).slice(0, 12);
     }
   });
@@ -55,41 +56,27 @@ export default function RecentMeals({ onSelectFood, selectedDate }) {
   if (recentFoods.length === 0) return null;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: -10 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="mb-4 rounded-2xl overflow-hidden"
-      style={{
-        background: 'rgba(255,255,255,0.03)',
-        border: '0.5px solid rgba(212,175,55,0.2)',
-      }}
-    >
-      {/* Header row — always visible */}
+    <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
       <button
-        onClick={() => setExpanded(p => !p)}
-        className="w-full flex items-center justify-between px-4 py-3"
+        onClick={() => setExpanded(e => !e)}
+        className="w-full flex items-center justify-between mb-3"
       >
         <div className="flex items-center gap-2">
-          <Clock className="w-4 h-4 text-[#D4AF37]" strokeWidth={1.5} />
-          <span
-            className="text-[10px] uppercase tracking-[0.25em]"
-            style={{ color: 'rgba(229,229,231,0.65)', fontFamily: 'Montserrat, sans-serif' }}
-          >
+          <Clock className="w-4 h-4" style={{ color: GOLD }} strokeWidth={1.5} />
+          <p className="text-xs uppercase tracking-widest" style={{ color: textMuted, fontFamily: 'Montserrat, sans-serif' }}>
             Recently Logged
-          </span>
-          <span
-            className="text-[9px] px-1.5 py-0.5 rounded-full"
-            style={{ background: 'rgba(212,175,55,0.12)', color: 'rgba(212,175,55,0.7)', fontFamily: 'Montserrat, sans-serif' }}
-          >
+          </p>
+          <span className="text-[10px] px-2 py-0.5 rounded-full" style={{ background: 'rgba(212,175,55,0.1)', color: GOLD, fontFamily: 'Montserrat, sans-serif' }}>
             {recentFoods.length}
           </span>
         </div>
-        {expanded
-          ? <ChevronUp className="w-4 h-4 text-[#D4AF37]/50" />
-          : <ChevronDown className="w-4 h-4 text-[#D4AF37]/50" />}
+        <ChevronDown
+          className="w-4 h-4 transition-transform duration-300"
+          style={{ color: textMuted, transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)' }}
+          strokeWidth={1.5}
+        />
       </button>
 
-      {/* Expandable grid */}
       <AnimatePresence>
         {expanded && (
           <motion.div
@@ -99,44 +86,40 @@ export default function RecentMeals({ onSelectFood, selectedDate }) {
             transition={{ duration: 0.25 }}
             className="overflow-hidden"
           >
-            <div
-              className="grid grid-cols-3 gap-2 px-3 pb-3"
-            >
+            <div className="space-y-2">
               {recentFoods.map((food, idx) => (
                 <motion.button
                   key={idx}
-                  initial={{ opacity: 0, scale: 0.92 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: idx * 0.03 }}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.04 }}
                   onClick={() => onSelectFood(food)}
-                  className="relative group text-left rounded-xl p-2.5 transition-all active:scale-95"
-                  style={{
-                    background: 'rgba(255,255,255,0.04)',
-                    border: '0.5px solid rgba(212,175,55,0.15)',
-                  }}
+                  className="w-full flex items-center gap-3 p-4 text-left rounded-2xl active:scale-[0.98] transition-transform"
+                  style={{ background: cardBg, border: `0.5px solid ${borderColor}` }}
                 >
-                  <p
-                    className="text-[10px] leading-snug mb-1"
-                    style={{
-                      color: '#E5E5E7',
-                      fontFamily: 'Montserrat, sans-serif',
-                      display: '-webkit-box',
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: 'vertical',
-                      overflow: 'hidden',
-                    }}
+                  <div
+                    className="w-14 h-14 rounded-xl flex-shrink-0 flex items-center justify-center"
+                    style={{ background: 'rgba(212,175,55,0.07)', border: `0.5px solid ${borderColor}` }}
                   >
-                    {food.name}
-                  </p>
-                  <p className="text-[9px]" style={{ color: '#D4AF37' }}>
-                    {Math.round(food.calories)} kcal
-                  </p>
-                  <p className="text-[8px] mt-0.5" style={{ color: 'rgba(229,229,231,0.35)', fontFamily: 'Montserrat, sans-serif' }}>
-                    P:{Math.round(food.protein || 0)}g · C:{Math.round(food.carbs || 0)}g · F:{Math.round(food.fat || 0)}g
-                  </p>
-                  <div className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                    style={{ background: 'rgba(212,175,55,0.2)' }}>
-                    <Plus className="w-2.5 h-2.5 text-[#D4AF37]" />
+                    <Clock className="w-5 h-5" style={{ color: GOLD, opacity: 0.4 }} strokeWidth={1.2} />
+                  </div>
+
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm truncate" style={{ color: isDarkMode ? '#FFFFFF' : '#1D1D1F', fontFamily: 'Montserrat, sans-serif' }}>
+                      {food.name}
+                    </p>
+                    <p className="text-[11px] mt-0.5" style={{ color: GOLD, fontFamily: 'Montserrat, sans-serif' }}>
+                      {Math.round(food.calories)} kcal · P{Math.round(food.protein || 0)}g C{Math.round(food.carbs || 0)}g F{Math.round(food.fat || 0)}g
+                    </p>
+                    {food.brand && (
+                      <p className="text-[10px] mt-0.5 truncate" style={{ color: textMuted, fontFamily: 'Montserrat, sans-serif' }}>
+                        {food.brand}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center" style={{ background: 'rgba(212,175,55,0.1)', border: `0.5px solid ${borderColor}` }}>
+                    <Plus className="w-3.5 h-3.5" style={{ color: GOLD }} strokeWidth={1.5} />
                   </div>
                 </motion.button>
               ))}
