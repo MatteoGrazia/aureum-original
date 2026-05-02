@@ -25,6 +25,7 @@ export default function Community() {
   const [pulseProfile, setPulseProfile] = useState(null);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [feedTab, setFeedTab] = useState('discover'); // 'discover' | 'following'
+  const [sortBy, setSortBy] = useState('newest'); // 'newest' | 'friends' | 'ascension'
   const myPostAPRef = useRef({});
 
   const { data: user } = useQuery({
@@ -149,25 +150,29 @@ export default function Community() {
   const mutedIds = useMemo(() => new Set(mutedUsers.map(m => m.muted_user_id)), [mutedUsers]);
   const followingIds = useMemo(() => new Set(following.map(f => f.following_id)), [following]);
 
-  // Engagement decay: posts older than 12h with 0 voltage drop in ranking
   const feed = useMemo(() => {
-    const now = Date.now();
     const filtered = rawFeed.filter(p => {
       if (p.is_hidden) return false;
       if (mutedIds.has(p.created_by)) return false;
       if (feedTab === 'following') return followingIds.has(p.created_by) || p.created_by === user?.email;
       return true;
     });
+
     return [...filtered].sort((a, b) => {
-      const ageA = (now - new Date(a.created_date).getTime()) / (1000 * 60 * 60);
-      const ageB = (now - new Date(b.created_date).getTime()) / (1000 * 60 * 60);
-      const decayA = ageA > 12 && (a.voltage_count || 0) === 0 ? -1000000 : 0;
-      const decayB = ageB > 12 && (b.voltage_count || 0) === 0 ? -1000000 : 0;
-      const scoreA = (a.voltage_count || 0) * 100 - ageA * 10 + decayA;
-      const scoreB = (b.voltage_count || 0) * 100 - ageB * 10 + decayB;
-      return scoreB - scoreA;
+      if (sortBy === 'ascension') {
+        return (b.voltage_count || 0) - (a.voltage_count || 0);
+      }
+      if (sortBy === 'friends') {
+        const aFriend = followingIds.has(a.created_by) ? 1 : 0;
+        const bFriend = followingIds.has(b.created_by) ? 1 : 0;
+        if (bFriend !== aFriend) return bFriend - aFriend;
+        // Within same group, sort newest first
+        return new Date(b.created_date) - new Date(a.created_date);
+      }
+      // Default: newest first
+      return new Date(b.created_date) - new Date(a.created_date);
     });
-  }, [rawFeed, feedTab, mutedIds, followingIds, user?.email]);
+  }, [rawFeed, feedTab, sortBy, mutedIds, followingIds, user?.email]);
 
   // Athletes for Pulse Row
   const { data: athletes = [] } = useQuery({
@@ -291,6 +296,31 @@ export default function Community() {
               </button>
             </div>
           </div>
+
+          {/* Sort Filter — only show when not on leaderboard */}
+          {!showLeaderboard && (
+            <div className="flex items-center justify-center gap-2 mb-4 px-4">
+              {[
+                { key: 'newest', label: 'NEWEST' },
+                { key: 'friends', label: 'FRIENDS' },
+                { key: 'ascension', label: 'ASCENSION' },
+              ].map(opt => (
+                <button
+                  key={opt.key}
+                  onClick={() => setSortBy(opt.key)}
+                  className="px-3 py-1.5 rounded-lg text-[9px] tracking-[0.18em] transition-all"
+                  style={{
+                    fontFamily: 'Montserrat, sans-serif',
+                    background: sortBy === opt.key ? 'rgba(212,175,55,0.15)' : 'rgba(255,255,255,0.04)',
+                    border: sortBy === opt.key ? '0.5px solid rgba(212,175,55,0.5)' : '0.5px solid rgba(255,255,255,0.08)',
+                    color: sortBy === opt.key ? '#D4AF37' : 'rgba(229,229,231,0.4)',
+                  }}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          )}
 
           {showLeaderboard ? (
             <SyndicateLeaderboard />
