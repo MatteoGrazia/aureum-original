@@ -97,13 +97,6 @@ export default function RecentMeals({ onSelectFood, selectedDate }) {
                   className="w-full flex items-center gap-3 p-4 text-left rounded-2xl active:scale-[0.98] transition-transform"
                   style={{ background: cardBg, border: `0.5px solid ${borderColor}` }}
                 >
-                  <div
-                    className="w-14 h-14 rounded-xl flex-shrink-0 flex items-center justify-center"
-                    style={{ background: 'rgba(212,175,55,0.07)', border: `0.5px solid ${borderColor}` }}
-                  >
-                    <Clock className="w-5 h-5" style={{ color: GOLD, opacity: 0.4 }} strokeWidth={1.2} />
-                  </div>
-
                   <div className="flex-1 min-w-0">
                     <p className="text-sm truncate" style={{ color: isDarkMode ? '#FFFFFF' : '#1D1D1F', fontFamily: 'Montserrat, sans-serif' }}>
                       {food.name}
