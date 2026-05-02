@@ -475,8 +475,8 @@ export default function QuickLogFAB({ onUpdate }) {
         animate={{
           borderRadius: isOpen ? '16px' : '50%',
           boxShadow: waterPulse
-            ? ['0 0 18px rgba(142,202,230,0.35)', '0 0 40px rgba(142,202,230,0.7)', '0 0 18px rgba(142,202,230,0.2)']
-            : '0 0 18px rgba(225,193,110,0.28)',
+            ? ['0 0 14px rgba(142,202,230,0.3)', '0 0 32px rgba(142,202,230,0.55)', '0 0 14px rgba(142,202,230,0.2)']
+            : '0 0 20px rgba(212,175,55,0.22), 0 0 6px rgba(212,175,55,0.10)',
         }}
         transition={waterPulse
           ? { duration: 0.55, ease: 'easeOut' }
@@ -484,15 +484,20 @@ export default function QuickLogFAB({ onUpdate }) {
         }
         whileTap={{ scale: 0.92, transition: { duration: 0.08, ease: 'easeOut' } }}
         style={{
-          position: 'absolute', inset: 0, border: 'none', cursor: 'pointer',
+          position: 'absolute', inset: 0, cursor: 'pointer',
           background: waterPulse
-            ? `linear-gradient(135deg, ${BLUE} 0%, ${BLUE} 50%, ${BLUE} 100%)`
-            : `linear-gradient(135deg, ${GOLD} 0%, ${GOLD} 50%, ${GOLD} 100%)`,
+            ? 'rgba(142,202,230,0.18)'
+            : (isDarkMode ? 'rgba(212,175,55,0.14)' : 'rgba(212,175,55,0.18)'),
+          border: waterPulse
+            ? '1.5px solid rgba(142,202,230,0.7)'
+            : `1.5px solid rgba(212,175,55,0.65)`,
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           touchAction: 'none', userSelect: 'none', WebkitUserSelect: 'none',
           willChange: 'transform',
           transform: 'translateZ(0)',
-          transition: 'background 0.18s ease', overflow: 'hidden',
+          transition: 'background 0.18s ease, border-color 0.18s ease', overflow: 'hidden',
         }}
         >
           <AnimatePresence mode="wait">
@@ -505,8 +510,8 @@ export default function QuickLogFAB({ onUpdate }) {
                 transition={{ duration: 0.2 }}
                 style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}
               >
-                <Droplets style={{ width: 18, height: 18, color: '#080808' }} strokeWidth={2} />
-                <span style={{ fontSize: 7, color: '#080808', fontFamily: 'Montserrat', fontWeight: 600, letterSpacing: '0.04em' }}>+250ml</span>
+                <Droplets style={{ width: 18, height: 18, color: '#8ECAE6' }} strokeWidth={2} />
+                <span style={{ fontSize: 7, color: '#8ECAE6', fontFamily: 'Montserrat', fontWeight: 600, letterSpacing: '0.04em' }}>+250ml</span>
               </motion.div>
             ) : (
               <motion.div
@@ -517,7 +522,7 @@ export default function QuickLogFAB({ onUpdate }) {
                 transition={{ duration: 0.2 }}
               >
                 <motion.div animate={{ rotate: isOpen ? 135 : 0 }} transition={{ duration: 0.3, ease: [0.34, 1.56, 0.64, 1] }}>
-                  <Plus style={{ width: 24, height: 24, color: '#080808' }} strokeWidth={2.5} />
+                  <Plus style={{ width: 24, height: 24, color: isDarkMode ? '#D4AF37' : '#9A7A14' }} strokeWidth={2} />
                 </motion.div>
               </motion.div>
             )}
