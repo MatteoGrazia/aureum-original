@@ -125,7 +125,9 @@ export default function Community() {
     queryFn: () => base44.entities.PerformanceFeed.list('-created_date', 60),
     enabled: consentGranted,
     staleTime: 0,
+    gcTime: 0,
     refetchOnMount: 'always',
+    refetchOnWindowFocus: true,
   });
 
   // Following list
