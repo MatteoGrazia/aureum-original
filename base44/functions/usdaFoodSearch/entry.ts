@@ -155,7 +155,7 @@ const toSingular = (word) => {
 };
 
 const normalizeQueryForSearch = (q) =>
-  q.toLowerCase().trim().split(/\s+/).map(toSingular).join(' ');
+  q.toLowerCase().trim().replace(/\s+/g, ' ').split(' ').filter(Boolean).map(toSingular).join(' ');
 
 const fetchUSDA = async (query) => {
   const url = `${USDA_BASE_URL}/foods/search?query=${encodeURIComponent(query)}&pageSize=80&dataType=SR%20Legacy,Foundation,Survey%20(FNDDS)&api_key=${USDA_API_KEY}`;
@@ -276,12 +276,13 @@ Deno.serve(async (req) => {
     }
 
     const { query } = await req.json();
+    const trimmedQuery = (query || '').trim();
 
-    if (!query || query.length < 2) {
+    if (!trimmedQuery || trimmedQuery.length < 2) {
       return Response.json({ foods: [] });
     }
 
-    const foods = await searchUSDA(query);
+    const foods = await searchUSDA(trimmedQuery);
     return Response.json({ foods });
   } catch (error) {
     console.error('Error:', error);
