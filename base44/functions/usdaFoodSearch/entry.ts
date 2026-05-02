@@ -173,20 +173,30 @@ const searchUSDA = async (query) => {
   const allFoods = await fetchUSDA(normalized);
 
   const scoreFood = (desc) => {
+    if (!desc) return 10;
     const name = desc.toLowerCase();
-    const tokens = name.split(/[\s,]+/);
+    const tokens = name.split(/[\s,]+/).filter(Boolean);
+    if (!tokens.length) return 10;
     const firstToken = toSingular(tokens[0]);
     const firstQueryWord = queryWords[0];
 
+    // Exact match (singular-normalized)
     if (toSingular(name) === normalized) return 0;
+
     if (firstToken === firstQueryWord) {
-      if (name.includes('raw') || name.includes('whole')) return 1;
-      if (!/\b(dish|recipe|soup|salad|sandwich|casserole|stew|pie|cake|burger|pizza|pasta|noodle|fried rice|stir.fry)\b/i.test(name)) return 2;
-      return 3;
+      // Exact single-word match: e.g. query="chicken", name="chicken" or "chicken, raw"
+      if (tokens.length === 1 || (tokens.length === 2 && /^(raw|whole|fresh|cooked|boiled|roasted|grilled|baked|fried|dried|canned|frozen)$/.test(tokens[1]))) return 1;
+      // Has raw/whole modifier — plain ingredient
+      if (name.includes('raw') || name.includes('whole')) return 2;
+      // Simple cut or form — breast, thigh, leg, fillet, ground, etc.
+      if (/\b(breast|thigh|leg|wing|fillet|loin|tenderloin|ground|minced|steak|chop|cutlet|drumstick|rib|belly|shoulder|neck|back)\b/.test(name)) return 3;
+      // Not a dish/recipe
+      if (!/\b(dish|recipe|soup|salad|sandwich|casserole|stew|pie|cake|burger|pizza|pasta|noodle|fried rice|stir.fry|nugget|finger|strip|taco|wrap|roll|bowl|curry|tikka|masala|alfredo|pesto|risotto)\b/i.test(name)) return 4;
+      return 5;
     }
-    if (queryWords.every(w => name.split(/[\s,]+/).map(toSingular).includes(w))) return 4;
-    if (name.startsWith(normalized)) return 5;
-    if (name.includes(normalized)) return 6;
+    if (queryWords.every(w => tokens.map(toSingular).includes(w))) return 6;
+    if (name.startsWith(normalized)) return 7;
+    if (name.includes(normalized)) return 8;
     return 10;
   };
 
@@ -194,15 +204,23 @@ const searchUSDA = async (query) => {
     .filter(f => {
       if (queryWords.length === 1) {
         const name = (f.description || '').toLowerCase();
-        const firstToken = toSingular(name.split(/[\s,]+/)[0]);
+        const firstToken = toSingular(name.split(/[\s,]+/).filter(Boolean)[0] || '');
         const startsWithQuery = firstToken === queryWords[0];
-        if (!startsWithQuery && /\b(with|and|sauce|soup|stew|casserole|pie|cake|dish|recipe|salad|sandwich|burger|pizza|pasta|noodle|fried rice|stir.fry)\b/i.test(name)) {
+        if (!startsWithQuery && /\b(with|and|sauce|soup|stew|casserole|pie|cake|dish|recipe|salad|sandwich|burger|pizza|pasta|noodle|fried rice|stir fry)\b/i.test(name)) {
           return false;
         }
       }
       return true;
     })
-    .sort((a, b) => scoreFood(a.description) - scoreFood(b.description));
+    .sort((a, b) => {
+      const sa = scoreFood(a.description);
+      const sb = scoreFood(b.description);
+      if (sa !== sb) return sa - sb;
+      // Secondary sort: fewer tokens = simpler/more generic = better
+      const ta = (a.description || '').split(/[\s,]+/).filter(Boolean).length;
+      const tb = (b.description || '').split(/[\s,]+/).filter(Boolean).length;
+      return ta - tb;
+    });
 
   const foods = sorted.slice(0, 10);
 
