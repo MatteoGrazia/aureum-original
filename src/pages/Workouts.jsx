@@ -567,14 +567,28 @@ export default function Workouts() {
           {view === 'routines' && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
 
-              {/* Hero Section — 3 part layout */}
-              <WorkoutWeeklyHero
-                logs={recentWorkouts}
-                userProfile={userProfile}
-              />
-              <div className="flex gap-2.5">
-                <LatestPRCard logs={recentWorkouts} />
-                <SBDCard logs={recentWorkouts} />
+              {/* Hero Section — Interlocking Rings */}
+              <div className="flex flex-col items-center"
+                style={{
+                  background: 'rgba(255,255,255,0.015)',
+                  border: '0.5px solid rgba(212,175,55,0.12)',
+                  borderRadius: 24,
+                  overflow: 'hidden',
+                  marginBottom: 8,
+                }}>
+                <WorkoutWeeklyHero logs={recentWorkouts} userProfile={userProfile} />
+                {/* Divider connector line */}
+                <div style={{ width: 1, height: 32, background: 'linear-gradient(to bottom, rgba(212,175,55,0.3), rgba(212,175,55,0.05))', marginTop: -8 }} />
+                <div className="flex flex-col w-full sm:flex-row">
+                  <div className="flex-1 flex flex-col items-center border-t sm:border-t-0 sm:border-r"
+                    style={{ borderColor: 'rgba(212,175,55,0.1)' }}>
+                    <LatestPRCard logs={recentWorkouts} />
+                  </div>
+                  <div className="flex-1 flex flex-col items-center border-t"
+                    style={{ borderColor: 'rgba(212,175,55,0.1)' }}>
+                    <SBDCard logs={recentWorkouts} />
+                  </div>
+                </div>
               </div>
 
               {/* Routines label */}

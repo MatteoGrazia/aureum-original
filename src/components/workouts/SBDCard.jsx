@@ -1,14 +1,35 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
+const GOLD = '#D4AF37';
 const BIG3 = ['Squat', 'Bench Press', 'Deadlift'];
+
+const RING_SIZE = 180;
+const STROKE = 2;
+const R = (RING_SIZE - STROKE * 2) / 2;
 
 const epley1RM = (weight, reps) => {
   if (!weight || !reps || reps <= 1) return weight || 0;
   return Math.round(weight * (1 + reps / 30));
 };
 
-export default function SBDCard({ logs = [], isLoading = false }) {
+function AnimatedNumber({ target, duration = 0.6 }) {
+  const [val, setVal] = useState(0);
+  useEffect(() => {
+    if (!target) { setVal(0); return; }
+    let start = null;
+    const step = (ts) => {
+      if (!start) start = ts;
+      const progress = Math.min((ts - start) / (duration * 1000), 1);
+      setVal(Math.round(progress * target));
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }, [target]);
+  return <>{val}</>;
+}
+
+export default function SBDCard({ logs = [] }) {
   const best = {};
   BIG3.forEach(l => { best[l] = 0; });
 
@@ -25,84 +46,64 @@ export default function SBDCard({ logs = [], isLoading = false }) {
 
   const total = BIG3.reduce((sum, l) => sum + (best[l] || 0), 0);
 
-  const imgUrls = {
-    'Squat': 'https://media.base44.com/images/public/698347d058d3014d6271ccff/b843f05f0_4.png',
-    'Bench Press': 'https://media.base44.com/images/public/698347d058d3014d6271ccff/0f962a9f8_5.png',
-    'Deadlift': 'https://media.base44.com/images/public/698347d058d3014d6271ccff/2fc9de17b_6.png',
-  };
-
-  if (isLoading) {
-    return (
-      <div
-        className="flex-1 rounded-2xl p-4"
-        style={{ background: 'rgba(255,255,255,0.03)', border: '0.5px solid rgba(212,175,55,0.15)' }}
-      >
-        <div className="h-3 w-20 rounded bg-white/10 animate-pulse mb-3" />
-        <div className="h-8 w-16 rounded bg-white/10 animate-pulse mb-4" />
-        <div className="flex justify-around">
-          {[1,2,3].map(i => <div key={i} className="h-10 w-10 rounded bg-white/10 animate-pulse" />)}
-        </div>
-      </div>
-    );
-  }
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.1 }}
-      className="flex-1 rounded-2xl p-4"
-      style={{
-        background: 'rgba(255,255,255,0.03)',
-        border: '0.5px solid rgba(212,175,55,0.18)',
-        boxShadow: '0 4px 24px rgba(0,0,0,0.3)',
-      }}
+      transition={{ duration: 0.5, delay: 0.2 }}
+      className="flex flex-col items-center pt-2 pb-4"
     >
-      <p
-        className="text-[9px] uppercase tracking-[0.3em] mb-2"
-        style={{ color: 'rgba(229,229,231,0.45)', fontFamily: 'Montserrat, sans-serif' }}
-      >
+      {/* Label */}
+      <p className="text-[9px] uppercase tracking-[0.35em] mb-4"
+        style={{ color: 'rgba(229,229,231,0.4)', fontFamily: 'Montserrat, sans-serif' }}>
         SBD Total
       </p>
 
-      <p
-        className="text-3xl leading-none mb-1"
-        style={{ color: '#FFFFFF', fontFamily: 'Inter, sans-serif', fontWeight: 100 }}
-      >
-        {total > 0 ? total : '–'}
-      </p>
-      {total > 0 && (
-        <p className="text-[9px] mb-3" style={{ color: 'rgba(212,175,55,0.5)', fontFamily: 'Montserrat, sans-serif' }}>
-          kg combined
-        </p>
-      )}
-      {total === 0 && (
-        <p className="text-[9px] mb-3" style={{ color: 'rgba(229,229,231,0.25)', fontFamily: 'Montserrat, sans-serif' }}>
-          Log S / B / D to track
-        </p>
-      )}
+      {/* Ring */}
+      <div className="relative flex items-center justify-center" style={{ width: RING_SIZE, height: RING_SIZE }}>
+        {/* Radial glow */}
+        <div className="absolute inset-0 rounded-full pointer-events-none" style={{
+          background: 'radial-gradient(circle, rgba(212,175,55,0.08) 0%, transparent 70%)',
+        }} />
 
-      <div className="flex justify-between">
-        {BIG3.map(lift => (
-          <div key={lift} className="text-center">
-            <img
-              src={imgUrls[lift]}
-              alt={lift}
-              style={{ width: 28, height: 28, objectFit: 'contain', mixBlendMode: 'screen', margin: '0 auto 2px' }}
-            />
-            <p
-              className="text-xs leading-none"
-              style={{ color: best[lift] ? '#FFFFFF' : 'rgba(255,255,255,0.2)', fontFamily: 'Montserrat, sans-serif', fontWeight: 300 }}
-            >
-              {best[lift] || '–'}
-            </p>
-            <p
-              className="text-[8px] uppercase tracking-[0.1em] mt-0.5"
-              style={{ color: 'rgba(255,255,255,0.2)', fontFamily: 'Montserrat, sans-serif' }}
-            >
-              {lift === 'Bench Press' ? 'B' : lift[0]}
-            </p>
+        <svg width={RING_SIZE} height={RING_SIZE} className="absolute inset-0">
+          <circle cx={RING_SIZE / 2} cy={RING_SIZE / 2} r={R}
+            fill="none" stroke={GOLD} strokeWidth={STROKE}
+            strokeOpacity={0.5}
+            style={{ filter: `drop-shadow(0 0 3px rgba(212,175,55,0.4))` }}
+          />
+        </svg>
+
+        {/* Inner content */}
+        <div className="flex flex-col items-center justify-center z-10">
+          <div className="leading-none text-center mb-1">
+            <span style={{ fontFamily: 'Inter, sans-serif', fontWeight: 100, fontSize: 44, color: '#FFFFFF' }}>
+              {total > 0 ? <AnimatedNumber target={total} /> : '–'}
+            </span>
+            {total > 0 && (
+              <span style={{ fontSize: 16, color: 'rgba(212,175,55,0.7)', marginLeft: 3, fontFamily: 'Montserrat, sans-serif' }}>kg</span>
+            )}
           </div>
+          <p className="text-[9px] uppercase tracking-[0.2em]"
+            style={{ color: 'rgba(212,175,55,0.5)', fontFamily: 'Montserrat, sans-serif' }}>
+            {total > 0 ? 'Combined' : 'Log S / B / D'}
+          </p>
+        </div>
+      </div>
+
+      {/* S / B / D breakdown */}
+      <div className="flex items-center gap-3 mt-3">
+        {BIG3.map((lift, i) => (
+          <React.Fragment key={lift}>
+            {i > 0 && <span style={{ color: 'rgba(255,255,255,0.12)', fontSize: 10 }}>/</span>}
+            <span style={{ fontFamily: 'Montserrat, sans-serif', fontSize: 11, color: 'rgba(229,229,231,0.6)' }}>
+              <span style={{ color: GOLD, fontWeight: 500 }}>{lift[0]}</span>
+              {': '}
+              <span style={{ color: best[lift] ? '#FFFFFF' : 'rgba(255,255,255,0.2)' }}>
+                {best[lift] || '–'}
+              </span>
+            </span>
+          </React.Fragment>
         ))}
       </div>
     </motion.div>
