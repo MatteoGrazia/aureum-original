@@ -17,10 +17,14 @@ const getNutrientValue = (nutrients, id) => {
   return n ? parseFloat(n.value || n.amount || 0) : 0;
 };
 
+// Detect if a food is liquid based on its name
+const isLiquidFood = (name) => {
+  return /\b(milk|juice|water|oil|sauce|broth|stock|cream|yogurt|drink|beverage|smoothie|shake|soup|tea|coffee|wine|beer|spirits|syrup|vinegar|kefir|buttermilk|coconut milk|almond milk|oat milk|soy milk|lemonade|soda|cola|energy drink)\b/i.test(name);
+};
+
 // Build all available serving units from USDA food portions
 const buildServingUnits = (food) => {
   const nutrients = food.foodNutrients || [];
-  // All values are per 100g in USDA
   const per100g = {
     calories: getNutrientValue(nutrients, 1008),
     protein: getNutrientValue(nutrients, 1003),
@@ -29,19 +33,20 @@ const buildServingUnits = (food) => {
     fiber: getNutrientValue(nutrients, 1079),
   };
 
+  const foodName = food.description || '';
+  const isLiquid = isLiquidFood(foodName);
   const units = [];
 
-  // Add named portions (e.g. "1 large", "1 medium", "1 cup")
+  // Add named portions from USDA (e.g. "1 large", "1 medium", "1 cup")
   const portions = food.foodPortions || [];
 
-  // Useful portion keywords — skip tiny measurement units like tbsp, tsp, oz, fl oz
-  const skipPattern = /\b(tbsp|tsp|tablespoon|teaspoon|fl oz|fluid ounce|pat|pats|sifted|cup sifted)\b/i;
+  // Only skip truly unhelpful ones (sifted flour, pat of butter etc.)
+  const skipPattern = /\b(pat|pats|sifted|cup sifted)\b/i;
 
   for (const portion of portions) {
     const grams = parseFloat(portion.gramWeight) || 0;
     if (grams <= 0) continue;
 
-    // Build a human-readable description
     let desc = '';
     if (portion.portionDescription) {
       desc = portion.portionDescription;
@@ -53,7 +58,6 @@ const buildServingUnits = (food) => {
       desc = `${grams}g`;
     }
 
-    // Skip unhelpful tiny-measurement servings
     if (skipPattern.test(desc)) continue;
 
     units.push({
@@ -70,12 +74,46 @@ const buildServingUnits = (food) => {
     });
   }
 
-  // Always add 1g option for precise measurement
+  // For liquid foods: add common liquid measures if not already present
+  if (isLiquid) {
+    // USDA nutrient data is per 100g. For liquids we approximate 1ml ≈ 1g (water density).
+    // Most liquids are close enough; oil is denser but users expect ml-based measures.
+    const liquidMeasures = [
+      { desc: '1 teaspoon (5ml)',   ml: 5   },
+      { desc: '1 tablespoon (15ml)', ml: 15  },
+      { desc: '1 fl oz (30ml)',      ml: 30  },
+      { desc: '100ml',               ml: 100 },
+      { desc: '1 cup (240ml)',       ml: 240 },
+    ];
+    const existingDescs = units.map(u => u.servingDescription.toLowerCase());
+    for (const { desc, ml } of liquidMeasures) {
+      if (!existingDescs.some(d => d.includes('teaspoon') || d.includes('tablespoon') || d.includes('fl oz') || d.includes('cup') || d.includes('100ml'))) {
+        // Only add if no liquid measures already present
+      }
+      const alreadyHas = units.some(u => u.servingDescription.toLowerCase().includes(desc.split(' ')[1]?.replace(/[()]/g, '') || ''));
+      if (!alreadyHas) {
+        units.push({
+          servingDescription: desc,
+          unit: 'ml',
+          amount: ml,
+          metricUnit: 'ml',
+          calories: Math.round((per100g.calories / 100) * ml * 10) / 10,
+          protein: Math.round((per100g.protein / 100) * ml * 10) / 10,
+          carbs: Math.round((per100g.carbs / 100) * ml * 10) / 10,
+          fat: Math.round((per100g.fat / 100) * ml * 10) / 10,
+          fiber: Math.round((per100g.fiber / 100) * ml * 10) / 10,
+          isDefault: false,
+        });
+      }
+    }
+  }
+
+  // Always add 1g/1ml precision option
   units.push({
-    servingDescription: '1g',
-    unit: 'g',
+    servingDescription: isLiquid ? '1ml' : '1g',
+    unit: isLiquid ? 'ml' : 'g',
     amount: 1,
-    metricUnit: 'g',
+    metricUnit: isLiquid ? 'ml' : 'g',
     calories: Math.round(per100g.calories / 100 * 10) / 10,
     protein: Math.round(per100g.protein / 100 * 10) / 10,
     carbs: Math.round(per100g.carbs / 100 * 10) / 10,
@@ -84,18 +122,18 @@ const buildServingUnits = (food) => {
     isDefault: false,
   });
 
-  // Always add 100g option
+  // Always add 100g/100ml option
   units.push({
-    servingDescription: '100g',
-    unit: 'g',
+    servingDescription: isLiquid ? '100ml' : '100g',
+    unit: isLiquid ? 'ml' : 'g',
     amount: 100,
-    metricUnit: 'g',
+    metricUnit: isLiquid ? 'ml' : 'g',
     calories: Math.round(per100g.calories * 10) / 10,
     protein: Math.round(per100g.protein * 10) / 10,
     carbs: Math.round(per100g.carbs * 10) / 10,
     fat: Math.round(per100g.fat * 10) / 10,
     fiber: Math.round(per100g.fiber * 10) / 10,
-    isDefault: units.length === 0, // default if no portions
+    isDefault: units.length === 0,
   });
 
   // Mark first named portion as default if we have portions
@@ -106,57 +144,99 @@ const buildServingUnits = (food) => {
   return units;
 };
 
-const searchUSDA = async (query) => {
-  // Include Foundation + SR Legacy + Survey for best whole-food coverage
+// Normalize a query: lowercase, trim, remove trailing 's' for basic de-pluralization
+const normalizeQuery = (q) => {
+  const trimmed = q.toLowerCase().trim();
+  // De-pluralize: remove trailing 's' only if word is >= 4 chars and ends in 's' (but not 'ss')
+  return trimmed.replace(/\b(\w{3,})s\b/g, (match, stem) => {
+    if (stem.endsWith('s')) return match; // "grass", "class" → keep
+    return stem;
+  });
+};
+
+// Get singular form of a word (simple heuristic)
+const getSingular = (word) => {
+  if (word.endsWith('ies') && word.length > 4) return word.slice(0, -3) + 'y';
+  if (word.endsWith('ves') && word.length > 4) return word.slice(0, -3) + 'f';
+  if (word.endsWith('s') && !word.endsWith('ss') && word.length > 3) return word.slice(0, -1);
+  return word;
+};
+
+const fetchUSDA = async (query) => {
   const url = `${USDA_BASE_URL}/foods/search?query=${encodeURIComponent(query)}&pageSize=80&dataType=SR%20Legacy,Foundation,Survey%20(FNDDS)&api_key=${USDA_API_KEY}`;
   const response = await fetch(url);
-
-  if (!response.ok) {
-    console.error('USDA API error:', response.status);
-    return [];
-  }
-
+  if (!response.ok) return [];
   const data = await response.json();
+  return data.foods || [];
+};
+
+const searchUSDA = async (query) => {
   const lowerQuery = query.toLowerCase().trim();
   const queryWords = lowerQuery.split(/\s+/);
 
-  const scoreFood = (desc, dataType) => {
+  // Build query variants to cover plural/singular/case differences
+  const singular = queryWords.map(getSingular).join(' ');
+  const queries = [lowerQuery];
+  if (singular !== lowerQuery) queries.push(singular);
+
+  // Run all query variants in parallel and merge
+  const allResults = await Promise.all(queries.map(fetchUSDA));
+  const seenFdcIds = new Set();
+  const merged = [];
+  for (const batch of allResults) {
+    for (const f of batch) {
+      if (!seenFdcIds.has(f.fdcId)) {
+        seenFdcIds.add(f.fdcId);
+        merged.push(f);
+      }
+    }
+  }
+
+  // Scoring: compare against both original and singular form
+  const scoreVariants = [lowerQuery, singular].filter((v, i, a) => a.indexOf(v) === i);
+
+  const scoreFood = (desc) => {
     const name = desc.toLowerCase();
     const tokens = name.split(/[\s,]+/);
-    const firstQueryWord = queryWords[0];
 
-    // Exact full match
-    if (name === lowerQuery) return 0;
-    // First token exact match
-    if (tokens[0] === firstQueryWord) {
-      // Prefer raw/whole simple entries
-      if (name.includes('raw') || name.includes('whole')) return 1;
-      if (!name.includes('dish') && !name.includes('recipe') && !name.includes('soup') && !name.includes('salad') && !name.includes('sandwich')) return 2;
-      return 3;
+    for (const variant of scoreVariants) {
+      const vWords = variant.split(/\s+/);
+      const firstVWord = vWords[0];
+      const firstToken = tokens[0];
+      const firstTokenSingular = getSingular(firstToken);
+
+      // Exact full match
+      if (name === variant) return 0;
+      // First token matches (or its singular matches)
+      if (firstToken === firstVWord || firstTokenSingular === firstVWord || firstToken === getSingular(firstVWord)) {
+        if (name.includes('raw') || name.includes('whole')) return 1;
+        if (!/\b(dish|recipe|soup|salad|sandwich|casserole|stew|pie|cake|burger|pizza|pasta|noodle|fried rice|stir.fry)\b/i.test(name)) return 2;
+        return 3;
+      }
+      // All query words present (or singular forms)
+      if (vWords.every(w => name.includes(w) || name.includes(getSingular(w)))) return 4;
+      if (name.startsWith(variant)) return 5;
+      if (name.includes(variant)) return 6;
     }
-    // All query words present
-    if (queryWords.every(w => name.includes(w))) return 4;
-    // Starts with query
-    if (name.startsWith(lowerQuery)) return 5;
-    // Contains query as substring
-    if (name.includes(lowerQuery)) return 6;
     return 10;
   };
 
-  const sorted = (data.foods || [])
+  const sorted = merged
     .filter(f => {
-      // Filter out multi-ingredient dishes when query is a single simple food
       if (queryWords.length === 1) {
         const name = (f.description || '').toLowerCase();
-        // Allow if the food name starts with the query word
-        const startsWithQuery = name.split(/[\s,]+/)[0] === lowerQuery;
+        const firstToken = name.split(/[\s,]+/)[0];
+        const firstTokenSingular = getSingular(firstToken);
+        const queryWord = queryWords[0];
+        const queryWordSingular = getSingular(queryWord);
+        const startsWithQuery = firstToken === queryWord || firstTokenSingular === queryWordSingular || firstToken === queryWordSingular;
         if (!startsWithQuery && /\b(with|and|sauce|soup|stew|casserole|pie|cake|dish|recipe|salad|sandwich|burger|pizza|pasta|noodle|fried rice|stir.fry)\b/i.test(name)) {
           return false;
         }
       }
       return true;
     })
-    .sort((a, b) => scoreFood(a.description, a.dataType) - scoreFood(b.description, b.dataType));
+    .sort((a, b) => scoreFood(a.description) - scoreFood(b.description));
 
   const foods = sorted.slice(0, 10);
 

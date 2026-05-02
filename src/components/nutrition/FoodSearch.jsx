@@ -65,6 +65,9 @@ export default function FoodSearch({ onSelectFood }) {
     }
   };
 
+  // Normalize query: lowercase, trim — backend handles singular/plural
+  const normalizeQuery = (q) => q.toLowerCase().trim().replace(/\s+/g, ' ');
+
   const searchFood = async (searchQuery) => {
     if (!searchQuery || searchQuery.length < 2) {
       setResults([]);
@@ -75,40 +78,50 @@ export default function FoodSearch({ onSelectFood }) {
     setLoading(true);
     setShowEmptyState(false);
 
-    // Translate non-English queries to English
     const translatedQuery = await translateIfNeeded(searchQuery);
+    const normalized = normalizeQuery(translatedQuery);
 
     try {
-      const usdaResponse = await base44.functions.invoke('usdaFoodSearch', { query: translatedQuery });
-      let foods = usdaResponse.data.foods || [];
+      // Run USDA and FatSecret in parallel for faster results
+      const [usdaResponse, fsResponse] = await Promise.allSettled([
+        base44.functions.invoke('usdaFoodSearch', { query: normalized }),
+        base44.functions.invoke('fatsecretSearch', { action: 'search', query: normalized }),
+      ]);
 
-      if (foods.length > 0) {
-        setResults(foods);
-        setShowEmptyState(false);
-        setLoading(false);
-        return;
+      const usdaFoods = usdaResponse.status === 'fulfilled' ? (usdaResponse.value.data.foods || []) : [];
+      const fsFoods = fsResponse.status === 'fulfilled'
+        ? (fsResponse.value.data.foods || []).map(food => ({
+            id: food.id,
+            name: food.name,
+            brand: food.brand,
+            calories: Math.round(food.calories),
+            protein: Math.round(food.protein),
+            carbs: Math.round(food.carbs),
+            fat: Math.round(food.fat),
+            fiber: Math.round(food.fiber),
+            serving_size: food.servingSize || '100g',
+            source: 'fatsecret',
+            needsDetails: food.needsDetails,
+          }))
+        : [];
+
+      // Prefer USDA results (whole foods), supplement with FatSecret (branded foods)
+      let combined = [...usdaFoods];
+      const usdaNames = new Set(usdaFoods.map(f => f.name?.toLowerCase()));
+      for (const f of fsFoods) {
+        if (!usdaNames.has(f.name?.toLowerCase())) combined.push(f);
       }
 
-      const fsResponse = await base44.functions.invoke('fatsecretSearch', { action: 'search', query: translatedQuery });
-      foods = (fsResponse.data.foods || []).map(food => ({
-        id: food.id,
-        name: food.name,
-        brand: food.brand,
-        calories: Math.round(food.calories),
-        protein: Math.round(food.protein),
-        carbs: Math.round(food.carbs),
-        fat: Math.round(food.fat),
-        fiber: Math.round(food.fiber),
-        serving_size: food.servingSize || '100g',
-        source: 'fatsecret',
-        needsDetails: food.needsDetails
-      }));
+      if (combined.length === 0) {
+        // Fallback to OpenFoodFacts
+        combined = await searchOpenFoodFactsFallback(normalized);
+      }
 
-      setResults(foods);
-      setShowEmptyState(foods.length === 0);
+      setResults(combined);
+      setShowEmptyState(combined.length === 0);
     } catch (error) {
       console.error('Search error:', error);
-      const foods = await searchOpenFoodFactsFallback(searchQuery);
+      const foods = await searchOpenFoodFactsFallback(normalized);
       setResults(foods);
       setShowEmptyState(foods.length === 0);
     }
@@ -135,7 +148,7 @@ export default function FoodSearch({ onSelectFood }) {
     clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
       searchFood(trimmed);
-    }, 450);
+    }, 600);
   };
 
   return (
