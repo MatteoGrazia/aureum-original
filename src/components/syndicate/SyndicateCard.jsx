@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
-import { Dumbbell, Flame, Clock, TrendingUp, MoreVertical, EyeOff, MessageCircle, Send, Flag } from 'lucide-react';
+import { Dumbbell, Flame, Clock, TrendingUp, MoreVertical, EyeOff, MessageCircle, Send, Flag, ChevronDown, ChevronUp, Image } from 'lucide-react';
 import AscensionFeather from './AscensionFeather';
 import { formatDistanceToNow } from 'date-fns';
 import { base44 } from '@/api/base44Client';
@@ -22,6 +22,8 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
   const [submitting, setSubmitting] = useState(false);
   const [showAthleteProfile, setShowAthleteProfile] = useState(false);
   const [reported, setReported] = useState(false);
+  const [showWorkoutDetail, setShowWorkoutDetail] = useState(false);
+  const [lightboxPhoto, setLightboxPhoto] = useState(null);
   const queryClient = useQueryClient();
   const { isDarkMode } = useTheme();
   const cardBg = isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.88)';
@@ -125,6 +127,32 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
           50% { border-color: #F4D03F; box-shadow: 0 0 20px rgba(244,208,63,0.5); }
         }
       `}</style>
+
+      {/* Photo Lightbox */}
+      <AnimatePresence>
+        {lightboxPhoto && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setLightboxPhoto(null)}
+            className="fixed inset-0 z-[500] flex items-center justify-center p-4"
+            style={{ background: 'rgba(0,0,0,0.92)', backdropFilter: 'blur(20px)' }}
+          >
+            <motion.img
+              initial={{ scale: 0.88, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.88, opacity: 0 }}
+              transition={{ type: 'spring', damping: 28, stiffness: 300 }}
+              src={lightboxPhoto}
+              alt=""
+              className="max-w-full max-h-full rounded-2xl"
+              style={{ border: '0.5px solid rgba(212,175,55,0.3)', boxShadow: '0 0 60px rgba(0,0,0,0.8)' }}
+              onClick={e => e.stopPropagation()}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {showAthleteProfile && (
         <AthleteProfileOverlay
@@ -283,6 +311,97 @@ export default function SyndicateCard({ post, currentUserEmail, onVoltage, index
           {post.notes && (
             <p className="text-xs mt-3 leading-relaxed" style={{ color: noteColor, fontFamily: 'Montserrat, sans-serif' }}>{post.notes}</p>
           )}
+
+          {/* Photo preview grid */}
+          {post.photos && post.photos.length > 0 && (
+            <div className={`mt-3 grid gap-1.5 ${post.photos.length === 1 ? 'grid-cols-1' : post.photos.length === 2 ? 'grid-cols-2' : 'grid-cols-3'}`}>
+              {post.photos.slice(0, 3).map((url, idx) => (
+                <div
+                  key={idx}
+                  className="relative rounded-xl overflow-hidden cursor-pointer active:scale-95 transition-transform"
+                  style={{ aspectRatio: post.photos.length === 1 ? '16/9' : '1/1' }}
+                  onClick={() => setLightboxPhoto(url)}
+                >
+                  <img src={url} alt="" className="w-full h-full object-cover" />
+                  {idx === 2 && post.photos.length > 3 && (
+                    <div className="absolute inset-0 flex items-center justify-center" style={{ background: 'rgba(8,8,8,0.6)' }}>
+                      <span className="text-white text-sm" style={{ fontFamily: 'Montserrat, sans-serif' }}>+{post.photos.length - 3}</span>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* View Full Workout button — only for workout posts with exercise data in notes */}
+          {isWorkout && post.notes && (
+            <button
+              onClick={() => setShowWorkoutDetail(s => !s)}
+              className="flex items-center gap-1.5 mt-3 transition-all"
+              style={{ color: isDarkMode ? 'rgba(212,175,55,0.65)' : 'rgba(154,122,20,0.75)', fontFamily: 'Montserrat, sans-serif', fontSize: 10, letterSpacing: '0.15em', textTransform: 'uppercase' }}
+            >
+              {showWorkoutDetail ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+              {showWorkoutDetail ? 'Hide Details' : 'View Workout'}
+            </button>
+          )}
+
+          {/* Expanded workout detail */}
+          <AnimatePresence>
+            {showWorkoutDetail && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.25 }}
+                className="overflow-hidden"
+              >
+                <div className="mt-3 rounded-xl p-3 space-y-2" style={{ background: isDarkMode ? 'rgba(212,175,55,0.04)' : 'rgba(154,122,20,0.05)', border: isDarkMode ? '0.5px solid rgba(212,175,55,0.12)' : '0.5px solid rgba(154,122,20,0.18)' }}>
+                  {post.workout_name && (
+                    <p className="text-[10px] uppercase tracking-[0.25em] mb-2" style={{ color: isDarkMode ? 'rgba(212,175,55,0.6)' : 'rgba(154,122,20,0.7)', fontFamily: 'Montserrat, sans-serif' }}>
+                      {post.workout_name}
+                    </p>
+                  )}
+                  <div className="flex flex-wrap gap-2">
+                    {post.volume_kg > 0 && (
+                      <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg" style={{ background: isDarkMode ? 'rgba(189,181,213,0.08)' : 'rgba(90,75,140,0.07)', border: isDarkMode ? '0.5px solid rgba(189,181,213,0.2)' : '0.5px solid rgba(90,75,140,0.2)' }}>
+                        <Dumbbell className="w-3 h-3" style={{ color: isDarkMode ? '#BDB5D5' : '#5A4B8C' }} strokeWidth={1.5} />
+                        <span className="text-xs" style={{ color: isDarkMode ? '#BDB5D5' : '#5A4B8C', fontFamily: 'Montserrat, sans-serif' }}>{post.volume_kg.toLocaleString()} kg total</span>
+                      </div>
+                    )}
+                    {post.duration_minutes > 0 && (
+                      <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg" style={{ background: isDarkMode ? 'rgba(189,181,213,0.08)' : 'rgba(90,75,140,0.07)', border: isDarkMode ? '0.5px solid rgba(189,181,213,0.2)' : '0.5px solid rgba(90,75,140,0.2)' }}>
+                        <Clock className="w-3 h-3" style={{ color: isDarkMode ? '#BDB5D5' : '#5A4B8C' }} strokeWidth={1.5} />
+                        <span className="text-xs" style={{ color: isDarkMode ? '#BDB5D5' : '#5A4B8C', fontFamily: 'Montserrat, sans-serif' }}>{post.duration_minutes} min</span>
+                      </div>
+                    )}
+                  </div>
+                  {/* Exercises parsed from notes */}
+                  {post.notes && (
+                    <div className="mt-2">
+                      <p className="text-[9px] uppercase tracking-[0.2em] mb-1.5" style={{ color: isDarkMode ? 'rgba(255,255,255,0.25)' : 'rgba(30,28,24,0.35)', fontFamily: 'Montserrat, sans-serif' }}>Exercises</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {post.notes.split(',').map((ex, i) => (
+                          <span key={i} className="px-2 py-1 rounded-lg text-[10px]" style={{ background: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(30,28,24,0.06)', color: isDarkMode ? 'rgba(229,229,231,0.6)' : 'rgba(30,28,24,0.65)', fontFamily: 'Montserrat, sans-serif', border: isDarkMode ? '0.5px solid rgba(255,255,255,0.08)' : '0.5px solid rgba(30,28,24,0.12)' }}>
+                            {ex.trim()}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {/* All photos if more than shown */}
+                  {post.photos && post.photos.length > 3 && (
+                    <div className="mt-2 grid grid-cols-4 gap-1">
+                      {post.photos.slice(3).map((url, idx) => (
+                        <div key={idx} className="rounded-lg overflow-hidden cursor-pointer active:scale-95 transition-transform" style={{ aspectRatio: '1/1' }} onClick={() => setLightboxPhoto(url)}>
+                          <img src={url} alt="" className="w-full h-full object-cover" />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         {/* Footer */}
