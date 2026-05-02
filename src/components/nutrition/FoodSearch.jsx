@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Plus, Loader2 } from 'lucide-react';
+import { Search, Plus, Loader2, ChevronDown } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { Input } from '@/components/ui/input';
 
@@ -10,6 +10,8 @@ export default function FoodSearch({ onSelectFood }) {
   const [loading, setLoading] = useState(false);
   const [showEmptyState, setShowEmptyState] = useState(false);
   const [focused, setFocused] = useState(false);
+  const [showAll, setShowAll] = useState(false);
+  const INITIAL_LIMIT = 5;
   const debounceRef = useRef(null);
   const containerRef = useRef(null);
 
@@ -119,11 +121,13 @@ export default function FoodSearch({ onSelectFood }) {
 
       setResults(combined);
       setShowEmptyState(combined.length === 0);
+      setShowAll(false);
     } catch (error) {
       console.error('Search error:', error);
       const foods = await searchOpenFoodFactsFallback(normalized);
       setResults(foods);
       setShowEmptyState(foods.length === 0);
+      setShowAll(false);
     }
 
     setLoading(false);
@@ -205,9 +209,9 @@ export default function FoodSearch({ onSelectFood }) {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="space-y-2 max-h-96 overflow-y-auto overflow-x-hidden pr-2"
+            className="space-y-2"
           >
-            {results.map((food, index) => (
+            {(showAll ? results : results.slice(0, INITIAL_LIMIT)).map((food, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, x: -20 }}
@@ -273,6 +277,21 @@ export default function FoodSearch({ onSelectFood }) {
                 </button>
               </motion.div>
             ))}
+
+            {/* Show more / show less */}
+            {results.length > INITIAL_LIMIT && (
+              <button
+                onClick={() => setShowAll(p => !p)}
+                className="w-full flex items-center justify-center gap-1.5 py-2 transition-all active:scale-95"
+                style={{ color: 'rgba(255,218,185,0.5)', fontFamily: 'Montserrat, sans-serif', fontSize: 10, letterSpacing: '0.15em', textTransform: 'uppercase' }}
+              >
+                <ChevronDown
+                  className="w-3.5 h-3.5 transition-transform duration-200"
+                  style={{ transform: showAll ? 'rotate(180deg)' : 'rotate(0deg)' }}
+                />
+                {showAll ? 'Show less' : `Show ${results.length - INITIAL_LIMIT} more results`}
+              </button>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
