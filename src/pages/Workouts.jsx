@@ -551,11 +551,14 @@ export default function Workouts() {
                 bottom: 100,
                 width: 56,
                 height: 56,
-                background: 'linear-gradient(135deg, #D4AF37 0%, #D4AF37 100%)',
-                boxShadow: '0 0 24px rgba(212,175,55,0.45)',
+                background: 'rgba(212,175,55,0.14)',
+                border: '1.5px solid rgba(212,175,55,0.65)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                boxShadow: '0 0 20px rgba(212,175,55,0.22), 0 0 6px rgba(212,175,55,0.10)',
               }}
             >
-              <Plus className="w-6 h-6 text-black" strokeWidth={2} />
+              <Plus className="w-6 h-6" style={{ color: '#D4AF37' }} strokeWidth={2} />
             </motion.button>
           )}
 
