@@ -127,7 +127,7 @@ export default function AuraHero({ remaining, goal, consumed, protein, carbs, fa
               />
             ))}
 
-            <p className="text-5xl relative z-10" style={{
+            <p className="text-7xl relative z-10" style={{
               fontFamily: 'Montserrat, sans-serif', fontWeight: 200, color: '#FFFFFF',
               textShadow: '0 0 20px rgba(212,175,55,0.7), 0 0 40px rgba(212,175,55,0.3)',
               letterSpacing: '-0.02em',
