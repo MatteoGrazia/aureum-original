@@ -1,7 +1,8 @@
-import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Search, Plus } from 'lucide-react';
 import { useTheme } from '@/components/shared/ThemeContext';
+import { useModalBack } from '@/lib/NavigationContext';
 
 const MUSCLES   = ['all','chest','back','shoulders','biceps','triceps','legs','core','glutes','forearms','calves'];
 const EQUIPMENT = ['all','barbell','dumbbell','cable','machine','bodyweight','kettlebell','bands'];
@@ -194,6 +195,13 @@ export default function ExercisePicker({ exercises, onSelect, onClose, mode = 'a
   const [selected, setSelected]         = useState(null);
   const sectionRefs = useRef({});
 
+  // Register back handler: if detail sheet open, close it; else close picker
+  const { openModal, closeModal } = useModalBack(() => {
+    if (selected) { setSelected(null); }
+    else { onClose(); }
+  });
+  useEffect(() => { openModal(); return () => { closeModal(); }; }, []);
+
   const iconColor   = isDarkMode ? '#D4AF37' : '#9C7E46';
   const bg          = isDarkMode ? '#0a0a0a' : '#F5F5F2';
   const cardBg      = isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.75)';
@@ -253,7 +261,7 @@ export default function ExercisePicker({ exercises, onSelect, onClose, mode = 'a
         <h2 style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400, color: textPrimary, fontSize: 18 }}>
           {mode === 'replace' ? 'Replace Exercise' : 'Add Exercise'}
         </h2>
-        <button onClick={onClose} className="w-10 h-10 rounded-xl flex items-center justify-center"
+        <button onClick={() => { closeModal(); onClose(); }} className="w-10 h-10 rounded-xl flex items-center justify-center"
           style={{ background: isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)' }}>
           <X className="w-5 h-5" style={{ color: textPrimary }} />
         </button>

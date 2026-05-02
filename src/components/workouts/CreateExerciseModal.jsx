@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Upload, Dumbbell, ChevronRight, Check } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useTheme } from '@/components/shared/ThemeContext';
+import { useModalBack } from '@/lib/NavigationContext';
 
 const MUSCLE_GROUPS = ['chest', 'back', 'shoulders', 'biceps', 'triceps', 'legs', 'core', 'glutes', 'forearms', 'calves'];
 const EQUIPMENT_OPTIONS = ['barbell', 'dumbbell', 'machine', 'cable', 'bodyweight', 'kettlebell', 'bands'];
@@ -78,6 +79,8 @@ function SelectDrawer({ title, options, value, onSelect, onClose, multi = false,
 
 export default function CreateExerciseModal({ onClose, onCreated }) {
   const { isDarkMode } = useTheme();
+  const { openModal, closeModal } = useModalBack(onClose);
+  useEffect(() => { openModal(); return () => { closeModal(); }; }, []);
   const [form, setForm] = useState({ name: '', muscle_group: '', equipment: '', secondary_muscles: [], instructions: '' });
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
@@ -170,7 +173,7 @@ export default function CreateExerciseModal({ onClose, onCreated }) {
             <h2 style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400, color: textPrimary, fontSize: 17, letterSpacing: '0.08em' }}>
               Create Exercise
             </h2>
-            <button onClick={onClose}>
+            <button onClick={() => { closeModal(); onClose(); }}>
               <X className="w-5 h-5" style={{ color: textMuted }} />
             </button>
           </div>
