@@ -45,10 +45,10 @@ export default function NutritionToolbar({ onAction, onOpenScanner }) {
           <button
             key={id}
             onClick={() => onAction(id)}
-            className="flex-1 flex flex-col items-center justify-center gap-1.5 py-1 transition-all active:scale-95"
+            className="flex-1 flex flex-col items-center justify-center gap-2 py-1 transition-all active:scale-95"
           >
-            <Icon className="w-4 h-4" style={{ color: PEACH }} strokeWidth={1.5} />
-            <span className="text-[9px] uppercase tracking-[0.10em]" style={{ color: textMuted, fontFamily: 'Montserrat, sans-serif' }}>
+            <Icon className="w-6 h-6" style={{ color: PEACH }} strokeWidth={1.5} />
+            <span className="text-[10px] uppercase tracking-[0.10em]" style={{ color: textMuted, fontFamily: 'Montserrat, sans-serif' }}>
               {label}
             </span>
           </button>
