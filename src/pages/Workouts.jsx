@@ -14,7 +14,9 @@ import WorkoutSummary from '@/components/workouts/WorkoutSummary';
 import ExercisePicker from '@/components/workouts/ExercisePicker';
 import WorkoutLogDetail from '@/components/workouts/WorkoutLogDetail';
 import RoutineCard from '@/components/workouts/RoutineCard';
-import WorkoutHero from '@/components/workouts/WorkoutHero';
+import WorkoutWeeklyHero from '@/components/workouts/WorkoutWeeklyHero';
+import SBDCard from '@/components/workouts/SBDCard';
+import LatestPRCard from '@/components/workouts/LatestPRCard';
 import CreateExerciseModal from '@/components/workouts/CreateExerciseModal';
 import WeeklyMuscleVolume from '@/components/workouts/WeeklyMuscleVolume';
 import TrainLikeThem from '@/components/workouts/TrainLikeThem';
@@ -565,8 +567,15 @@ export default function Workouts() {
           {view === 'routines' && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
 
-              {/* Hero: Big 3 Total + Wilks */}
-              <WorkoutHero logs={recentWorkouts} />
+              {/* Hero Section — 3 part layout */}
+              <WorkoutWeeklyHero
+                logs={recentWorkouts}
+                userProfile={userProfile}
+              />
+              <div className="flex gap-2.5">
+                <LatestPRCard logs={recentWorkouts} />
+                <SBDCard logs={recentWorkouts} />
+              </div>
 
               {/* Routines label */}
               <div className="flex items-center justify-between">
