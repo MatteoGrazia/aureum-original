@@ -85,7 +85,7 @@ export default function RoutineCard({ routine, isExpanded, onToggle, onStart, on
             <div className="flex flex-wrap gap-1.5 mb-2">
               {routine.target_muscles.slice(0, 4).map(m => (
                 <span key={m} className="text-[9px] uppercase tracking-wider capitalize px-2 py-0.5 rounded-full"
-                  style={{ color: 'rgba(212,175,55,0.6)', background: 'rgba(212,175,55,0.07)', border: '0.5px solid rgba(212,175,55,0.15)' }}>
+                  style={{ color: 'rgba(189,181,213,0.7)', background: 'rgba(189,181,213,0.07)', border: '0.5px solid rgba(189,181,213,0.18)' }}>
                   {m}
                 </span>
               ))}
