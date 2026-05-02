@@ -129,8 +129,7 @@ export default function AuraHero({ remaining, goal, consumed, protein, carbs, fa
 
             <p className="text-7xl relative z-10" style={{
               fontFamily: 'Montserrat, sans-serif', fontWeight: 200, color: '#FFFFFF',
-              textShadow: 'none',
-              opacity: 0.75,
+              textShadow: '0 0 20px rgba(255,255,255,0.25)',
               letterSpacing: '-0.02em',
             }}>
               {Math.max(remaining, 0)}
