@@ -14,6 +14,7 @@ export default function FoodSearch({ onSelectFood }) {
   const INITIAL_LIMIT = 5;
   const debounceRef = useRef(null);
   const containerRef = useRef(null);
+  const searchIdRef = useRef(0); // tracks latest search to ignore stale results
 
   // Dismiss results on outside click
   React.useEffect(() => {
@@ -77,18 +78,24 @@ export default function FoodSearch({ onSelectFood }) {
       return;
     }
 
+    // Stamp this search — ignore results if a newer search has started
+    const myId = ++searchIdRef.current;
+
     setLoading(true);
     setShowEmptyState(false);
 
     const translatedQuery = await translateIfNeeded(searchQuery);
+    if (searchIdRef.current !== myId) return; // stale
+
     const normalized = normalizeQuery(translatedQuery);
 
     try {
-      // Run USDA and FatSecret in parallel for faster results
       const [usdaResponse, fsResponse] = await Promise.allSettled([
         base44.functions.invoke('usdaFoodSearch', { query: normalized }),
         base44.functions.invoke('fatsecretSearch', { action: 'search', query: normalized }),
       ]);
+
+      if (searchIdRef.current !== myId) return; // stale
 
       const usdaFoods = usdaResponse.status === 'fulfilled' ? (usdaResponse.value.data.foods || []) : [];
       const fsFoods = fsResponse.status === 'fulfilled'
@@ -107,7 +114,6 @@ export default function FoodSearch({ onSelectFood }) {
           }))
         : [];
 
-      // Prefer USDA results (whole foods), supplement with FatSecret (branded foods)
       let combined = [...usdaFoods];
       const usdaNames = new Set(usdaFoods.map(f => f.name?.toLowerCase()));
       for (const f of fsFoods) {
@@ -115,22 +121,22 @@ export default function FoodSearch({ onSelectFood }) {
       }
 
       if (combined.length === 0) {
-        // Fallback to OpenFoodFacts
         combined = await searchOpenFoodFactsFallback(normalized);
+        if (searchIdRef.current !== myId) return; // stale
       }
 
       setResults(combined);
       setShowEmptyState(combined.length === 0);
       setShowAll(false);
     } catch (error) {
-      console.error('Search error:', error);
+      if (searchIdRef.current !== myId) return;
       const foods = await searchOpenFoodFactsFallback(normalized);
       setResults(foods);
       setShowEmptyState(foods.length === 0);
       setShowAll(false);
     }
 
-    setLoading(false);
+    if (searchIdRef.current === myId) setLoading(false);
   };
 
   const handleSearch = (e) => {
