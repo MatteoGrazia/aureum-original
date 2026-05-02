@@ -11,6 +11,7 @@ html, body, #root {
   background-color: #080808;
   min-height: 100vh;
   overflow-x: hidden;
+  overflow-y: auto;
 }
 html[data-theme="light"],
 html[data-theme="light"] body,
@@ -47,7 +48,6 @@ nav,
 [style*="overflow-y: auto"],
 [style*="overflow-y: scroll"] {
   -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;
 }
 
 /* Skeleton shimmer loader */
@@ -81,11 +81,7 @@ html[data-theme="light"] .skeleton {
   transition: opacity 150ms ease;
 }
 
-/* Prevent box-shadow repaints during scroll — replace with cheaper border */
-.scroll-container > * {
-  /* Children inside scroll containers should avoid expensive box-shadow */
-  contain: layout style;
-}
+/* scroll-container hint — no contain override needed */
 
 @layer base {
   :root {
@@ -165,7 +161,6 @@ html[data-theme="light"] .skeleton {
 @layer base {
   html {
     background: #080808;
-    overscroll-behavior: none;
   }
   html[data-theme="light"] {
     background: #F5F5F7;
@@ -178,7 +173,6 @@ html[data-theme="light"] .skeleton {
   body {
     @apply bg-background text-foreground;
     background: #080808;
-    overscroll-behavior: none;
   }
   html[data-theme="light"] body {
     background: #F5F5F7;
