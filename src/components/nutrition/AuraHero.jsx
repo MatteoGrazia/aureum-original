@@ -105,7 +105,7 @@ export default function AuraHero({ remaining, goal, consumed, protein, carbs, fa
           onClick={() => setFlipped(f => !f)}
           animate={{ rotateY: flipped ? 180 : 0 }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          style={{ width: 186, height: 186, transformStyle: 'preserve-3d', cursor: 'pointer', position: 'relative' }}
+          style={{ width: 230, height: 230, transformStyle: 'preserve-3d', cursor: 'pointer', position: 'relative' }}
         >
           {/* ── FRONT ── */}
           <div
