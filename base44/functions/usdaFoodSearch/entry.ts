@@ -144,23 +144,18 @@ const buildServingUnits = (food) => {
   return units;
 };
 
-// Normalize a query: lowercase, trim, remove trailing 's' for basic de-pluralization
-const normalizeQuery = (q) => {
-  const trimmed = q.toLowerCase().trim();
-  // De-pluralize: remove trailing 's' only if word is >= 4 chars and ends in 's' (but not 'ss')
-  return trimmed.replace(/\b(\w{3,})s\b/g, (match, stem) => {
-    if (stem.endsWith('s')) return match; // "grass", "class" → keep
-    return stem;
-  });
+// Normalize to singular form so "eggs" and "egg" produce identical queries
+const toSingular = (word) => {
+  const w = word.toLowerCase();
+  if (w.endsWith('ies') && w.length > 4) return w.slice(0, -3) + 'y'; // berries → berry
+  if (w.endsWith('ves') && w.length > 4) return w.slice(0, -3) + 'f'; // halves → half
+  if (w.endsWith('ss') || w.endsWith('us') || w.endsWith('is')) return w; // grass, status, basis
+  if (w.endsWith('s') && w.length > 2) return w.slice(0, -1); // eggs → egg, apples → apple
+  return w;
 };
 
-// Get singular form of a word (simple heuristic)
-const getSingular = (word) => {
-  if (word.endsWith('ies') && word.length > 4) return word.slice(0, -3) + 'y';
-  if (word.endsWith('ves') && word.length > 4) return word.slice(0, -3) + 'f';
-  if (word.endsWith('s') && !word.endsWith('ss') && word.length > 3) return word.slice(0, -1);
-  return word;
-};
+const normalizeQueryForSearch = (q) =>
+  q.toLowerCase().trim().split(/\s+/).map(toSingular).join(' ');
 
 const fetchUSDA = async (query) => {
   const url = `${USDA_BASE_URL}/foods/search?query=${encodeURIComponent(query)}&pageSize=80&dataType=SR%20Legacy,Foundation,Survey%20(FNDDS)&api_key=${USDA_API_KEY}`;
@@ -171,65 +166,36 @@ const fetchUSDA = async (query) => {
 };
 
 const searchUSDA = async (query) => {
-  const lowerQuery = query.toLowerCase().trim();
-  const queryWords = lowerQuery.split(/\s+/);
+  // Always normalize to singular so "eggs" and "egg" produce the same results
+  const normalized = normalizeQueryForSearch(query);
+  const queryWords = normalized.split(/\s+/);
 
-  // Build query variants to cover plural/singular/case differences
-  const singular = queryWords.map(getSingular).join(' ');
-  const queries = [lowerQuery];
-  if (singular !== lowerQuery) queries.push(singular);
-
-  // Run all query variants in parallel and merge
-  const allResults = await Promise.all(queries.map(fetchUSDA));
-  const seenFdcIds = new Set();
-  const merged = [];
-  for (const batch of allResults) {
-    for (const f of batch) {
-      if (!seenFdcIds.has(f.fdcId)) {
-        seenFdcIds.add(f.fdcId);
-        merged.push(f);
-      }
-    }
-  }
-
-  // Scoring: compare against both original and singular form
-  const scoreVariants = [lowerQuery, singular].filter((v, i, a) => a.indexOf(v) === i);
+  const allFoods = await fetchUSDA(normalized);
 
   const scoreFood = (desc) => {
     const name = desc.toLowerCase();
     const tokens = name.split(/[\s,]+/);
+    const firstToken = toSingular(tokens[0]);
+    const firstQueryWord = queryWords[0];
 
-    for (const variant of scoreVariants) {
-      const vWords = variant.split(/\s+/);
-      const firstVWord = vWords[0];
-      const firstToken = tokens[0];
-      const firstTokenSingular = getSingular(firstToken);
-
-      // Exact full match
-      if (name === variant) return 0;
-      // First token matches (or its singular matches)
-      if (firstToken === firstVWord || firstTokenSingular === firstVWord || firstToken === getSingular(firstVWord)) {
-        if (name.includes('raw') || name.includes('whole')) return 1;
-        if (!/\b(dish|recipe|soup|salad|sandwich|casserole|stew|pie|cake|burger|pizza|pasta|noodle|fried rice|stir.fry)\b/i.test(name)) return 2;
-        return 3;
-      }
-      // All query words present (or singular forms)
-      if (vWords.every(w => name.includes(w) || name.includes(getSingular(w)))) return 4;
-      if (name.startsWith(variant)) return 5;
-      if (name.includes(variant)) return 6;
+    if (toSingular(name) === normalized) return 0;
+    if (firstToken === firstQueryWord) {
+      if (name.includes('raw') || name.includes('whole')) return 1;
+      if (!/\b(dish|recipe|soup|salad|sandwich|casserole|stew|pie|cake|burger|pizza|pasta|noodle|fried rice|stir.fry)\b/i.test(name)) return 2;
+      return 3;
     }
+    if (queryWords.every(w => name.split(/[\s,]+/).map(toSingular).includes(w))) return 4;
+    if (name.startsWith(normalized)) return 5;
+    if (name.includes(normalized)) return 6;
     return 10;
   };
 
-  const sorted = merged
+  const sorted = allFoods
     .filter(f => {
       if (queryWords.length === 1) {
         const name = (f.description || '').toLowerCase();
-        const firstToken = name.split(/[\s,]+/)[0];
-        const firstTokenSingular = getSingular(firstToken);
-        const queryWord = queryWords[0];
-        const queryWordSingular = getSingular(queryWord);
-        const startsWithQuery = firstToken === queryWord || firstTokenSingular === queryWordSingular || firstToken === queryWordSingular;
+        const firstToken = toSingular(name.split(/[\s,]+/)[0]);
+        const startsWithQuery = firstToken === queryWords[0];
         if (!startsWithQuery && /\b(with|and|sauce|soup|stew|casserole|pie|cake|dish|recipe|salad|sandwich|burger|pizza|pasta|noodle|fried rice|stir.fry)\b/i.test(name)) {
           return false;
         }
