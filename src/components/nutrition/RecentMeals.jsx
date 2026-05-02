@@ -16,6 +16,7 @@ export default function RecentMeals({ onSelectFood, selectedDate }) {
 
   const { data: recentFoods = [] } = useQuery({
     queryKey: ['recentFoods', selectedDate],
+    staleTime: 60_000,
     queryFn: async () => {
       const logs = await base44.entities.FoodLog.filter({});
       const foodMap = new Map();

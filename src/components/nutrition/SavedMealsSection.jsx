@@ -38,8 +38,9 @@ export default function SavedMealsSection({ onLogMeal, selectedMeal }) {
 
   const handleDelete = async (e, mealId) => {
     e.stopPropagation();
-    await base44.entities.SavedMeal.delete(mealId);
-    queryClient.invalidateQueries(['savedMeals']);
+    // Optimistic removal — instant UI response
+    queryClient.setQueryData(['savedMeals'], (old = []) => old.filter(m => m.id !== mealId));
+    base44.entities.SavedMeal.delete(mealId);
   };
 
   if (savedMeals.length === 0) return null;

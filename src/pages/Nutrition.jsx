@@ -212,10 +212,10 @@ export default function Nutrition() {
     base44.entities.FoodLog.delete(logId);
   };
 
-  // Log multiple foods at once (from meal scan / voice log)
+  // Log multiple foods at once (from meal scan / voice log) — parallel creates
   const handleLogMultipleFoods = async (foods) => {
-    for (const food of foods) {
-      await base44.entities.FoodLog.create({
+    await Promise.all(foods.map(food =>
+      base44.entities.FoodLog.create({
         date: dateStr,
         meal_type: selectedMeal,
         food_name: food.name,
@@ -227,8 +227,8 @@ export default function Nutrition() {
         carbs: Math.round(food.carbs || 0),
         fat: Math.round(food.fat || 0),
         fiber: Math.round(food.fiber || 0),
-      });
-    }
+      })
+    ));
     refetch();
   };
 
