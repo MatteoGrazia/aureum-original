@@ -5,6 +5,7 @@ import { Flame } from 'lucide-react';
 
 const GOLD = '#D4AF37';
 const PEACH = '#FFDAB9';
+const PURPLE = '#BDB5D5';
 const DEFAULT_GOAL = 5;
 
 const RING_SIZE = 220;
@@ -100,22 +101,22 @@ export default function WorkoutWeeklyHero({ logs = [], userProfile = null }) {
       <div className="relative flex items-center justify-center" style={{ width: RING_SIZE, height: RING_SIZE }}>
         {/* Radial glow */}
         <div className="absolute inset-0 rounded-full pointer-events-none" style={{
-          background: 'radial-gradient(circle, rgba(212,175,55,0.10) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(189,181,213,0.10) 0%, transparent 70%)',
         }} />
 
         <svg width={RING_SIZE} height={RING_SIZE} className="absolute inset-0" style={{ transform: 'rotate(-90deg)' }}>
           {/* Track */}
           <circle cx={RING_SIZE / 2} cy={RING_SIZE / 2} r={R}
-            fill="none" stroke="rgba(212,175,55,0.12)" strokeWidth={STROKE} />
+            fill="none" stroke="rgba(189,181,213,0.12)" strokeWidth={STROKE} />
           {/* Progress arc */}
           <motion.circle
             cx={RING_SIZE / 2} cy={RING_SIZE / 2} r={R}
-            fill="none" stroke={GOLD} strokeWidth={STROKE} strokeLinecap="round"
+            fill="none" stroke={PURPLE} strokeWidth={STROKE} strokeLinecap="round"
             strokeDasharray={CIRC}
             initial={{ strokeDashoffset: CIRC }}
             animate={{ strokeDashoffset: CIRC - arcLength }}
             transition={{ duration: 1.2, ease: 'easeOut', delay: 0.2 }}
-            style={{ filter: `drop-shadow(0 0 4px rgba(212,175,55,0.6))` }}
+            style={{ filter: `drop-shadow(0 0 4px rgba(189,181,213,0.6))` }}
           />
         </svg>
 

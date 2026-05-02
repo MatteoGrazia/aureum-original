@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
 const GOLD = '#D4AF37';
+const PURPLE = '#BDB5D5';
 const BIG3 = ['Squat', 'Bench Press', 'Deadlift'];
 
 const RING_SIZE = 180;
@@ -63,14 +64,14 @@ export default function SBDCard({ logs = [] }) {
       <div className="relative flex items-center justify-center" style={{ width: RING_SIZE, height: RING_SIZE }}>
         {/* Radial glow */}
         <div className="absolute inset-0 rounded-full pointer-events-none" style={{
-          background: 'radial-gradient(circle, rgba(212,175,55,0.08) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(189,181,213,0.08) 0%, transparent 70%)',
         }} />
 
         <svg width={RING_SIZE} height={RING_SIZE} className="absolute inset-0">
           <circle cx={RING_SIZE / 2} cy={RING_SIZE / 2} r={R}
-            fill="none" stroke={GOLD} strokeWidth={STROKE}
-            strokeOpacity={0.5}
-            style={{ filter: `drop-shadow(0 0 3px rgba(212,175,55,0.4))` }}
+            fill="none" stroke={PURPLE} strokeWidth={STROKE}
+            strokeOpacity={0.6}
+            style={{ filter: `drop-shadow(0 0 3px rgba(189,181,213,0.4))` }}
           />
         </svg>
 
