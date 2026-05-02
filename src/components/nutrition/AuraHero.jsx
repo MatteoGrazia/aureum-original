@@ -14,9 +14,9 @@ const PARTICLES = Array.from({ length: 18 }, (_, i) => ({
 }));
 
 const RINGS = [
-  { label: 'protein', r: 122, stroke: 2,   color: MACRO_TONES.protein, animDelay: 0    },
-  { label: 'carbs',   r: 110, stroke: 1.5, color: MACRO_TONES.carbs,   animDelay: 0.3  },
-  { label: 'fat',     r:  98, stroke: 1.5, color: MACRO_TONES.fat,     animDelay: 0.6  },
+  { label: 'protein', r: 152, stroke: 2.5, color: MACRO_TONES.protein, animDelay: 0    },
+  { label: 'carbs',   r: 138, stroke: 2,   color: MACRO_TONES.carbs,   animDelay: 0.3  },
+  { label: 'fat',     r: 124, stroke: 2,   color: MACRO_TONES.fat,     animDelay: 0.6  },
 ];
 
 function MacroRings({ protein, carbs, fat, macroGoals }) {
@@ -29,8 +29,8 @@ function MacroRings({ protein, carbs, fat, macroGoals }) {
 
   return (
     <svg
-      width={280} height={280}
-      viewBox="0 0 280 280"
+      width={340} height={340}
+      viewBox="0 0 340 340"
       className="absolute inset-0 pointer-events-none"
       style={{ transform: 'rotate(-90deg)' }}
     >
@@ -48,11 +48,11 @@ function MacroRings({ protein, carbs, fat, macroGoals }) {
         return (
           <g key={ring.label}>
             {/* Track */}
-            <circle cx={140} cy={140} r={ring.r} fill="none"
+            <circle cx={170} cy={170} r={ring.r} fill="none"
               stroke="#E5E5E7" strokeWidth={ring.stroke} strokeOpacity={0.1} />
             {/* Filled arc */}
             <motion.circle
-              cx={140} cy={140} r={ring.r}
+              cx={170} cy={170} r={ring.r}
               fill="none"
               stroke={ring.color}
               strokeWidth={ring.stroke}
@@ -96,7 +96,7 @@ export default function AuraHero({ remaining, goal, consumed, protein, carbs, fa
 
   return (
     <div className="flex flex-col items-center mb-8">
-      <div className="relative flex items-center justify-center" style={{ width: 280, height: 280, overflow: 'hidden' }}>
+      <div className="relative flex items-center justify-center" style={{ width: 340, height: 340, overflow: 'hidden' }}>
         {/* Three concentric macro rings */}
         <MacroRings protein={protein} carbs={carbs} fat={fat} macroGoals={macroGoals} />
 
