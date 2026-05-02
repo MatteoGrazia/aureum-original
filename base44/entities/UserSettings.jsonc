@@ -1,0 +1,417 @@
+{
+  "name": "UserSettings",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "Unique per user \u2014 one record per user"
+    },
+    "home_default_tab": {
+      "type": "string",
+      "enum": [
+        "today",
+        "weekly",
+        "monthly"
+      ],
+      "default": "today"
+    },
+    "home_show_motivational_quote": {
+      "type": "boolean",
+      "default": true
+    },
+    "home_show_streak_banner": {
+      "type": "boolean",
+      "default": true
+    },
+    "home_widget_order": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [
+        "nutrition",
+        "activity",
+        "workouts",
+        "sleep"
+      ]
+    },
+    "home_units_weight": {
+      "type": "string",
+      "enum": [
+        "kg",
+        "lbs"
+      ],
+      "default": "kg"
+    },
+    "home_units_distance": {
+      "type": "string",
+      "enum": [
+        "km",
+        "miles"
+      ],
+      "default": "km"
+    },
+    "nutrition_tdee_calculation_method": {
+      "type": "string",
+      "enum": [
+        "mifflin",
+        "harris",
+        "katch"
+      ],
+      "default": "mifflin"
+    },
+    "nutrition_goal": {
+      "type": "string",
+      "enum": [
+        "cut",
+        "maintain",
+        "bulk",
+        "custom"
+      ],
+      "default": "maintain"
+    },
+    "nutrition_custom_calories": {
+      "type": "number"
+    },
+    "nutrition_calorie_deficit": {
+      "type": "number",
+      "default": 300
+    },
+    "nutrition_calorie_surplus": {
+      "type": "number",
+      "default": 250
+    },
+    "nutrition_macro_split_protein": {
+      "type": "number",
+      "default": 30
+    },
+    "nutrition_macro_split_carbs": {
+      "type": "number",
+      "default": 45
+    },
+    "nutrition_macro_split_fat": {
+      "type": "number",
+      "default": 25
+    },
+    "nutrition_protein_per_kg": {
+      "type": "number",
+      "default": 2.0
+    },
+    "nutrition_protein_target_method": {
+      "type": "string",
+      "enum": [
+        "percentage",
+        "per_kg"
+      ],
+      "default": "per_kg"
+    },
+    "nutrition_meal_count": {
+      "type": "number",
+      "default": 3
+    },
+    "nutrition_show_micronutrients": {
+      "type": "boolean",
+      "default": false
+    },
+    "nutrition_water_goal_ml": {
+      "type": "number",
+      "default": 2500
+    },
+    "nutrition_water_reminder_enabled": {
+      "type": "boolean",
+      "default": false
+    },
+    "nutrition_water_reminder_interval_hours": {
+      "type": "number",
+      "default": 2
+    },
+    "nutrition_diary_start_time": {
+      "type": "string",
+      "default": "06:00"
+    },
+    "nutrition_barcode_scanner_default_serving": {
+      "type": "string",
+      "enum": [
+        "100g",
+        "serving"
+      ],
+      "default": "serving"
+    },
+    "nutrition_show_calories_remaining": {
+      "type": "boolean",
+      "default": true
+    },
+    "workout_weekly_goal": {
+      "type": "number",
+      "default": 5
+    },
+    "workout_preferred_days": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday"
+      ]
+    },
+    "workout_default_rest_timer": {
+      "type": "number",
+      "default": 90
+    },
+    "workout_rest_timer_auto_start": {
+      "type": "boolean",
+      "default": true
+    },
+    "workout_volume_method": {
+      "type": "string",
+      "enum": [
+        "all_sets",
+        "working_sets_only"
+      ],
+      "default": "all_sets"
+    },
+    "workout_show_pr_section": {
+      "type": "boolean",
+      "default": true
+    },
+    "workout_show_sbd_section": {
+      "type": "boolean",
+      "default": true
+    },
+    "workout_sbd_squat_override": {
+      "type": "number"
+    },
+    "workout_sbd_bench_override": {
+      "type": "number"
+    },
+    "workout_sbd_deadlift_override": {
+      "type": "number"
+    },
+    "workout_default_rep_range_min": {
+      "type": "number",
+      "default": 8
+    },
+    "workout_default_rep_range_max": {
+      "type": "number",
+      "default": 12
+    },
+    "workout_default_set_count": {
+      "type": "number",
+      "default": 3
+    },
+    "workout_plate_calculator_enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "workout_bar_weight": {
+      "type": "number",
+      "default": 20
+    },
+    "workout_show_previous_performance": {
+      "type": "boolean",
+      "default": true
+    },
+    "workout_progression_increment": {
+      "type": "number",
+      "default": 2.5
+    },
+    "workout_auto_progression": {
+      "type": "boolean",
+      "default": false
+    },
+    "activity_daily_steps_goal": {
+      "type": "number",
+      "default": 10000
+    },
+    "activity_show_steps_on_home": {
+      "type": "boolean",
+      "default": true
+    },
+    "activity_calorie_burn_method": {
+      "type": "string",
+      "enum": [
+        "auto",
+        "manual"
+      ],
+      "default": "auto"
+    },
+    "activity_manual_tdee_adjustment": {
+      "type": "number"
+    },
+    "activity_connect_healthkit": {
+      "type": "boolean",
+      "default": false
+    },
+    "activity_connect_google_fit": {
+      "type": "boolean",
+      "default": false
+    },
+    "activity_track_floors": {
+      "type": "boolean",
+      "default": true
+    },
+    "activity_track_distance": {
+      "type": "boolean",
+      "default": true
+    },
+    "activity_active_minutes_goal": {
+      "type": "number",
+      "default": 30
+    },
+    "activity_count_workout_steps": {
+      "type": "boolean",
+      "default": true
+    },
+    "activity_cardio_calories_in_nutrition": {
+      "type": "boolean",
+      "default": true
+    },
+    "community_profile_visibility": {
+      "type": "string",
+      "enum": [
+        "public",
+        "friends",
+        "private"
+      ],
+      "default": "public"
+    },
+    "community_show_workouts": {
+      "type": "boolean",
+      "default": true
+    },
+    "community_show_body_stats": {
+      "type": "boolean",
+      "default": false
+    },
+    "community_show_nutrition": {
+      "type": "boolean",
+      "default": false
+    },
+    "community_allow_friend_requests": {
+      "type": "boolean",
+      "default": true
+    },
+    "community_show_in_leaderboards": {
+      "type": "boolean",
+      "default": true
+    },
+    "community_leaderboard_metric": {
+      "type": "string",
+      "enum": [
+        "volume",
+        "streak",
+        "steps",
+        "workouts"
+      ],
+      "default": "volume"
+    },
+    "community_notifications_likes": {
+      "type": "boolean",
+      "default": true
+    },
+    "community_notifications_comments": {
+      "type": "boolean",
+      "default": true
+    },
+    "community_notifications_friend_requests": {
+      "type": "boolean",
+      "default": true
+    },
+    "profile_dob": {
+      "type": "string",
+      "format": "date"
+    },
+    "profile_gender": {
+      "type": "string",
+      "enum": [
+        "male",
+        "female",
+        "other",
+        "prefer_not_to_say"
+      ]
+    },
+    "profile_height_cm": {
+      "type": "number"
+    },
+    "profile_weight_kg": {
+      "type": "number"
+    },
+    "profile_body_fat_percentage": {
+      "type": "number"
+    },
+    "profile_activity_level": {
+      "type": "string",
+      "enum": [
+        "sedentary",
+        "lightly_active",
+        "moderately_active",
+        "very_active",
+        "extra_active"
+      ],
+      "default": "moderately_active"
+    },
+    "profile_fitness_goal": {
+      "type": "string",
+      "enum": [
+        "lose_fat",
+        "build_muscle",
+        "maintain",
+        "improve_endurance",
+        "general_fitness"
+      ],
+      "default": "build_muscle"
+    },
+    "profile_experience_level": {
+      "type": "string",
+      "enum": [
+        "beginner",
+        "intermediate",
+        "advanced",
+        "elite"
+      ],
+      "default": "intermediate"
+    },
+    "profile_measurement_frequency": {
+      "type": "string",
+      "enum": [
+        "daily",
+        "weekly",
+        "biweekly",
+        "monthly"
+      ],
+      "default": "weekly"
+    },
+    "profile_show_age": {
+      "type": "boolean",
+      "default": true
+    },
+    "profile_timezone": {
+      "type": "string",
+      "default": "UTC"
+    },
+    "profile_language": {
+      "type": "string",
+      "enum": [
+        "en",
+        "fr",
+        "de",
+        "es"
+      ],
+      "default": "en"
+    },
+    "profile_theme": {
+      "type": "string",
+      "enum": [
+        "dark",
+        "light",
+        "auto"
+      ],
+      "default": "dark"
+    }
+  },
+  "required": []
+}

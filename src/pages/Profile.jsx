@@ -21,6 +21,7 @@ function WingIcon({ size = 16 }) {
   );
 }
 import { useTheme } from '@/components/shared/ThemeContext';
+import SettingsPanel from '@/components/settings/SettingsPanel';
 import ProfilePictureUpload from '@/components/profile/ProfilePictureUpload';
 import GlassCard from '@/components/ui/GlassCard';
 import GoldButton from '@/components/ui/GoldButton';
@@ -33,6 +34,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 export default function Profile() {
   const { isDarkMode, toggleTheme } = useTheme();
   const [editMode, setEditMode] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const [editData, setEditData] = useState({});
   const [newUsername, setNewUsername] = useState('');
   const [newEmail, setNewEmail] = useState('');
@@ -322,7 +324,7 @@ export default function Profile() {
               <p className="text-sm mt-0.5" style={{ color: '#E5E5E7', fontFamily: 'Montserrat, sans-serif', fontWeight: 300, opacity: 0.5 }}>{user?.email}</p>
             </div>
             <button
-              onClick={handleEditProfile}
+              onClick={() => setShowSettings(true)}
               className="w-10 h-10 rounded-xl flex items-center justify-center"
               style={{ background: 'rgba(255,255,255,0.06)', border: '0.5px solid rgba(212,175,55,0.2)' }}
             >
@@ -367,6 +369,11 @@ export default function Profile() {
           </button>
         </div>
       </motion.div>
+
+      {/* Settings Panel */}
+      <AnimatePresence>
+        {showSettings && <SettingsPanel onClose={() => setShowSettings(false)} />}
+      </AnimatePresence>
 
       {/* Edit Profile Modal */}
       <AnimatePresence>
