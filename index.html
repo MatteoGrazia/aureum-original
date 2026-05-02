@@ -5,7 +5,22 @@
     <link rel="icon" type="image/svg+xml" href="https://base44.com/logo_v2.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="manifest" href="/manifest.json" />
-    <title>Base44 APP</title>
+    <title>Aureum</title>
+    <!-- Prevent white flash before React hydrates -->
+    <style>
+      html, body, #root {
+        background-color: #080808;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+      }
+    </style>
+    <!-- Preload primary font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500&display=swap" />
   </head>
   <body>
     <div id="root"></div>

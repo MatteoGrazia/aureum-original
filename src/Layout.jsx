@@ -43,7 +43,7 @@ function LayoutInner({ children, currentPageName }) {
       </main>
 
       {/* ── Premium Frosted Bottom Navigation ── */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50" style={{ display: 'var(--hide-nav, block)' }}>
+      <nav className="fixed bottom-0 left-0 right-0 z-50" style={{ display: 'var(--hide-nav, block)', willChange: 'transform', transform: 'translateZ(0)' }}>
         <div
           className="mx-4 mb-3 rounded-2xl glass-card overflow-hidden"
           style={{ marginBottom: 'calc(0.75rem + env(safe-area-inset-bottom, 0px))' }}

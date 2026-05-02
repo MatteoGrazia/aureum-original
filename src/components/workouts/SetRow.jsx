@@ -15,7 +15,7 @@ const epley1RM = (weight, reps) => {
   return Math.round(weight * (1 + reps / 30));
 };
 
-export default function SetRow({ set, index, onUpdate, onDelete, onComplete, previousSet, peak1RM, isBodyweight = false }) {
+const SetRow = React.memo(function SetRow({ set, index, onUpdate, onDelete, onComplete, previousSet, peak1RM, isBodyweight = false }) {
   const [showComment, setShowComment] = useState(false);
   const { isDarkMode } = useTheme();
   const gold = isDarkMode ? '#D4AF37' : '#9A7A14';
@@ -205,4 +205,6 @@ export default function SetRow({ set, index, onUpdate, onDelete, onComplete, pre
       )}
     </motion.div>
   );
-}
+});
+
+export default SetRow;

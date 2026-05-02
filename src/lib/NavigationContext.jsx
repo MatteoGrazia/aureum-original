@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useRef, useCallback } from 'react';
+import React, { createContext, useContext, useRef, useCallback, useMemo } from 'react';
 
 const NavigationContext = createContext(null);
 
@@ -15,22 +15,24 @@ export function NavigationProvider({ children }) {
   }, []);
 
   React.useEffect(() => {
-    const onPopState = (e) => {
+    const onPopState = () => {
       const stack = stackRef.current;
       if (stack.length > 0) {
         const handler = stack[stack.length - 1];
         stack.pop();
         handler?.();
-        // Re-push so the URL doesn't change from the user's perspective
         window.history.pushState({ modal: true }, '');
       }
     };
-    window.addEventListener('popstate', onPopState);
+    window.addEventListener('popstate', onPopState, { passive: true });
     return () => window.removeEventListener('popstate', onPopState);
   }, []);
 
+  // Memoize context value so consumers don't re-render on unrelated parent renders
+  const value = useMemo(() => ({ openModal, closeModal }), [openModal, closeModal]);
+
   return (
-    <NavigationContext.Provider value={{ openModal, closeModal }}>
+    <NavigationContext.Provider value={value}>
       {children}
     </NavigationContext.Provider>
   );
@@ -38,14 +40,17 @@ export function NavigationProvider({ children }) {
 
 export function useModalBack(onBack) {
   const ctx = useContext(NavigationContext);
+  // Use refs to avoid stale closure issues without triggering re-renders
+  const onBackRef = useRef(onBack);
+  onBackRef.current = onBack;
 
   const openModal = useCallback(() => {
-    ctx?.openModal(onBack);
-  }, [ctx, onBack]);
+    ctx?.openModal(onBackRef.current);
+  }, [ctx]);
 
   const closeModal = useCallback(() => {
-    ctx?.closeModal(onBack);
-  }, [ctx, onBack]);
+    ctx?.closeModal(onBackRef.current);
+  }, [ctx]);
 
   return { openModal, closeModal };
 }

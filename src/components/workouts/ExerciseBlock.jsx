@@ -40,7 +40,7 @@ const epley1RM = (weight, reps) => {
 
 const BODYWEIGHT_EQUIPMENT = ['bodyweight'];
 
-export default function ExerciseBlock({ exercise, onUpdate, onStructuralUpdate, onReplace, onTimerStart, previousSets = [], userWeight = 70 }) {
+const ExerciseBlock = React.memo(function ExerciseBlock({ exercise, onUpdate, onStructuralUpdate, onReplace, onTimerStart, previousSets = [], userWeight = 70 }) {
   const isBodyweight = BODYWEIGHT_EQUIPMENT.includes(exercise.equipment);
   const { isDarkMode } = useTheme();
 
@@ -194,4 +194,6 @@ export default function ExerciseBlock({ exercise, onUpdate, onStructuralUpdate, 
       </div>
     </div>
   );
-}
+});
+
+export default ExerciseBlock;

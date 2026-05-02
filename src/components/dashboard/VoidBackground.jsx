@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, memo } from 'react';
 import { useTheme } from '@/components/shared/ThemeContext';
 
 // Stable deterministic values - no Math.random() on render
@@ -20,7 +20,7 @@ const LIGHT_PARTICLES = Array.from({ length: 10 }, (_, i) => ({
   duration: (i % 4) * 3 + 12,
 }));
 
-export default function VoidBackground() {
+const VoidBackground = memo(function VoidBackground() {
   const { isDarkMode } = useTheme();
   // Prevent background from causing flicker by always having a base
   React.useEffect(() => {
@@ -129,4 +129,6 @@ export default function VoidBackground() {
       />
     </div>
   );
-}
+});
+
+export default VoidBackground;

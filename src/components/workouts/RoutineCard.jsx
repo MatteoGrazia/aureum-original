@@ -33,7 +33,7 @@ function MuscleIcon({ muscle, size = 18, color = '#D4AF37' }) {
   );
 }
 
-export default function RoutineCard({ routine, isExpanded, onToggle, onStart, onDelete, onEdit, allLogs = [], allExercises = [] }) {
+const RoutineCard = React.memo(function RoutineCard({ routine, isExpanded, onToggle, onStart, onDelete, onEdit, allLogs = [], allExercises = [] }) {
   const exerciseImageMap = React.useMemo(() => {
     const map = {};
     allExercises.forEach(ex => { if (ex.name && ex.image_url) map[ex.name] = ex.image_url; });
@@ -148,6 +148,9 @@ export default function RoutineCard({ routine, isExpanded, onToggle, onStart, on
                         <img
                           src={exerciseImageMap[ex.exercise_name]}
                           alt={ex.exercise_name}
+                          loading="lazy"
+                          width={36}
+                          height={36}
                           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                         />
                       ) : (
@@ -184,4 +187,6 @@ export default function RoutineCard({ routine, isExpanded, onToggle, onStart, on
       </AnimatePresence>
     </motion.div>
   );
-}
+});
+
+export default RoutineCard;

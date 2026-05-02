@@ -158,12 +158,20 @@ export default function Dashboard() {
           <img 
             src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698347d058d3014d6271ccff/f764a7a57_2.png"
             alt="Aureum"
+            loading="eager"
+            width={64}
+            height={64}
             className="w-16 h-16 mx-auto mb-4 opacity-90"
+            style={{ backgroundColor: 'transparent' }}
           />
           <img 
             src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698347d058d3014d6271ccff/161ef6a6d_Untitleddesign1.png"
             alt="AUREUM"
+            loading="eager"
+            width={256}
+            height={48}
             className="w-64 h-auto mx-auto mb-3"
+            style={{ backgroundColor: 'transparent' }}
           />
           <p 
             className="text-white text-[11px] uppercase tracking-[0.25em]"

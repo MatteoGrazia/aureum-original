@@ -136,6 +136,8 @@ export default function Workouts() {
   const { data: allExercises = [] } = useQuery({
     queryKey: ['exercises'],
     queryFn: () => base44.entities.Exercise.list('-created_date', 500),
+    staleTime: 10 * 60 * 1000, // Exercise library is static — cache for 10 min
+    gcTime: 30 * 60 * 1000,
   });
 
   const exercises = useMemo(() => {
@@ -196,9 +198,11 @@ export default function Workouts() {
     return () => clearInterval(persistTimerRef.current);
   }, [view, activeWorkout, workoutStartTime]);
 
-  // Deduplicate + seed exercises
+  // Deduplicate + seed exercises — run only once per session, not on every render
+  const dedupeRanRef = useRef(false);
   useEffect(() => {
-    if (exercises.length === 0) return; // wait for data to load
+    if (exercises.length === 0 || dedupeRanRef.current) return;
+    dedupeRanRef.current = true;
 
     // Deduplicate: keep only the first occurrence of each exercise name
     const seen = new Set();

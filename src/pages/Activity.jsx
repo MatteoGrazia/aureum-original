@@ -43,7 +43,8 @@ export default function Activity() {
       const activities = await base44.entities.DailyActivity.filter({ date: today });
       return activities[0] || { steps: 0, water_liters: 0, active_minutes: 0, calories_burned: 0, sedentary_minutes: 480 };
     },
-    refetchInterval: 30000 // Refetch every 30 seconds
+    staleTime: 2 * 60 * 1000,
+    refetchInterval: 5 * 60 * 1000, // 5 min instead of 30s — reduces server load dramatically
   });
 
   const { data: profile } = useQuery({
@@ -99,11 +100,10 @@ export default function Activity() {
   const { data: weeklyActivity = [] } = useQuery({
     queryKey: ['weeklyActivity', weekOffset],
     queryFn: async () => {
-      // Fetch enough days and filter to the week range
       const all = await base44.entities.DailyActivity.filter({}, '-date', 90);
       return all.filter(d => d.date >= startDateStr && d.date <= endDateStr).sort((a, b) => a.date.localeCompare(b.date));
     },
-    refetchInterval: 30000
+    staleTime: 5 * 60 * 1000,
   });
 
   const stepGoal = profile?.daily_step_goal || 10000;
@@ -117,18 +117,14 @@ export default function Activity() {
   // Calculate monthly and yearly averages
   const { data: monthlyActivity = [] } = useQuery({
     queryKey: ['monthlyActivity'],
-    queryFn: async () => {
-      return base44.entities.DailyActivity.filter({}, '-date', 30);
-    },
-    refetchInterval: 30000
+    queryFn: () => base44.entities.DailyActivity.filter({}, '-date', 30),
+    staleTime: 5 * 60 * 1000,
   });
   
   const { data: yearlyActivity = [] } = useQuery({
     queryKey: ['yearlyActivity'],
-    queryFn: async () => {
-      return base44.entities.DailyActivity.filter({}, '-date', 365);
-    },
-    refetchInterval: 30000
+    queryFn: () => base44.entities.DailyActivity.filter({}, '-date', 365),
+    staleTime: 10 * 60 * 1000,
   });
   
   const monthlySteps = monthlyActivity.reduce((sum, day) => sum + (day.steps || 0), 0);

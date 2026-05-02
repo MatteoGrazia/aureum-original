@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Plus, ChevronDown, ChevronUp, Calculator } from 'lucide-react';
 import ExerciseBlock from './ExerciseBlock';
@@ -114,17 +114,22 @@ export default function AureumLogger({
     setShowRestTimer(false);
   };
 
-  const updateExercise = (index, exercise) => {
-    const exercises = [...activeWorkout.exercises];
-    exercises[index] = exercise;
-    onUpdateWorkout({ ...activeWorkout, exercises });
-  };
+  const activeWorkoutRef = useRef(activeWorkout);
+  activeWorkoutRef.current = activeWorkout;
 
-  const structuralUpdateExercise = (index, exercise) => {
-    const exercises = [...activeWorkout.exercises];
+  const updateExercise = useCallback((index, exercise) => {
+    const current = activeWorkoutRef.current;
+    const exercises = [...current.exercises];
     exercises[index] = exercise;
-    onUpdateWorkout({ ...activeWorkout, exercises, is_modified: true });
-  };
+    onUpdateWorkout({ ...current, exercises });
+  }, [onUpdateWorkout]);
+
+  const structuralUpdateExercise = useCallback((index, exercise) => {
+    const current = activeWorkoutRef.current;
+    const exercises = [...current.exercises];
+    exercises[index] = exercise;
+    onUpdateWorkout({ ...current, exercises, is_modified: true });
+  }, [onUpdateWorkout]);
 
   const addExercise = (ex) => {
     const newEx = {
