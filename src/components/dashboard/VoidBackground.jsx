@@ -48,7 +48,6 @@ const VoidBackground = memo(function VoidBackground() {
               background: 'radial-gradient(circle, rgba(212,175,55,0.1) 0%, rgba(212,175,55,0.04) 50%, transparent 70%)',
               filter: 'blur(50px)',
               animation: `voidPulse ${blob.duration}s ease-in-out ${blob.delay}s infinite`,
-              willChange: 'transform, opacity',
             }}
           />
         ))}
@@ -65,7 +64,6 @@ const VoidBackground = memo(function VoidBackground() {
               background: 'rgba(156,126,70,0.85)',
               boxShadow: `0 0 ${p.size * 3}px rgba(156,126,70,0.5)`,
               animation: `voidFloat ${p.duration}s ease-in-out ${p.delay}s infinite`,
-              willChange: 'transform, opacity',
             }}
           />
         ))}
@@ -97,11 +95,10 @@ const VoidBackground = memo(function VoidBackground() {
             background: 'radial-gradient(circle, rgba(40,40,40,0.35) 0%, transparent 70%)',
             filter: 'blur(50px)',
             animation: `voidPulse ${blob.duration}s ease-in-out ${blob.delay}s infinite`,
-            willChange: 'transform, opacity',
           }}
         />
       ))}
-      {/* Star particles — reduced count and simpler shadows */}
+      {/* Star particles */}
       {DARK_PARTICLES.slice(0, 10).map((p) => (
         <div
           key={p.id}
@@ -114,7 +111,6 @@ const VoidBackground = memo(function VoidBackground() {
             background: 'rgba(255,255,255,0.75)',
             boxShadow: `0 0 ${p.size * 3}px rgba(255,255,255,0.3)`,
             animation: `voidFloat ${p.duration}s ease-in-out ${p.delay}s infinite`,
-            willChange: 'transform, opacity',
           }}
         />
       ))}

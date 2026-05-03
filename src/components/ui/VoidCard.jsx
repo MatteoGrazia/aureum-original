@@ -12,9 +12,9 @@ export default function VoidCard({ children, className, style, ...props }) {
         background: isDarkMode
           ? 'rgba(255, 255, 255, 0.03)'
           : 'rgba(255, 255, 255, 0.6)',
-        backdropFilter: 'blur(20px) saturate(180%)',
+        backdropFilter: 'blur(12px) saturate(150%)',
         boxShadow: isDarkMode
-          ? '0 20px 50px rgba(0, 0, 0, 0.6)'
+          ? '0 8px 30px rgba(0, 0, 0, 0.5)'
           : '0 2px 8px rgba(225, 193, 110, 0.04)',
         border: isDarkMode
           ? '0.5px solid rgba(212, 175, 55, 0.2)'
@@ -24,7 +24,6 @@ export default function VoidCard({ children, className, style, ...props }) {
         width: '92%',
         margin: '10px auto',
         overflow: 'hidden',
-        transition: 'background 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease',
         ...style,
       }}
       {...props}

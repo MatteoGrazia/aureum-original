@@ -33,14 +33,12 @@ html[data-theme="light"] img {
   background-color: #e8e4dc;
 }
 
-/* Hardware acceleration for animated elements */
+/* Hardware acceleration — ONLY nav and glass-card to avoid layer explosion */
 .glass-card,
-nav,
-[class*="fixed"],
-[class*="sticky"] {
+nav {
   transform: translateZ(0);
-  will-change: transform;
 }
+/* Do NOT apply will-change broadly — it creates GPU layers that cause black squares */
 
 /* Scroll performance */
 .overflow-y-auto,
@@ -201,12 +199,10 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Montserrat', sans-serif; font-weight: 400
 .font-semibold, .font-bold { font-weight: 500; }
 
 .glass-card {
-  backdrop-filter: blur(12px) saturate(140%);
+  backdrop-filter: blur(8px) saturate(130%);
   background: rgba(255, 255, 255, 0.05);
   border: 0.5px solid rgba(212, 175, 55, 0.2);
   transition: background 0.18s ease, border-color 0.18s ease;
-  will-change: auto;
-  transform: translateZ(0);
 }
 
 .gold-text { color: var(--gold); }
