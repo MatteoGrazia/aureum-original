@@ -1,8 +1,21 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Plus, Loader2, ChevronDown } from 'lucide-react';
+import { Search, Plus, Loader2, ChevronDown, Clock, CheckCircle } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { Input } from '@/components/ui/input';
+import {
+  normaliseQuery,
+  searchLocalFoods,
+  searchFoodHistory,
+  searchOpenFoodFacts,
+  mergeAndRank,
+  setFoodHistoryCache,
+  getRecentFoods,
+  COMMON_FOODS,
+} from '@/lib/foodSearch';
+
+const QUICK_ADD = ['Egg', 'Chicken Breast', 'White Rice (cooked)', 'Oats (dry)', 'Banana'];
+const INITIAL_LIMIT = 5;
 
 export default function FoodSearch({ onSelectFood }) {
   const [query, setQuery] = useState('');
@@ -11,13 +24,31 @@ export default function FoodSearch({ onSelectFood }) {
   const [showEmptyState, setShowEmptyState] = useState(false);
   const [focused, setFocused] = useState(false);
   const [showAll, setShowAll] = useState(false);
-  const INITIAL_LIMIT = 5;
-  const debounceRef = useRef(null);
-  const containerRef = useRef(null);
-  const searchIdRef = useRef(0); // tracks latest search to ignore stale results
+  const [recentFoods, setRecentFoods] = useState([]);
 
-  // Dismiss results on outside click
-  React.useEffect(() => {
+  const debounceRef = useRef(null);
+  const searchIdRef = useRef(0);
+  const containerRef = useRef(null);
+  const historyLoadedRef = useRef(false);
+
+  // Load food history once on mount
+  useEffect(() => {
+    if (historyLoadedRef.current) return;
+    historyLoadedRef.current = true;
+    (async () => {
+      try {
+        const user = await base44.auth.me();
+        const logs = await base44.entities.FoodLog.filter({ created_by: user.email }, '-created_date', 200);
+        setFoodHistoryCache(logs);
+        setRecentFoods(getRecentFoods(5));
+      } catch {
+        // silently ignore — history is optional
+      }
+    })();
+  }, []);
+
+  // Dismiss on outside click
+  useEffect(() => {
     const handler = (e) => {
       if (containerRef.current && !containerRef.current.contains(e.target)) {
         setResults([]);
@@ -29,140 +60,82 @@ export default function FoodSearch({ onSelectFood }) {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  const searchOpenFoodFactsFallback = async (searchQuery) => {
-    try {
-      const response = await fetch(
-        `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(searchQuery)}&search_simple=1&action=process&json=1&page_size=20`
-      );
-      const data = await response.json();
-      return (data.products || [])
-        .filter(p => p.product_name && p.nutriments?.['energy-kcal_100g'] > 0)
-        .slice(0, 12)
-        .map(p => ({
-          name: p.product_name,
-          brand: p.brands || '',
-          calories: Math.round(p.nutriments?.['energy-kcal_100g'] || 0),
-          protein: Math.round(p.nutriments?.proteins_100g || 0),
-          carbs: Math.round(p.nutriments?.carbohydrates_100g || 0),
-          fat: Math.round(p.nutriments?.fat_100g || 0),
-          fiber: Math.round(p.nutriments?.fiber_100g || 0),
-          serving_size: '100g',
-          source: 'openfoods'
-        }));
-    } catch {
-      return [];
-    }
-  };
-
-  const translateIfNeeded = async (text) => {
-    // Detect if text is non-English (simple heuristic: contains non-ASCII or known patterns)
-    const isLikelyNonEnglish = /[^\x00-\x7F]/.test(text) || /^[a-z]{1,3}$/i.test(text) === false && !/^[a-zA-Z\s\-']+$/.test(text);
-    if (!isLikelyNonEnglish) return text;
-    try {
-      const result = await base44.integrations.Core.InvokeLLM({
-        prompt: `Translate this food search term to English. Return ONLY the English translation, nothing else: "${text}"`,
-      });
-      return (typeof result === 'string' ? result : result?.text || text).trim().replace(/["']/g, '');
-    } catch {
-      return text;
-    }
-  };
-
-  // Normalize query: lowercase, trim — backend handles singular/plural
-  const normalizeQuery = (q) => q.toLowerCase().trim().replace(/\s+/g, ' ');
-
-  const searchFood = async (searchQuery) => {
-    if (!searchQuery || searchQuery.length < 2) {
-      setResults([]);
-      setShowEmptyState(false);
-      return;
-    }
-
-    // Stamp this search — ignore results if a newer search has started
-    const myId = ++searchIdRef.current;
-
-    setLoading(true);
-    setShowEmptyState(false);
-
-    const translatedQuery = await translateIfNeeded(searchQuery);
-    if (searchIdRef.current !== myId) return; // stale
-
-    const normalized = normalizeQuery(translatedQuery);
-
-    try {
-      const [usdaResponse, fsResponse] = await Promise.allSettled([
-        base44.functions.invoke('usdaFoodSearch', { query: normalized }),
-        base44.functions.invoke('fatsecretSearch', { action: 'search', query: normalized }),
-      ]);
-
-      if (searchIdRef.current !== myId) return; // stale
-
-      const usdaFoods = usdaResponse.status === 'fulfilled' ? (usdaResponse.value.data.foods || []) : [];
-      const fsFoods = fsResponse.status === 'fulfilled'
-        ? (fsResponse.value.data.foods || []).map(food => ({
-            id: food.id,
-            name: food.name,
-            brand: food.brand,
-            calories: Math.round(food.calories),
-            protein: Math.round(food.protein),
-            carbs: Math.round(food.carbs),
-            fat: Math.round(food.fat),
-            fiber: Math.round(food.fiber),
-            serving_size: food.servingSize || '100g',
-            source: 'fatsecret',
-            needsDetails: food.needsDetails,
-          }))
-        : [];
-
-      let combined = [...usdaFoods];
-      const usdaNames = new Set(usdaFoods.map(f => f.name?.toLowerCase()));
-      for (const f of fsFoods) {
-        if (!usdaNames.has(f.name?.toLowerCase())) combined.push(f);
-      }
-
-      if (combined.length === 0) {
-        combined = await searchOpenFoodFactsFallback(normalized);
-        if (searchIdRef.current !== myId) return; // stale
-      }
-
-      setResults(combined);
-      setShowEmptyState(combined.length === 0);
-      setShowAll(false);
-    } catch (error) {
-      if (searchIdRef.current !== myId) return;
-      const foods = await searchOpenFoodFactsFallback(normalized);
-      setResults(foods);
-      setShowEmptyState(foods.length === 0);
-      setShowAll(false);
-    }
-
-    if (searchIdRef.current === myId) setLoading(false);
-  };
-
-  const handleSearch = (e) => {
-    const value = e.target.value;
-    setQuery(value);
-
-    const trimmed = value.trim();
-
-    // Immediately clear if too short
-    if (!trimmed || trimmed.length < 2) {
-      clearTimeout(debounceRef.current);
+  const runSearch = useCallback(async (rawQuery) => {
+    const norm = normaliseQuery(rawQuery);
+    if (norm.length < 2) {
       setResults([]);
       setShowEmptyState(false);
       setLoading(false);
       return;
     }
 
-    // Debounced search — trim spaces so "apple" and "apple " are identical
+    const myId = ++searchIdRef.current;
+
+    // --- Tier 1 & 2: instant local results ---
+    const local = searchLocalFoods(norm);
+    const history = searchFoodHistory(norm);
+    const instant = mergeAndRank(local, history, [], []);
+    setResults(instant);
+    setShowEmptyState(false);
+    setShowAll(false);
+
+    // --- Tier 3: parallel API calls ---
+    setLoading(true);
+
+    const [offResult, fsResult] = await Promise.allSettled([
+      searchOpenFoodFacts(norm),
+      base44.functions.invoke('fatsecretSearch', { action: 'search', query: norm })
+        .then(r => (r.data?.foods || []).map(f => ({
+          name: f.name, brand: f.brand,
+          calories: f.calories, protein: f.protein,
+          carbs: f.carbs, fat: f.fat, fiber: f.fiber,
+          serving_size: f.servingSize || 100, serving_unit: 'g',
+          source: 'fatsecret', score: 50,
+          needsDetails: f.needsDetails,
+        }))),
+    ]);
+
+    if (searchIdRef.current !== myId) return; // stale
+
+    const offFoods = offResult.status === 'fulfilled' ? offResult.value : [];
+    const fsFoods = fsResult.status === 'fulfilled' ? fsResult.value : [];
+    const merged = mergeAndRank(local, history, offFoods, fsFoods);
+
+    setResults(merged);
+    setShowEmptyState(merged.length === 0);
+    setLoading(false);
+  }, []);
+
+  const handleSearch = (e) => {
+    const value = e.target.value;
+    setQuery(value);
+
     clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => {
-      searchFood(trimmed);
-    }, 600);
+
+    if (!value.trim() || value.trim().length < 2) {
+      setResults([]);
+      setShowEmptyState(false);
+      setLoading(false);
+      return;
+    }
+
+    debounceRef.current = setTimeout(() => runSearch(value), 300);
   };
 
+  const handleSelect = (food) => {
+    onSelectFood(food);
+    setQuery('');
+    setResults([]);
+    setShowEmptyState(false);
+    setFocused(false);
+  };
+
+  const showQuickPanel = focused && !query.trim();
+  const displayed = showAll ? results : results.slice(0, INITIAL_LIMIT);
+
   return (
-    <div ref={containerRef} className="space-y-4 w-full max-w-full overflow-visible">
+    <div ref={containerRef} className="space-y-3 w-full max-w-full overflow-visible">
+      {/* Search input */}
       <div className="relative h-12">
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: '#D4AF37' }} />
         <Input
@@ -174,133 +147,162 @@ export default function FoodSearch({ onSelectFood }) {
           className="pl-11 h-12 rounded-xl"
           style={{
             background: 'rgba(255,255,255,0.05)',
-            border: '0.5px solid rgba(255, 218, 185, 0.2)',
+            border: '0.5px solid rgba(255,218,185,0.2)',
           }}
         />
         {loading && (
-          <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center justify-center">
+          <div className="absolute right-4 top-1/2 -translate-y-1/2">
             <Loader2 className="w-4 h-4 animate-spin" style={{ color: '#FFDAB9' }} />
           </div>
         )}
       </div>
 
       <AnimatePresence>
-        {/* Only show empty state when loading is fully done */}
-        {showEmptyState && query.trim().length >= 2 && !loading && (
+        {/* Quick panel — shown when focused with no query */}
+        {showQuickPanel && (
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
+            key="quick-panel"
+            initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
+            exit={{ opacity: 0, y: 6 }}
+            className="space-y-4"
           >
-            <div
-              className="p-6 rounded-xl text-center"
-              style={{
-                background: 'rgba(255, 255, 255, 0.03)',
-                backdropFilter: 'blur(30px) saturate(180%)',
-                border: '0.5px solid rgba(212, 175, 55, 0.1)'
-              }}
-            >
-              <p className="text-white/60 text-sm mb-4" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 300 }}>
-                No perfect match found
+            {/* Quick-add tiles */}
+            <div>
+              <p className="text-[9px] uppercase tracking-[0.25em] mb-2" style={{ color: 'rgba(255,218,185,0.45)', fontFamily: 'Montserrat' }}>
+                Common Foods
               </p>
-              <p className="text-white/40 text-xs" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>
-                Try scanning a barcode or adding a custom food
-              </p>
+              <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
+                {QUICK_ADD.map(name => {
+                  const food = COMMON_FOODS.find(f => f.name === name);
+                  if (!food) return null;
+                  return (
+                    <button
+                      key={name}
+                      onClick={() => handleSelect({ ...food, source: 'local' })}
+                      className="flex-shrink-0 px-3 py-2 rounded-xl text-left"
+                      style={{ background: 'rgba(212,175,55,0.08)', border: '0.5px solid rgba(212,175,55,0.2)' }}
+                    >
+                      <p className="text-[11px] whitespace-nowrap" style={{ color: 'rgba(255,255,255,0.85)', fontFamily: 'Montserrat' }}>{name.split(' ')[0]}</p>
+                      <p className="text-[9px]" style={{ color: 'rgba(212,175,55,0.6)' }}>{food.calories} kcal</p>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
+
+            {/* Recently logged */}
+            {recentFoods.length > 0 && (
+              <div>
+                <p className="text-[9px] uppercase tracking-[0.25em] mb-2" style={{ color: 'rgba(255,218,185,0.45)', fontFamily: 'Montserrat' }}>
+                  Recently Logged
+                </p>
+                <div className="space-y-1">
+                  {recentFoods.map((food, i) => (
+                    <FoodRow key={i} food={food} onSelect={handleSelect} />
+                  ))}
+                </div>
+              </div>
+            )}
           </motion.div>
         )}
 
-        {results.length > 0 && (
+        {/* Empty state */}
+        {showEmptyState && query.trim().length >= 2 && !loading && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="space-y-2"
+            key="empty"
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 6 }}
+            className="p-6 rounded-xl text-center"
+            style={{ background: 'rgba(255,255,255,0.03)', border: '0.5px solid rgba(212,175,55,0.1)' }}
           >
-            {(showAll ? results : results.slice(0, INITIAL_LIMIT)).map((food, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.03 }}
-              >
-                <button
-                onClick={() => onSelectFood(food)}
-                className="w-full text-left p-2 rounded-lg transition-all active:scale-95"
-                style={{
-                  background: 'rgba(255, 255, 255, 0.04)',
-                  backdropFilter: 'blur(30px) saturate(180%)',
-                  border: '0.5px solid rgba(229, 229, 231, 0.1)',
-                  overflow: 'hidden',
-                  boxShadow: '0 2px 8px rgba(255, 218, 185, 0.03)'
-                }}
-                >
-                <div className="flex items-start gap-1.5 w-full">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-baseline gap-2 mb-0.5">
-                      <p className="text-xs text-white flex-1"
-                        style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {food.name}
-                      </p>
-                      <span 
-                        className="text-[11px] font-semibold flex-shrink-0 whitespace-nowrap"
-                        style={{ color: '#FFDAB9' }}
-                      >
-                        {food.calories}kcal
-                      </span>
-                    </div>
-                    {food.brand && (
-                      <p 
-                        className="text-[9px] mb-1"
-                        style={{ 
-                          fontFamily: 'Montserrat, sans-serif', 
-                          fontWeight: 300, 
-                          overflow: 'hidden', 
-                          textOverflow: 'ellipsis', 
-                          whiteSpace: 'nowrap',
-                          color: '#E5E5E7'
-                        }}
-                      >
-                        {food.brand}
-                      </p>
-                    )}
-                    <div className="flex flex-wrap gap-x-3 gap-y-1 text-[9px]" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 400 }}>
-                      <span style={{ color: '#FFDAB9' }}>P: {food.protein}g</span>
-                      <span style={{ color: '#FFE5CC' }}>C: {food.carbs}g</span>
-                      <span style={{ color: '#E1A95F' }}>F: {food.fat}g</span>
-                    </div>
-                  </div>
-                  <div 
-                    className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center transition-colors mt-0.5"
-                    style={{ 
-                      background: 'rgba(255, 218, 185, 0.15)',
-                      border: '0.5px solid rgba(255, 218, 185, 0.2)'
-                    }}
-                  >
-                    <Plus className="w-3 h-3" style={{ color: '#FFDAB9' }} />
-                  </div>
-                </div>
-                </button>
-              </motion.div>
+            <p className="text-white/60 text-sm mb-1" style={{ fontFamily: 'Montserrat' }}>
+              No results for "{query.trim()}"
+            </p>
+            <p className="text-white/30 text-xs" style={{ fontFamily: 'Montserrat' }}>
+              Try a simpler term or scan a barcode
+            </p>
+          </motion.div>
+        )}
+
+        {/* Results */}
+        {results.length > 0 && !showQuickPanel && (
+          <motion.div
+            key="results"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="space-y-1.5"
+          >
+            {displayed.map((food, i) => (
+              <FoodRow key={`${food.name}-${i}`} food={food} onSelect={handleSelect} showBadge />
             ))}
 
-            {/* Show more / show less */}
             {results.length > INITIAL_LIMIT && (
               <button
                 onClick={() => setShowAll(p => !p)}
-                className="w-full flex items-center justify-center gap-1.5 py-2 transition-all active:scale-95"
-                style={{ color: 'rgba(255,218,185,0.5)', fontFamily: 'Montserrat, sans-serif', fontSize: 10, letterSpacing: '0.15em', textTransform: 'uppercase' }}
+                className="w-full flex items-center justify-center gap-1.5 py-2"
+                style={{ color: 'rgba(255,218,185,0.45)', fontFamily: 'Montserrat', fontSize: 10, letterSpacing: '0.15em', textTransform: 'uppercase' }}
               >
-                <ChevronDown
-                  className="w-3.5 h-3.5 transition-transform duration-200"
-                  style={{ transform: showAll ? 'rotate(180deg)' : 'rotate(0deg)' }}
-                />
-                {showAll ? 'Show less' : `Show ${results.length - INITIAL_LIMIT} more results`}
+                <ChevronDown className="w-3.5 h-3.5" style={{ transform: showAll ? 'rotate(180deg)' : 'rotate(0)' }} />
+                {showAll ? 'Show less' : `${results.length - INITIAL_LIMIT} more results`}
               </button>
             )}
           </motion.div>
         )}
       </AnimatePresence>
     </div>
+  );
+}
+
+function FoodRow({ food, onSelect, showBadge = false }) {
+  return (
+    <button
+      onClick={() => onSelect(food)}
+      className="w-full text-left p-2.5 rounded-xl transition-all active:scale-[0.98]"
+      style={{
+        background: 'rgba(255,255,255,0.04)',
+        border: '0.5px solid rgba(229,229,231,0.08)',
+      }}
+    >
+      <div className="flex items-center gap-2 w-full">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-1.5 mb-0.5">
+            {showBadge && food.source === 'history' && (
+              <Clock className="w-3 h-3 flex-shrink-0" style={{ color: 'rgba(255,218,185,0.5)' }} />
+            )}
+            {showBadge && food.source === 'local' && (
+              <CheckCircle className="w-3 h-3 flex-shrink-0" style={{ color: 'rgba(212,175,55,0.6)' }} />
+            )}
+            <p
+              className="text-xs text-white flex-1 truncate"
+              style={{ fontFamily: 'Montserrat' }}
+            >
+              {food.name}
+            </p>
+            <span className="text-[11px] flex-shrink-0" style={{ color: '#FFDAB9' }}>
+              {food.calories} kcal
+            </span>
+          </div>
+          {food.brand && (
+            <p className="text-[9px] truncate mb-0.5" style={{ color: 'rgba(229,229,231,0.45)', fontFamily: 'Montserrat' }}>
+              {food.brand}
+            </p>
+          )}
+          <div className="flex gap-3 text-[9px]" style={{ fontFamily: 'Montserrat' }}>
+            <span style={{ color: '#FFDAB9' }}>P {food.protein}g</span>
+            <span style={{ color: '#FFE5CC' }}>C {food.carbs}g</span>
+            <span style={{ color: '#E1A95F' }}>F {food.fat}g</span>
+          </div>
+        </div>
+        <div
+          className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center"
+          style={{ background: 'rgba(255,218,185,0.12)', border: '0.5px solid rgba(255,218,185,0.2)' }}
+        >
+          <Plus className="w-3 h-3" style={{ color: '#FFDAB9' }} />
+        </div>
+      </div>
+    </button>
   );
 }
