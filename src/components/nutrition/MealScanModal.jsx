@@ -20,9 +20,9 @@ const TUTORIAL_SLIDES = [
     title: 'Photograph Your Meal',
     desc: 'Take a clear photo from directly above your plate. Include the whole meal — sides, sauces, and drinks all count.',
     chips: [
-      { emoji: '☀️', label: 'Good lighting' },
-      { emoji: '📐', label: 'Top-down view' },
-      { emoji: '🍽️', label: 'Full plate' },
+      { label: 'Good lighting — natural or bright overhead light' },
+      { label: 'Top-down angle — shoot from directly above' },
+      { label: 'Full plate — include sides, sauces and drinks' },
     ],
   },
   {
@@ -516,11 +516,23 @@ function TutorialStep({ tutorialPage, setTutorialPage, textPrimary, textMuted, c
           {slide.desc}
         </motion.p>
 
-        {/* Screen 1 chips */}
+        {/* Screen 1 bullet list */}
         {tutorialPage === 0 && slide.chips && (
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-            className="flex gap-2 flex-wrap justify-center">
-            {slide.chips.map(c => <Chip key={c.label}>{c.emoji} {c.label}</Chip>)}
+            className="w-full flex flex-col gap-2.5">
+            {slide.chips.map((c, i) => (
+              <div key={c.label} className="flex items-center gap-3 px-4 py-2.5 rounded-xl"
+                style={{ background: PEACH_DIM, border: `0.5px solid ${PEACH_BORDER}` }}>
+                <span className="text-[8px] tracking-[0.3em] uppercase flex-shrink-0"
+                  style={{ color: 'rgba(255,218,185,0.4)', fontFamily: 'Montserrat', minWidth: 16 }}>
+                  0{i + 1}
+                </span>
+                <div className="w-px h-3 flex-shrink-0" style={{ background: 'rgba(255,218,185,0.2)' }} />
+                <span className="text-xs tracking-wider" style={{ color: PEACH, fontFamily: 'Montserrat' }}>
+                  {c.label}
+                </span>
+              </div>
+            ))}
           </motion.div>
         )}
 
