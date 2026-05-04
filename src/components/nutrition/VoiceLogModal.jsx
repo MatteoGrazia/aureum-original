@@ -81,6 +81,7 @@ export default function VoiceLogModal({ isOpen, onClose, onFoodsSelected, select
   const autoStopRef = useRef(null);
   const textInputRef = useRef(null);
   const abortRef = useRef(null);
+  const itemsListRef = useRef(null);
   const loadingMsg = useLoadingMessage();
 
   const bg = isDarkMode ? 'rgba(10,8,4,0.97)' : 'rgba(255,252,245,0.97)';
@@ -376,11 +377,11 @@ export default function VoiceLogModal({ isOpen, onClose, onFoodsSelected, select
             <p className="text-[10px] uppercase tracking-[0.2em] mb-2" style={{ color: textMuted, fontFamily: 'Montserrat' }}>Try saying:</p>
             <div className="flex flex-col gap-2 mb-5">
               {EXAMPLES.map((ex, i) => (
-                <button key={i} onClick={() => setText(ex)}
+                <div key={i}
                   className="text-left px-4 py-2.5 rounded-xl text-xs"
-                  style={{ background: PEACH_DIM, border: `0.5px solid ${PEACH_BORDER}`, color: PEACH, fontFamily: 'Montserrat' }}>
+                  style={{ background: PEACH_DIM, border: `0.5px solid ${PEACH_BORDER}`, color: PEACH, fontFamily: 'Montserrat', cursor: 'default', userSelect: 'none' }}>
                   "{ex}"
-                </button>
+                </div>
               ))}
             </div>
 
@@ -564,7 +565,7 @@ export default function VoiceLogModal({ isOpen, onClose, onFoodsSelected, select
               )}
 
               {/* Items list */}
-              <div>
+              <div ref={itemsListRef}>
                 <p className="text-[10px] uppercase tracking-[0.2em] mb-2" style={{ color: textMuted, fontFamily: 'Montserrat' }}>
                   Ingredients
                 </p>
@@ -617,10 +618,10 @@ export default function VoiceLogModal({ isOpen, onClose, onFoodsSelected, select
             {/* Sticky bottom buttons */}
             <div className="absolute bottom-0 left-0 right-0 px-5 pt-4 pb-8 flex gap-3"
               style={{ background: `linear-gradient(to top, ${bg} 65%, transparent)` }}>
-              <button onClick={onClose}
+              <button onClick={() => itemsListRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
                 className="flex-1 py-4 rounded-2xl text-sm uppercase tracking-[0.1em]"
                 style={{ background: 'transparent', border: `0.5px solid ${PEACH_BORDER}`, color: PEACH, fontFamily: 'Montserrat' }}>
-                Edit First
+                Edit Items
               </button>
               <button onClick={handleLogMeal}
                 className="flex-[2] py-4 rounded-2xl flex items-center justify-center gap-2 text-sm uppercase tracking-[0.1em]"
