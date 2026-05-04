@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
 import { base44 } from '@/api/base44Client';
@@ -70,6 +70,15 @@ export default function Nutrition() {
       return profiles[0] || null;
     },
     staleTime: 5 * 60_000,
+  });
+
+  const { data: userSettings, refetch: refetchSettings } = useQuery({
+    queryKey: ['userSettingsNutrition'],
+    queryFn: async () => {
+      const records = await base44.entities.UserSettings.filter({});
+      return records[0] || null;
+    },
+    staleTime: 60_000,
   });
 
   const totalCalories = foodLogs.reduce((sum, log) => sum + (log.calories || 0), 0);
@@ -306,12 +315,16 @@ export default function Nutrition() {
         onClose={() => setShowMealScan(false)}
         onFoodsSelected={handleLogMultipleFoods}
         selectedMeal={selectedMeal}
+        userSettings={userSettings}
+        onSettingsChanged={refetchSettings}
       />
       <VoiceLogModal
         isOpen={showVoiceLog}
         onClose={() => setShowVoiceLog(false)}
         onFoodsSelected={handleLogMultipleFoods}
         selectedMeal={selectedMeal}
+        userSettings={userSettings}
+        onSettingsChanged={refetchSettings}
       />
       <QuickAddModal
         isOpen={showQuickAdd}

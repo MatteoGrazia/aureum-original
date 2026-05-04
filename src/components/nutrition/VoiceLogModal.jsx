@@ -2,10 +2,11 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   X, Mic, ScanLine, ChevronRight, Check, Minus,
-  AlertTriangle, RefreshCw, Search, Info, MicOff
+  AlertTriangle, RefreshCw, Search, Info, MicOff, Lock
 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useTheme } from '@/components/shared/ThemeContext';
+import { checkDailyLimit, incrementUsage, timeUntilMidnight } from '@/lib/dailyLimitUtils';
 
 const PEACH = '#FFDAB9';
 const PEACH_DIM = 'rgba(255,218,185,0.12)';
@@ -62,7 +63,7 @@ function ConfidenceBadge({ confidence }) {
   );
 }
 
-export default function VoiceLogModal({ isOpen, onClose, onFoodsSelected, selectedMeal }) {
+export default function VoiceLogModal({ isOpen, onClose, onFoodsSelected, selectedMeal, userSettings, onSettingsChanged }) {
   const { isDarkMode } = useTheme();
   const [step, setStep] = useState('input'); // input | recording | processing | results | error
   const [text, setText] = useState('');
@@ -226,6 +227,11 @@ export default function VoiceLogModal({ isOpen, onClose, onFoodsSelected, select
       setItems(data.items.map(item => ({ ...item, removed: false })));
       setPortionIdx(2);
       setStep('results');
+      // Increment usage counter after successful analysis
+      if (userSettings) {
+        await incrementUsage(userSettings, 'voice');
+        if (onSettingsChanged) onSettingsChanged();
+      }
     } catch (err) {
       clearTimeout(timeout);
       if (controller.signal.aborted) return;
@@ -307,6 +313,9 @@ export default function VoiceLogModal({ isOpen, onClose, onFoodsSelected, select
 
   if (!isOpen) return null;
 
+  const limit = checkDailyLimit(userSettings, 'voice');
+  const showCounter = !limit.allowed || limit.remaining <= 5;
+
   return (
     <motion.div
       initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
@@ -326,10 +335,40 @@ export default function VoiceLogModal({ isOpen, onClose, onFoodsSelected, select
             : step === 'error' ? 'Error'
             : 'Voice Log'}
         </p>
-        <div className="w-5" />
+        {showCounter && limit.allowed ? (
+          <p className="text-[10px]" style={{ color: 'rgba(255,255,255,0.3)', fontFamily: 'Montserrat' }}>
+            {limit.used}/30
+          </p>
+        ) : (
+          <div className="w-5" />
+        )}
       </div>
 
-      <AnimatePresence mode="wait">
+      {/* Blocked state */}
+      {!limit.allowed && (
+        <div className="flex-1 flex flex-col items-center justify-center gap-5 px-6 text-center">
+          <div className="w-20 h-20 rounded-3xl flex items-center justify-center"
+            style={{ background: 'rgba(212,175,55,0.1)', border: '0.5px solid rgba(212,175,55,0.25)' }}>
+            <Lock className="w-9 h-9" style={{ color: GOLD }} strokeWidth={1.5} />
+          </div>
+          <div>
+            <p className="text-base mb-2" style={{ color: textPrimary, fontFamily: 'Montserrat' }}>Daily limit reached</p>
+            <p className="text-sm leading-relaxed mb-3" style={{ color: textMuted, fontFamily: 'Montserrat' }}>
+              You have used all 30 voice logs for today. Your limit resets at midnight.
+            </p>
+            <p className="text-xs" style={{ color: 'rgba(212,175,55,0.7)', fontFamily: 'Montserrat' }}>
+              Resets in {timeUntilMidnight()}
+            </p>
+          </div>
+          <button onClick={onClose}
+            className="w-full py-4 rounded-2xl text-sm uppercase tracking-[0.12em]"
+            style={{ background: 'transparent', border: `0.5px solid ${PEACH_BORDER}`, color: PEACH, fontFamily: 'Montserrat' }}>
+            Log Manually
+          </button>
+        </div>
+      )}
+
+      {limit.allowed && <AnimatePresence mode="wait">
 
         {/* ── INPUT ── */}
         {step === 'input' && (
@@ -667,7 +706,7 @@ export default function VoiceLogModal({ isOpen, onClose, onFoodsSelected, select
           </motion.div>
         )}
 
-      </AnimatePresence>
+      </AnimatePresence>}
     </motion.div>
   );
 }

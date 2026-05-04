@@ -3,10 +3,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   X, Camera, ScanLine, MessageSquare, ChevronRight, Send,
   AlertTriangle, RefreshCw, Search, Minus, Plus, Check,
-  AlertCircle, Info
+  AlertCircle, Info, Lock
 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useTheme } from '@/components/shared/ThemeContext';
+import { checkDailyLimit, incrementUsage, timeUntilMidnight } from '@/lib/dailyLimitUtils';
 
 const PEACH = '#FFDAB9';
 const PEACH_DIM = 'rgba(255,218,185,0.12)';
@@ -105,7 +106,7 @@ function MacroPill({ label, value, color }) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-export default function MealScanModal({ isOpen, onClose, onFoodsSelected, selectedMeal }) {
+export default function MealScanModal({ isOpen, onClose, onFoodsSelected, selectedMeal, userSettings, onSettingsChanged }) {
   const { isDarkMode } = useTheme();
   const [step, setStep] = useState('tutorial'); // tutorial | capture | context | scanning | results | error
   const [tutorialPage, setTutorialPage] = useState(0);
@@ -190,6 +191,11 @@ export default function MealScanModal({ isOpen, onClose, onFoodsSelected, select
       setItems(data.items.map(item => ({ ...item, removed: false })));
       setPortionIdx(2);
       setStep('results');
+      // Increment usage counter after successful analysis
+      if (userSettings) {
+        await incrementUsage(userSettings, 'ai_scan');
+        if (onSettingsChanged) onSettingsChanged();
+      }
     } catch (err) {
       clearTimeout(timeout);
       if (controller.signal.aborted) return;
@@ -255,6 +261,9 @@ export default function MealScanModal({ isOpen, onClose, onFoodsSelected, select
 
   if (!isOpen) return null;
 
+  const limit = checkDailyLimit(userSettings, 'ai_scan');
+  const showCounter = !limit.allowed || limit.remaining <= 5;
+
   return (
     <motion.div
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
@@ -273,11 +282,41 @@ export default function MealScanModal({ isOpen, onClose, onFoodsSelected, select
             : step === 'error' ? 'Scan Failed'
             : 'AI Meal Scan'}
         </p>
-        <div className="w-5" />
+        {showCounter && limit.allowed ? (
+          <p className="text-[10px]" style={{ color: 'rgba(255,255,255,0.3)', fontFamily: 'Montserrat' }}>
+            {limit.used}/30
+          </p>
+        ) : (
+          <div className="w-5" />
+        )}
       </div>
 
+      {/* Blocked state */}
+      {!limit.allowed && (
+        <div className="flex-1 flex flex-col items-center justify-center gap-5 px-6 text-center">
+          <div className="w-20 h-20 rounded-3xl flex items-center justify-center"
+            style={{ background: 'rgba(212,175,55,0.1)', border: '0.5px solid rgba(212,175,55,0.25)' }}>
+            <Lock className="w-9 h-9" style={{ color: GOLD }} strokeWidth={1.5} />
+          </div>
+          <div>
+            <p className="text-base mb-2" style={{ color: textPrimary, fontFamily: 'Montserrat' }}>Daily limit reached</p>
+            <p className="text-sm leading-relaxed mb-3" style={{ color: textMuted, fontFamily: 'Montserrat' }}>
+              You have used all 30 AI scans for today. Your limit resets at midnight.
+            </p>
+            <p className="text-xs" style={{ color: 'rgba(212,175,55,0.7)', fontFamily: 'Montserrat' }}>
+              Resets in {timeUntilMidnight()}
+            </p>
+          </div>
+          <button onClick={onClose}
+            className="w-full py-4 rounded-2xl text-sm uppercase tracking-[0.12em]"
+            style={{ background: 'transparent', border: `0.5px solid ${PEACH_BORDER}`, color: PEACH, fontFamily: 'Montserrat' }}>
+            Log Manually
+          </button>
+        </div>
+      )}
+
       {/* ── TUTORIAL ── */}
-      <AnimatePresence mode="wait">
+      {limit.allowed && <AnimatePresence mode="wait">
         {step === 'tutorial' && (
           <TutorialStep
             key="tutorial"
@@ -472,11 +511,13 @@ export default function MealScanModal({ isOpen, onClose, onFoodsSelected, select
             </div>
           </motion.div>
         )}
-      </AnimatePresence>
+      </AnimatePresence>}
 
       {/* Hidden file inputs */}
-      <input ref={fileInputRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={e => handleImageFile(e.target.files?.[0])} />
-      <input ref={galleryInputRef} type="file" accept="image/*" className="hidden" onChange={e => handleImageFile(e.target.files?.[0])} />
+      {limit.allowed && <>
+        <input ref={fileInputRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={e => handleImageFile(e.target.files?.[0])} />
+        <input ref={galleryInputRef} type="file" accept="image/*" className="hidden" onChange={e => handleImageFile(e.target.files?.[0])} />
+      </>}
     </motion.div>
   );
 }

@@ -411,6 +411,26 @@
         "auto"
       ],
       "default": "dark"
+    },
+    "daily_ai_usage": {
+      "type": "object",
+      "description": "Tracks daily usage of AI Scan and Voice Log features",
+      "properties": {
+        "ai_scan_count": {
+          "type": "number",
+          "default": 0
+        },
+        "ai_scan_date": {
+          "type": "string"
+        },
+        "voice_count": {
+          "type": "number",
+          "default": 0
+        },
+        "voice_date": {
+          "type": "string"
+        }
+      }
     }
   },
   "required": []
