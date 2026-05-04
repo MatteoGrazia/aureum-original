@@ -165,7 +165,13 @@ export default function VoiceLogModal({ isOpen, onClose, onFoodsSelected, select
       recorder.onstop = async () => {
         const blob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
         const buf = await blob.arrayBuffer();
-        const b64 = btoa(String.fromCharCode(...new Uint8Array(buf)));
+        const bytes = new Uint8Array(buf);
+        let binary = '';
+        const chunkSize = 8192;
+        for (let i = 0; i < bytes.length; i += chunkSize) {
+          binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize));
+        }
+        const b64 = btoa(binary);
         recorder.stream.getTracks().forEach(t => t.stop());
         resolve(b64);
       };
