@@ -32,7 +32,7 @@ const SQUARE_INPUT_STYLE = {
   fontFamily: 'Montserrat, sans-serif',
 };
 
-const SetRow = React.memo(function SetRow({ set, index, onUpdate, onDelete, onComplete, previousSet, peak1RM, isBodyweight = false }) {
+const SetRow = React.memo(function SetRow({ set, index, onUpdate, onDelete, onComplete, previousSet, peak1RM, isBodyweight = false, weightUnit = 'kg' }) {
   const [showComment, setShowComment] = useState(false);
   const { isDarkMode } = useTheme();
   const gold = isDarkMode ? '#D4AF37' : '#9A7A14';
@@ -118,7 +118,7 @@ const SetRow = React.memo(function SetRow({ set, index, onUpdate, onDelete, onCo
           />
         )}
         <span className="text-[10px] flex-shrink-0" style={{ color: dimText, width: 14, textAlign: 'center' }}>
-          {isBodyweight ? '' : 'kg'}
+          {isBodyweight ? '' : weightUnit}
         </span>
 
         {/* FIX 4: Reps — square input box */}
@@ -212,11 +212,11 @@ const SetRow = React.memo(function SetRow({ set, index, onUpdate, onDelete, onCo
               className="text-[9px] uppercase tracking-[0.15em]"
               style={{ color: gold, fontFamily: 'Montserrat, sans-serif' }}
             >
-              ★ PR — Peak {current1RM}kg
+              ★ PR — Peak {weightUnit === 'lbs' ? Math.round(current1RM * 2.20462) : current1RM}{weightUnit}
             </motion.span>
           ) : (
             <span className="text-[9px] tracking-[0.1em]" style={{ color: dimText, fontFamily: 'Montserrat, sans-serif' }}>
-              1RM ~{current1RM}kg
+              1RM ~{weightUnit === 'lbs' ? Math.round(current1RM * 2.20462) : current1RM}{weightUnit}
             </span>
           )}
         </div>

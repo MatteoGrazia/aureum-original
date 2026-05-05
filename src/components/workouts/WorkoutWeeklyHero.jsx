@@ -2,6 +2,7 @@ import React, { useMemo, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { startOfWeek, endOfWeek, isWithinInterval, parseISO, subDays, format } from 'date-fns';
 import { Flame } from 'lucide-react';
+import { useSettings } from '@/lib/SettingsContext';
 
 const GOLD = '#D4AF37';
 const PEACH = '#FFDAB9';
@@ -30,7 +31,8 @@ function AnimatedNumber({ target, duration = 0.8 }) {
 }
 
 export default function WorkoutWeeklyHero({ logs = [], userProfile = null }) {
-  const weeklyGoal = userProfile?.weekly_workout_goal || DEFAULT_GOAL;
+  const appSettings = useSettings();
+  const weeklyGoal = appSettings.workout_weekly_goal || userProfile?.weekly_workout_goal || DEFAULT_GOAL;
 
   const stats = useMemo(() => {
     const now = new Date();

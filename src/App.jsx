@@ -1,4 +1,5 @@
 import { Toaster } from "@/components/ui/toaster"
+import { SettingsProvider } from '@/lib/SettingsContext';
 // Set base background early to prevent flash
 if (typeof document !== 'undefined') {
   const savedTheme = localStorage.getItem('aureum_theme');
@@ -77,6 +78,7 @@ function App() {
   return (
     <AuthProvider>
       <QueryClientProvider client={queryClientInstance}>
+        <SettingsProvider>
         <Router>
           <NavigationProvider>
           <NavigationTracker />
@@ -84,6 +86,7 @@ function App() {
           </NavigationProvider>
         </Router>
         <Toaster />
+        </SettingsProvider>
       </QueryClientProvider>
     </AuthProvider>
   )

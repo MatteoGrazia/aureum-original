@@ -14,9 +14,11 @@ import SupplementStreak from '@/components/dashboard/SupplementStreak';
 import OnboardingModal from '@/components/shared/OnboardingModal';
 import WeightTrendMini from '@/components/dashboard/WeightTrendMini';
 import PowerliftingTotals from '@/components/dashboard/PowerliftingTotals';
+import { useSettings } from '@/lib/SettingsContext';
 
 
 export default function Dashboard() {
+  const appSettings = useSettings();
   const [showWelcome, setShowWelcome] = useState(false);
   const [showDatePill, setShowDatePill] = useState(false);
   const queryClient = useQueryClient();
@@ -108,9 +110,11 @@ export default function Dashboard() {
   const activityCalories = dailyActivity?.calories_burned || 0;
   const consumedCalories = todaysFoodLogs?.reduce((sum, log) => sum + (log.calories || 0), 0) || 0;
   const remainingCalories = maintenanceCalories + activityCalories - consumedCalories;
-  const stepsGoal = profile?.daily_step_goal || 10000;
+  // Use UserSettings step goal if set, fall back to UserProfile
+  const stepsGoal = appSettings.activity_daily_steps_goal || profile?.daily_step_goal || 10000;
   const workoutVolume = todaysWorkout?.total_volume || 0;
-  const waterGoal = profile?.water_goal || 2.5;
+  // Water goal: UserSettings in ml → convert to liters for display
+  const waterGoalLiters = (appSettings.nutrition_water_goal_ml || 2500) / 1000;
   const waterUnit = profile?.water_unit || 'liters';
 
   const handleUpdate = () => {
@@ -202,7 +206,7 @@ export default function Dashboard() {
           <AureumPulse label="Calories Consumed" value={consumedCalories} goal={maintenanceCalories + activityCalories} unit="kcal" icon={Flame} iconColor="#FFDAB9" index={0} />
           <AureumPulse label="Steps" value={dailyActivity?.steps || 0} goal={stepsGoal} unit="steps" icon={Footprints} iconColor="#B2D8D8" index={1} />
           <AureumPulse label="Training Volume" value={workoutVolume} goal={5000} unit="kg" icon={Dumbbell} iconColor="#BDB5D5" index={2} />
-          <AureumPulse label="Hydration" value={dailyActivity?.water_liters || 0} goal={waterGoal} unit={waterUnit === 'glasses' ? 'glasses' : 'L'} icon={Droplets} iconColor="#9BB7D4" index={3} />
+          <AureumPulse label="Hydration" value={dailyActivity?.water_liters || 0} goal={waterGoalLiters} unit={waterUnit === 'glasses' ? 'glasses' : 'L'} icon={Droplets} iconColor="#9BB7D4" index={3} />
         </div>
 
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="mb-6">
