@@ -1,12 +1,15 @@
-import React from 'react';
-import { Plus, RefreshCw } from 'lucide-react';
+// FIX 1 — REORDER EXERCISES: drag handle on each card (HTML5 native DnD, no library)
+// Flutter equivalent: ReorderableListView with onReorder callback
+// FIX 2 — EXERCISE COMMENTS: comment icon per exercise (not per set)
+
+import React, { useState, useRef } from 'react';
+import { Plus, RefreshCw, MessageSquare, GripVertical } from 'lucide-react';
 import SetRow from './SetRow';
 import { useTheme } from '@/components/shared/ThemeContext';
 
 const playSetBell = () => {
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    // Two-tone premium bell: fundamental + harmonic
     [[880, 0, 0.18], [1760, 0, 0.09], [880, 0.06, 0.12]].forEach(([freq, delay, vol]) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
@@ -26,11 +29,7 @@ const playSetBell = () => {
 
 const createSet = (type = 'normal', weight = 0, reps = 0) => ({
   id: Math.random().toString(36).slice(2),
-  type,
-  weight,
-  reps,
-  rpe: 7,
-  completed: false,
+  type, weight, reps, rpe: 7, completed: false,
 });
 
 const epley1RM = (weight, reps) => {
@@ -40,9 +39,47 @@ const epley1RM = (weight, reps) => {
 
 const BODYWEIGHT_EQUIPMENT = ['bodyweight'];
 
-const ExerciseBlock = React.memo(function ExerciseBlock({ exercise, onUpdate, onStructuralUpdate, onReplace, onTimerStart, previousSets = [], userWeight = 70 }) {
+// FIX 2: exercise-level comment field component
+function ExerciseComment({ comment, onChange, isDarkMode, gold }) {
+  const textMuted = isDarkMode ? 'rgba(255,255,255,0.35)' : 'rgba(30,28,24,0.50)';
+  const cardBorder = isDarkMode ? 'rgba(212,175,55,0.12)' : 'rgba(184,148,31,0.18)';
+  return (
+    <div className="px-4 pb-2">
+      <textarea
+        value={comment || ''}
+        onChange={e => onChange(e.target.value.slice(0, 300))}
+        onBlur={e => onChange(e.target.value.trim().slice(0, 300))}
+        placeholder="Add a note for this exercise... e.g. felt weak today, used different grip"
+        rows={2}
+        maxLength={300}
+        className="w-full text-xs outline-none resize-none rounded-xl px-3 py-2"
+        style={{
+          background: isDarkMode ? 'rgba(212,175,55,0.05)' : 'rgba(154,122,20,0.05)',
+          border: `0.5px solid ${isDarkMode ? 'rgba(212,175,55,0.18)' : 'rgba(184,148,31,0.25)'}`,
+          color: isDarkMode ? 'rgba(229,229,231,0.75)' : 'rgba(30,28,24,0.75)',
+          fontFamily: 'Montserrat, sans-serif',
+          lineHeight: 1.5,
+        }}
+      />
+      <p className="text-right text-[9px] mt-0.5" style={{ color: textMuted }}>
+        {(comment || '').length}/300
+      </p>
+    </div>
+  );
+}
+
+const ExerciseBlock = React.memo(function ExerciseBlock({
+  exercise, onUpdate, onStructuralUpdate, onReplace, onTimerStart,
+  previousSets = [], userWeight = 70,
+  // FIX 1: drag props
+  draggable, onDragStart, onDragOver, onDragEnd, onDrop, isDraggingOver,
+  // history view flag (no drag handle in history)
+  isHistoryView = false,
+}) {
   const isBodyweight = BODYWEIGHT_EQUIPMENT.includes(exercise.equipment);
   const { isDarkMode } = useTheme();
+  // FIX 2: comment toggle state
+  const [showComment, setShowComment] = useState(!!(exercise.comment));
 
   const addSet = (type = 'normal') => {
     const last = exercise.sets[exercise.sets.length - 1];
@@ -73,9 +110,13 @@ const ExerciseBlock = React.memo(function ExerciseBlock({ exercise, onUpdate, on
     }
   };
 
+  // FIX 2: update exercise-level comment
+  const updateComment = (comment) => {
+    onUpdate({ ...exercise, comment });
+  };
+
   const completedCount = exercise.sets.filter(s => s.completed).length;
 
-  // Calculate the 90-day peak 1RM for PR detection from previousSets
   const peak1RM = previousSets.reduce((max, s) => {
     const rm = epley1RM(s.weight, s.reps);
     return rm > max ? rm : max;
@@ -86,6 +127,7 @@ const ExerciseBlock = React.memo(function ExerciseBlock({ exercise, onUpdate, on
   const cardBg = isDarkMode ? 'rgba(255,255,255,0.025)' : 'rgba(255,255,255,0.88)';
   const cardBorder = isDarkMode ? '0.5px solid rgba(212,175,55,0.12)' : '0.5px solid rgba(184,148,31,0.18)';
   const gold = isDarkMode ? '#9C7E46' : '#7A6318';
+  const goldBright = isDarkMode ? '#D4AF37' : '#9A7A14';
   const textPrimary = isDarkMode ? '#FFFFFF' : '#1E1C18';
   const textMuted = isDarkMode ? 'rgba(255,255,255,0.35)' : 'rgba(30,28,24,0.50)';
   const colHeaderColor = isDarkMode ? 'rgba(255,255,255,0.20)' : 'rgba(30,28,24,0.35)';
@@ -93,15 +135,39 @@ const ExerciseBlock = React.memo(function ExerciseBlock({ exercise, onUpdate, on
   const addBtnColor = isDarkMode ? 'rgba(255,255,255,0.35)' : 'rgba(30,28,24,0.50)';
   const replaceBtnBg = isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(30,28,24,0.06)';
   const replaceBtnBorder = isDarkMode ? '1px solid rgba(255,255,255,0.10)' : '1px solid rgba(30,28,24,0.15)';
+  const hasComment = !!(exercise.comment && exercise.comment.trim());
 
   return (
+    // FIX 1: native HTML5 drag and drop on the card
     <div
-      className="rounded-2xl overflow-hidden"
-      style={{ background: cardBg, border: cardBorder, boxShadow: isDarkMode ? 'none' : '0 1px 8px rgba(0,0,0,0.05)' }}
+      draggable={draggable}
+      onDragStart={onDragStart}
+      onDragOver={onDragOver}
+      onDragEnd={onDragEnd}
+      onDrop={onDrop}
+      className="rounded-2xl overflow-hidden transition-all"
+      style={{
+        background: cardBg,
+        border: isDraggingOver
+          ? `1px solid ${goldBright}`
+          : cardBorder,
+        boxShadow: isDarkMode ? 'none' : '0 1px 8px rgba(0,0,0,0.05)',
+        opacity: draggable ? 0.85 : 1,
+      }}
     >
       {/* Header */}
-      <div className="flex items-start justify-between px-4 pt-4 pb-1">
-        <div className="flex items-center gap-3 flex-1 min-w-0 mr-3">
+      <div className="flex items-start justify-between px-3 pt-4 pb-1">
+        {/* FIX 1: drag handle — only shown in active workout, not history */}
+        {!isHistoryView && (
+          <div
+            className="flex items-center justify-center w-7 h-7 mr-1 flex-shrink-0 cursor-grab active:cursor-grabbing mt-0.5"
+            style={{ color: textMuted, touchAction: 'none' }}
+          >
+            <GripVertical className="w-4 h-4" />
+          </div>
+        )}
+
+        <div className="flex items-center gap-3 flex-1 min-w-0 mr-2">
           {imgSrc && (
             <div style={{ width: 44, height: 44, borderRadius: '50%', overflow: 'hidden', flexShrink: 0, border: `0.5px solid ${isDarkMode ? 'rgba(212,175,55,0.2)' : 'rgba(184,148,31,0.25)'}`, background: '#ffffff' }}>
               <img src={imgSrc} alt={exercise.exercise_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
@@ -118,17 +184,57 @@ const ExerciseBlock = React.memo(function ExerciseBlock({ exercise, onUpdate, on
                 <span style={{ color: gold, opacity: 0.8 }} className="ml-1">· {exercise.default_rest}s rest</span>
               )}
             </p>
+            {/* FIX 2: show saved comment in history view as italic grey text */}
+            {isHistoryView && hasComment && (
+              <p className="text-[11px] italic mt-1" style={{ color: textMuted, fontFamily: 'Montserrat, sans-serif' }}>
+                {exercise.comment}
+              </p>
+            )}
           </div>
         </div>
-        <button
-          onClick={onReplace}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-colors flex-shrink-0"
-          style={{ background: replaceBtnBg, border: replaceBtnBorder }}
-        >
-          <RefreshCw className="w-3 h-3" style={{ color: textMuted }} />
-          <span className="text-xs" style={{ color: textMuted }}>Replace</span>
-        </button>
+
+        <div className="flex items-center gap-1.5 flex-shrink-0">
+          {/* FIX 2: comment icon with gold dot indicator */}
+          {!isHistoryView && (
+            <button
+              onClick={() => setShowComment(p => !p)}
+              className="relative w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors"
+              style={{
+                background: (showComment || hasComment)
+                  ? (isDarkMode ? 'rgba(212,175,55,0.12)' : 'rgba(154,122,20,0.10)')
+                  : (isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(30,28,24,0.06)'),
+              }}
+            >
+              <MessageSquare className="w-3.5 h-3.5" style={{ color: hasComment ? goldBright : textMuted }} />
+              {/* Gold dot indicator when comment exists */}
+              {hasComment && (
+                <span
+                  className="absolute top-0.5 right-0.5 w-1.5 h-1.5 rounded-full"
+                  style={{ background: goldBright }}
+                />
+              )}
+            </button>
+          )}
+          <button
+            onClick={onReplace}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-colors flex-shrink-0"
+            style={{ background: replaceBtnBg, border: replaceBtnBorder }}
+          >
+            <RefreshCw className="w-3 h-3" style={{ color: textMuted }} />
+            <span className="text-xs" style={{ color: textMuted }}>Replace</span>
+          </button>
+        </div>
       </div>
+
+      {/* FIX 2: exercise comment field */}
+      {!isHistoryView && (showComment || hasComment) && (
+        <ExerciseComment
+          comment={exercise.comment}
+          onChange={updateComment}
+          isDarkMode={isDarkMode}
+          gold={goldBright}
+        />
+      )}
 
       {/* Previous session ghost label */}
       {previousSets.length > 0 && (
@@ -143,9 +249,10 @@ const ExerciseBlock = React.memo(function ExerciseBlock({ exercise, onUpdate, on
       <div className="flex items-center gap-2 px-4 pt-1 pb-0.5">
         <div className="w-7" />
         <div className="w-4" />
-        <div className="flex-1 text-center text-[9px] uppercase tracking-widest" style={{ color: colHeaderColor }}>Weight</div>
+        {/* FIX 4: square input column headers — match 56px box width */}
+        <div className="text-center text-[9px] uppercase tracking-widest" style={{ width: 56, color: colHeaderColor }}>Weight</div>
         <div className="w-4" />
-        <div className="flex-1 text-center text-[9px] uppercase tracking-widest" style={{ color: colHeaderColor }}>Reps</div>
+        <div className="text-center text-[9px] uppercase tracking-widest" style={{ width: 56, color: colHeaderColor }}>Reps</div>
         <div className="w-9" />
         <div className="w-7" />
       </div>
@@ -167,31 +274,33 @@ const ExerciseBlock = React.memo(function ExerciseBlock({ exercise, onUpdate, on
         ))}
       </div>
 
-      {/* Add set buttons */}
-      <div className="flex gap-2 px-3 pb-4">
-        <button
-          onClick={() => addSet('normal')}
-          className="flex-1 py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 transition-colors"
-          style={{ background: addBtnBg, color: addBtnColor }}
-        >
-          <Plus className="w-3 h-3" />
-          Add Set
-        </button>
-        <button
-          onClick={() => addSet('warmup')}
-          className="px-3 py-2.5 rounded-xl text-xs transition-colors"
-          style={{ background: isDarkMode ? 'rgba(245,158,11,0.10)' : 'rgba(180,83,9,0.08)', color: isDarkMode ? 'rgba(251,191,36,0.85)' : '#b45309' }}
-        >
-          + Warm-up
-        </button>
-        <button
-          onClick={() => addSet('dropset')}
-          className="px-3 py-2.5 rounded-xl text-xs transition-colors"
-          style={{ background: isDarkMode ? 'rgba(59,130,246,0.10)' : 'rgba(29,78,216,0.08)', color: isDarkMode ? 'rgba(96,165,250,0.85)' : '#1d4ed8' }}
-        >
-          + Drop
-        </button>
-      </div>
+      {/* Add set buttons — hidden in history view */}
+      {!isHistoryView && (
+        <div className="flex gap-2 px-3 pb-4">
+          <button
+            onClick={() => addSet('normal')}
+            className="flex-1 py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 transition-colors"
+            style={{ background: addBtnBg, color: addBtnColor }}
+          >
+            <Plus className="w-3 h-3" />
+            Add Set
+          </button>
+          <button
+            onClick={() => addSet('warmup')}
+            className="px-3 py-2.5 rounded-xl text-xs transition-colors"
+            style={{ background: isDarkMode ? 'rgba(245,158,11,0.10)' : 'rgba(180,83,9,0.08)', color: isDarkMode ? 'rgba(251,191,36,0.85)' : '#b45309' }}
+          >
+            + Warm-up
+          </button>
+          <button
+            onClick={() => addSet('dropset')}
+            className="px-3 py-2.5 rounded-xl text-xs transition-colors"
+            style={{ background: isDarkMode ? 'rgba(59,130,246,0.10)' : 'rgba(29,78,216,0.08)', color: isDarkMode ? 'rgba(96,165,250,0.85)' : '#1d4ed8' }}
+          >
+            + Drop
+          </button>
+        </div>
+      )}
     </div>
   );
 });

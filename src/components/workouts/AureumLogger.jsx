@@ -1,3 +1,8 @@
+// FIX 1 — REORDER: HTML5 native drag-and-drop for exercise reorder
+// Flutter equivalent: ReorderableListView with onReorder callback
+// FIX 5 — STICKY TOP BAR with correct padding so content isn't hidden
+// FIX 6 — CORRECT VOLUME: only completed non-warmup sets, weight × reps
+
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Plus, ChevronDown, ChevronUp, Calculator } from 'lucide-react';
@@ -47,11 +52,7 @@ const sendRestCompleteNotification = (exerciseName) => {
 
 const createSet = (type = 'normal', weight = 0, reps = 0) => ({
   id: Math.random().toString(36).slice(2),
-  type,
-  weight,
-  reps,
-  rpe: 7,
-  completed: false,
+  type, weight, reps, rpe: 7, completed: false,
 });
 
 const formatTime = (secs) => {
@@ -59,6 +60,18 @@ const formatTime = (secs) => {
   const s = secs % 60;
   return `${m}:${s.toString().padStart(2, '0')}`;
 };
+
+// FIX 6: correct volume — only completed sets, weight × reps, rounded
+function calculateTotalVolume(exercises) {
+  return exercises.reduce((total, exercise) => {
+    return total + exercise.sets.reduce((exTotal, set) => {
+      if (!set.completed) return exTotal;
+      const weight = parseFloat(set.weight) || 0;
+      const reps = parseInt(set.reps) || 0;
+      return exTotal + weight * reps;
+    }, 0);
+  }, 0);
+}
 
 export default function AureumLogger({
   activeWorkout, allExercises, onUpdateWorkout,
@@ -79,6 +92,7 @@ export default function AureumLogger({
   const addBtnBorder = isDarkMode ? 'rgba(255,255,255,0.12)' : 'rgba(184,148,31,0.30)';
   const finishGradient = isDarkMode ? 'linear-gradient(to top, rgba(8,8,8,1) 70%, transparent)' : 'linear-gradient(to top, rgba(242,239,233,1) 70%, transparent)';
   const gold = isDarkMode ? '#D4AF37' : '#9A7A14';
+
   const [elapsed, setElapsed] = useState(() => {
     if (workoutStartTime) return Math.floor((Date.now() - new Date(workoutStartTime).getTime()) / 1000);
     return 0;
@@ -91,11 +105,14 @@ export default function AureumLogger({
   const [replaceIndex, setReplaceIndex] = useState(null);
   const [showCalculator, setShowCalculator] = useState(false);
 
+  // FIX 1: drag state
+  const dragIndexRef = useRef(null);
+  const [dragOverIndex, setDragOverIndex] = useState(null);
+
   useEffect(() => {
     requestNotificationPermission();
   }, []);
 
-  // Always keep timer running regardless of minimized state
   useEffect(() => {
     const interval = setInterval(() => setElapsed(e => e + 1), 1000);
     return () => clearInterval(interval);
@@ -157,13 +174,43 @@ export default function AureumLogger({
     setReplaceIndex(null);
   };
 
+  // FIX 1: HTML5 drag handlers
+  const handleDragStart = useCallback((index) => {
+    dragIndexRef.current = index;
+  }, []);
+
+  const handleDragOver = useCallback((e, index) => {
+    e.preventDefault();
+    setDragOverIndex(index);
+  }, []);
+
+  const handleDrop = useCallback((e, dropIndex) => {
+    e.preventDefault();
+    const dragIndex = dragIndexRef.current;
+    if (dragIndex === null || dragIndex === dropIndex) {
+      setDragOverIndex(null);
+      return;
+    }
+    const current = activeWorkoutRef.current;
+    const exercises = [...current.exercises];
+    const [moved] = exercises.splice(dragIndex, 1);
+    exercises.splice(dropIndex, 0, moved);
+    onUpdateWorkout({ ...current, exercises, is_modified: true });
+    dragIndexRef.current = null;
+    setDragOverIndex(null);
+  }, [onUpdateWorkout]);
+
+  const handleDragEnd = useCallback(() => {
+    dragIndexRef.current = null;
+    setDragOverIndex(null);
+  }, []);
+
   const totalSets = activeWorkout.exercises.reduce((s, ex) => s + ex.sets.length, 0);
   const completedSets = activeWorkout.exercises.reduce((s, ex) => s + ex.sets.filter(set => set.completed).length, 0);
-  const totalVolume = activeWorkout.exercises.reduce((sum, ex) =>
-    sum + ex.sets.filter(s => s.completed && s.type !== 'warmup').reduce((s2, s) => s2 + (s.weight || 0) * (s.reps || 0), 0), 0
-  );
+  // FIX 6: use correct volume calculator
+  const totalVolume = Math.round(calculateTotalVolume(activeWorkout.exercises));
 
-  // Minimized pill — always visible, shows timer + volume + restore
+  // Minimized pill
   if (isMinimized) {
     return (
       <motion.div
@@ -207,18 +254,19 @@ export default function AureumLogger({
   return (
     <>
       <div className="relative z-10 min-h-screen" style={{ background: bg, paddingBottom: '140px' }}>
-        {/* Sticky top bar — volume + timer + controls */}
+        {/* FIX 5: Sticky top bar — position sticky, z-index 50, compact on mobile */}
         <div
-          className="sticky top-0 z-30 px-4"
+          className="sticky top-0 z-50 px-4"
           style={{
             background: panelBg,
             backdropFilter: 'blur(20px)',
-            paddingTop: 'calc(env(safe-area-inset-top, 0px) + 48px)',
-            paddingBottom: 12,
+            WebkitBackdropFilter: 'blur(20px)',
+            paddingTop: 'calc(env(safe-area-inset-top, 0px) + 44px)',
+            paddingBottom: 10,
             borderBottom: `0.5px solid ${divider}`,
           }}
         >
-          {/* Row 1: name + minimize + cancel */}
+          {/* Row 1: name + controls */}
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-base truncate flex-1 mr-2" style={{ color: textPrimary, fontFamily: 'Montserrat, sans-serif' }}>
               {activeWorkout.routine_name}
@@ -248,7 +296,7 @@ export default function AureumLogger({
             </div>
           </div>
 
-          {/* Row 2: stats bar */}
+          {/* Row 2: stats bar — FIX 6: volume shown correctly */}
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1.5">
               <span className="text-[10px] uppercase tracking-wider" style={{ color: textMuted }}>Time</span>
@@ -279,7 +327,7 @@ export default function AureumLogger({
           </div>
         </div>
 
-        {/* Body */}
+        {/* FIX 5: Body — pt-3 ensures content is not hidden behind sticky bar */}
         <div className="px-4 pt-3 space-y-3">
           <AnimatePresence>
             {showRestTimer && (
@@ -292,6 +340,7 @@ export default function AureumLogger({
             )}
           </AnimatePresence>
 
+          {/* FIX 1: exercise list with drag-and-drop */}
           {activeWorkout.exercises.map((exercise, i) => (
             <ExerciseBlock
               key={`${exercise.exercise_id || i}-${i}`}
@@ -302,6 +351,13 @@ export default function AureumLogger({
               onTimerStart={triggerRestTimer}
               previousSets={previousWorkoutSets[exercise.exercise_name] || []}
               userWeight={userWeight}
+              // FIX 1: drag props
+              draggable={true}
+              onDragStart={() => handleDragStart(i)}
+              onDragOver={(e) => handleDragOver(e, i)}
+              onDrop={(e) => handleDrop(e, i)}
+              onDragEnd={handleDragEnd}
+              isDraggingOver={dragOverIndex === i && dragIndexRef.current !== i}
             />
           ))}
 

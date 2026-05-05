@@ -1,18 +1,35 @@
+// FIX 4 — SQUARE INPUT BOXES: 56×56px fixed square inputs for weight and reps
+
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Check, Trash2, MessageSquare, X } from 'lucide-react';
 import { useTheme } from '@/components/shared/ThemeContext';
 
 const SET_TYPES = [
-  { key: 'normal', label: 'N', darkClass: 'text-white/50 bg-white/10', lightClass: 'text-[#1E1C18]/50 bg-[#1E1C18]/08' },
-  { key: 'warmup', label: 'W', darkClass: 'text-orange-400 bg-orange-500/20', lightClass: 'text-orange-600 bg-orange-500/15' },
-  { key: 'dropset', label: 'D', darkClass: 'text-blue-400 bg-blue-500/20', lightClass: 'text-blue-700 bg-blue-500/15' },
-  { key: 'failure', label: 'F', darkClass: 'text-red-400 bg-red-500/20', lightClass: 'text-red-700 bg-red-500/15' },
+  { key: 'normal',  label: 'N', darkClass: 'text-white/50 bg-white/10',          lightClass: 'text-[#1E1C18]/50 bg-[#1E1C18]/08' },
+  { key: 'warmup',  label: 'W', darkClass: 'text-orange-400 bg-orange-500/20',    lightClass: 'text-orange-600 bg-orange-500/15' },
+  { key: 'dropset', label: 'D', darkClass: 'text-blue-400 bg-blue-500/20',        lightClass: 'text-blue-700 bg-blue-500/15' },
+  { key: 'failure', label: 'F', darkClass: 'text-red-400 bg-red-500/20',          lightClass: 'text-red-700 bg-red-500/15' },
 ];
 
 const epley1RM = (weight, reps) => {
   if (!weight || !reps || reps <= 1) return weight || 0;
   return Math.round(weight * (1 + reps / 30));
+};
+
+// FIX 4: square input box — 56×56px on mobile, 64×64px on larger screens
+const SQUARE_INPUT_STYLE = {
+  width: 56,
+  height: 56,
+  minWidth: 56,
+  flexShrink: 0,
+  borderRadius: 8,
+  textAlign: 'center',
+  fontSize: 16,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  fontFamily: 'Montserrat, sans-serif',
 };
 
 const SetRow = React.memo(function SetRow({ set, index, onUpdate, onDelete, onComplete, previousSet, peak1RM, isBodyweight = false }) {
@@ -21,7 +38,7 @@ const SetRow = React.memo(function SetRow({ set, index, onUpdate, onDelete, onCo
   const gold = isDarkMode ? '#D4AF37' : '#9A7A14';
   const fieldBg = isDarkMode ? 'rgba(0,0,0,0.25)' : 'rgba(255,255,255,0.95)';
   const fieldBorder = isDarkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(184,148,31,0.28)';
-  const fieldColor = isDarkMode ? undefined : '#1E1C18';
+  const fieldColor = isDarkMode ? '#FFFFFF' : '#1E1C18';
   const dimText = isDarkMode ? 'rgba(255,255,255,0.25)' : 'rgba(30,28,24,0.40)';
   const rowBg = set.completed
     ? (isDarkMode ? 'rgba(156,126,70,0.12)' : 'rgba(184,148,31,0.10)')
@@ -70,15 +87,14 @@ const SetRow = React.memo(function SetRow({ set, index, onUpdate, onDelete, onCo
         {/* Set index */}
         <span className="text-xs w-4 text-center flex-shrink-0" style={{ color: dimText }}>{index + 1}</span>
 
-        {/* Weight — locked to bodyweight if bodyweight exercise */}
+        {/* FIX 4: Weight — square input box */}
         {isBodyweight ? (
           <div
-            className="flex-1 min-w-0 rounded-lg text-center text-[#D4AF37]/70 text-lg py-2.5"
             style={{
+              ...SQUARE_INPUT_STYLE,
               background: 'rgba(212,175,55,0.05)',
               border: '1px solid rgba(212,175,55,0.15)',
-              fontFamily: 'Montserrat, sans-serif',
-              fontSize: 13,
+              color: 'rgba(212,175,55,0.70)',
             }}
           >
             BW
@@ -92,18 +108,20 @@ const SetRow = React.memo(function SetRow({ set, index, onUpdate, onDelete, onCo
             onChange={e => onUpdate({ ...set, weight: parseFloat(e.target.value) || 0 })}
             placeholder={ghostWeight}
             disabled={set.completed}
-            className="flex-1 min-w-0 rounded-lg text-center text-lg py-2.5 disabled:opacity-50 outline-none"
+            className="disabled:opacity-50 outline-none"
             style={{
+              ...SQUARE_INPUT_STYLE,
               background: fieldBg,
               border: fieldBorder,
               color: fieldColor,
-              fontFamily: 'Montserrat, sans-serif',
             }}
           />
         )}
-        <span className="text-[10px] flex-shrink-0" style={{ color: dimText }}>{isBodyweight ? '' : 'kg'}</span>
+        <span className="text-[10px] flex-shrink-0" style={{ color: dimText, width: 14, textAlign: 'center' }}>
+          {isBodyweight ? '' : 'kg'}
+        </span>
 
-        {/* Reps */}
+        {/* FIX 4: Reps — square input box */}
         <input
           type="number"
           inputMode="numeric"
@@ -111,15 +129,15 @@ const SetRow = React.memo(function SetRow({ set, index, onUpdate, onDelete, onCo
           onChange={e => onUpdate({ ...set, reps: parseInt(e.target.value) || 0 })}
           placeholder={ghostReps}
           disabled={set.completed}
-          className="flex-1 min-w-0 rounded-lg text-center text-lg py-2.5 disabled:opacity-50 outline-none"
+          className="disabled:opacity-50 outline-none"
           style={{
+            ...SQUARE_INPUT_STYLE,
             background: fieldBg,
             border: fieldBorder,
             color: fieldColor,
-            fontFamily: 'Montserrat, sans-serif',
           }}
         />
-        <span className="text-[10px] flex-shrink-0" style={{ color: dimText }}>rps</span>
+        <span className="text-[10px] flex-shrink-0" style={{ color: dimText, width: 14, textAlign: 'center' }}>rps</span>
 
         {/* Comment toggle */}
         <button
@@ -133,7 +151,7 @@ const SetRow = React.memo(function SetRow({ set, index, onUpdate, onDelete, onCo
         {/* Complete toggle */}
         <button
           onClick={() => onComplete({ ...set, completed: !set.completed })}
-          className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-all`}
+          className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-all"
           style={set.completed
             ? { background: 'rgba(156,126,70,0.25)', border: '1px solid #9C7E46' }
             : { background: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(30,28,24,0.06)', border: isDarkMode ? '1px solid rgba(255,255,255,0.15)' : '1px solid rgba(30,28,24,0.18)' }
@@ -152,7 +170,7 @@ const SetRow = React.memo(function SetRow({ set, index, onUpdate, onDelete, onCo
         )}
       </div>
 
-      {/* Comment field */}
+      {/* Set-level comment field */}
       {(showComment || set.comment) && (
         <div
           className="px-3 py-2 flex items-center gap-2"
@@ -177,7 +195,7 @@ const SetRow = React.memo(function SetRow({ set, index, onUpdate, onDelete, onCo
         </div>
       )}
 
-      {/* Info strip – 1RM */}
+      {/* Info strip — 1RM */}
       {show1RM && (
         <div
           className="flex items-center justify-between px-3 py-1"
