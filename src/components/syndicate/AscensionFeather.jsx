@@ -14,7 +14,7 @@ function WingIcon({ size = 16, opacity = 1, glowing = false }) {
         opacity,
         filter: glowing ? 'drop-shadow(0 0 5px rgba(152,171,143,0.8))' : 'none',
         objectFit: 'contain',
-        mixBlendMode: 'multiply',
+        mixBlendMode: 'screen',
       }}
     />
   );

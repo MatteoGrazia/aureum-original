@@ -176,7 +176,7 @@ export default function WorkoutSummary({ summary, onDone }) {
             <img
               src="https://media.base44.com/images/public/698347d058d3014d6271ccff/af471ee99_1.png"
               alt="Workout Complete"
-              style={{ width: '100%', height: '100%', objectFit: 'contain', mixBlendMode: 'multiply' }}
+              style={{ width: '100%', height: '100%', objectFit: 'contain', mixBlendMode: 'screen' }}
             />
           </motion.div>
           <h1
