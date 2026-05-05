@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Check, Trash2, MessageSquare, X } from 'lucide-react';
 import { useTheme } from '@/components/shared/ThemeContext';
+import { useSettings, toDisplayWeight, weightUnitLabel } from '@/lib/SettingsContext';
 
 const SET_TYPES = [
   { key: 'normal',  label: 'N', darkClass: 'text-white/50 bg-white/10',          lightClass: 'text-[#1E1C18]/50 bg-[#1E1C18]/08' },
@@ -35,6 +36,8 @@ const SQUARE_INPUT_STYLE = {
 const SetRow = React.memo(function SetRow({ set, index, onUpdate, onDelete, onComplete, previousSet, peak1RM, isBodyweight = false }) {
   const [showComment, setShowComment] = useState(false);
   const { isDarkMode } = useTheme();
+  const settings = useSettings();
+  const wUnit = weightUnitLabel(settings.home_units_weight);
   const gold = isDarkMode ? '#D4AF37' : '#9A7A14';
   const fieldBg = isDarkMode ? 'rgba(0,0,0,0.25)' : 'rgba(255,255,255,0.95)';
   const fieldBorder = isDarkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(184,148,31,0.28)';
@@ -118,7 +121,7 @@ const SetRow = React.memo(function SetRow({ set, index, onUpdate, onDelete, onCo
           />
         )}
         <span className="text-[10px] flex-shrink-0" style={{ color: dimText, width: 14, textAlign: 'center' }}>
-          {isBodyweight ? '' : 'kg'}
+          {isBodyweight ? '' : wUnit}
         </span>
 
         {/* FIX 4: Reps — square input box */}
@@ -212,11 +215,11 @@ const SetRow = React.memo(function SetRow({ set, index, onUpdate, onDelete, onCo
               className="text-[9px] uppercase tracking-[0.15em]"
               style={{ color: gold, fontFamily: 'Montserrat, sans-serif' }}
             >
-              ★ PR — Peak {current1RM}kg
+              ★ PR — Peak {toDisplayWeight(current1RM, settings.home_units_weight)}{wUnit}
             </motion.span>
           ) : (
             <span className="text-[9px] tracking-[0.1em]" style={{ color: dimText, fontFamily: 'Montserrat, sans-serif' }}>
-              1RM ~{current1RM}kg
+              1RM ~{toDisplayWeight(current1RM, settings.home_units_weight)}{wUnit}
             </span>
           )}
         </div>

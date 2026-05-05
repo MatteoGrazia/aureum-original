@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { useSettings, toDisplayWeight, weightUnitLabel } from '@/lib/SettingsContext';
 
 const GOLD = '#D4AF37';
 const PURPLE = '#BDB5D5';
@@ -31,6 +32,8 @@ function AnimatedNumber({ target, duration = 0.6 }) {
 }
 
 export default function SBDCard({ logs = [] }) {
+  const settings = useSettings();
+  const wUnit = weightUnitLabel(settings.home_units_weight);
   const best = {};
   BIG3.forEach(l => { best[l] = 0; });
 
@@ -82,7 +85,7 @@ export default function SBDCard({ logs = [] }) {
               {total > 0 ? <AnimatedNumber target={total} /> : '–'}
             </span>
             {total > 0 && (
-              <span style={{ fontSize: 16, color: 'rgba(212,175,55,0.7)', marginLeft: 3, fontFamily: 'Montserrat, sans-serif' }}>kg</span>
+              <span style={{ fontSize: 16, color: 'rgba(212,175,55,0.7)', marginLeft: 3, fontFamily: 'Montserrat, sans-serif' }}>{wUnit}</span>
             )}
           </div>
           <p className="text-[9px] uppercase tracking-[0.2em]"
@@ -101,7 +104,7 @@ export default function SBDCard({ logs = [] }) {
               <span style={{ color: GOLD, fontWeight: 500 }}>{lift[0]}</span>
               {': '}
               <span style={{ color: best[lift] ? '#FFFFFF' : 'rgba(255,255,255,0.2)' }}>
-                {best[lift] || '–'}
+                {best[lift] ? toDisplayWeight(best[lift], settings.home_units_weight) : '–'}
               </span>
             </span>
           </React.Fragment>

@@ -2,6 +2,7 @@ import React, { useMemo, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { startOfWeek, endOfWeek, isWithinInterval, parseISO, subDays, format } from 'date-fns';
 import { Flame } from 'lucide-react';
+import { useSettings } from '@/lib/SettingsContext';
 
 const GOLD = '#D4AF37';
 const PEACH = '#FFDAB9';
@@ -30,7 +31,8 @@ function AnimatedNumber({ target, duration = 0.8 }) {
 }
 
 export default function WorkoutWeeklyHero({ logs = [], userProfile = null }) {
-  const weeklyGoal = userProfile?.weekly_workout_goal || DEFAULT_GOAL;
+  const settings = useSettings();
+  const weeklyGoal = settings.workout_weekly_goal || DEFAULT_GOAL;
 
   const stats = useMemo(() => {
     const now = new Date();
@@ -146,7 +148,7 @@ export default function WorkoutWeeklyHero({ logs = [], userProfile = null }) {
             {formatVolume(stats.volumeThisWeek)}
           </p>
           <p className="text-[8px] uppercase tracking-[0.18em] mt-1" style={{ color: 'rgba(229,229,231,0.3)', fontFamily: 'Montserrat, sans-serif' }}>
-            kg this week
+            {settings.home_units_weight === 'lbs' ? 'lbs' : 'kg'} this week
           </p>
         </div>
         <div className="flex-1 rounded-xl px-3 py-2.5 text-center"

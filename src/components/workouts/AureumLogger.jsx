@@ -12,6 +12,7 @@ import ExercisePicker from './ExercisePicker';
 import PlateCalculator from './PlateCalculator';
 import GoldButton from '@/components/ui/GoldButton';
 import { useTheme } from '@/components/shared/ThemeContext';
+import { useSettings, weightUnitLabel } from '@/lib/SettingsContext';
 
 const REST_BY_MUSCLE = {
   legs: 180, back: 150, chest: 120, shoulders: 90,
@@ -80,6 +81,9 @@ export default function AureumLogger({
   userWeight = 70,
 }) {
   const { isDarkMode } = useTheme();
+  const settings = useSettings();
+  const wUnit = weightUnitLabel(settings.home_units_weight);
+  const defaultRestDuration = settings.workout_default_rest_timer || 90;
   const bg = isDarkMode ? '#080808' : '#F2EFE9';
   const panelBg = isDarkMode ? 'rgba(8,8,8,0.98)' : 'rgba(242,239,233,0.98)';
   const pillBg = isDarkMode ? 'rgba(8,8,8,0.97)' : 'rgba(255,255,255,0.97)';
@@ -119,7 +123,8 @@ export default function AureumLogger({
   }, []);
 
   const triggerRestTimer = (exercise) => {
-    const dur = getRestDuration(exercise);
+    // Use per-exercise rest if defined, otherwise fall back to user setting
+    const dur = exercise.default_rest || settings.workout_default_rest_timer || getRestDuration(exercise);
     setRestDuration(dur);
     setCurrentRestExercise(exercise?.exercise_name || '');
     setRestKey(k => k + 1);
@@ -231,7 +236,7 @@ export default function AureumLogger({
           <div className="flex items-center gap-3 mt-0.5">
             <span className="text-sm tabular-nums" style={{ color: textDim }}>{formatTime(elapsed)}</span>
             <span className="text-xs" style={{ color: textMuted }}>{completedSets}/{totalSets} sets</span>
-            {totalVolume > 0 && <span className="text-xs" style={{ color: gold, opacity: 0.8 }}>{totalVolume.toLocaleString()} kg</span>}
+            {totalVolume > 0 && <span className="text-xs" style={{ color: gold, opacity: 0.8 }}>{totalVolume.toLocaleString()} {wUnit}</span>}
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -311,7 +316,7 @@ export default function AureumLogger({
             <div className="flex items-center gap-1.5">
               <span className="text-[10px] uppercase tracking-wider" style={{ color: textMuted }}>Vol</span>
               <span className="text-sm tabular-nums" style={{ color: gold, fontFamily: 'Montserrat, sans-serif' }}>
-                {totalVolume > 0 ? `${totalVolume.toLocaleString()} kg` : '—'}
+                {totalVolume > 0 ? `${totalVolume.toLocaleString()} ${wUnit}` : '—'}
               </span>
             </div>
           </div>

@@ -21,6 +21,7 @@ import QuickAddModal from '@/components/nutrition/QuickAddModal';
 import CreateFoodModal from '@/components/nutrition/CreateFoodModal';
 import NutritionToolbar from '@/components/nutrition/NutritionToolbar';
 import SavedMealsSection from '@/components/nutrition/SavedMealsSection';
+import { useSettings } from '@/lib/SettingsContext';
 
 const mealIcons = {
   breakfast: Coffee,

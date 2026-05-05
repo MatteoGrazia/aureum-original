@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { format } from 'date-fns';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useSettings } from '@/lib/SettingsContext';
 import { Target, TrendingUp, Award } from 'lucide-react';
 import VoidCard from '@/components/ui/VoidCard';
 import VoidBackground from '@/components/dashboard/VoidBackground';
@@ -12,6 +13,7 @@ import GoogleFitConnect from '@/components/activity/GoogleFitConnect';
 
 export default function Activity() {
   const queryClient = useQueryClient();
+  const settings = useSettings();
   const today = format(new Date(), 'yyyy-MM-dd');
   const [isGoogleFitConnected, setIsGoogleFitConnected] = useState(false);
 
@@ -106,7 +108,7 @@ export default function Activity() {
     staleTime: 5 * 60 * 1000,
   });
 
-  const stepGoal = profile?.daily_step_goal || 10000;
+  const stepGoal = settings.activity_daily_steps_goal || profile?.daily_step_goal || 10000;
   const currentSteps = dailyActivity?.steps || 0;
 
   // Calculate weekly stats
