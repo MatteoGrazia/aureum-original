@@ -106,32 +106,19 @@ export function useUserSettings() {
   // Merge with defaults so any missing key always returns default
   const settings = { ...SETTINGS_DEFAULTS, ...(userSettingsRaw || {}) };
 
-  const updateSetting = useCallback(async (key, value) => {
-    if (!userSettingsRaw?.id) return;
-
-    // Optimistic update
+  const updateSetting = useCallback((key, value) => {
+    // Just optimistic update in cache — no auto-save anymore
     queryClient.setQueryData(['userSettings'], (old) => ({
       ...old,
       [key]: value,
     }));
+  }, [queryClient]);
 
-    // Debounced save — batch rapid changes
-    clearTimeout(saveTimerRef.current);
-    saveTimerRef.current = setTimeout(async () => {
-      await base44.entities.UserSettings.update(userSettingsRaw.id, { [key]: value });
-      toast('Saved ✓', {
-        duration: 1500,
-        style: {
-          background: 'rgba(12,12,12,0.97)',
-          border: '0.5px solid rgba(212,175,55,0.3)',
-          color: 'rgba(212,175,55,0.8)',
-          fontFamily: 'Montserrat, sans-serif',
-          fontSize: 12,
-        },
-      });
-      queryClient.invalidateQueries(['userSettings']);
-    }, 400);
+  const saveSettings = useCallback(async (pendingValues) => {
+    if (!userSettingsRaw?.id) return;
+    await base44.entities.UserSettings.update(userSettingsRaw.id, pendingValues);
+    queryClient.invalidateQueries(['userSettings']);
   }, [userSettingsRaw?.id, queryClient]);
 
-  return { settings, updateSetting, isLoading, settingsId: userSettingsRaw?.id };
+  return { settings, updateSetting, saveSettings, isLoading, settingsId: userSettingsRaw?.id };
 }
