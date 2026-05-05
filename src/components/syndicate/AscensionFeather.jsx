@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const ASCENSION_ICON = 'https://media.base44.com/images/public/698347d058d3014d6271ccff/9e8f5a2d2_2.png';
+const ASCENSION_ICON = 'https://media.base44.com/images/public/698347d058d3014d6271ccff/1f48a54d9_2.svg';
 
 function WingIcon({ size = 16, opacity = 1, glowing = false }) {
   return (

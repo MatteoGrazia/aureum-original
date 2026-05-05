@@ -174,7 +174,7 @@ export default function WorkoutSummary({ summary, onDone }) {
             style={{ width: 120, height: 120 }}
           >
             <img
-              src="https://media.base44.com/images/public/698347d058d3014d6271ccff/550bb46c5_1.png"
+              src="https://media.base44.com/images/public/698347d058d3014d6271ccff/2d3201ec0_1.svg"
               alt="Workout Complete"
               style={{ width: '100%', height: '100%', objectFit: 'contain' }}
             />
