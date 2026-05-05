@@ -70,7 +70,7 @@ function ExerciseComment({ comment, onChange, isDarkMode, gold }) {
 
 const ExerciseBlock = React.memo(function ExerciseBlock({
   exercise, onUpdate, onStructuralUpdate, onReplace, onTimerStart,
-  previousSets = [], userWeight = 70, weightUnit = 'kg',
+  previousSets = [], userWeight = 70,
   // FIX 1: drag props
   draggable, onDragStart, onDragOver, onDragEnd, onDrop, isDraggingOver,
   // history view flag (no drag handle in history)
@@ -240,7 +240,7 @@ const ExerciseBlock = React.memo(function ExerciseBlock({
       {previousSets.length > 0 && (
         <div className="px-4 pb-1">
           <p className="text-[9px] uppercase tracking-[0.15em]" style={{ color: gold, fontFamily: 'Montserrat, sans-serif' }}>
-            Last session · {weightUnit === 'lbs' ? Math.round((previousSets[0]?.weight || 0) * 2.20462) : previousSets[0]?.weight}{weightUnit} × {previousSets[0]?.reps}
+            Last session · {previousSets[0]?.weight}kg × {previousSets[0]?.reps}
           </p>
         </div>
       )}
@@ -270,7 +270,6 @@ const ExerciseBlock = React.memo(function ExerciseBlock({
             previousSet={previousSets[i] || previousSets[0] || null}
             peak1RM={peak1RM}
             isBodyweight={isBodyweight}
-            weightUnit={weightUnit}
           />
         ))}
       </div>

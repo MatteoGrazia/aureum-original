@@ -21,7 +21,6 @@ import QuickAddModal from '@/components/nutrition/QuickAddModal';
 import CreateFoodModal from '@/components/nutrition/CreateFoodModal';
 import NutritionToolbar from '@/components/nutrition/NutritionToolbar';
 import SavedMealsSection from '@/components/nutrition/SavedMealsSection';
-import { useSettings, getMacroGoals, fmtCalories, calorieUnitLabel } from '@/lib/SettingsContext';
 
 const mealIcons = {
   breakfast: Coffee,
@@ -31,7 +30,6 @@ const mealIcons = {
 };
 
 export default function Nutrition() {
-  const appSettings = useSettings();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showScanner, setShowScanner] = useState(() => {
     const params = new URLSearchParams(window.location.search);
