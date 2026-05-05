@@ -6,16 +6,16 @@ const ASCENSION_ICON = 'https://media.base44.com/images/public/698347d058d3014d6
 function WingIcon({ size = 16, opacity = 1, glowing = false }) {
   return (
     <img
-      src={ASCENSION_ICON}
-      alt="Ascension"
-      style={{
-        width: size,
-        height: size,
-        opacity,
-        filter: glowing ? 'drop-shadow(0 0 5px rgba(152,171,143,0.8))' : 'none',
-        objectFit: 'contain',
-
-      }}
+    src={ASCENSION_ICON}
+    alt="Ascension"
+    style={{
+      width: size,
+      height: size,
+      opacity,
+      filter: glowing ? 'drop-shadow(0 0 5px rgba(152,171,143,0.8))' : 'none',
+      objectFit: 'contain',
+      background: 'transparent',
+    }}
     />
   );
 }
