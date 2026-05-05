@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const ASCENSION_ICON = 'https://media.base44.com/images/public/698347d058d3014d6271ccff/5df9bf0f1_2.png';
+const ASCENSION_ICON = 'https://media.base44.com/images/public/698347d058d3014d6271ccff/9e8f5a2d2_2.png';
 
 function WingIcon({ size = 16, opacity = 1, glowing = false }) {
   return (
@@ -14,7 +14,7 @@ function WingIcon({ size = 16, opacity = 1, glowing = false }) {
         opacity,
         filter: glowing ? 'drop-shadow(0 0 5px rgba(152,171,143,0.8))' : 'none',
         objectFit: 'contain',
-        mixBlendMode: 'screen',
+
       }}
     />
   );
