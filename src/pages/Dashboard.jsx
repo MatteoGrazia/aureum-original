@@ -14,6 +14,7 @@ import SupplementStreak from '@/components/dashboard/SupplementStreak';
 import OnboardingModal from '@/components/shared/OnboardingModal';
 import WeightTrendMini from '@/components/dashboard/WeightTrendMini';
 import PowerliftingTotals from '@/components/dashboard/PowerliftingTotals';
+import { useSettings } from '@/lib/SettingsContext';
 
 
 export default function Dashboard() {
@@ -104,13 +105,15 @@ export default function Dashboard() {
     queryClient.invalidateQueries(['userProfile']);
   };
 
+  const appSettings = useSettings();
+
   const maintenanceCalories = profile?.maintenance_calories || 2000;
   const activityCalories = dailyActivity?.calories_burned || 0;
   const consumedCalories = todaysFoodLogs?.reduce((sum, log) => sum + (log.calories || 0), 0) || 0;
   const remainingCalories = maintenanceCalories + activityCalories - consumedCalories;
-  const stepsGoal = profile?.daily_step_goal || 10000;
+  const stepsGoal = appSettings.activity_daily_steps_goal || profile?.daily_step_goal || 10000;
   const workoutVolume = todaysWorkout?.total_volume || 0;
-  const waterGoal = profile?.water_goal || 2.5;
+  const waterGoal = (appSettings.nutrition_water_goal_ml || 2500) / 1000;
   const waterUnit = profile?.water_unit || 'liters';
 
   const handleUpdate = () => {

@@ -22,6 +22,7 @@ import WeeklyMuscleVolume from '@/components/workouts/WeeklyMuscleVolume';
 import TrainLikeThem from '@/components/workouts/TrainLikeThem';
 import { Input } from '@/components/ui/input';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+import { useSettings } from '@/lib/SettingsContext';
 
 const STORAGE_KEY = 'aureum_active_workout';
 
@@ -132,6 +133,9 @@ export default function Workouts() {
   });
 
   const userWeight = latestWeight || userProfile?.current_weight || 70;
+  const appSettings = useSettings();
+  const showPR  = appSettings.workout_show_pr_section  !== false;
+  const showSBD = appSettings.workout_show_sbd_section !== false;
 
   const { data: allExercises = [] } = useQuery({
     queryKey: ['exercises'],
@@ -583,16 +587,22 @@ export default function Workouts() {
                 <WorkoutWeeklyHero logs={recentWorkouts} userProfile={userProfile} />
                 {/* Divider connector line */}
                 <div style={{ width: 1, height: 32, background: 'linear-gradient(to bottom, rgba(212,175,55,0.3), rgba(212,175,55,0.05))', marginTop: -8 }} />
-                <div className="flex flex-col w-full sm:flex-row">
-                  <div className="flex-1 flex flex-col items-center border-t sm:border-t-0 sm:border-r"
-                    style={{ borderColor: 'rgba(212,175,55,0.1)' }}>
-                    <LatestPRCard logs={recentWorkouts} />
+                {(showPR || showSBD) && (
+                  <div className="flex flex-col w-full sm:flex-row">
+                    {showPR && (
+                      <div className={`flex-1 flex flex-col items-center border-t ${showSBD ? 'sm:border-t-0 sm:border-r' : ''}`}
+                        style={{ borderColor: 'rgba(212,175,55,0.1)' }}>
+                        <LatestPRCard logs={recentWorkouts} />
+                      </div>
+                    )}
+                    {showSBD && (
+                      <div className="flex-1 flex flex-col items-center border-t"
+                        style={{ borderColor: 'rgba(212,175,55,0.1)' }}>
+                        <SBDCard logs={recentWorkouts} />
+                      </div>
+                    )}
                   </div>
-                  <div className="flex-1 flex flex-col items-center border-t"
-                    style={{ borderColor: 'rgba(212,175,55,0.1)' }}>
-                    <SBDCard logs={recentWorkouts} />
-                  </div>
-                </div>
+                )}
               </div>
 
               {/* Routines label */}

@@ -46,6 +46,7 @@ export default function Nutrition() {
   const [selectedUnit, setSelectedUnit] = useState(null);
   const [loadingDetails, setLoadingDetails] = useState(false);
   const queryClient = useQueryClient();
+  const appSettings = useSettings();
 
   const dateStr = format(selectedDate, 'yyyy-MM-dd');
 
@@ -86,6 +87,17 @@ export default function Nutrition() {
   const totalProtein = foodLogs.reduce((sum, log) => sum + (log.protein || 0), 0);
   const totalCarbs = foodLogs.reduce((sum, log) => sum + (log.carbs || 0), 0);
   const totalFat = foodLogs.reduce((sum, log) => sum + (log.fat || 0), 0);
+
+  // Goals derived from settings
+  const calorieGoal = appSettings.nutrition_custom_calories || profile?.maintenance_calories || 2000;
+  const macroGoals = {
+    protein: appSettings.profile_weight_kg
+      ? Math.round(appSettings.profile_weight_kg * (appSettings.nutrition_protein_per_kg || 2.0))
+      : Math.round((calorieGoal * ((appSettings.nutrition_macro_split_protein || 30) / 100)) / 4),
+    carbs: Math.round((calorieGoal * ((appSettings.nutrition_macro_split_carbs || 45) / 100)) / 4),
+    fat:   Math.round((calorieGoal * ((appSettings.nutrition_macro_split_fat   || 25) / 100)) / 9),
+  };
+  const waterGoalLiters = (appSettings.nutrition_water_goal_ml || 2500) / 1000;
 
   // Ensure every food always has a 1g option
   const ensureOneGram = (units, base) => {
@@ -395,13 +407,13 @@ export default function Nutrition() {
           transition={{ delay: 0.1, duration: 0.4 }}
         >
           <AuraHero
-            remaining={Math.max((profile?.maintenance_calories || 2000) - totalCalories, 0)}
-            goal={profile?.maintenance_calories || 2000}
+            remaining={Math.max(calorieGoal - totalCalories, 0)}
+            goal={calorieGoal}
             consumed={totalCalories}
             protein={totalProtein}
             carbs={totalCarbs}
             fat={totalFat}
-            macroGoals={{ protein: 150, carbs: 250, fat: 70 }}
+            macroGoals={macroGoals}
           />
         </motion.div>
 
@@ -705,7 +717,7 @@ export default function Nutrition() {
           protein={totalProtein}
           carbs={totalCarbs}
           fat={totalFat}
-          goals={{ protein: 150, carbs: 250, fat: 70 }}
+          goals={macroGoals}
         />
       </motion.div>
 
@@ -874,7 +886,7 @@ export default function Nutrition() {
       >
         <WaterTracker
           glasses={Math.round((dailyActivity?.water_liters || 0) / 0.25)}
-          goal={Math.round((profile?.water_goal || 2.5) / 0.25)}
+          goal={Math.round(waterGoalLiters / 0.25)}
           onAdd={handleWaterAdd}
           onRemove={handleWaterRemove}
         />
