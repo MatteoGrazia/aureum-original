@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-const ASCENSION_ICON = 'https://media.base44.com/images/public/698347d058d3014d6271ccff/4158e2305_AscensionIcon.png';
+const ASCENSION_ICON = 'https://media.base44.com/images/public/698347d058d3014d6271ccff/1f48a54d9_2.svg';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 
@@ -100,7 +100,7 @@ export default function SyndicateLeaderboard() {
 
             {/* AP */}
             <div className="flex items-center gap-1.5 flex-shrink-0">
-              <img src={ASCENSION_ICON} alt="AP" style={{ width: 16, height: 16, objectFit: 'contain', filter: 'brightness(0) saturate(100%) invert(68%) sepia(13%) saturate(500%) hue-rotate(95deg) brightness(95%)' }} />
+              <img src={ASCENSION_ICON} alt="AP" style={{ width: 16, height: 16, objectFit: 'contain', background: 'transparent' }} />
               <span style={{ fontFamily: 'Georgia, serif', fontSize: 15, color: '#98AB8F', fontWeight: 300 }}>
                 {athlete.totalAP.toLocaleString()}
               </span>

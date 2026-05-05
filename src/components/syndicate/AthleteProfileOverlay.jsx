@@ -2,10 +2,9 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Dumbbell, Clock, Users, ChevronRight, Lock } from 'lucide-react';
 
-const ASCENSION_ICON = 'https://media.base44.com/images/public/698347d058d3014d6271ccff/4158e2305_AscensionIcon.png';
-const SAGE_FILTER = 'brightness(0) saturate(100%) invert(68%) sepia(13%) saturate(500%) hue-rotate(95deg) brightness(95%)';
+const ASCENSION_ICON = 'https://media.base44.com/images/public/698347d058d3014d6271ccff/1f48a54d9_2.svg';
 function AscensionImg({ size = 20 }) {
-  return <img src={ASCENSION_ICON} alt="AP" style={{ width: size, height: size, objectFit: 'contain', filter: SAGE_FILTER }} />;
+  return <img src={ASCENSION_ICON} alt="AP" style={{ width: size, height: size, objectFit: 'contain', background: 'transparent' }} />;
 }
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { formatDistanceToNow } from 'date-fns';
