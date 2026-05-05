@@ -9,14 +9,14 @@ import {
   LogOut, ChevronRight, Edit3, Save, Droplets, Share2, Zap, Sun, Moon
 } from 'lucide-react';
 
-const ASCENSION_ICON = 'https://media.base44.com/images/public/698347d058d3014d6271ccff/4158e2305_AscensionIcon.png';
+const ASCENSION_ICON = 'https://media.base44.com/images/public/698347d058d3014d6271ccff/1f48a54d9_2.svg';
 
 function WingIcon({ size = 16 }) {
   return (
     <img
       src={ASCENSION_ICON}
       alt="Ascension"
-      style={{ width: size, height: size, objectFit: 'contain', filter: 'brightness(0) saturate(100%) invert(68%) sepia(13%) saturate(500%) hue-rotate(95deg) brightness(95%)' }}
+      style={{ width: size, height: size, objectFit: 'contain', background: 'transparent' }}
     />
   );
 }
