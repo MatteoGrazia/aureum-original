@@ -28,11 +28,15 @@ export default function AscensionFeather({ count = 0, hasGiven = false, onAscend
   const [showPulse, setShowPulse] = useState(false);
   const [displayCount, setDisplayCount] = useState(count);
   const [flicker, setFlicker] = useState(false);
+  const [optimisticActive, setOptimisticActive] = useState(false);
 
   useEffect(() => { setDisplayCount(count); }, [count]);
 
   const handleTap = () => {
-    if (hasGiven || disabled) return;
+    if (hasGiven || optimisticActive || disabled) return;
+    // Instant optimistic update — no waiting for async
+    setOptimisticActive(true);
+    setDisplayCount(c => c + 1);
     softSnap();
     setAnimating(true);
     setShowPulse(true);
@@ -43,7 +47,7 @@ export default function AscensionFeather({ count = 0, hasGiven = false, onAscend
     onAscend?.();
   };
 
-  const isActive = hasGiven;
+  const isActive = hasGiven || optimisticActive;
 
   return (
     <button
