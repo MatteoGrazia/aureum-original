@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useLocation } from 'react-router-dom';
 import { Plus, Calculator, Dumbbell, Trash2, X, History, GripVertical } from 'lucide-react';
 import VoidCard from '@/components/ui/VoidCard';
 import VoidBackground from '@/components/dashboard/VoidBackground';
@@ -23,6 +24,7 @@ import TrainLikeThem from '@/components/workouts/TrainLikeThem';
 import { Input } from '@/components/ui/input';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { useSettings } from '@/lib/SettingsContext';
+import { useWorkout } from '@/lib/WorkoutContext';
 
 const STORAGE_KEY = 'aureum_active_workout';
 
@@ -98,9 +100,31 @@ export default function Workouts() {
   const [showHistory, setShowHistory] = useState(false);
 
   const queryClient = useQueryClient();
+  const location = useLocation();
+  const workoutCtx = useWorkout();
   const today = format(new Date(), 'yyyy-MM-dd');
   const persistTimerRef = useRef(null);
   const seededRef = useRef(false);
+
+  // C13: auto-minimize when navigating away from /Workouts while a workout is active
+  const prevLocationRef = useRef(location.pathname);
+  useEffect(() => {
+    const prev = prevLocationRef.current;
+    prevLocationRef.current = location.pathname;
+    if (activeWorkout && view === 'active' && !workoutMinimized && prev !== location.pathname) {
+      setWorkoutMinimized(true);
+      setView('routines');
+      workoutCtx?.minimizeWorkout();
+    }
+  }, [location.pathname]);
+
+  // Sync: if global context says restore (from another page), switch to active view
+  useEffect(() => {
+    if (workoutCtx && !workoutCtx.isMinimized && activeWorkout && workoutMinimized) {
+      setWorkoutMinimized(false);
+      setView('active');
+    }
+  }, [workoutCtx?.isMinimized]);
 
   const { data: routines = [] } = useQuery({
     queryKey: ['routines'],
@@ -318,6 +342,8 @@ export default function Workouts() {
     setActiveWorkout(built);
     setWorkoutStartTime(new Date());
     setView('active');
+    setWorkoutMinimized(false);
+    workoutCtx?.startWorkout(built, new Date());
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ workout: built, startTime: new Date() }));
   };
 
@@ -333,6 +359,7 @@ export default function Workouts() {
         rpe: s.rpe,
         is_warmup: s.type === 'warmup',
         set_type: s.type,
+        is_pr: s.is_pr || false,
       }))
     );
     const totalVolume = allSets
@@ -382,6 +409,7 @@ export default function Workouts() {
 
     localStorage.removeItem(STORAGE_KEY);
     setShowSmartSave(false);
+    workoutCtx?.clearWorkout();
 
     setWorkoutSummary({
       routineName: activeWorkout.routine_name,
@@ -399,6 +427,7 @@ export default function Workouts() {
     setWorkoutStartTime(null);
     setWorkoutMinimized(false);
     setView('routines');
+    workoutCtx?.clearWorkout();
   };
 
   const cancelWorkout = () => {
@@ -407,6 +436,7 @@ export default function Workouts() {
     setActiveWorkout(null);
     setWorkoutMinimized(false);
     setView('routines');
+    workoutCtx?.clearWorkout();
   };
 
   const addExerciseToRoutine = (ex) => {
@@ -473,14 +503,14 @@ export default function Workouts() {
         <AureumLogger
           activeWorkout={activeWorkout}
           allExercises={exercises}
-          onUpdateWorkout={setActiveWorkout}
+          onUpdateWorkout={(w) => { setActiveWorkout(w); workoutCtx?.updateWorkout(w); }}
           onFinish={handleFinishWorkout}
           onCancel={cancelWorkout}
           previousWorkoutSets={previousWorkoutSets}
           workoutStartTime={workoutStartTime}
           isMinimized={workoutMinimized}
-          onMinimize={() => { setWorkoutMinimized(true); setView('routines'); }}
-          onRestore={() => { setWorkoutMinimized(false); setView('active'); }}
+          onMinimize={() => { setWorkoutMinimized(true); setView('routines'); workoutCtx?.minimizeWorkout(); }}
+          onRestore={() => { setWorkoutMinimized(false); setView('active'); workoutCtx?.restoreWorkout(); }}
           userWeight={userWeight}
         />
       )}

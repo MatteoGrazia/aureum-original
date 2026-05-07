@@ -15,6 +15,8 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import { SettingsProvider } from '@/lib/SettingsContext';
+import { WorkoutProvider } from '@/lib/WorkoutContext';
+import GlobalMinimizedWorkout from '@/components/workouts/GlobalMinimizedWorkout';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -79,13 +81,16 @@ function App() {
     <AuthProvider>
       <QueryClientProvider client={queryClientInstance}>
         <SettingsProvider>
+        <WorkoutProvider>
         <Router>
           <NavigationProvider>
           <NavigationTracker />
           <AuthenticatedApp />
+          <GlobalMinimizedWorkout />
           </NavigationProvider>
         </Router>
         <Toaster />
+        </WorkoutProvider>
         </SettingsProvider>
       </QueryClientProvider>
     </AuthProvider>

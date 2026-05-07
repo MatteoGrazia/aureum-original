@@ -90,7 +90,7 @@ export default function SBDCard({ logs = [] }) {
           </div>
           <p className="text-[9px] uppercase tracking-[0.2em]"
             style={{ color: 'rgba(212,175,55,0.5)', fontFamily: 'Montserrat, sans-serif' }}>
-            {total > 0 ? 'Combined' : 'Log S / B / D'}
+            {total > 0 ? 'Combined' : 'Log S, B, D'}
           </p>
         </div>
       </div>

@@ -125,7 +125,7 @@ export default function RestTimerBar({ duration = 90, onComplete, onDismiss }) {
         // FIX 3: "Rest complete" toast — no navigation, no unmount
         <div className="flex items-center justify-between">
           <span className="text-sm" style={{ color: '#22c55e', fontFamily: 'Montserrat, sans-serif' }}>
-            ✓ Rest complete — time to work!
+            ✓ Rest complete, time to work!
           </span>
           <button onClick={onDismiss} className="w-8 h-8 rounded-lg flex items-center justify-center ml-3" style={{ background: btnBg }}>
             <X className="w-3 h-3" style={{ color: iconColor }} />

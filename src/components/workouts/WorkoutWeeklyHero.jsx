@@ -69,7 +69,7 @@ export default function WorkoutWeeklyHero({ logs = [], userProfile = null }) {
   }, [logs]);
 
   const formatDuration = (mins) => {
-    if (!mins) return '–';
+    if (!mins) return '0m';
     const h = Math.floor(mins / 60);
     const m = mins % 60;
     if (h === 0) return `${m}m`;
@@ -78,7 +78,7 @@ export default function WorkoutWeeklyHero({ logs = [], userProfile = null }) {
   };
 
   const formatVolume = (vol) => {
-    if (!vol) return '–';
+    if (!vol) return '0';
     if (vol >= 1000) return `${(vol / 1000).toFixed(1)}k`;
     return `${Math.round(vol)}`;
   };

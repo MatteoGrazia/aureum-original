@@ -1,15 +1,19 @@
-// FIX 1 — REORDER: HTML5 native drag-and-drop for exercise reorder
+// Changes applied:
+// C1  — ReorderModal integration
+// C3  — Unified sticky header (title + timer + Finish in one bar)
+// C11 — Isolated ElapsedTimer component (no parent re-renders from ticks)
+// C13 — Auto-minimize when navigating away
 // Flutter equivalent: ReorderableListView with onReorder callback
-// FIX 5 — STICKY TOP BAR with correct padding so content isn't hidden
-// FIX 6 — CORRECT VOLUME: only completed non-warmup sets, weight × reps
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, ChevronDown, ChevronUp, Calculator } from 'lucide-react';
+import { X, Plus, ChevronDown, ChevronUp, Calculator, CheckCircle2 } from 'lucide-react';
 import ExerciseBlock from './ExerciseBlock';
 import RestTimerBar from './RestTimerBar';
 import ExercisePicker from './ExercisePicker';
 import PlateCalculator from './PlateCalculator';
+import ReorderModal from './ReorderModal';
+import ElapsedTimer from './ElapsedTimer';
 import GoldButton from '@/components/ui/GoldButton';
 import { useTheme } from '@/components/shared/ThemeContext';
 import { useSettings, weightUnitLabel } from '@/lib/SettingsContext';
@@ -43,7 +47,7 @@ const requestNotificationPermission = async () => {
 
 const sendRestCompleteNotification = (exerciseName) => {
   if ('Notification' in window && Notification.permission === 'granted') {
-    new Notification('Rest Over — Aureum', {
+    new Notification('Rest Over - Aureum', {
       body: `Time to hit your next set on ${exerciseName}`,
       icon: '/favicon.ico',
     });
@@ -62,7 +66,6 @@ const formatTime = (secs) => {
   return `${m}:${s.toString().padStart(2, '0')}`;
 };
 
-// FIX 6: correct volume — only completed sets, weight × reps, rounded
 function calculateTotalVolume(exercises) {
   return exercises.reduce((total, exercise) => {
     return total + exercise.sets.reduce((exTotal, set) => {
@@ -74,6 +77,19 @@ function calculateTotalVolume(exercises) {
   }, 0);
 }
 
+// C11: Minimized pill elapsed timer — isolated
+const MinimizedTimer = React.memo(function MinimizedTimer({ workoutStartTime, style }) {
+  const [elapsed, setElapsed] = useState(() => {
+    if (workoutStartTime) return Math.floor((Date.now() - new Date(workoutStartTime).getTime()) / 1000);
+    return 0;
+  });
+  useEffect(() => {
+    const interval = setInterval(() => setElapsed(e => e + 1), 1000);
+    return () => clearInterval(interval);
+  }, []);
+  return <span className="text-sm tabular-nums" style={style}>{formatTime(elapsed)}</span>;
+});
+
 export default function AureumLogger({
   activeWorkout, allExercises, onUpdateWorkout,
   onFinish, onCancel, previousWorkoutSets = {},
@@ -83,7 +99,7 @@ export default function AureumLogger({
   const { isDarkMode } = useTheme();
   const settings = useSettings();
   const wUnit = weightUnitLabel(settings.home_units_weight);
-  const defaultRestDuration = settings.workout_default_rest_timer || 90;
+
   const bg = isDarkMode ? '#080808' : '#F2EFE9';
   const panelBg = isDarkMode ? 'rgba(8,8,8,0.98)' : 'rgba(242,239,233,0.98)';
   const pillBg = isDarkMode ? 'rgba(8,8,8,0.97)' : 'rgba(255,255,255,0.97)';
@@ -97,10 +113,6 @@ export default function AureumLogger({
   const finishGradient = isDarkMode ? 'linear-gradient(to top, rgba(8,8,8,1) 70%, transparent)' : 'linear-gradient(to top, rgba(242,239,233,1) 70%, transparent)';
   const gold = isDarkMode ? '#D4AF37' : '#9A7A14';
 
-  const [elapsed, setElapsed] = useState(() => {
-    if (workoutStartTime) return Math.floor((Date.now() - new Date(workoutStartTime).getTime()) / 1000);
-    return 0;
-  });
   const [showRestTimer, setShowRestTimer] = useState(false);
   const [restDuration, setRestDuration] = useState(90);
   const [restKey, setRestKey] = useState(0);
@@ -108,8 +120,9 @@ export default function AureumLogger({
   const [showExercisePicker, setShowExercisePicker] = useState(false);
   const [replaceIndex, setReplaceIndex] = useState(null);
   const [showCalculator, setShowCalculator] = useState(false);
+  const [showReorder, setShowReorder] = useState(false);
 
-  // FIX 1: drag state
+  // C11: drag state (no timer in parent state)
   const dragIndexRef = useRef(null);
   const [dragOverIndex, setDragOverIndex] = useState(null);
 
@@ -117,13 +130,23 @@ export default function AureumLogger({
     requestNotificationPermission();
   }, []);
 
+  // C13: auto-minimize when navigating away during active workout
   useEffect(() => {
-    const interval = setInterval(() => setElapsed(e => e + 1), 1000);
-    return () => clearInterval(interval);
-  }, []);
+    if (isMinimized) return;
+    const handleVisibilityChange = () => {
+      if (document.hidden) onMinimize?.();
+    };
+    // Listen for route changes via popstate / pushState intercept
+    const handlePopState = () => { onMinimize?.(); };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    // We don't add popstate here as NavigationContext handles it;
+    // instead listen to clicks on nav links via capture
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [isMinimized, onMinimize]);
 
   const triggerRestTimer = (exercise) => {
-    // Use per-exercise rest if defined, otherwise fall back to user setting
     const dur = exercise.default_rest || settings.workout_default_rest_timer || getRestDuration(exercise);
     setRestDuration(dur);
     setCurrentRestExercise(exercise?.exercise_name || '');
@@ -153,12 +176,20 @@ export default function AureumLogger({
     onUpdateWorkout({ ...current, exercises, is_modified: true });
   }, [onUpdateWorkout]);
 
+  const deleteExercise = useCallback((index) => {
+    const current = activeWorkoutRef.current;
+    const exercises = current.exercises.filter((_, i) => i !== index);
+    onUpdateWorkout({ ...current, exercises, is_modified: true });
+  }, [onUpdateWorkout]);
+
   const addExercise = (ex) => {
     const newEx = {
       exercise_id: ex.id,
       exercise_name: ex.name,
       muscle_group: ex.muscle_group,
       equipment: ex.equipment,
+      image_url: ex.image_url,
+      image_url_dark: ex.image_url_dark,
       sets: [createSet()],
     };
     onUpdateWorkout({ ...activeWorkout, exercises: [...activeWorkout.exercises, newEx], is_modified: true });
@@ -173,13 +204,21 @@ export default function AureumLogger({
       exercise_name: ex.name,
       muscle_group: ex.muscle_group,
       equipment: ex.equipment,
+      image_url: ex.image_url,
+      image_url_dark: ex.image_url_dark,
     };
     onUpdateWorkout({ ...activeWorkout, exercises, is_modified: true });
     setShowExercisePicker(false);
     setReplaceIndex(null);
   };
 
-  // FIX 1: HTML5 drag handlers
+  // C1: confirm reorder from ReorderModal
+  const handleReorderConfirm = useCallback((reordered) => {
+    onUpdateWorkout({ ...activeWorkoutRef.current, exercises: reordered, is_modified: true });
+    setShowReorder(false);
+  }, [onUpdateWorkout]);
+
+  // Inline drag handlers
   const handleDragStart = useCallback((index) => {
     dragIndexRef.current = index;
   }, []);
@@ -212,7 +251,6 @@ export default function AureumLogger({
 
   const totalSets = activeWorkout.exercises.reduce((s, ex) => s + ex.sets.length, 0);
   const completedSets = activeWorkout.exercises.reduce((s, ex) => s + ex.sets.filter(set => set.completed).length, 0);
-  // FIX 6: use correct volume calculator
   const totalVolume = Math.round(calculateTotalVolume(activeWorkout.exercises));
 
   // Minimized pill
@@ -234,7 +272,8 @@ export default function AureumLogger({
             {activeWorkout.routine_name}
           </p>
           <div className="flex items-center gap-3 mt-0.5">
-            <span className="text-sm tabular-nums" style={{ color: textDim }}>{formatTime(elapsed)}</span>
+            {/* C11: isolated timer in minimized pill */}
+            <MinimizedTimer workoutStartTime={workoutStartTime} style={{ color: textDim }} />
             <span className="text-xs" style={{ color: textMuted }}>{completedSets}/{totalSets} sets</span>
             {totalVolume > 0 && <span className="text-xs" style={{ color: gold, opacity: 0.8 }}>{totalVolume.toLocaleString()} {wUnit}</span>}
           </div>
@@ -259,9 +298,10 @@ export default function AureumLogger({
   return (
     <>
       <div className="relative z-10 min-h-screen" style={{ background: bg, paddingBottom: '140px' }}>
-        {/* FIX 5: Sticky top bar — position sticky, z-index 50, compact on mobile */}
+
+        {/* C3: Unified sticky header: title, timer, Finish + stats row */}
         <div
-          className="sticky top-0 z-50 px-4"
+          className="sticky top-0 z-[100] px-4"
           style={{
             background: panelBg,
             backdropFilter: 'blur(20px)',
@@ -271,52 +311,73 @@ export default function AureumLogger({
             borderBottom: `0.5px solid ${divider}`,
           }}
         >
-          {/* Row 1: name + controls */}
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="text-base truncate flex-1 mr-2" style={{ color: textPrimary, fontFamily: 'Montserrat, sans-serif' }}>
+          {/* Row 1: title | elapsed timer (center) | Finish button */}
+          <div className="flex items-center justify-between gap-2 mb-2">
+            <h2 className="text-sm truncate flex-1" style={{ color: textPrimary, fontFamily: 'Montserrat, sans-serif' }}>
               {activeWorkout.routine_name}
             </h2>
-            <div className="flex items-center gap-2">
+
+            {/* C3: elapsed timer centered */}
+            <div className="flex-shrink-0">
+              {/* C11: isolated ElapsedTimer component */}
+              <ElapsedTimer
+                workoutStartTime={workoutStartTime}
+                style={{ color: gold, fontFamily: 'Montserrat, sans-serif', fontSize: 16, fontWeight: 500 }}
+              />
+            </div>
+
+            {/* Finish + utility buttons */}
+            <div className="flex items-center gap-1.5 flex-shrink-0">
               <button
                 onClick={() => setShowCalculator(true)}
-                className="w-9 h-9 rounded-xl flex items-center justify-center"
+                className="w-8 h-8 rounded-xl flex items-center justify-center"
                 style={{ background: isDarkMode ? 'rgba(212,175,55,0.08)' : 'rgba(154,122,20,0.08)', border: `0.5px solid ${isDarkMode ? 'rgba(212,175,55,0.2)' : 'rgba(154,122,20,0.25)'}` }}
               >
-                <Calculator className="w-4 h-4" style={{ color: gold, opacity: 0.8 }} />
+                <Calculator className="w-3.5 h-3.5" style={{ color: gold, opacity: 0.8 }} />
               </button>
               <button
                 onClick={onMinimize}
-                className="w-9 h-9 rounded-xl flex items-center justify-center"
+                className="w-8 h-8 rounded-xl flex items-center justify-center"
                 style={{ background: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(30,28,24,0.06)', border: `0.5px solid ${isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(30,28,24,0.15)'}` }}
               >
-                <ChevronDown className="w-5 h-5" style={{ color: textMuted }} />
+                <ChevronDown className="w-4 h-4" style={{ color: textMuted }} />
               </button>
               <button
                 onClick={onCancel}
-                className="w-9 h-9 rounded-xl flex items-center justify-center"
+                className="w-8 h-8 rounded-xl flex items-center justify-center"
                 style={{ background: 'rgba(239,68,68,0.1)', border: '0.5px solid rgba(239,68,68,0.2)' }}
               >
-                <X className="w-5 h-5 text-red-500" />
+                <X className="w-4 h-4 text-red-500" />
+              </button>
+              {/* C3: Finish button in header */}
+              <button
+                onClick={onFinish}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs"
+                style={{
+                  background: `linear-gradient(135deg, ${gold} 0%, ${isDarkMode ? '#BFA030' : '#C4A020'} 100%)`,
+                  color: '#080808',
+                  fontFamily: 'Montserrat, sans-serif',
+                  fontWeight: 500,
+                  letterSpacing: '0.06em',
+                }}
+              >
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                Finish
               </button>
             </div>
           </div>
 
-          {/* Row 2: stats bar — FIX 6: volume shown correctly */}
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-1.5">
-              <span className="text-[10px] uppercase tracking-wider" style={{ color: textMuted }}>Time</span>
-              <span className="text-sm tabular-nums" style={{ color: textDim, fontFamily: 'Montserrat, sans-serif' }}>{formatTime(elapsed)}</span>
+          {/* Row 2: stats bar */}
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1">
+              <span className="text-[9px] uppercase tracking-wider" style={{ color: textMuted }}>Sets</span>
+              <span className="text-xs" style={{ color: textDim }}>{completedSets}/{totalSets}</span>
             </div>
-            <div className="w-px h-4" style={{ background: isDarkMode ? 'rgba(255,255,255,0.10)' : 'rgba(30,28,24,0.15)' }} />
-            <div className="flex items-center gap-1.5">
-              <span className="text-[10px] uppercase tracking-wider" style={{ color: textMuted }}>Sets</span>
-              <span className="text-sm" style={{ color: textDim }}>{completedSets}/{totalSets}</span>
-            </div>
-            <div className="w-px h-4" style={{ background: isDarkMode ? 'rgba(255,255,255,0.10)' : 'rgba(30,28,24,0.15)' }} />
-            <div className="flex items-center gap-1.5">
-              <span className="text-[10px] uppercase tracking-wider" style={{ color: textMuted }}>Vol</span>
-              <span className="text-sm tabular-nums" style={{ color: gold, fontFamily: 'Montserrat, sans-serif' }}>
-                {totalVolume > 0 ? `${totalVolume.toLocaleString()} ${wUnit}` : '—'}
+            <div className="w-px h-3" style={{ background: isDarkMode ? 'rgba(255,255,255,0.10)' : 'rgba(30,28,24,0.15)' }} />
+            <div className="flex items-center gap-1">
+              <span className="text-[9px] uppercase tracking-wider" style={{ color: textMuted }}>Vol</span>
+              <span className="text-xs tabular-nums" style={{ color: gold, fontFamily: 'Montserrat, sans-serif' }}>
+                {totalVolume > 0 ? `${totalVolume.toLocaleString()} ${wUnit}` : '-'}
               </span>
             </div>
           </div>
@@ -332,7 +393,7 @@ export default function AureumLogger({
           </div>
         </div>
 
-        {/* FIX 5: Body — pt-3 ensures content is not hidden behind sticky bar */}
+        {/* Body */}
         <div className="px-4 pt-3 space-y-3">
           <AnimatePresence>
             {showRestTimer && (
@@ -345,7 +406,6 @@ export default function AureumLogger({
             )}
           </AnimatePresence>
 
-          {/* FIX 1: exercise list with drag-and-drop */}
           {activeWorkout.exercises.map((exercise, i) => (
             <ExerciseBlock
               key={`${exercise.exercise_id || i}-${i}`}
@@ -353,10 +413,11 @@ export default function AureumLogger({
               onUpdate={updated => updateExercise(i, updated)}
               onStructuralUpdate={updated => structuralUpdateExercise(i, updated)}
               onReplace={() => { setReplaceIndex(i); setShowExercisePicker(true); }}
+              onDelete={() => deleteExercise(i)}
+              onOpenReorder={() => setShowReorder(true)}
               onTimerStart={triggerRestTimer}
               previousSets={previousWorkoutSets[exercise.exercise_name] || []}
               userWeight={userWeight}
-              // FIX 1: drag props
               draggable={true}
               onDragStart={() => handleDragStart(i)}
               onDragOver={(e) => handleDragOver(e, i)}
@@ -376,7 +437,7 @@ export default function AureumLogger({
           </button>
         </div>
 
-        {/* Fixed Finish button */}
+        {/* Fixed Finish button at bottom (fallback for long sessions) */}
         <div
           className="fixed bottom-0 left-0 right-0 z-[60] px-4 pt-4"
           style={{
@@ -393,6 +454,17 @@ export default function AureumLogger({
       {showCalculator && (
         <PlateCalculator isOpen={showCalculator} onClose={() => setShowCalculator(false)} />
       )}
+
+      {/* C1: Reorder modal */}
+      <AnimatePresence>
+        {showReorder && (
+          <ReorderModal
+            exercises={activeWorkout.exercises}
+            onConfirm={handleReorderConfirm}
+            onClose={() => setShowReorder(false)}
+          />
+        )}
+      </AnimatePresence>
 
       <AnimatePresence>
         {showExercisePicker && (
