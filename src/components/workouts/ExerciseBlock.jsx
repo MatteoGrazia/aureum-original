@@ -231,10 +231,10 @@ const ExerciseBlock = React.memo(function ExerciseBlock({
   const addBtnColor = isDarkMode ? 'rgba(255,255,255,0.35)' : 'rgba(30,28,24,0.50)';
   const hasComment = !!(exercise.comment && exercise.comment.trim());
 
-  // C4: warmup pill — same orange as "W" badge
-  const warmupPillBg = isDarkMode ? 'rgba(245,158,11,0.20)' : 'rgba(180,83,9,0.15)';
-  const warmupPillColor = isDarkMode ? 'rgb(251,146,60)' : '#b45309'; // text-orange-400 / orange-600
-  const warmupPillBorder = isDarkMode ? '1px solid rgba(251,146,60,0.35)' : '1px solid rgba(180,83,9,0.3)';
+  // Drop set pill styling — purple
+  const dropPillBg = isDarkMode ? 'rgba(139,92,246,0.18)' : 'rgba(109,40,217,0.10)';
+  const dropPillColor = isDarkMode ? 'rgb(167,139,250)' : '#6d28d9';
+  const dropPillBorder = isDarkMode ? '1px solid rgba(139,92,246,0.35)' : '1px solid rgba(109,40,217,0.25)';
 
   return (
     <div
@@ -416,13 +416,13 @@ const ExerciseBlock = React.memo(function ExerciseBlock({
               >
                 Remove Set
               </button>
-              {/* C4: warmup pill — orange matching W badge */}
+              {/* Drop set pill */}
               <button
-                onClick={() => addSet('warmup')}
+                onClick={() => addSet('dropset')}
                 className="px-3 py-2.5 rounded-xl text-xs transition-colors"
-                style={{ background: warmupPillBg, color: warmupPillColor, border: warmupPillBorder }}
+                style={{ background: dropPillBg, color: dropPillColor, border: dropPillBorder }}
               >
-                + Warm-up
+                + Drop Set
               </button>
             </>
           )}

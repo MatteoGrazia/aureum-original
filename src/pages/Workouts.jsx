@@ -103,24 +103,18 @@ export default function Workouts() {
   const location = useLocation();
   const workoutCtx = useWorkout();
   const today = format(new Date(), 'yyyy-MM-dd');
-  const persistTimerRef = useRef(null);
   const seededRef = useRef(false);
 
-  // C13: auto-minimize when navigating away from /Workouts while a workout is active
-  const prevLocationRef = useRef(location.pathname);
+  // Auto-minimize handled globally by GlobalMinimizedWorkout — just sync view state when context minimizes
+  
+
+  // Sync with global context: minimize → show routines, restore → show active
   useEffect(() => {
-    const prev = prevLocationRef.current;
-    prevLocationRef.current = location.pathname;
-    if (activeWorkout && view === 'active' && !workoutMinimized && prev !== location.pathname) {
+    if (!workoutCtx) return;
+    if (workoutCtx.isMinimized && view === 'active') {
       setWorkoutMinimized(true);
       setView('routines');
-      workoutCtx?.minimizeWorkout();
-    }
-  }, [location.pathname]);
-
-  // Sync: if global context says restore (from another page), switch to active view
-  useEffect(() => {
-    if (workoutCtx && !workoutCtx.isMinimized && activeWorkout && workoutMinimized) {
+    } else if (!workoutCtx.isMinimized && workoutMinimized && activeWorkout) {
       setWorkoutMinimized(false);
       setView('active');
     }
@@ -213,18 +207,15 @@ export default function Workouts() {
     }
   }, []);
 
-  // Persist every 10s
+  // Persist immediately on every workout change (so minimizing never loses completed sets)
   useEffect(() => {
-    if (view === 'active' && activeWorkout) {
-      persistTimerRef.current = setInterval(() => {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify({
-          workout: activeWorkout,
-          startTime: workoutStartTime,
-        }));
-      }, 10000);
+    if (activeWorkout && workoutStartTime) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        workout: activeWorkout,
+        startTime: workoutStartTime,
+      }));
     }
-    return () => clearInterval(persistTimerRef.current);
-  }, [view, activeWorkout, workoutStartTime]);
+  }, [activeWorkout, workoutStartTime]);
 
   // Deduplicate + seed exercises — run only once per session, not on every render
   const dedupeRanRef = useRef(false);

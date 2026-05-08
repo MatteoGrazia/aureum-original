@@ -9,15 +9,21 @@ const formatTime = (secs) => {
 };
 
 const ElapsedTimer = React.memo(function ElapsedTimer({ workoutStartTime, style }) {
-  const [elapsed, setElapsed] = useState(() => {
+  // Always derive elapsed from the real start time so restoring after minimize shows correct value
+  const getElapsed = () => {
     if (workoutStartTime) return Math.floor((Date.now() - new Date(workoutStartTime).getTime()) / 1000);
     return 0;
-  });
+  };
+  const [elapsed, setElapsed] = useState(getElapsed);
 
   useEffect(() => {
-    const interval = setInterval(() => setElapsed(e => e + 1), 1000);
+    // Re-sync on mount in case component remounted after minimize/restore
+    setElapsed(getElapsed());
+    const interval = setInterval(() => {
+      setElapsed(Math.floor((Date.now() - new Date(workoutStartTime).getTime()) / 1000));
+    }, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [workoutStartTime]);
 
   return (
     <span className="tabular-nums" style={style}>

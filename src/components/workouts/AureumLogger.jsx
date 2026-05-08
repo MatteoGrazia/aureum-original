@@ -77,16 +77,19 @@ function calculateTotalVolume(exercises) {
   }, 0);
 }
 
-// C11: Minimized pill elapsed timer — isolated
+// C11: Minimized pill elapsed timer — always derives from real start time
 const MinimizedTimer = React.memo(function MinimizedTimer({ workoutStartTime, style }) {
-  const [elapsed, setElapsed] = useState(() => {
-    if (workoutStartTime) return Math.floor((Date.now() - new Date(workoutStartTime).getTime()) / 1000);
-    return 0;
-  });
+  const getElapsed = () => workoutStartTime
+    ? Math.floor((Date.now() - new Date(workoutStartTime).getTime()) / 1000)
+    : 0;
+  const [elapsed, setElapsed] = useState(getElapsed);
   useEffect(() => {
-    const interval = setInterval(() => setElapsed(e => e + 1), 1000);
+    setElapsed(getElapsed());
+    const interval = setInterval(() => {
+      setElapsed(Math.floor((Date.now() - new Date(workoutStartTime).getTime()) / 1000));
+    }, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [workoutStartTime]);
   return <span className="text-sm tabular-nums" style={style}>{formatTime(elapsed)}</span>;
 });
 
@@ -407,24 +410,45 @@ export default function AureumLogger({
           </AnimatePresence>
 
           {activeWorkout.exercises.map((exercise, i) => (
-            <ExerciseBlock
-              key={`${exercise.exercise_id || i}-${i}`}
-              exercise={exercise}
-              onUpdate={updated => updateExercise(i, updated)}
-              onStructuralUpdate={updated => structuralUpdateExercise(i, updated)}
-              onReplace={() => { setReplaceIndex(i); setShowExercisePicker(true); }}
-              onDelete={() => deleteExercise(i)}
-              onOpenReorder={() => setShowReorder(true)}
-              onTimerStart={triggerRestTimer}
-              previousSets={previousWorkoutSets[exercise.exercise_name] || []}
-              userWeight={userWeight}
-              draggable={true}
-              onDragStart={() => handleDragStart(i)}
-              onDragOver={(e) => handleDragOver(e, i)}
-              onDrop={(e) => handleDrop(e, i)}
-              onDragEnd={handleDragEnd}
-              isDraggingOver={dragOverIndex === i && dragIndexRef.current !== i}
-            />
+            <div key={`${exercise.exercise_id || i}-${i}`}>
+              {/* Sticky exercise name label while scrolling */}
+              <div
+                className="sticky z-[90] px-1 py-1 mb-1"
+                style={{
+                  top: 'calc(env(safe-area-inset-top, 0px) + 44px + 72px)', // below the main sticky header
+                  pointerEvents: 'none',
+                }}
+              >
+                <span
+                  className="text-[10px] uppercase tracking-[0.2em] px-2 py-0.5 rounded-full"
+                  style={{
+                    background: isDarkMode ? 'rgba(8,8,8,0.85)' : 'rgba(242,239,233,0.90)',
+                    color: gold,
+                    fontFamily: 'Montserrat, sans-serif',
+                    backdropFilter: 'blur(8px)',
+                  }}
+                >
+                  {exercise.exercise_name}
+                </span>
+              </div>
+              <ExerciseBlock
+                exercise={exercise}
+                onUpdate={updated => updateExercise(i, updated)}
+                onStructuralUpdate={updated => structuralUpdateExercise(i, updated)}
+                onReplace={() => { setReplaceIndex(i); setShowExercisePicker(true); }}
+                onDelete={() => deleteExercise(i)}
+                onOpenReorder={() => setShowReorder(true)}
+                onTimerStart={triggerRestTimer}
+                previousSets={previousWorkoutSets[exercise.exercise_name] || []}
+                userWeight={userWeight}
+                draggable={true}
+                onDragStart={() => handleDragStart(i)}
+                onDragOver={(e) => handleDragOver(e, i)}
+                onDrop={(e) => handleDrop(e, i)}
+                onDragEnd={handleDragEnd}
+                isDraggingOver={dragOverIndex === i && dragIndexRef.current !== i}
+              />
+            </div>
           ))}
 
           <button

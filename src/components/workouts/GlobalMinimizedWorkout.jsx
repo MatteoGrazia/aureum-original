@@ -1,6 +1,6 @@
 // Global minimized workout bar — visible on ALL pages when workout is active and minimized
-// C13: auto-minimize on navigation
-import React, { useState, useEffect } from 'react';
+// Also handles auto-minimize when navigating away from the Workouts page
+import React, { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronUp } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -8,31 +8,72 @@ import { useWorkout } from '@/lib/WorkoutContext';
 import { useTheme } from '@/components/shared/ThemeContext';
 import { useSettings, weightUnitLabel } from '@/lib/SettingsContext';
 
+const STORAGE_KEY = 'aureum_active_workout';
+
 const formatTime = (secs) => {
   const m = Math.floor(secs / 60);
   const s = secs % 60;
   return `${m}:${s.toString().padStart(2, '0')}`;
 };
 
-// Isolated timer for minimized pill
+// Isolated timer — always derives elapsed from actual start time so it never resets
 const MiniTimer = React.memo(function MiniTimer({ workoutStartTime, style }) {
-  const [elapsed, setElapsed] = React.useState(() => {
-    if (workoutStartTime) return Math.floor((Date.now() - new Date(workoutStartTime).getTime()) / 1000);
-    return 0;
-  });
+  const getElapsed = () => workoutStartTime
+    ? Math.floor((Date.now() - new Date(workoutStartTime).getTime()) / 1000)
+    : 0;
+  const [elapsed, setElapsed] = React.useState(getElapsed);
+
   React.useEffect(() => {
-    const interval = setInterval(() => setElapsed(e => e + 1), 1000);
+    setElapsed(getElapsed());
+    const interval = setInterval(() => {
+      setElapsed(Math.floor((Date.now() - new Date(workoutStartTime).getTime()) / 1000));
+    }, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [workoutStartTime]);
+
   return <span style={style}>{formatTime(elapsed)}</span>;
 });
 
 export default function GlobalMinimizedWorkout() {
-  const { activeWorkout, workoutStartTime, isMinimized, restoreWorkout } = useWorkout();
+  const { activeWorkout, workoutStartTime, isMinimized, minimizeWorkout, restoreWorkout, updateWorkout } = useWorkout();
   const { isDarkMode } = useTheme();
   const settings = useSettings();
   const navigate = useNavigate();
   const location = useLocation();
+  const prevPathRef = useRef(location.pathname);
+
+  // Auto-minimize when navigating away from Workouts while a workout is active and NOT already minimized
+  useEffect(() => {
+    const prev = prevPathRef.current;
+    const curr = location.pathname;
+    prevPathRef.current = curr;
+
+    const wasOnWorkouts = prev.toLowerCase().includes('workout') || prev === '/';
+    const nowOnWorkouts = curr.toLowerCase().includes('workout');
+
+    if (activeWorkout && !isMinimized && !nowOnWorkouts) {
+      // Persist current workout state immediately before minimizing
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const data = JSON.parse(saved);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify({
+            ...data,
+            workout: activeWorkout,
+          }));
+        }
+      } catch (_) {}
+      minimizeWorkout();
+    }
+  }, [location.pathname]);
+
+  // Also sync workout updates from localStorage when restoring
+  const handleResume = () => {
+    restoreWorkout();
+    if (!location.pathname.toLowerCase().includes('workout')) {
+      navigate('/Workouts');
+    }
+  };
 
   if (!activeWorkout || !isMinimized) return null;
 
@@ -50,16 +91,10 @@ export default function GlobalMinimizedWorkout() {
       return t + (parseFloat(s.weight) || 0) * (parseInt(s.reps) || 0);
     }, 0), 0));
 
-  const handleResume = () => {
-    restoreWorkout();
-    if (!location.pathname.toLowerCase().includes('workout')) {
-      navigate('/Workouts');
-    }
-  };
-
   return (
     <AnimatePresence>
       <motion.div
+        key="global-minimized"
         initial={{ y: 80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 80, opacity: 0 }}
