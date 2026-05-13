@@ -1,0 +1,83 @@
+{
+  "name": "DailyActivity",
+  "type": "object",
+  "properties": {
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "steps": {
+      "type": "number",
+      "default": 0
+    },
+    "active_minutes": {
+      "type": "number",
+      "default": 0
+    },
+    "sedentary_minutes": {
+      "type": "number",
+      "default": 0
+    },
+    "calories_burned": {
+      "type": "number",
+      "default": 0
+    },
+    "water_liters": {
+      "type": "number",
+      "default": 0,
+      "description": "Water consumed in liters"
+    },
+    "step_goal": {
+      "type": "number",
+      "default": 10000
+    },
+    "energy_level": {
+      "type": "number",
+      "description": "Daily readiness / energy rating from 1 to 5"
+    }
+  },
+  "required": [
+    "date"
+  ],
+  "rls": {
+    "create": {
+      "created_by": "{{user.email}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
