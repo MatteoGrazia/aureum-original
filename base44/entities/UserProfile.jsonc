@@ -1,0 +1,138 @@
+{
+  "name": "UserProfile",
+  "type": "object",
+  "properties": {
+    "height": {
+      "type": "number",
+      "description": "Height in cm"
+    },
+    "current_weight": {
+      "type": "number",
+      "description": "Current weight in kg"
+    },
+    "goal_weight": {
+      "type": "number"
+    },
+    "birth_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "gender": {
+      "type": "string",
+      "enum": [
+        "male",
+        "female",
+        "other"
+      ]
+    },
+    "activity_level": {
+      "type": "string",
+      "enum": [
+        "sedentary",
+        "light",
+        "moderate",
+        "active",
+        "very_active"
+      ]
+    },
+    "goal": {
+      "type": "string",
+      "enum": [
+        "lose",
+        "maintain",
+        "gain"
+      ]
+    },
+    "maintenance_calories": {
+      "type": "number"
+    },
+    "daily_step_goal": {
+      "type": "number",
+      "default": 10000
+    },
+    "water_goal": {
+      "type": "number",
+      "default": 2.5,
+      "description": "Daily water goal in liters"
+    },
+    "measurement_system": {
+      "type": "string",
+      "enum": [
+        "metric",
+        "imperial",
+        "uk"
+      ],
+      "default": "metric",
+      "description": "Preferred measurement system"
+    },
+    "water_unit": {
+      "type": "string",
+      "enum": [
+        "liters",
+        "glasses"
+      ],
+      "default": "liters",
+      "description": "Preferred water tracking unit"
+    },
+    "lifetime_volume": {
+      "type": "number",
+      "default": 0,
+      "description": "Total lifetime weight lifted in kg"
+    },
+    "permissions_requested": {
+      "type": "boolean",
+      "default": false
+    },
+    "step_tracking_enabled": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether user has granted step tracking permission"
+    },
+    "google_fit_refresh_token": {
+      "type": "string",
+      "description": "OAuth refresh token for Google Fit integration"
+    }
+  },
+  "required": [],
+  "rls": {
+    "create": {
+      "created_by": "{{user.email}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
