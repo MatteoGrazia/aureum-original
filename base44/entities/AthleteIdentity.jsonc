@@ -1,0 +1,105 @@
+{
+  "name": "AthleteIdentity",
+  "type": "object",
+  "properties": {
+    "username": {
+      "type": "string",
+      "description": "Athlete's unique handle"
+    },
+    "display_name": {
+      "type": "string",
+      "description": "Public display name for Syndicate"
+    },
+    "bio": {
+      "type": "string",
+      "description": "Short athlete bio"
+    },
+    "avatar_url": {
+      "type": "string",
+      "description": "Profile photo URL"
+    },
+    "syndicate_visible": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether athlete appears in the Syndicate feed"
+    },
+    "is_private": {
+      "type": "boolean",
+      "default": false,
+      "description": "Privacy mode - requires approval for Syndicate connections"
+    },
+    "network_consent": {
+      "type": "boolean",
+      "default": false,
+      "description": "Has the athlete consented to share data in the Syndicate"
+    },
+    "last_active": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last time this athlete posted or interacted"
+    },
+    "is_founder": {
+      "type": "boolean",
+      "default": false,
+      "description": "Lifetime member status with gold shimmer border"
+    },
+    "total_workouts": {
+      "type": "number",
+      "default": 0
+    },
+    "total_volume_kg": {
+      "type": "number",
+      "default": 0
+    },
+    "follower_count": {
+      "type": "number",
+      "default": 0
+    },
+    "following_count": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [],
+  "rls": {
+    "create": {
+      "created_by": "{{user.email}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
