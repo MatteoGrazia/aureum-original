@@ -1,0 +1,107 @@
+{
+  "name": "WorkoutLog",
+  "type": "object",
+  "properties": {
+    "routine_id": {
+      "type": "string",
+      "description": "Associated routine"
+    },
+    "routine_name": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "duration_minutes": {
+      "type": "number"
+    },
+    "total_volume": {
+      "type": "number",
+      "description": "Total weight lifted (kg)"
+    },
+    "sets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "exercise_id": {
+            "type": "string"
+          },
+          "exercise_name": {
+            "type": "string"
+          },
+          "set_number": {
+            "type": "number"
+          },
+          "weight": {
+            "type": "number"
+          },
+          "reps": {
+            "type": "number"
+          },
+          "rpe": {
+            "type": "number"
+          },
+          "is_warmup": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "notes": {
+      "type": "string"
+    },
+    "photos": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Workout photo URLs"
+    }
+  },
+  "required": [
+    "date"
+  ],
+  "rls": {
+    "create": {
+      "created_by": "{{user.email}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
