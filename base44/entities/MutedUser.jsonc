@@ -1,0 +1,57 @@
+{
+  "name": "MutedUser",
+  "type": "object",
+  "properties": {
+    "muted_user_id": {
+      "type": "string",
+      "description": "User ID that is muted"
+    },
+    "muted_user_name": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "muted_user_id"
+  ],
+  "rls": {
+    "create": {
+      "created_by": "{{user.email}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
