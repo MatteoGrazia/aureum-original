@@ -95,7 +95,7 @@
     },
     "nutrition_protein_per_kg": {
       "type": "number",
-      "default": 2.0
+      "default": 2
     },
     "nutrition_protein_target_method": {
       "type": "string",
@@ -433,5 +433,56 @@
       }
     }
   },
-  "required": []
+  "required": [],
+  "rls": {
+    "create": {
+      "created_by": "{{user.email}}",
+      "data.user_id": "{{user.email}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "data.user_id": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "data.user_id": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "data.user_id": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
 }
