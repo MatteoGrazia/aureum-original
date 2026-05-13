@@ -129,7 +129,7 @@ export default function Dashboard() {
       <div className="min-h-screen flex items-center justify-center" style={{ background: '#080808' }}>
         <div className="text-center">
           <img
-            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698347d058d3014d6271ccff/f764a7a57_2.png"
+            src="https://media.base44.com/images/public/698347d058d3014d6271ccff/e65df92db_4.svg"
             alt="Aureum"
             className="w-24 h-24 mx-auto mb-6"
             style={{ filter: 'drop-shadow(0 0 20px rgba(212,175,55,0.4))' }}
@@ -159,7 +159,7 @@ export default function Dashboard() {
           className="mb-10 text-center pt-6">
 
           <img 
-            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698347d058d3014d6271ccff/f764a7a57_2.png"
+            src="https://media.base44.com/images/public/698347d058d3014d6271ccff/e65df92db_4.svg"
             alt="Aureum"
             loading="eager"
             width={64}
