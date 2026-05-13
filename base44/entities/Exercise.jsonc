@@ -1,0 +1,84 @@
+{
+  "name": "Exercise",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Exercise name"
+    },
+    "muscle_group": {
+      "type": "string",
+      "enum": [
+        "chest",
+        "back",
+        "shoulders",
+        "biceps",
+        "triceps",
+        "legs",
+        "core",
+        "glutes",
+        "forearms",
+        "calves"
+      ],
+      "description": "Primary muscle group targeted"
+    },
+    "secondary_muscles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Secondary muscles worked"
+    },
+    "equipment": {
+      "type": "string",
+      "enum": [
+        "barbell",
+        "dumbbell",
+        "machine",
+        "cable",
+        "bodyweight",
+        "kettlebell",
+        "bands"
+      ],
+      "description": "Equipment required"
+    },
+    "instructions": {
+      "type": "string",
+      "description": "How to perform the exercise"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "URL to anatomical illustration (light mode)"
+    },
+    "image_url_dark": {
+      "type": "string",
+      "description": "URL to anatomical illustration (dark mode)"
+    }
+  },
+  "required": [
+    "name",
+    "muscle_group"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "isAuthenticated": true
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
