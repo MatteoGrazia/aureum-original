@@ -1,0 +1,21 @@
+{
+  "name": "User",
+  "type": "object",
+  "properties": {
+    "role": {
+      "type": "string",
+      "enum": [
+        "admin",
+        "user"
+      ],
+      "default": "user"
+    },
+    "google_fit_refresh_token": {
+      "type": "string",
+      "description": "OAuth refresh token for Google Fit integration"
+    }
+  },
+  "required": [
+    "google_fit_refresh_token"
+  ]
+}
